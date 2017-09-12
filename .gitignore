@@ -54,6 +54,12 @@ dkms.conf
 
 # STM32CubeMX generated files
 .mxproject
+.cproject
 
 # Build Directory
 build/
+.dep/
+
+# Eclipse stuff
+.settings/
+.project
