@@ -56,6 +56,29 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define AIRSPD_ADC_Pin GPIO_PIN_0
+#define AIRSPD_ADC_GPIO_Port GPIOC
+#define EXT_BATT_ADC_Pin GPIO_PIN_0
+#define EXT_BATT_ADC_GPIO_Port GPIOB
+#define VBATT_ADC_Pin GPIO_PIN_1
+#define VBATT_ADC_GPIO_Port GPIOB
+#define LED1_Pin GPIO_PIN_0
+#define LED1_GPIO_Port GPIOG
+#define LED2_Pin GPIO_PIN_1
+#define LED2_GPIO_Port GPIOG
+#define LED3_Pin GPIO_PIN_7
+#define LED3_GPIO_Port GPIOE
+#define MEM_WC_Pin GPIO_PIN_13
+#define MEM_WC_GPIO_Port GPIOE
+#define PW_GOOD_EXT_Pin GPIO_PIN_14
+#define PW_GOOD_EXT_GPIO_Port GPIOE
+#define PW_GOOD_INT_Pin GPIO_PIN_15
+#define PW_GOOD_INT_GPIO_Port GPIOE
+#define USONIC_IC_Pin GPIO_PIN_8
+#define USONIC_IC_GPIO_Port GPIOB
+#define USONIC_OC_Pin GPIO_PIN_9
+#define USONIC_OC_GPIO_Port GPIOB
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

@@ -49,24 +49,75 @@
 /* Includes ------------------------------------------------------------------*/
 #include "FreeRTOS.h"
 #include "task.h"
+#include "cmsis_os.h"
 
 /* USER CODE BEGIN Includes */     
 
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
+osThreadId defaultTaskHandle;
 
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
 
 /* Function prototypes -------------------------------------------------------*/
+void StartDefaultTask(void const * argument);
+
+void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* USER CODE BEGIN FunctionPrototypes */
 
 /* USER CODE END FunctionPrototypes */
 
 /* Hook prototypes */
+
+/* Init FreeRTOS */
+
+void MX_FREERTOS_Init(void) {
+  /* USER CODE BEGIN Init */
+       
+  /* USER CODE END Init */
+
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* Create the thread(s) */
+  /* definition and creation of defaultTask */
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+}
+
+/* StartDefaultTask function */
+void StartDefaultTask(void const * argument)
+{
+
+  /* USER CODE BEGIN StartDefaultTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartDefaultTask */
+}
 
 /* USER CODE BEGIN Application */
      
