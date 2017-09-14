@@ -116,6 +116,8 @@ void StartDefaultTask(void const * argument)
   {
     osDelay(1);
   }
+
+  vTaskDelete(defaultTaskHandle); // delete task when finished
   /* USER CODE END StartDefaultTask */
 }
 
