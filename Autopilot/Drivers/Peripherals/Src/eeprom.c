@@ -7,9 +7,9 @@ void EEPROM_Init(void) {
 }
 
 void EEPROM_Write(uint16_t memAddress, uint8_t * data, uint16_t dataLen) {
-    HAL_I2C_Mem_Write_IT(hi2c1, EEPROM_ADDR, memAddress, I2C_MEMADD_SIZE_16BIT, data, dataLen);
+    HAL_I2C_Mem_Write_IT(&hi2c1, EEPROM_ADDR, memAddress, I2C_MEMADD_SIZE_16BIT, data, dataLen);
 }
 
 void EEPROM_Read(uint16_t memAddress, uint8_t *data, uint16_t dataLen) {
-    HAL_I2C_Mem_Read_IT(hi2c1, EEPROM_ADDR, memAddress, I2C_MEMADD_SIZE_16BIT, data, dataLen);
+    HAL_I2C_Mem_Read_IT(&hi2c1, EEPROM_ADDR, memAddress, I2C_MEMADD_SIZE_16BIT, data, dataLen);
 }

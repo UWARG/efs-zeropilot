@@ -90,8 +90,8 @@ Src/tim.c \
 Src/spi.c \
 Src/usart.c \
 Src/i2c.c \
-Drivers/Src/altimeter.c \
-Drivers/Src/eeprom.c
+Drivers/Peripherals/Src/altimeter.c \
+Drivers/Peripherals/Src/eeprom.c
 
 # ASM sources
 ASM_SOURCES =  \
