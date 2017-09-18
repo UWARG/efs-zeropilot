@@ -2,7 +2,6 @@
 #define EEPROM_H
 
 #include "i2c.h"
-#include "gpio.h"
 
 void EEPROM_Init(void);
 void EEPROM_Write(uint16_t memAddress, uint8_t *data, uint16_t dataLen);

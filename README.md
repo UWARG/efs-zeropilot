@@ -9,7 +9,7 @@ This repository contains the code that runs on the autopilot board. For the sche
 ## Documentation
 
 Documentation for the ZeroPilot software is available [here](http://docs.uwarg.com/zeropilot).
-ZeroPilot uses two STM32 microcontrollers to control a vehicle. The code for these MCUs is build on the STM32 HAL library.
+ZeroPilot uses two STM32 microcontrollers to control a vehicle. The code for these MCUs is built on the STM32 HAL library.
 
 ### Autopilot (STM32F765ZG)
 
