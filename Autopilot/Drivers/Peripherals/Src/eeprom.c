@@ -22,7 +22,7 @@ void EEPROM_Read(uint16_t memAddress, uint8_t *data, uint16_t dataLen) {
 void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c) {
     BaseType_t higherPrioTaskWoken = pdFALSE;
     if (hi2c->Instance == I2C1) {
-        xTaskNotifyFromISR(currentIndex, 0, eNoAction, &higherPrioTaskWoken);
+        xTaskNotifyFromISR(currentTask, 0, eNoAction, &higherPrioTaskWoken);
         portYIELD_FROM_ISR(higherPrioTaskWoken)
     }
 }
