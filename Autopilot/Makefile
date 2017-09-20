@@ -28,80 +28,84 @@ OPT = -Og
 #######################################
 # paths
 #######################################
-# source path
-SOURCES_DIR =  \
-Drivers/STM32F7xx_HAL_Driver \
-Middlewares \
-Drivers/CMSIS \
-Drivers \
-Application \
-Application/User \
-Middlewares/FreeRTOS \
-Application/MAKEFILE
-
-# firmware library path
-PERIFLIB_PATH =
 
 # Build path
 BUILD_DIR = build
 
+FREERTOS_DIR = Middlewares/Third_Party/FreeRTOS/Source
+
+TM_DIR = Middlewares/Third_Party/TM
+
+HAL_DIR = Drivers/STM32F7xx_HAL_Driver
+
+PERIPH_DIR = Drivers/Peripherals
+
 ######################################
 # source
 ######################################
-# C sources
-C_SOURCES =  \
-Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/port.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.c \
+FREERTOS_SOURCES = \
+$(FREERTOS_DIR)/portable/GCC/ARM_CM7/r0p1/port.c \
+$(FREERTOS_DIR)/portable/MemMang/heap_4.c \
+$(FREERTOS_DIR)/CMSIS_RTOS/cmsis_os.c \
+$(FREERTOS_DIR)/tasks.c \
+$(FREERTOS_DIR)/timers.c \
+$(FREERTOS_DIR)/event_groups.c \
+$(FREERTOS_DIR)/queue.c \
+$(FREERTOS_DIR)/list.c \
+$(FREERTOS_DIR)/croutine.c \
+
+TM_SOURCES = \
+
+HAL_SOURCES = \
+$(HAL_DIR)/Src/stm32f7xx_hal.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_cortex.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_gpio.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_uart.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_spi.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_rcc.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_rcc_ex.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_adc.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_adc_ex.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_pwr.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_pwr_ex.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_flash.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_flash_ex.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_dma.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_dma_ex.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_i2c.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_i2c_ex.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_tim.c \
+$(HAL_DIR)/Src/stm32f7xx_hal_tim_ex.c \
+
+PERI_SOURCES = \
+$(PERIPH_DIR)/Src/altimeter.c \
+$(PERIPH_DIR)/Src/eeprom.c \
+
+MAIN_SOURCES =  \
 Src/stm32f7xx_hal_msp.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.c \
-Middlewares/Third_Party/FreeRTOS/Source/tasks.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc_ex.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_spi.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.c \
-Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
+Src/stm32f7xx_hal_timebase_TIM.c \
+Src/stm32f7xx_it.c \
+Src/system_stm32f7xx.c \
 Src/main.c \
 Src/freertos.c \
-Src/stm32f7xx_hal_timebase_TIM.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.c \
-Middlewares/Third_Party/FreeRTOS/Source/timers.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.c \
-Middlewares/Third_Party/FreeRTOS/Source/event_groups.c \
-Middlewares/Third_Party/FreeRTOS/Source/queue.c \
-Middlewares/Third_Party/FreeRTOS/Source/list.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.c \
-Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim_ex.c \
-Middlewares/Third_Party/FreeRTOS/Source/croutine.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim.c \
-Src/system_stm32f7xx.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.c \
-Src/stm32f7xx_it.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.c \
 Src/adc.c \
 Src/gpio.c \
 Src/tim.c \
 Src/spi.c \
 Src/usart.c \
 Src/i2c.c \
-Drivers/Peripherals/Src/altimeter.c \
-Drivers/Peripherals/Src/eeprom.c
+
+
+C_SOURCES = \
+$(FREERTOS_SOURCES) \
+$(TM_SOURCES) \
+$(HAL_SOURCES) \
+$(PERI_SOURCES) \
+$(MAIN_SOURCES) \
 
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32f765xx.s
-
-
-######################################
-# firmware library
-######################################
-PERIFLIB_SOURCES =
 
 
 #######################################
@@ -138,6 +142,7 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
+-DSTM32F7xx \
 -DSTM32F765xx
 
 
@@ -148,15 +153,15 @@ AS_INCLUDES =  \
 # C includes
 C_INCLUDES =  \
 -IInc \
--IDrivers/STM32F7xx_HAL_Driver/Inc \
--IDrivers/STM32F7xx_HAL_Driver/Inc/Legacy \
--IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1 \
+-I$(FREERTOS_DIR)/portable/GCC/ARM_CM7/r0p1 \
+-I$(FREERTOS_DIR)/include \
+-I$(FREERTOS_DIR)/CMSIS_RTOS \
+-I$(HAL_DIR)/Inc \
+-I$(HAL_DIR)/Inc/Legacy \
+-I$(TM_DIR) \
+-I$(PERIPH_DIR)/Inc \
 -IDrivers/CMSIS/Device/ST/STM32F7xx/Include \
--IMiddlewares/Third_Party/FreeRTOS/Source/include \
--IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
 -IDrivers/CMSIS/Include \
--IDrivers/Peripherals/Inc
-
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
@@ -198,20 +203,25 @@ OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
-	$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
+	@echo $<
+	@$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
-	$(AS) -c $(CFLAGS) $< -o $@
+	@echo $<
+	@$(AS) -c $(CFLAGS) $< -o $@
 
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
-	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
-	$(SZ) $@
+	@echo $@
+	@$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+	@$(SZ) $@
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(HEX) $< $@
+	@echo $@
+	@$(HEX) $< $@
 
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(BIN) $< $@
+	@echo $@
+	@$(BIN) $< $@
 
 $(BUILD_DIR):
 	mkdir $@
