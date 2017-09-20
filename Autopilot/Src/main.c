@@ -57,7 +57,7 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "tm_stm32_general.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/

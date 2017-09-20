@@ -55,6 +55,7 @@ $(FREERTOS_DIR)/list.c \
 $(FREERTOS_DIR)/croutine.c \
 
 TM_SOURCES = \
+$(TM_DIR)/Src/tm_stm32_general.c \
 
 HAL_SOURCES = \
 $(HAL_DIR)/Src/stm32f7xx_hal.c \
@@ -158,7 +159,7 @@ C_INCLUDES =  \
 -I$(FREERTOS_DIR)/CMSIS_RTOS \
 -I$(HAL_DIR)/Inc \
 -I$(HAL_DIR)/Inc/Legacy \
--I$(TM_DIR) \
+-I$(TM_DIR)/Inc \
 -I$(PERIPH_DIR)/Inc \
 -IDrivers/CMSIS/Device/ST/STM32F7xx/Include \
 -IDrivers/CMSIS/Include \
