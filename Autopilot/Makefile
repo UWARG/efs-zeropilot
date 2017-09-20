@@ -144,7 +144,7 @@ AS_DEFS =
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32F7xx \
--DSTM32F765xx
+-DSTM32F767xx
 
 
 # AS includes
@@ -171,6 +171,7 @@ CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2
+C_DEFS += -DDEBUG
 endif
 
 
@@ -182,7 +183,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)"
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = STM32F765ZGTx_FLASH.ld
+LDSCRIPT = STM32F767ZITx_FLASH.ld
 
 # libraries
 LIBS = -lc -lm -lnosys
