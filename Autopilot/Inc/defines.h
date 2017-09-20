@@ -1,4 +1,4 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-#endif
+#endif /* DEFINES_H */
