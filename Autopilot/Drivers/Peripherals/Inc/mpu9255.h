@@ -24,6 +24,6 @@ void MPU9255_ReadAccel(MPU9255_t* mpu);
 void MPU9255_ReadGyro(MPU9255_t* mpu);
 void MPU9255_ReadMag(MPU9255_t* mpu);
 
-int16_t MPU9255_ReadTemp(MPU9255_t* mpu);
+int16_t MPU9255_ReadTemp();
 
 #endif

@@ -238,7 +238,8 @@ void MPU9255_ReadAccel(MPU9255_t* mpu) {
 
     I2C_ReadBytes(hi2c, MPU9255_ADDR, ACCEL_XOUT_H, data, 6);
 
-    mpu->Ax_raw = BYTES2WORD_BE(data);
+    /* DO NOT CHANGE THESE. MPU9255 REFERECE FRAME IS WEIRD */
+    mpu->Ax_raw = -BYTES2WORD_BE(data);
     mpu->Ay_raw = BYTES2WORD_BE(data + 2);
     mpu->Az_raw = BYTES2WORD_BE(data + 4);
 
@@ -252,9 +253,10 @@ void MPU9255_ReadGyro(MPU9255_t* mpu) {
 
     I2C_ReadBytes(hi2c, MPU9255_ADDR, GYRO_XOUT_H, data, 6);
 
+    /* DO NOT CHANGE THESE. MPU9255 REFERECE FRAME IS WEIRD */
     mpu->Gx_raw = BYTES2WORD_BE(data);
-    mpu->Gy_raw = BYTES2WORD_BE(data + 2);
-    mpu->Gz_raw = BYTES2WORD_BE(data + 4);
+    mpu->Gy_raw = -BYTES2WORD_BE(data + 2);
+    mpu->Gz_raw = -BYTES2WORD_BE(data + 4);
 
     mpu->Gx = mpu->Gx_raw * mpu->G_res;
     mpu->Gy = mpu->Gy_raw * mpu->G_res;
@@ -269,9 +271,11 @@ void MPU9255_ReadMag(MPU9255_t* mpu) {
         I2C_ReadBytes(hi2c, AK8963_ADDR, AK8963_XOUT_L, data, 7);
 
         if (!(data[6] & 0x08)) {
-            mpu->Mx_raw = BYTES2WORD_LE(data);
-            mpu->My_raw = BYTES2WORD_LE(data + 2);
-            mpu->Mz_raw = BYTES2WORD_LE(data + 4);
+            /* DO NOT CHANGE THESE. MPU9255 REFERECE FRAME IS WEIRD */
+            mpu->My_raw = -BYTES2WORD_LE(data); 
+            mpu->Mx_raw = BYTES2WORD_LE(data + 2);
+            mpu->Mz_raw = -BYTES2WORD_LE(data + 4);
+            // yes x and y are swapped. yes that's on purpose. 
 
             mpu->Mx = mpu->Mx_raw * mpu->Mx_adj * mpu->M_res;
             mpu->My = mpu->My_raw * mpu->My_adj * mpu->M_res;

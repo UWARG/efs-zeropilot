@@ -132,15 +132,18 @@ int main(void)
   TM_AHRSIMU_t ahrs = {0};
 
   MPU9255_Init(&mpu);
-  TM_AHRSIMU_Init(&ahrs, 0.2f, 100.f, 9.f);
+  TM_AHRSIMU_Init(&ahrs, 0.5f, 100.f, 9.f);
 
   while (1) {
     MPU9255_ReadAccel(&mpu);
     MPU9255_ReadGyro(&mpu);
     MPU9255_ReadMag(&mpu);
     TM_AHRSIMU_UpdateAHRS(&ahrs, mpu.Gx, mpu.Gy, mpu.Gz, mpu.Ax, mpu.Ay, mpu.Az, mpu.Mx, mpu.My, mpu.Mz);
-    debug("%.2f, %.2f, %.2f", ahrs.Roll, ahrs.Pitch, ahrs.Yaw);
-    
+    debug("R: %.2f, P: %.2f, Y: %.2f", ahrs.Roll, ahrs.Pitch, ahrs.Yaw);
+    // debug("Acc: X: %.2f,\tY: %.2f,\tZ: %.2f", mpu.Ax, mpu.Ay, mpu.Az);
+    // debug("Gyr: X: %.2f,\tY: %.2f,\tZ: %.2f", mpu.Gx, mpu.Gy, mpu.Gz);
+    // debug("Mag: X: %.2f,\tY: %.2f,\tZ: %.2f", mpu.Mx, mpu.My, mpu.Mz);
+
     HAL_Delay(10);
   }
   /* USER CODE END 2 */
