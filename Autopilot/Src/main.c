@@ -57,7 +57,9 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
+#include "debug.h"
 #include "mpu9255.h"
+#include "tm_stm32_ahrs_imu.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -77,10 +79,7 @@ void MX_FREERTOS_Init(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-int __io_putchar(int ch) {
-  HAL_UART_Transmit(&huart3, (uint8_t*)&ch, 1, 0xFF);
-  return ch;
-}
+
 /* USER CODE END 0 */
 
 int main(void)
@@ -103,7 +102,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -118,20 +117,31 @@ int main(void)
   MX_ADC3_Init();
   MX_ADC2_Init();
   MX_UART4_Init();
-  MX_USART3_UART_Init();
+  // MX_USART3_UART_Init();
   MX_USART1_UART_Init();
   MX_SPI2_Init();
   MX_TIM10_Init();
   MX_TIM11_Init();
 
   /* USER CODE BEGIN 2 */
-  printf("starting up...\r\n");
+  debug_init();
 
-  MPU9255_t mpu;
+  debug("Starting up...");
+
+  MPU9255_t mpu = {0};
+  TM_AHRSIMU_t ahrs = {0};
 
   MPU9255_Init(&mpu);
-  while (1) {
+  TM_AHRSIMU_Init(&ahrs, 0.2f, 100.f, 9.f);
 
+  while (1) {
+    MPU9255_ReadAccel(&mpu);
+    MPU9255_ReadGyro(&mpu);
+    MPU9255_ReadMag(&mpu);
+    TM_AHRSIMU_UpdateAHRS(&ahrs, mpu.Gx, mpu.Gy, mpu.Gz, mpu.Ax, mpu.Ay, mpu.Az, mpu.Mx, mpu.My, mpu.Mz);
+    debug("%.2f, %.2f, %.2f", ahrs.Roll, ahrs.Pitch, ahrs.Yaw);
+    
+    HAL_Delay(10);
   }
   /* USER CODE END 2 */
 
@@ -269,7 +279,7 @@ void _Error_Handler(char * file, int line)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  printf("ERROR: %s : %d\r\n", file, line);
+  debug("ERROR: [%s] : %d", file, line);
   while(1) 
   {
   }

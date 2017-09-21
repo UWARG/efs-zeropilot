@@ -301,6 +301,25 @@ I2C_HandleTypeDef* I2C_GetHandle(I2C_TypeDef* I2Cx) {
   else if (I2Cx == I2C4) return &hi2c4;
   return NULL;
 }
+
+void I2C_WriteByte(I2C_HandleTypeDef* hi2c, uint16_t devAddr, uint8_t memAddr, uint8_t byte) {
+  HAL_I2C_Mem_Write(hi2c, devAddr, (uint16_t)memAddr, I2C_MEMADD_SIZE_8BIT, &byte, 1, 0xFF);
+}
+
+void I2C_WriteBytes(I2C_HandleTypeDef *hi2c, uint16_t devAddr, uint8_t memAddr, uint8_t* bytes, uint16_t len) {
+  HAL_I2C_Mem_Write(hi2c, devAddr, (uint16_t)memAddr, I2C_MEMADD_SIZE_8BIT, bytes, len, 0xFF);
+}
+
+uint8_t I2C_ReadByte(I2C_HandleTypeDef *hi2c, uint16_t devAddr, uint8_t memAddr) {
+  uint8_t data;
+  HAL_I2C_Mem_Read(hi2c, devAddr, (uint16_t)memAddr, I2C_MEMADD_SIZE_8BIT, &data, 1, 0xFF);
+  return data;
+}
+
+void I2C_ReadBytes(I2C_HandleTypeDef *hi2c, uint16_t devAddr, uint8_t memAddr, uint8_t *bytes, uint16_t len) {
+  HAL_I2C_Mem_Read(hi2c, devAddr, (uint16_t)memAddr, I2C_MEMADD_SIZE_8BIT, bytes, len, 0xFF);
+}
+
 /* USER CODE END 1 */
 
 /**
