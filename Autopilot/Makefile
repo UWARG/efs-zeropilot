@@ -56,6 +56,10 @@ $(FREERTOS_DIR)/croutine.c \
 
 TM_SOURCES = \
 $(TM_DIR)/Src/tm_stm32_general.c \
+$(TM_DIR)/Src/tm_stm32_gpio.c \
+$(TM_DIR)/Src/tm_stm32_rcc.c \
+$(TM_DIR)/Src/tm_stm32_delay.c \
+$(TM_DIR)/Src/tm_stm32_ahrs_imu.c \
 
 HAL_SOURCES = \
 $(HAL_DIR)/Src/stm32f7xx_hal.c \
@@ -81,12 +85,14 @@ $(HAL_DIR)/Src/stm32f7xx_hal_tim_ex.c \
 PERI_SOURCES = \
 $(PERIPH_DIR)/Src/altimeter.c \
 $(PERIPH_DIR)/Src/eeprom.c \
+$(PERIPH_DIR)/Src/mpu9255.c \
 
 MAIN_SOURCES =  \
 Src/stm32f7xx_hal_msp.c \
 Src/stm32f7xx_hal_timebase_TIM.c \
 Src/stm32f7xx_it.c \
 Src/system_stm32f7xx.c \
+Src/syscalls.c \
 Src/main.c \
 Src/freertos.c \
 Src/adc.c \
@@ -106,7 +112,7 @@ $(MAIN_SOURCES) \
 
 # ASM sources
 ASM_SOURCES =  \
-startup_stm32f765xx.s
+startup_stm32f767xx.s
 
 
 #######################################
@@ -188,7 +194,7 @@ LDSCRIPT = STM32F767ZITx_FLASH.ld
 # libraries
 LIBS = -lc -lm -lnosys
 LIBDIR =
-LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -u _printf_float
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin

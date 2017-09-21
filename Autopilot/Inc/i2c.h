@@ -76,7 +76,7 @@ void MX_I2C2_Init(void);
 void MX_I2C4_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+I2C_HandleTypeDef* I2C_GetHandle(I2C_TypeDef* I2Cx);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

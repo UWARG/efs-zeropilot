@@ -6,6 +6,7 @@ static const uint16_t EEPROM_ADDR = 0b1010000 << 1; // last 4 bits are E2, E1, E
 static TaskHandle_t currentTask = NULL;
 
 void EEPROM_Init(void) {
+    MX_I2C1_Init();
     HAL_GPIO_WritePin(MEM_WC_GPIO_Port, MEM_WC_Pin, GPIO_PIN_SET); // drive WC pin low to enable writing
 }
 

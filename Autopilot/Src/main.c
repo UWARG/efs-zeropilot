@@ -57,7 +57,7 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
-#include "tm_stm32_general.h"
+
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -77,8 +77,11 @@ void MX_FREERTOS_Init(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
+int __io_putchar(int ch) {
+  HAL_UART_Transmit(&huart3, (uint8_t*)&ch, 1, 0xFF);
+  return ch;
+}
+    /* USER CODE END 0 */
 
 int main(void)
 {
@@ -107,9 +110,9 @@ int main(void)
   MX_GPIO_Init();
   MX_SPI5_Init();
   MX_SPI4_Init();
-  MX_I2C1_Init();
+  // MX_I2C1_Init();
   MX_I2C2_Init();
-  MX_I2C4_Init();
+  // MX_I2C4_Init();
   MX_USART2_UART_Init();
   MX_SPI1_Init();
   MX_ADC3_Init();
@@ -122,6 +125,7 @@ int main(void)
   MX_TIM11_Init();
 
   /* USER CODE BEGIN 2 */
+  printf("starting up...\r\n");
 
   /* USER CODE END 2 */
 
@@ -259,6 +263,7 @@ void _Error_Handler(char * file, int line)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
+  printf("ERROR: %s : %d\r\n", file, line);
   while(1) 
   {
   }

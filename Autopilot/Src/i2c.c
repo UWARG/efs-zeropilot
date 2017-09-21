@@ -295,7 +295,12 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
 } 
 
 /* USER CODE BEGIN 1 */
-
+I2C_HandleTypeDef* I2C_GetHandle(I2C_TypeDef* I2Cx) {
+  if (I2Cx == I2C1) return &hi2c1;
+  else if (I2Cx == I2C2) return &hi2c2;
+  else if (I2Cx == I2C4) return &hi2c4;
+  return NULL;
+}
 /* USER CODE END 1 */
 
 /**
