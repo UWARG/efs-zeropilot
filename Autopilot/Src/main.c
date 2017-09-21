@@ -57,7 +57,7 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "mpu9255.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -81,7 +81,7 @@ int __io_putchar(int ch) {
   HAL_UART_Transmit(&huart3, (uint8_t*)&ch, 1, 0xFF);
   return ch;
 }
-    /* USER CODE END 0 */
+/* USER CODE END 0 */
 
 int main(void)
 {
@@ -127,6 +127,12 @@ int main(void)
   /* USER CODE BEGIN 2 */
   printf("starting up...\r\n");
 
+  MPU9255_t mpu;
+
+  MPU9255_Init(&mpu);
+  while (1) {
+
+  }
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

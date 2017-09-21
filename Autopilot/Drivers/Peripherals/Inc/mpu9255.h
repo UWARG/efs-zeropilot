@@ -10,8 +10,10 @@ typedef struct {
     float Gx, Gy, Gz;
     float Mx, My, Mz;
 
+    float A_res, G_res, M_res;
 
-
+    float Mx_adj, My_adj, Mx_adj;
+    
 } MPU9255_t;
 
 HAL_StatusTypeDef MPU9255_Init(MPU9255_t* mpu);

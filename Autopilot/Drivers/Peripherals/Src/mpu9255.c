@@ -1,6 +1,7 @@
 #include "mpu9255.h"
 
 #define MPU9255_ADDR 0xD0
+#define AK8963_ADDR (0x0C << 1)
 #define MPU9255_I2C I2C4
 
 
@@ -141,7 +142,6 @@
 #define ZA_OFFSET_L         0x7E
 
 
-
 HAL_StatusTypeDef MPU9255_Init(MPU9255_t *mpu) {
     I2C_HandleTypeDef* hi2c = I2C_GetHandle(MPU9255_I2C);
     uint8_t data;
@@ -151,21 +151,80 @@ HAL_StatusTypeDef MPU9255_Init(MPU9255_t *mpu) {
 
     // is connected
     if (HAL_I2C_IsDeviceReady(hi2c, MPU9255_ADDR, 2, 5) != HAL_OK) {
+        printf("no mpu");
         // error
     }
 
     // who am i
     HAL_I2C_Mem_Read(hi2c, MPU9255_ADDR, WHO_AM_I_MPU9255, I2C_MEMADD_SIZE_8BIT, &data, 1, 0xFF);
     if (data != 0x73) {
+        printf("mpu who am i failed");
         // error
     }
 
     // power
-    
+    data = 0x01
+    HAL_I2C_Mem_Write(hi2c, MPU9255_ADDR, PWR_MGMT_1, I2C_MEMADD_SIZE_8BIT, &data, 1, 0xFF);
+    // wait for a bit
+    HAL_Delay(200);
 
-    // config gyrod, accel, thermo
+    // config gyro, accel, thermo
+    data = 0x03; // low pass for temp & 1 KHz output
+    HAL_I2C_Mem_Write(hi2c, MPU9255_ADDR, CONFIG, I2C_MEMADD_SIZE_8BIT, &data, 1, 0xFF);
+
+    data = 0x03; // configure sensors for 250 Hz output
+    HAL_I2C_Mem_Write(hi2c, MPU9255_ADDR, SMPLRT_DIV, I2C_MEMADD_SIZE_8BIT, &data, 1, 0xFF);
+
+    data = 0x03 << 3; // set full scale range for accel and gyro
+    HAL_I2C_Mem_Write(hi2c, MPU9255_ADDR, GYRO_CONFIG, I2C_MEMADD_SIZE_8BIT, &data, 1 ,0xFF);
+    HAL_I2C_Mem_Write(hi2c, MPU9255_ADDR, ACCEL_CONFIG, I2C_MEMADD_SIZE_8BIT, &data, 1, 0xFF);
+
+    data = 0x03; // low pass for accel & 1KHz outpout
+    HAL_I2C_Mem_Write(hi2c, MPU9255_ADDR, ACCEL_CONFIG2, I2C_MEMADD_SIZE_8BIT, &data, 1, 0xFF);
+
+    // config slave port for pass-through
+    data = 0x02;
+    HAL_I2C_Mem_Write(hi2c, MPU9255_ADDR, INT_PIN_CFG, I2C_MEMADD_SIZE_8BIT, &data, 1, 0xFF);
+    data = 0x00; // disable interrupts
+    HAL_I2C_Mem_Write(hi2c, MPU9255_ADDR, INT_ENABLE, I2C_MEMADD_SIZE_8BIT, &data, 1, 0xFF);
+
+    // is mag connected
+    if (HAL_I2C_IsDeviceReady(hi2c, AK8963_ADDR, 2, 5) != HAL_OK) {
+        printf("no mag");
+        // error
+    }
+
+    // who am i mag
+    HAL_I2C_Mem_Read(hi2c, AK8963_ADDR, WHO_AM_I_AK8963, I2C_MEMADD_SIZE_8BIT, &data, 1, 0xFF);
+    if (data != 0x48) {
+        printf("mag who am i failed");
+        // error
+    }
 
     // config mag
+    uint8_t rawData[3];
+    data = 0x00; // Power down
+    HAL_I2C_Mem_Write(hi2c, AK8963_ADDR, AK8963_CNTL, I2C_MEMADD_SIZE_8BIT, &data, 1, 0xFF);
+    HAL_Delay(10);
+
+    data = 0x0F; // ROM access
+    HAL_I2C_Mem_Write(hi2c, AK8963_ADDR, AK8963_CNTL, I2C_MEMADD_SIZE_8BIT, &data, 1, 0xFF);
+    HAL_I2C_Mem_Read(hi2c, AK8963_ADDR, AK8963_ASAX, I2C_MEMADD_SIZE_8BIT, rawData, 3, 0xFF);
+
+    mpu->Mx_adj = (float)(rawData[0] - 128) / 256.f + 1;
+    mpu->My_adj = (float)(rawData[1] - 128) / 256.f + 1;
+    mpu->Mz_adj = (float)(rawData[2] - 128) / 256.f + 1;
+
+    data = 0x00; // Power down again
+    HAL_I2C_Mem_Write(hi2c, AK8963_ADDR, AK8963_CNTL, I2C_MEMADD_SIZE_8BIT, &data, 1, 0xFF);
+    HAL_Delay(10);
+
+    data = 0x16; // full resolution, 100 Hz
+    HAL_I2C_Mem_Write(hi2c, AK8963_ADDR, AK8963_CNTL, I2C_MEMADD_SIZE_8BIT, &data, 1, 0xFF);
+    
+    mpu->A_res = 16.f / 32768.f;
+    mpu->G_res = 2000.f / 32768.f;
+    mpu->M_res = 49120.f / 32768.f;
 
     return HAL_OK;
 }
