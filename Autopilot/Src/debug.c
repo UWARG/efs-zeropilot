@@ -1,7 +1,5 @@
-#include <stdio.h>
 
 #include "debug.h"
-#include "usart.h"
 
 void debug_init() {
     MX_USART3_UART_Init();

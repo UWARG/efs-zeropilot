@@ -58,8 +58,6 @@
 
 /* USER CODE BEGIN Includes */
 #include "debug.h"
-#include "mpu9255.h"
-#include "tm_stm32_ahrs_imu.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -128,24 +126,12 @@ int main(void)
 
   debug("Starting up...");
 
-  MPU9255_t mpu = {0};
-  TM_AHRSIMU_t ahrs = {0};
-
-  MPU9255_Init(&mpu);
-  TM_AHRSIMU_Init(&ahrs, 0.5f, 100.f, 9.f);
-
-  while (1) {
-    MPU9255_ReadAccel(&mpu);
-    MPU9255_ReadGyro(&mpu);
-    MPU9255_ReadMag(&mpu);
-    TM_AHRSIMU_UpdateAHRS(&ahrs, mpu.Gx, mpu.Gy, mpu.Gz, mpu.Ax, mpu.Ay, mpu.Az, mpu.Mx, mpu.My, mpu.Mz);
-    debug("R: %.2f, P: %.2f, Y: %.2f", ahrs.Roll, ahrs.Pitch, ahrs.Yaw);
-    // debug("Acc: X: %.2f,\tY: %.2f,\tZ: %.2f", mpu.Ax, mpu.Ay, mpu.Az);
-    // debug("Gyr: X: %.2f,\tY: %.2f,\tZ: %.2f", mpu.Gx, mpu.Gy, mpu.Gz);
-    // debug("Mag: X: %.2f,\tY: %.2f,\tZ: %.2f", mpu.Mx, mpu.My, mpu.Mz);
-
-    HAL_Delay(10);
+  /* Infinite loop */
+  for (;;) {
+    debug("hello!");
   }
+
+  // everythig after this isn't super important yet
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
