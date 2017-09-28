@@ -34,8 +34,6 @@ BUILD_DIR = build
 
 FREERTOS_DIR = Middlewares/Third_Party/FreeRTOS/Source
 
-TM_DIR = Middlewares/Third_Party/TM
-
 HAL_DIR = Drivers/STM32F7xx_HAL_Driver
 
 PERIPH_DIR = Drivers/Peripherals
@@ -53,13 +51,6 @@ $(FREERTOS_DIR)/event_groups.c \
 $(FREERTOS_DIR)/queue.c \
 $(FREERTOS_DIR)/list.c \
 $(FREERTOS_DIR)/croutine.c \
-
-TM_SOURCES = \
-$(TM_DIR)/Src/tm_stm32_general.c \
-$(TM_DIR)/Src/tm_stm32_gpio.c \
-$(TM_DIR)/Src/tm_stm32_rcc.c \
-$(TM_DIR)/Src/tm_stm32_delay.c \
-$(TM_DIR)/Src/tm_stm32_ahrs_imu.c \
 
 HAL_SOURCES = \
 $(HAL_DIR)/Src/stm32f7xx_hal.c \
@@ -106,7 +97,6 @@ Src/i2c.c \
 
 C_SOURCES = \
 $(FREERTOS_SOURCES) \
-$(TM_SOURCES) \
 $(HAL_SOURCES) \
 $(PERI_SOURCES) \
 $(MAIN_SOURCES) \
@@ -166,7 +156,6 @@ C_INCLUDES =  \
 -I$(FREERTOS_DIR)/CMSIS_RTOS \
 -I$(HAL_DIR)/Inc \
 -I$(HAL_DIR)/Inc/Legacy \
--I$(TM_DIR)/Inc \
 -I$(PERIPH_DIR)/Inc \
 -IDrivers/CMSIS/Device/ST/STM32F7xx/Include \
 -IDrivers/CMSIS/Include \
@@ -244,6 +233,6 @@ clean:
 #######################################
 # dependencies
 #######################################
--include $(shell mkdir .dep 2>/dev/null) $(wildcard .dep/*)
+# -include $(shell mkdir .dep 2>/dev/null) $(wildcard .dep/*)
 
 # *** EOF ***

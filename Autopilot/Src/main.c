@@ -126,10 +126,6 @@ int main(void)
 
   debug("Starting up...");
 
-  /* Infinite loop */
-  for (;;) {
-    debug("hello!");
-  }
 
   // everythig after this isn't super important yet
   /* USER CODE END 2 */

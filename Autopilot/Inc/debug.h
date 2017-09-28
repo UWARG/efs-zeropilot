@@ -11,7 +11,15 @@
 #define DBG_TYPE DBG_UART
 #endif
 
-#define debug(fmt, ...) printf(fmt "\r\n", ## __VA_ARGS__)
+#ifdef DEBUG
+#define debug(fmt, ...) { \
+    vTaskSuspendAll(); \
+    printf(fmt "\r\n", ## __VA_ARGS__); \
+    xTaskResumeAll(); \
+    }
+#else
+#define debug(fmt, ...)
+#endif /* DEBUG */
 
 void debug_init(void);
 

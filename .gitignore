@@ -25,6 +25,5 @@ build/
 .dep/
 
 # IDE stuff
-.vscode/
 .settings/
 .project
