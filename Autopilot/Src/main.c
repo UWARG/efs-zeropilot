@@ -126,17 +126,6 @@ int main(void)
   debug_init();
   debug("Starting up...");
 
-
-  MPL3115A2_Init();
-
-  /* Infinite loop */
-  for (;;) {
-    debug("Altitude: %f %s", getAltitude(), "m");
-    debug("Temperature: %f %s", getTemperature(), " C??");
-    HAL_Delay(1000);
-  }
-
-  // everythig after this isn't super important yet
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
