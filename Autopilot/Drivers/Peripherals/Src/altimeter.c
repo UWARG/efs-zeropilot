@@ -3,6 +3,7 @@
 
 #define MPL3115A2_ADDR 0x60 << 1
 #define MPL3115A2_I2C I2C2
+//registers
 #define STATUS 0x00
 #define PRESSURE_OUT_MSB 0x01
 #define PRESSURE_OUT_CSB 0x02
@@ -10,6 +11,7 @@
 #define TEMP_OUT_MSB 0x04
 #define TEMP_OUT_LSB 0x05
 #define WHO_AM_I_MPL3115A2 0x0C
+#define PT_DATA_CFG 0x13
 #define CTRL_REG1 0x26
 
 static I2C_HandleTypeDef* hi2c;
@@ -33,8 +35,8 @@ static I2C_HandleTypeDef* hi2c;
 
      //initializing altimeter (see flowchart in documentation for better description)
      I2C_WriteByte(hi2c, MPL3115A2_ADDR, CTRL_REG1, 0xB8);
-     I2C_WriteByte(hi2c, MPL3115A2_ADDR, 0x13, 0x07);
-     I2C_WriteByte(hi2c, MPL3115A2_ADDR, CTRL_REG1, 0xB9);
+     I2C_WriteByte(hi2c, MPL3115A2_ADDR, PT_DATA_CFG, 0x07);
+     I2C_WriteByte(hi2c, MPL3115A2_ADDR, CTRL_REG1, 0xB9); //enable
 
      return HAL_OK;
 }
@@ -49,8 +51,6 @@ static I2C_HandleTypeDef* hi2c;
    //msb *= 4;
    float lsb = data[2] >> 4;
    lsb /= 4;
-   //debug("In values: %02x, %02x, %02x",data[0], data[1], data[2]);
-   //debug("status %02x, %02x", I2C_ReadByte(hi2c, MPL3115A2_ADDR, STATUS), I2C_ReadByte(hi2c, MPL3115A2_ADDR, 0x08));
    return ((float)msb + lsb);
  }
 
