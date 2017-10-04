@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * @file      startup_stm32f767xx.s
+  * @file      startup_stm32f765xx.s
   * @author    MCD Application Team
-  * @brief     STM32F767xx Devices vector table for GCC based toolchain. 
+  * @brief     STM32F765xx Devices vector table for GCC based toolchain. 
   *            This module performs:
   *                - Set the initial SP
   *                - Set the initial PC == Reset_Handler,
@@ -246,8 +246,8 @@ g_pfnVectors:
   .word     SPI5_IRQHandler                   /* SPI5                         */
   .word     SPI6_IRQHandler                   /* SPI6                         */
   .word     SAI1_IRQHandler                   /* SAI1                         */
-  .word     LTDC_IRQHandler                   /* LTDC                         */
-  .word     LTDC_ER_IRQHandler                /* LTDC error                   */
+  .word     0                                 /* Reserved                     */
+  .word     0                                 /* Reserved                     */
   .word     DMA2D_IRQHandler                  /* DMA2D                        */
   .word     SAI2_IRQHandler                   /* SAI2                         */
   .word     QUADSPI_IRQHandler                /* QUADSPI                      */
@@ -266,7 +266,7 @@ g_pfnVectors:
   .word     CAN3_RX0_IRQHandler               /* CAN3 RX0                     */
   .word     CAN3_RX1_IRQHandler               /* CAN3 RX1                     */
   .word     CAN3_SCE_IRQHandler               /* CAN3 SCE                     */
-  .word     JPEG_IRQHandler                   /* JPEG                         */
+  .word     0                                 /* Reserved                     */
   .word     MDIOS_IRQHandler                  /* MDIOS                        */
   
 /*******************************************************************************
@@ -566,12 +566,6 @@ g_pfnVectors:
 
    .weak      SAI1_IRQHandler            
    .thumb_set SAI1_IRQHandler,Default_Handler
-   
-   .weak      LTDC_IRQHandler            
-   .thumb_set LTDC_IRQHandler,Default_Handler
-
-   .weak      LTDC_ER_IRQHandler            
-   .thumb_set LTDC_ER_IRQHandler,Default_Handler
 
    .weak      DMA2D_IRQHandler            
    .thumb_set DMA2D_IRQHandler,Default_Handler   
@@ -623,9 +617,6 @@ g_pfnVectors:
 
    .weak      CAN3_SCE_IRQHandler            
    .thumb_set CAN3_SCE_IRQHandler,Default_Handler
-
-   .weak      JPEG_IRQHandler            
-   .thumb_set JPEG_IRQHandler,Default_Handler
 
    .weak      MDIOS_IRQHandler            
    .thumb_set MDIOS_IRQHandler,Default_Handler   

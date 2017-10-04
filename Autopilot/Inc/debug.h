@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "usart.h"
+#include "cmsis_os.h"
 
 #define DBG_UART 0
 #define DBG_ITM  1
