@@ -52,48 +52,11 @@ $(FREERTOS_DIR)/queue.c \
 $(FREERTOS_DIR)/list.c \
 $(FREERTOS_DIR)/croutine.c \
 
-HAL_SOURCES = \
-$(HAL_DIR)/Src/stm32f7xx_hal.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_cortex.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_gpio.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_uart.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_spi.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_rcc.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_rcc_ex.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_adc.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_adc_ex.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_pwr.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_pwr_ex.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_flash.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_flash_ex.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_dma.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_dma_ex.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_i2c.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_i2c_ex.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_tim.c \
-$(HAL_DIR)/Src/stm32f7xx_hal_tim_ex.c \
+HAL_SOURCES = $(wildcard $(HAL_DIR)/Src/*.c)
 
-PERI_SOURCES = \
-$(PERIPH_DIR)/Src/altimeter.c \
-$(PERIPH_DIR)/Src/eeprom.c \
-$(PERIPH_DIR)/Src/mpu9255.c \
+PERI_SOURCES = $(wildcard $(PERIPH_DIR)/Src/*.c)
 
-MAIN_SOURCES =  \
-Src/stm32f7xx_hal_msp.c \
-Src/stm32f7xx_hal_timebase_TIM.c \
-Src/stm32f7xx_it.c \
-Src/system_stm32f7xx.c \
-Src/syscalls.c \
-Src/debug.c \
-Src/main.c \
-Src/freertos.c \
-Src/adc.c \
-Src/gpio.c \
-Src/tim.c \
-Src/spi.c \
-Src/usart.c \
-Src/i2c.c \
-Src/network.c \
+MAIN_SOURCES = $(wildcard Src/*.c)
 
 C_SOURCES = \
 $(FREERTOS_SOURCES) \
@@ -103,7 +66,7 @@ $(MAIN_SOURCES) \
 
 # ASM sources
 ASM_SOURCES =  \
-startup_stm32f767xx.s
+startup_stm32f765xx.s
 
 
 #######################################

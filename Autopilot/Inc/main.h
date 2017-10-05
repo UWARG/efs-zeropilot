@@ -51,7 +51,11 @@
   /* Includes ------------------------------------------------------------------*/
 
 /* USER CODE BEGIN Includes */
-
+#include <math.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdlib.h>
 /* USER CODE END Includes */
 
 /* Private define ------------------------------------------------------------*/
@@ -80,7 +84,9 @@
 #define USONIC_OC_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-
+typedef uint8_t byte;
+typedef uint16_t word;
+typedef uint32_t dword;
 /* USER CODE END Private defines */
 
 void _Error_Handler(char *, int);

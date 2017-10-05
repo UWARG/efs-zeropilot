@@ -13,7 +13,7 @@ copy = '''\
  * @author {1}
  * @date {2}
  * @copyright Waterloo Aerial Robotics Group 2017 \\n
- *  https://raw.githubusercontent.com/UWARG/ZeroPilot-SW/master/LICENSE
+ *  https://raw.githubusercontent.com/UWARG/ZeroPilot-SW/master/LICENSE.md
  */\n
 '''
 
@@ -29,5 +29,5 @@ with open(dirn + 'Inc/' + fnh, 'w') as f:
     f.write(copy.format(fnh, author, datetime.date.today().isoformat()))
     defn = filename.upper() + '_H'
     f.write('#ifndef ' + defn + '\n')
-    f.write('#define ' + defn + '\n\n\n')
+    f.write('#define ' + defn + '\n' * 3)
     f.write('#endif /* ' + defn + ' */\n')
