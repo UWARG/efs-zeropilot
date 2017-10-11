@@ -1,5 +1,7 @@
 #include "PWM.h"
 
+#define PWM_OFFSET (4800)
+
 void PWM_Init(void) {
     MX_TIM1_Init();
     MX_TIM3_Init();
@@ -8,9 +10,17 @@ void PWM_Init(void) {
     MX_TIM17_Init();
 
     HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1); // required?
+
+    // for (uint8_t i = 1, i <= PWM_NUM_CHANNELS; ++i) {
+    //     PWM_Set(i, 0);
+    // }
 }
 
-void PWM_Set(uint8_t channel, uint16_t pulse) {
+void PWM_Set(uint8_t channel, int16_t val) {
+    if (val > MAX_PWM || val < MIN_PWM) return;
+
+    uint16_t pulse = val + PWM_OFFSET;
+
     switch (channel) {
         case 1:
             __HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, pulse);

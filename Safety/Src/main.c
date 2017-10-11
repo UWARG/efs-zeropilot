@@ -109,8 +109,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
   PWM_Init();
 
-  PWM_Set(1, MAX_PWM);
-  PWM_Set(2, MAX_PWM);
+  PWM_Set(1, PWM_MAX); // 2.5 ms pulse
+  PWM_Set(2, PWM_MAX);
 
   /* USER CODE END 2 */
 
