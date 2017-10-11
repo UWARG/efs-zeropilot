@@ -114,11 +114,10 @@ int main(void)
   while (1)
   {
   /* USER CODE END WHILE */
-    HAL_GPIO_WritePin(GPIOC, LED1_Pin | LED2_Pin | LED3_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
 
-    /* USER CODE BEGIN 3 */
-
+  /* USER CODE BEGIN 3 */
+  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin | LED2_Pin | LED3_Pin, GPIO_PIN_SET);
+  // HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
   }
   /* USER CODE END 3 */
 
