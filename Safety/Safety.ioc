@@ -73,7 +73,6 @@ NVIC.NonMaskableInt_IRQn=true\:0\:0\:false\:false\:true\:true
 NVIC.PendSV_IRQn=true\:0\:0\:false\:false\:true\:true
 NVIC.SVC_IRQn=true\:0\:0\:false\:false\:true\:true
 NVIC.SysTick_IRQn=true\:0\:0\:false\:false\:true\:true
-NVIC.TIM14_IRQn=true\:0\:0\:false\:false\:true\:true
 PA10.GPIOParameters=GPIO_Label
 PA10.GPIO_Label=PWM11
 PA10.Locked=true
