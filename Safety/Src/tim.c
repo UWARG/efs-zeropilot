@@ -43,6 +43,7 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN 0 */
+#include "debug.h"
 
 /* USER CODE END 0 */
 
@@ -671,6 +672,12 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 } 
 
 /* USER CODE BEGIN 1 */
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
+  if (htim->Instance == TIM14) { // only timer configured for input capture
+    // PPM input
+    debug("Got PPM edge. Val: %lu", HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1));
+  }
+}
 
 /* USER CODE END 1 */
 

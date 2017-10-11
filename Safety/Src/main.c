@@ -46,6 +46,7 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
+#include "PWM.h"
 
 /* USER CODE END Includes */
 
@@ -96,16 +97,20 @@ int main(void)
   MX_CRC_Init();
   MX_I2C1_Init();
   MX_SPI1_Init();
-  MX_TIM1_Init();
-  MX_TIM3_Init();
+  // MX_TIM1_Init();
+  // MX_TIM3_Init();
   MX_TIM14_Init();
-  MX_TIM15_Init();
-  MX_TIM16_Init();
-  MX_TIM17_Init();
+  // MX_TIM15_Init();
+  // MX_TIM16_Init();
+  // MX_TIM17_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
 
   /* USER CODE BEGIN 2 */
+  PWM_Init();
+
+  PWM_Set(1, MAX_PWM);
+  PWM_Set(2, MAX_PWM);
 
   /* USER CODE END 2 */
 
@@ -116,8 +121,7 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin | LED2_Pin | LED3_Pin, GPIO_PIN_SET);
-  // HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
+
   }
   /* USER CODE END 3 */
 
