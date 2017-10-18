@@ -79,9 +79,9 @@ void PWM_Init(void) {
 }
 
 void PWM_Set(uint8_t channel, int16_t val) {
-    if (val > PWM_MIN || val < PWM_MIN) return;
+    if (val < PWM_MIN || val > PWM_MAX) return;
 
-    uint16_t pulse = val + PWM_OFFSET;
+    uint16_t pulse = (uint16_t)(val + PWM_OFFSET);
 
     PWM_Channel pwm = PWM_GetChannel(channel);
     __HAL_TIM_SET_COMPARE(pwm.handle, pwm.channel, pulse);

@@ -126,6 +126,14 @@ int main(void)
   debug_init();
   debug("Starting up...");
 
+  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+
+  while(1) {
+    debug("aaa");
+  }
+
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
