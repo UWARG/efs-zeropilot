@@ -73,8 +73,8 @@ void PWM_Init(void) {
 
     for (uint8_t i = 1; i <= PWM_NUM_CHANNELS; ++i) {
         PWM_Channel pwm = PWM_GetChannel(i);
-        HAL_TIM_PWM_Start(pwm.handle, pwm.channel); // required?
-        PWM_Set(i, 0);
+        HAL_TIM_PWM_Start(pwm.handle, pwm.channel); // required
+        PWM_Set(i, PWM_MIN);
     }
 }
 

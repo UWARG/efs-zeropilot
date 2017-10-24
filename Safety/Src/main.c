@@ -104,19 +104,18 @@ int main(void)
   // MX_TIM15_Init();
   // MX_TIM16_Init();
   // MX_TIM17_Init();
-  MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
+  // MX_USART1_UART_Init();
+  // MX_USART2_UART_Init();
 
   /* USER CODE BEGIN 2 */
   debug_init();
   PWM_Init();
 
-  PWM_Set(1, PWM_MAX); // 2.5 ms pulse
-  PWM_Set(2, PWM_MAX);
+  debug("Starting up...");
 
   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+  // HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+  // HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
 
   /* USER CODE END 2 */
 
