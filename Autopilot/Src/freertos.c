@@ -53,14 +53,12 @@
 
 /* USER CODE BEGIN Includes */
 #include "debug.h"
-#include "mpu9255.h"
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
 osThreadId defaultTaskHandle;
 
 /* USER CODE BEGIN Variables */
-osThreadId IMUTaskHandle;
 
 /* USER CODE END Variables */
 
@@ -70,7 +68,7 @@ void StartDefaultTask(void const * argument);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* USER CODE BEGIN FunctionPrototypes */
-void IMUUpdateTask(void const * arg);
+
 /* USER CODE END FunctionPrototypes */
 
 /* Hook prototypes */
@@ -113,32 +111,15 @@ void StartDefaultTask(void const * argument)
 {
 
   /* USER CODE BEGIN StartDefaultTask */
-  for (;;) {
-    debug("123: %f", 123.f);
-    osDelay(100);
-  }
+  // this function will (eventually) start all the threads for the autopilot
+
+  
   vTaskDelete(defaultTaskHandle); // delete task when finished
   /* USER CODE END StartDefaultTask */
 }
 
 /* USER CODE BEGIN Application */
-void IMUUpdateTask(void const * arg) {
-  MPU9255_t mpu = {0};
 
-  MPU9255_Init(&mpu);
-
-  for (;;)
-  {
-    MPU9255_ReadAccel(&mpu);
-    MPU9255_ReadGyro(&mpu);
-    MPU9255_ReadMag(&mpu);
-    // debug("Acc: X: %.2f,\tY: %.2f,\tZ: %.2f", mpu.Ax, mpu.Ay, mpu.Az);
-    // debug("Gyr: X: %.2f,\tY: %.2f,\tZ: %.2f", mpu.Gx, mpu.Gy, mpu.Gz);
-    // debug("Mag: X: %.2f,\tY: %.2f,\tZ: %.2f", mpu.Mx, mpu.My, mpu.Mz);
-
-    HAL_Delay(1000);
-  }
-}
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

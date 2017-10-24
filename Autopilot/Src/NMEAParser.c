@@ -11,7 +11,7 @@
 #include <ctype.h>
 
 static long double convertLatLong(char* lat_lon_string);
-static byte asciiToHex(unsigned char asciiSymbol);
+static byte_t asciiToHex(unsigned char asciiSymbol);
 
 bool isValidNMEAString(char* string, uint16_t max_length){
     uint16_t i = 0;
@@ -127,11 +127,11 @@ static long double convertLatLong(char* lat_lon_string){
 
 /**
  * Converts a character string that respresents a hexadecimal into the corresponding
- * byte
+ * byte_t
  * @param asciiSymbol
  * @return
  */
-static byte asciiToHex(unsigned char asciiSymbol) {
+static byte_t asciiToHex(unsigned char asciiSymbol) {
     char hexOut = 0;
     if (asciiSymbol == 0x2E)
         hexOut = 0x10;

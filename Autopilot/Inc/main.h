@@ -84,9 +84,9 @@
 #define USONIC_OC_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-typedef uint8_t byte;
-typedef uint16_t word;
-typedef uint32_t dword;
+typedef uint8_t byte_t;
+typedef uint16_t halfword_t;
+typedef uint32_t word_t;
 /* USER CODE END Private defines */
 
 void _Error_Handler(char *, int);
