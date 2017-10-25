@@ -13,7 +13,7 @@
 ######################################
 # target
 ######################################
-TARGET = ZeroPilot
+TARGET = Autopilot
 
 
 ######################################
@@ -28,15 +28,15 @@ OPT = -Og
 #######################################
 # paths
 #######################################
+ROOT_DIR 		= ./..
+PROJECT_DIR 	= $(ROOT_DIR)/$(TARGET)
 
 # Build path
-BUILD_DIR = build
+BUILD_DIR 		= $(PROJECT_DIR)/build
+HAL_DIR 		= $(PROJECT_DIR)/Drivers/STM32F7xx_HAL_Driver
 
-FREERTOS_DIR = Middlewares/Third_Party/FreeRTOS/Source
-
-HAL_DIR = Drivers/STM32F7xx_HAL_Driver
-
-PERIPH_DIR = Drivers/Peripherals
+FREERTOS_DIR 	= $(PROJECT_DIR)/Middlewares/Third_Party/FreeRTOS/Source
+PERIPH_DIR 		= $(PROJECT_DIR)/Drivers/Peripherals
 
 ######################################
 # source
@@ -56,7 +56,7 @@ HAL_SOURCES = $(wildcard $(HAL_DIR)/Src/*.c)
 
 PERI_SOURCES = $(wildcard $(PERIPH_DIR)/Src/*.c)
 
-MAIN_SOURCES = $(wildcard Src/*.c)
+MAIN_SOURCES = $(wildcard $(PROJECT_DIR)/Src/*.c)
 
 C_SOURCES = \
 $(FREERTOS_SOURCES) \
@@ -66,7 +66,7 @@ $(MAIN_SOURCES) \
 
 # ASM sources
 ASM_SOURCES =  \
-startup_stm32f765xx.s
+$(PROJECT_DIR)/startup_stm32f765xx.s
 
 
 #######################################
@@ -108,19 +108,19 @@ C_DEFS =  \
 
 # AS includes
 AS_INCLUDES =  \
--IInc
+-I$(PROJECT_DIR)/Inc
 
 # C includes
 C_INCLUDES =  \
--IInc \
+-I$(PROJECT_DIR)/Inc \
 -I$(FREERTOS_DIR)/portable/GCC/ARM_CM7/r0p1 \
 -I$(FREERTOS_DIR)/include \
 -I$(FREERTOS_DIR)/CMSIS_RTOS \
 -I$(HAL_DIR)/Inc \
 -I$(HAL_DIR)/Inc/Legacy \
 -I$(PERIPH_DIR)/Inc \
--IDrivers/CMSIS/Device/ST/STM32F7xx/Include \
--IDrivers/CMSIS/Include \
+-I$(PROJECT_DIR)/Drivers/CMSIS/Device/ST/STM32F7xx/Include \
+-I$(PROJECT_DIR)/Drivers/CMSIS/Include \
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
@@ -141,7 +141,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)"
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = STM32F765ZGTx_FLASH.ld
+LDSCRIPT = $(PROJECT_DIR)/STM32F765ZGTx_FLASH.ld
 
 # libraries
 LIBS = -lc -lm -lnosys
@@ -192,6 +192,9 @@ $(BUILD_DIR):
 clean:
 	-rm -fR $(BUILD_DIR)
 
+# program device
+install: $(BUILD_DIR)/$(TARGET).bin
+	@ST-LINK_CLI -c SWD -p "$(BUILD_DIR)/$(TARGET).bin" 0x08000000 -NoPrompt -Rst -Run
 
 # file creation
 file:

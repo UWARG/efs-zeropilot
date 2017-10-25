@@ -58,7 +58,6 @@
 
 /* USER CODE BEGIN Includes */
 #include "debug.h"
-#include "altimeter.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -78,7 +77,7 @@ void MX_FREERTOS_Init(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-
+#define data_len 16
 /* USER CODE END 0 */
 
 int main(void)
@@ -125,14 +124,11 @@ int main(void)
   /* USER CODE BEGIN 2 */
   debug_init();
   debug("Starting up...");
-
+  debug("Compiled on %s at %s", __DATE__, __TIME__);
+  
   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
-
-  while(1) {
-    debug("aaa");
-  }
 
   /* USER CODE END 2 */
 
