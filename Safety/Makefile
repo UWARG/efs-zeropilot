@@ -28,83 +28,29 @@ OPT = -Og
 #######################################
 # paths
 #######################################
-# source path
-SOURCES_DIR =  \
-Drivers/CMSIS \
-Application \
-Drivers/STM32F0xx_HAL_Driver \
-Drivers \
-Application/MAKEFILE \
-Application/User
-
-# firmware library path
-PERIFLIB_PATH = 
+ROOT_DIR 		= ./..
+PROJECT_DIR 	= $(ROOT_DIR)/$(TARGET)
 
 # Build path
-BUILD_DIR = build
+BUILD_DIR 		= $(PROJECT_DIR)/build
+HAL_DIR 		= $(PROJECT_DIR)/Drivers/STM32F0xx_HAL_Driver
 
 ######################################
 # source
 ######################################
 # C sources
-C_SOURCES =  \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_crc_ex.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_crc.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_flash_ex.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_i2c.c \
-Src/usart.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi_ex.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_dma.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_pwr_ex.c \
-Src/gpio.c \
-Src/system_stm32f0xx.c \
-Src/crc.c \
-Src/spi.c \
-Src/stm32f0xx_hal_msp.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rcc.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_cortex.c \
-Src/main.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim_ex.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_uart.c \
-Src/i2c.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_flash.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_uart_ex.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_i2c_ex.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim.c \
-Src/stm32f0xx_it.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_pwr.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rcc_ex.c \
-Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_gpio.c \
-Src/tim.c \
-Src/syscalls.c \
-Src/debug.c \
-Src/PWM.c
+HAL_SOURCES = $(wildcard $(HAL_DIR)/Src/*.c)
+
+MAIN_SOURCES = $(wildcard $(PROJECT_DIR)/Src/*.c)
+
+C_SOURCES = \
+$(HAL_SOURCES) \
+$(MAIN_SOURCES) \
 
 # ASM sources
 ASM_SOURCES =  \
-startup_stm32f030xc.s
+$(PROJECT_DIR)/startup_stm32f030xc.s
 
-
-######################################
-# firmware library
-######################################
-PERIFLIB_SOURCES = 
-
-
-#######################################
-# binaries
-#######################################
-PREFIX = arm-none-eabi-
-CC = $(PREFIX)gcc
-AS = $(PREFIX)gcc -x assembler-with-cpp
-CP = $(PREFIX)objcopy
-AR = $(PREFIX)ar
-SZ = $(PREFIX)size
-HEX = $(CP) -O ihex
-BIN = $(CP) -O binary -S
- 
 #######################################
 # CFLAGS
 #######################################
@@ -135,81 +81,14 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
--IInc \
--IDrivers/STM32F0xx_HAL_Driver/Inc \
--IDrivers/STM32F0xx_HAL_Driver/Inc/Legacy \
--IDrivers/CMSIS/Device/ST/STM32F0xx/Include \
--IDrivers/CMSIS/Include
-
-
-# compile gcc flags
-ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
-
-CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
-
-ifeq ($(DEBUG), 1)
-CFLAGS += -g -gdwarf-2
-C_DEFS += -DDEBUG
-endif
-
-
-# Generate dependency information
-CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)"
-
+-I$(PROJECT_DIR)/Drivers/CMSIS/Device/ST/STM32F0xx/Include \
 
 #######################################
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = STM32F030RCTx_FLASH.ld
+LDSCRIPT = $(PROJECT_DIR)/STM32F030RCTx_FLASH.ld
 
-# libraries
-LIBS = -lc -lm -lnosys
-LIBDIR =
-LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
-
-# default action: build all
-all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
-
-
-#######################################
-# build the application
-#######################################
-# list of objects
-OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
-vpath %.c $(sort $(dir $(C_SOURCES)))
-# list of ASM program objects
-OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
-vpath %.s $(sort $(dir $(ASM_SOURCES)))
-
-$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR) 
-	$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
-
-$(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
-	$(AS) -c $(CFLAGS) $< -o $@
-
-$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
-	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
-	$(SZ) $@
-
-$(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(HEX) $< $@
-	
-$(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(BIN) $< $@	
-	
-$(BUILD_DIR):
-	mkdir $@		
-
-#######################################
-# clean up
-#######################################
-clean:
-	-rm -fR .dep $(BUILD_DIR)
-  
-#######################################
-# dependencies
-#######################################
--include $(shell mkdir .dep 2>/dev/null) $(wildcard .dep/*)
+include $(ROOT_DIR)/project.mk
 
 # *** EOF ***
