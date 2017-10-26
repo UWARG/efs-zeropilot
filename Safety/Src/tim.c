@@ -444,7 +444,8 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
     HAL_GPIO_Init(PPM_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN TIM14_MspInit 1 */
-
+    HAL_TIM_Base_Start_IT(tim_baseHandle);
+    HAL_TIM_IC_Start_IT(tim_baseHandle, TIM_CHANNEL_1);
   /* USER CODE END TIM14_MspInit 1 */
   }
   else if(tim_baseHandle->Instance==TIM15)
@@ -676,6 +677,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
   if (htim->Instance == TIM14) { // only timer configured for input capture
     // PPM input
     debug("Got PPM edge. Val: %lu", HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1));
+    __HAL_TIM_SET_COUNTER(&htim14, 0); //reset counter after input capture interrupt occurs
   }
 }
 

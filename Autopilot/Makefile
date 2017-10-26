@@ -22,7 +22,7 @@ TARGET = Autopilot
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -Os
+OPT = -Og
 
 
 #######################################
@@ -53,6 +53,7 @@ $(FREERTOS_DIR)/list.c \
 $(FREERTOS_DIR)/croutine.c \
 
 HAL_SOURCES = $(wildcard $(HAL_DIR)/Src/*.c)
+# $(wildcard $(PROJECT_DIR)/Drivers/CMSIS/DSP_Lib/Source/*/*.c)
 
 PERI_SOURCES = $(wildcard $(PERIPH_DIR)/Src/*.c)
 
@@ -92,6 +93,7 @@ C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32F7xx \
 -DSTM32F765xx \
+-DARM_MATH_CM7 \
 
 # AS includes
 AS_INCLUDES =  \
@@ -110,6 +112,11 @@ C_INCLUDES =  \
 #######################################
 # link script
 LDSCRIPT = $(PROJECT_DIR)/STM32F765ZGTx_FLASH.ld
+
+# libraries
+LIBS = -lc -lm -lnosys -larm_cortexM7lfdp_math
+LIBDIR = -L$(PROJECT_DIR)/Drivers/CMSIS/Lib/GCC/
+LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 include $(ROOT_DIR)/project.mk
 

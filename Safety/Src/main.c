@@ -38,7 +38,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f0xx_hal.h"
-#include "crc.h"
 #include "i2c.h"
 #include "spi.h"
 #include "tim.h"
@@ -95,7 +94,6 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_CRC_Init();
   MX_I2C1_Init();
   MX_SPI1_Init();
   // MX_TIM1_Init();
@@ -111,11 +109,12 @@ int main(void)
   debug_init();
   PWM_Init();
 
-  debug("Starting up...");
+  debug("\n\nStarting up...");
+  debug("Compiled on %s at %s", __DATE__, __TIME__);
 
   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-  // HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
-  // HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
 
   /* USER CODE END 2 */
 
@@ -127,7 +126,6 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
 
-    debug("aaa");
   }
   /* USER CODE END 3 */
 
