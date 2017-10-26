@@ -122,7 +122,6 @@ int main(void)
   MX_TIM11_Init();
 
   /* USER CODE BEGIN 2 */
-  debug_init();
   debug("\n\nStarting up...");
   debug("Compiled on %s at %s", __DATE__, __TIME__);
   

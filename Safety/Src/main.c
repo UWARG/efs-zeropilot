@@ -106,7 +106,6 @@ int main(void)
   MX_USART2_UART_Init();
 
   /* USER CODE BEGIN 2 */
-  debug_init();
   PWM_Init();
 
   debug("\n\nStarting up...");
