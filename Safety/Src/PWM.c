@@ -65,15 +65,10 @@ static PWM_Channel PWM_GetChannel(uint8_t channel) {
 }
 
 void PWM_Init(void) {
-    MX_TIM1_Init();
-    MX_TIM3_Init();
-    MX_TIM15_Init();
-    MX_TIM16_Init();
-    MX_TIM17_Init();
 
     for (uint8_t i = 1; i <= PWM_NUM_CHANNELS; ++i) {
         PWM_Channel pwm = PWM_GetChannel(i);
-        HAL_TIM_PWM_Start(pwm.handle, pwm.channel); // required
+        HAL_TIM_PWM_Start(pwm.handle, pwm.channel);
         PWM_Set(i, PWM_MIN);
     }
 }

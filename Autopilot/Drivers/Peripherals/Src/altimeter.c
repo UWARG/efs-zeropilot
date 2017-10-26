@@ -19,9 +19,6 @@ static I2C_HandleTypeDef* hi2c;
  HAL_StatusTypeDef MPL3115A2_Init() {
      hi2c = I2C_GetHandle(MPL3115A2_I2C);
 
-     // i2c init
-     MX_I2C2_Init();
-
      if (HAL_I2C_IsDeviceReady(hi2c, MPL3115A2_ADDR, 2, 5) != HAL_OK) {
          debug("no altimeter");
          // error

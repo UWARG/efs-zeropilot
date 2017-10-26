@@ -151,9 +151,6 @@ static I2C_HandleTypeDef* hi2c;
 HAL_StatusTypeDef MPU9255_Init(MPU9255_t *mpu) {
     hi2c = I2C_GetHandle(MPU9255_I2C);
 
-    // i2c init
-    MX_I2C4_Init();
-
     // is connected
     if (HAL_I2C_IsDeviceReady(hi2c, MPU9255_ADDR, 2, 5) != HAL_OK) {
         debug("no mpu");

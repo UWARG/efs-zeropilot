@@ -22,7 +22,4 @@
 #define debug(fmt, ...)
 #endif /* DEBUG */
 
-void debug_init(void);
-
-
 #endif
