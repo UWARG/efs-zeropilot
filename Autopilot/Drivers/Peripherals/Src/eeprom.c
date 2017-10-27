@@ -15,8 +15,8 @@ void EEPROM_Write(uint16_t memAddress, uint8_t * data, uint16_t dataLen) {
 
 void EEPROM_Read(uint16_t memAddress, uint8_t *data, uint16_t dataLen) {
     HAL_I2C_Mem_Read_IT(&hi2c1, EEPROM_ADDR, memAddress, I2C_MEMADD_SIZE_16BIT, data, dataLen);
-    uint32_t noti = ulTaskNotifyTake(pdTRUE, 0xFFFF);
-    if (noti == 0) return;
+    // uint32_t noti = ulTaskNotifyTake(pdTRUE, 0xFFFF);
+    // if (noti == 0) return;
 }
 
 // called from I2C Rx ISR
