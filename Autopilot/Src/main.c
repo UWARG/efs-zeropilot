@@ -58,6 +58,7 @@
 
 /* USER CODE BEGIN Includes */
 #include "debug.h"
+#include "eeprom.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -129,6 +130,20 @@ int main(void)
   HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
 
+
+  EEPROM_Init();
+  
+  uint8_t data[16] = {0xFF,0xFE,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+  uint8_t data2[16] = {0 };
+
+  EEPROM_Write(0, data, 16);
+  HAL_Delay(500);
+  EEPROM_Read(0, data2, 16);
+  HAL_Delay(50);
+  for (uint8_t i = 0; i < 16; i++) {
+    debug("eeprom: %02x", data2[i]);
+  }
+  while(1);
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
