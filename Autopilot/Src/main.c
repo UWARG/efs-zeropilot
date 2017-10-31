@@ -133,16 +133,7 @@ int main(void)
 
   EEPROM_Init();
   
-  uint8_t data[16] = {0xFC,0xFD, 0x32,3,4,5,6,7,8,9,10,11,12,13,14,15};
-  uint8_t data2[16] = {0 };
 
-  EEPROM_Write(0, data, 16);
-  HAL_Delay(10);
-  EEPROM_Read(0, data2, 16);
-  for (uint8_t i = 0; i < 16; i++) {
-    debug("eeprom: %02x", data2[i]);
-  }
-  while(1);
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
