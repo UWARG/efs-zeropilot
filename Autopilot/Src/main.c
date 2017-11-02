@@ -130,10 +130,8 @@ int main(void)
   HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
 
-
   EEPROM_Init();
   
-
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
