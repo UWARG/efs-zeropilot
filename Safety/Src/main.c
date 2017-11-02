@@ -121,12 +121,16 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint8_t *spi1_data;
+
+  __HAL_SPI_ENABLE(&hspi1);
   while (1)
   {
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-    debug("%u", PPM_Get());
+    //debug("%u", PPM_Get());
+    debug("%u",HAL_SPI_Receive(&hspi1,spi1_data, sizeof(uint8_t),100));
 
   }
   /* USER CODE END 3 */
