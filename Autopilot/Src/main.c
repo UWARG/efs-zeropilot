@@ -134,7 +134,8 @@ int main(void)
   EEPROM_Init();
   
 
-  uint8_t data[4];
+  uint16_t data[4];
+  uint16_t dataRx[4];
   data[0] = 1;
   data[1] = 2;
   data[2] = 3;
@@ -143,7 +144,9 @@ int main(void)
   __HAL_SPI_ENABLE(&hspi1);
 
   while(1){
-    HAL_SPI_Transmit(&hspi1, data, 4, 100); 
+    if(HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)data, (uint8_t*)dataRx, 4, 500) == HAL_OK){
+      debug("TxRx %d, %d, %d, %d", dataRx[0], dataRx[1], dataRx[2],dataRx[3]);
+    } 
   }
   /* USER CODE END 2 */
 

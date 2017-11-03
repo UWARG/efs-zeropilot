@@ -28,7 +28,7 @@
   * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
   * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
   * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * SERVICES; LOSS OF USE, spi1_TX, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
   * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
   * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -121,7 +121,12 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint8_t *spi1_data;
+  uint16_t spi1_RX[4];
+  uint16_t spi1_TX[4];
+  spi1_TX[0] = 5;
+  spi1_TX[1] = 6;
+  spi1_TX[2] = 7;
+  spi1_TX[3] = 8;
 
   __HAL_SPI_ENABLE(&hspi1);
   while (1)
@@ -130,7 +135,12 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
     //debug("%u", PPM_Get());
-    debug("%u",HAL_SPI_Receive(&hspi1,spi1_data, sizeof(uint8_t),100));
+
+    if(HAL_SPI_Receive(&hspi1,(uint8_t *)spi1_RX, 4,100) == HAL_OK){
+      debug("SPI Receive: %d, %d, %d, %d", spi1_RX[0], spi1_RX[1], spi1_RX[2], spi1_RX[3]);
+      HAL_SPI_Transmit(&hspi1, (uint8_t *)spi1_TX, 4, 100);
+    }
+    
 
   }
   /* USER CODE END 3 */
