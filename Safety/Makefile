@@ -35,17 +35,25 @@ PROJECT_DIR 	= $(ROOT_DIR)/$(TARGET)
 BUILD_DIR 		= $(PROJECT_DIR)/build
 HAL_DIR 		= $(PROJECT_DIR)/Drivers/STM32F0xx_HAL_Driver
 
+PERIPH_DIR 		= $(PROJECT_DIR)/Drivers/Peripherals
+COMMON_DIR 		= $(PROJECT_DIR)/../Common
+
 ######################################
 # source
 ######################################
 # C sources
 HAL_SOURCES = $(wildcard $(HAL_DIR)/Src/*.c)
 
+PERI_SOURCES = $(wildcard $(PERIPH_DIR)/Src/*.c)
+COMMON_SOURCES = $(wildcard $(COMMON_DIR)/Src/*.c)
+
 MAIN_SOURCES = $(wildcard $(PROJECT_DIR)/Src/*.c)
 
 C_SOURCES = \
 $(HAL_SOURCES) \
+$(PERI_SOURCES) \
 $(MAIN_SOURCES) \
+$(COMMON_SOURCES) \
 
 # ASM sources
 ASM_SOURCES =  \
@@ -82,6 +90,9 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES =  \
 -I$(PROJECT_DIR)/Drivers/CMSIS/Device/ST/STM32F0xx/Include \
+-I$(PERIPH_DIR)/Inc \
+-I$(COMMON_DIR)/Inc \
+
 
 #######################################
 # LDFLAGS

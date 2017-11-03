@@ -59,6 +59,7 @@
 /* USER CODE BEGIN Includes */
 #include "debug.h"
 #include "eeprom.h"
+#include "interchip_comm_A.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -127,26 +128,17 @@ int main(void)
   debug("Compiled on %s at %s", __DATE__, __TIME__);
   
   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
 
 
   EEPROM_Init();
   
-
-  uint16_t data[4];
-  uint16_t dataRx[4];
-  data[0] = 1;
-  data[1] = 2;
-  data[2] = 3;
-  data[3] = 4;
-
-  __HAL_SPI_ENABLE(&hspi1);
+  interchipInit();
+  
 
   while(1){
-    if(HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)data, (uint8_t*)dataRx, 4, 500) == HAL_OK){
-      debug("TxRx %d, %d, %d, %d", dataRx[0], dataRx[1], dataRx[2],dataRx[3]);
-    } 
+    interchipUpdate();
   }
   /* USER CODE END 2 */
 

@@ -144,7 +144,6 @@ void TIM14_IRQHandler(void)
 void SPI1_IRQHandler(void)
 {
   /* USER CODE BEGIN SPI1_IRQn 0 */
-  debug("hello");
   /* USER CODE END SPI1_IRQn 0 */
   HAL_SPI_IRQHandler(&hspi1);
   /* USER CODE BEGIN SPI1_IRQn 1 */

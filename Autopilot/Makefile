@@ -37,6 +37,7 @@ HAL_DIR 		= $(PROJECT_DIR)/Drivers/STM32F7xx_HAL_Driver
 
 FREERTOS_DIR 	= $(PROJECT_DIR)/Middlewares/Third_Party/FreeRTOS/Source
 PERIPH_DIR 		= $(PROJECT_DIR)/Drivers/Peripherals
+COMMON_DIR 		= $(PROJECT_DIR)/../Common
 
 ######################################
 # source
@@ -56,6 +57,7 @@ HAL_SOURCES = $(wildcard $(HAL_DIR)/Src/*.c)
 # $(wildcard $(PROJECT_DIR)/Drivers/CMSIS/DSP_Lib/Source/*/*.c)
 
 PERI_SOURCES = $(wildcard $(PERIPH_DIR)/Src/*.c)
+COMMON_SOURCES = $(wildcard $(COMMON_DIR)/Src/*.c)
 
 MAIN_SOURCES = $(wildcard $(PROJECT_DIR)/Src/*.c)
 
@@ -64,6 +66,7 @@ $(FREERTOS_SOURCES) \
 $(HAL_SOURCES) \
 $(PERI_SOURCES) \
 $(MAIN_SOURCES) \
+$(COMMON_SOURCES) \
 
 # ASM sources
 ASM_SOURCES =  \
@@ -106,6 +109,7 @@ C_INCLUDES =  \
 -I$(FREERTOS_DIR)/include \
 -I$(FREERTOS_DIR)/CMSIS_RTOS \
 -I$(PERIPH_DIR)/Inc \
+-I$(COMMON_DIR)/Inc \
 
 #######################################
 # LDFLAGS

@@ -47,6 +47,7 @@
 /* USER CODE BEGIN Includes */
 #include "debug.h"
 #include "PWM.h"
+#include "interchip_comm_S.h"
 
 /* USER CODE END Includes */
 
@@ -115,31 +116,18 @@ int main(void)
   HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
 
-  // HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
+  interchipInit();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint16_t spi1_RX[4];
-  uint16_t spi1_TX[4];
-  spi1_TX[0] = 5;
-  spi1_TX[1] = 6;
-  spi1_TX[2] = 7;
-  spi1_TX[3] = 8;
-
-  __HAL_SPI_ENABLE(&hspi1);
   while (1)
   {
   /* USER CODE END WHILE */
-
+    pollInterchip();
   /* USER CODE BEGIN 3 */
-    //debug("%u", PPM_Get());
 
-    if(HAL_SPI_Receive(&hspi1,(uint8_t *)spi1_RX, 4,100) == HAL_OK){
-      debug("SPI Receive: %d, %d, %d, %d", spi1_RX[0], spi1_RX[1], spi1_RX[2], spi1_RX[3]);
-      HAL_SPI_Transmit(&hspi1, (uint8_t *)spi1_TX, 4, 100);
-    }
     
 
   }
