@@ -139,6 +139,7 @@ int main(void)
 
   while(1){
     interchipUpdate();
+    HAL_Delay(1);
   }
   /* USER CODE END 2 */
 
