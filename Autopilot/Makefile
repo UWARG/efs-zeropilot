@@ -67,46 +67,7 @@ $(HAL_SOURCES) \
 $(PERI_SOURCES) \
 $(MAIN_SOURCES) \
 $(COMMON_SOURCES) \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.c \
-Src/adc.c \
-Middlewares/Third_Party/FreeRTOS/Source/timers.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc_ex.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.c \
-Src/tim.c \
-Src/stm32f7xx_hal_msp.c \
-Src/stm32f7xx_hal_timebase_TIM.c \
-Middlewares/Third_Party/FreeRTOS/Source/tasks.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_spi.c \
-Src/stm32f7xx_it.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc.c \
-Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
-Src/i2c.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.c \
-Middlewares/Third_Party/FreeRTOS/Source/list.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim.c \
-Middlewares/Third_Party/FreeRTOS/Source/event_groups.c \
-Src/spi.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.c \
-Middlewares/Third_Party/FreeRTOS/Source/queue.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim_ex.c \
-Src/gpio.c \
-Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.c \
-Src/usart.c \
-Src/freertos.c \
-Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/port.c \
-Middlewares/Third_Party/FreeRTOS/Source/croutine.c \
-Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c \
-Src/main.c \
-Src/system_stm32f7xx.c
+
 
 # ASM sources
 ASM_SOURCES =  \
@@ -150,20 +111,12 @@ C_INCLUDES =  \
 -I$(FREERTOS_DIR)/CMSIS_RTOS \
 -I$(PERIPH_DIR)/Inc \
 -I$(COMMON_DIR)/Inc \
--IInc \
--IDrivers/STM32F7xx_HAL_Driver/Inc \
--IDrivers/STM32F7xx_HAL_Driver/Inc/Legacy \
--IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1 \
--IDrivers/CMSIS/Device/ST/STM32F7xx/Include \
--IMiddlewares/Third_Party/FreeRTOS/Source/include \
--IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
--IDrivers/CMSIS/Include
 
 #######################################
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = STM32F765ZGTx_FLASH.ld
+LDSCRIPT = $(PROJECT_DIR)/STM32F765ZGTx_FLASH.ld
 
 # libraries
 LIBS = -lc -lm -lnosys -larm_cortexM7lfdp_math

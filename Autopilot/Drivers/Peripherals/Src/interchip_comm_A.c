@@ -22,7 +22,7 @@ void interchipInit(){
 HAL_StatusTypeDef interchipUpdate(){
 
     //send data
-    HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)&dataTX, (uint8_t*)&dataRX, sizeof(Interchip_StoA_Packet)/sizeof(uint16_t), 500);
+    HAL_SPI_Transmit_IT(&hspi1, (uint8_t*)&dataTX,/* (uint8_t*)&dataRX,*/ sizeof(Interchip_StoA_Packet)/sizeof(uint16_t));
 
     if(transmit_status == HAL_OK){
         //debug("TxRx %d, %d, %d, %d", dataRx[0], dataRx[1], dataRx[2],dataRx[3]);

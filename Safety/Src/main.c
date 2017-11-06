@@ -43,6 +43,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "stm32f0xx_it.h"
 
 /* USER CODE BEGIN Includes */
 #include "debug.h"
@@ -118,6 +119,7 @@ int main(void)
   //HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
 
   interchipInit();
+  Spi1Flag = 1;
 
   /* USER CODE END 2 */
 
@@ -128,8 +130,11 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-
-    pollInterchip();
+    if(Spi1Flag == 1){
+      debug("Spi flag set");
+      Spi1Flag = 0;
+    }
+    //pollInterchip();
 
   }
   /* USER CODE END 3 */
