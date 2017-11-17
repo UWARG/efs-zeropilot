@@ -9,7 +9,7 @@ typedef struct {
 } PWM_Channel;
 
 static __IO uint16_t ppm_last_capture = 0;
-static __IO uint16_t capture_value[PPM_NUM_CHANNELS] = { 0 };
+static __IO int16_t capture_value[PPM_NUM_CHANNELS] = { 0 };
 static __IO uint8_t ppm_index = 0;
 
 static PWM_Channel PWM_GetChannel(uint8_t channel) {
@@ -89,8 +89,8 @@ void PWM_Set(uint8_t channel, int16_t val) {
 }
 
 
-uint16_t PPM_Get(void) {
-    return ppm_last_capture;
+int16_t* PPM_Get(void) {
+    return capture_value;
 }
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
@@ -98,7 +98,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
         uint16_t time_diff = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 
         if (ppm_index != 0) { // the first edge doesn't give us any data
-            capture_value[ppm_index - 1] = time_diff;
+            capture_value[ppm_index - 1] = time_diff - PPM_OFFSET;
         }
         ppm_index = (ppm_index + 1) % (PPM_NUM_CHANNELS + 1); // index should reset, but just in case
         __HAL_TIM_SET_COUNTER(htim, 0);
