@@ -111,7 +111,7 @@ int main(void)
   debug("\n\nStarting up...");
   debug("Compiled on %s at %s", __DATE__, __TIME__);
 
-  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
 
@@ -121,12 +121,21 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  int16_t *input;
   while (1)
   {
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-    debug("%u", PPM_Get());
+    
+    input = PPM_Get();
+    
+    for(uint8_t i=0; i<PPM_NUM_CHANNELS; i++){
+      printf("%d: %d    ", i, input[i]);
+    }
+    printf("\n");
+
+    HAL_Delay(500);
 
   }
   /* USER CODE END 3 */
