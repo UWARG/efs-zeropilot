@@ -16,16 +16,19 @@ void interchipInit(){
     }
     dataTX.autonomous_level = 27;
     debug("sizeof: %d", sizeof(Interchip_StoA_Packet)/sizeof(uint16_t));
+    HAL_SPI_Transmit(&hspi1, (uint8_t*)&dataTX,  sizeof(Interchip_StoA_Packet)/sizeof(uint16_t),100);
+
     
 }
 
 HAL_StatusTypeDef interchipUpdate(){
 
     //send data
-    HAL_SPI_Transmit_IT(&hspi1, (uint8_t*)&dataTX,/* (uint8_t*)&dataRX,*/ sizeof(Interchip_StoA_Packet)/sizeof(uint16_t));
+    
+    HAL_SPI_TransmitReceive_IT(&hspi1, (uint8_t*)&dataTX, (uint8_t*)&dataRX, sizeof(Interchip_StoA_Packet)/sizeof(uint16_t));
 
     if(transmit_status == HAL_OK){
-        //debug("TxRx %d, %d, %d, %d", dataRx[0], dataRx[1], dataRx[2],dataRx[3]);
+        debug("TxRx %d", dataRX.PWM[0]);
       }
     return transmit_status;
 }

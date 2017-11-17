@@ -108,6 +108,8 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
+  //HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+  //HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
 }
 
 /* USER CODE BEGIN 2 */
