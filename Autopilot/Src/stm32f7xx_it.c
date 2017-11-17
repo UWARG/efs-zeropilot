@@ -41,6 +41,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern SPI_HandleTypeDef hspi1;
 extern TIM_HandleTypeDef htim10;
 extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart1;
@@ -193,6 +194,21 @@ void TIM4_IRQHandler(void)
 }
 
 /**
+* @brief This function handles SPI1 global interrupt.
+*/
+void SPI1_IRQHandler(void)
+{
+  /* USER CODE BEGIN SPI1_IRQn 0 */
+
+  /* USER CODE END SPI1_IRQn 0 */
+  HAL_NVIC_ClearPendingIRQ(SPI1_IRQn);
+  HAL_SPI_IRQHandler(&hspi1);
+  /* USER CODE BEGIN SPI1_IRQn 1 */
+
+  /* USER CODE END SPI1_IRQn 1 */
+}
+
+/**
 * @brief This function handles USART1 global interrupt.
 */
 void USART1_IRQHandler(void)
@@ -249,6 +265,12 @@ void UART4_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-
+/*uint8_t aTxBuffer[] = "Rohalamin";
+void EXTI0_1_IRQHandler(void)
+{
+  HAL_NVIC_ClearPendingIRQ(EXTI0_1_IRQn);
+  HAL_SPI_Transmit_IT( &hspi1 , (uint8_t*)aTxBuffer , 10 );
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+} 
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
