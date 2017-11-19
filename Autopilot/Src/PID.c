@@ -12,7 +12,7 @@
  * Filtering constant for derivative. Between 0 and 1.
  * The larger this is, the more twitchy D control is. 
  */
-#define FILTER 0.4f
+#define FILTER (0.4f)
 
 /* Generic PID functions. Can be used to PID other things (flaps, etc) */
 
