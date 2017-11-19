@@ -129,13 +129,13 @@ int main(void)
   /* USER CODE BEGIN 3 */
     
     input = PPM_Get();
-    
-    for(uint8_t i=0; i<PPM_NUM_CHANNELS; i++){
-      printf("%d: %d    ", i, input[i]);
-    }
-    printf("\n");
 
-    HAL_Delay(500);
+    for(uint8_t i=0; i<PPM_NUM_CHANNELS; i++){
+      debug("%d: %d", i+1, input[i]);
+    }
+    printf("\r\n");
+
+    HAL_Delay(100);
 
   }
   /* USER CODE END 3 */

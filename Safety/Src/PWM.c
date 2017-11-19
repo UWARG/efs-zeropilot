@@ -70,6 +70,7 @@ static PWM_Channel PWM_GetChannel(uint8_t channel) {
 }
 
 void PWM_Init(void) {
+    HAL_TIM_Base_Start_IT(&htim14);
     HAL_TIM_IC_Start_IT(&htim14, TIM_CHANNEL_1);
 
     for (uint8_t i = 1; i <= PWM_NUM_CHANNELS; ++i) {
@@ -89,7 +90,7 @@ void PWM_Set(uint8_t channel, int16_t val) {
 }
 
 
-int16_t* PPM_Get(void) {
+volatile int16_t* PPM_Get(void) {
     return capture_value;
 }
 
