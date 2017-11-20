@@ -58,7 +58,12 @@
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
+#include "ByteQueue.h"
 
+extern ByteQueue uart1_rx;
+extern ByteQueue uart2_rx;
+extern ByteQueue uart3_rx;
+extern ByteQueue uart4_rx;
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart4;
