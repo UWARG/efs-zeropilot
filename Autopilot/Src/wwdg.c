@@ -1,7 +1,8 @@
 /**
   ******************************************************************************
-  * File Name          : main.h
-  * Description        : This file contains the common defines of the application
+  * File Name          : WWDG.c
+  * Description        : This file provides code for the configuration
+  *                      of the WWDG instances.
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -45,73 +46,63 @@
   *
   ******************************************************************************
   */
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __MAIN_H
-#define __MAIN_H
+
 /* Includes ------------------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-#include <math.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdlib.h>
-/* USER CODE END Includes */
+#include "wwdg.h"
 
-/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
 
-#define AIRSPD_ADC_Pin GPIO_PIN_0
-#define AIRSPD_ADC_GPIO_Port GPIOC
-#define EXT_BATT_ADC_Pin GPIO_PIN_0
-#define EXT_BATT_ADC_GPIO_Port GPIOB
-#define VBATT_ADC_Pin GPIO_PIN_1
-#define VBATT_ADC_GPIO_Port GPIOB
-#define LED1_Pin GPIO_PIN_0
-#define LED1_GPIO_Port GPIOG
-#define LED2_Pin GPIO_PIN_1
-#define LED2_GPIO_Port GPIOG
-#define LED3_Pin GPIO_PIN_7
-#define LED3_GPIO_Port GPIOE
-#define MEM_WC_Pin GPIO_PIN_13
-#define MEM_WC_GPIO_Port GPIOE
-#define PW_GOOD_EXT_Pin GPIO_PIN_14
-#define PW_GOOD_EXT_GPIO_Port GPIOE
-#define PW_GOOD_INT_Pin GPIO_PIN_15
-#define PW_GOOD_INT_GPIO_Port GPIOE
-#define USONIC_IC_Pin GPIO_PIN_8
-#define USONIC_IC_GPIO_Port GPIOB
-#define USONIC_OC_Pin GPIO_PIN_9
-#define USONIC_OC_GPIO_Port GPIOB
+/* USER CODE END 0 */
 
-/* ########################## Assert Selection ############################## */
-/**
-  * @brief Uncomment the line below to expanse the "assert_param" macro in the 
-  *        HAL drivers code
-  */
-/* #define USE_FULL_ASSERT    1U */
+WWDG_HandleTypeDef hwwdg;
 
-/* USER CODE BEGIN Private defines */
-typedef uint8_t byte_t;
-typedef uint16_t halfword_t;
-typedef uint32_t word_t;
-/* USER CODE END Private defines */
+/* WWDG init function */
+void MX_WWDG_Init(void)
+{
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-void _Error_Handler(char *, int);
+  hwwdg.Instance = WWDG;
+  hwwdg.Init.Prescaler = WWDG_PRESCALER_8;
+  hwwdg.Init.Window = 80;
+  hwwdg.Init.Counter = 127;
+  hwwdg.Init.EWIMode = WWDG_EWI_ENABLE;
+  if (HAL_WWDG_Init(&hwwdg) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
 
-#define Error_Handler() _Error_Handler(__FILE__, __LINE__)
-#ifdef __cplusplus
 }
-#endif
+
+void HAL_WWDG_MspInit(WWDG_HandleTypeDef* wwdgHandle)
+{
+
+  if(wwdgHandle->Instance==WWDG)
+  {
+  /* USER CODE BEGIN WWDG_MspInit 0 */
+
+  /* USER CODE END WWDG_MspInit 0 */
+    /* WWDG clock enable */
+    __HAL_RCC_WWDG_CLK_ENABLE();
+
+    /* WWDG interrupt Init */
+    HAL_NVIC_SetPriority(WWDG_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(WWDG_IRQn);
+  /* USER CODE BEGIN WWDG_MspInit 1 */
+
+  /* USER CODE END WWDG_MspInit 1 */
+  }
+}
+ 
+
+/* USER CODE BEGIN 1 */
+
+/* USER CODE END 1 */
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-*/ 
+  */
 
-#endif /* __MAIN_H */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
