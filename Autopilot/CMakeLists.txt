@@ -33,8 +33,9 @@ link_directories(
 )
 
 file(GLOB_RECURSE USER_SOURCES "Src/*.c")
+file(GLOB_RECURSE USER_INC "Inc/*.h")
 
-add_executable(${ELF_NAME} ${USER_SOURCES} startup_stm32f765xx.s)
+add_executable(${ELF_NAME} ${USER_SOURCES} ${USER_INC} startup_stm32f765xx.s)
 
 target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS arm_cortexM7lfdp_math)
 
