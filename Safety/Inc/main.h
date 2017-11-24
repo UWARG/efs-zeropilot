@@ -105,7 +105,5 @@ void _Error_Handler(char *, int);
   * @}
 */ 
 
-int Spi1Flag;
-
 #endif /* __MAIN_H */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

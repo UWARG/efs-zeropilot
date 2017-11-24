@@ -22,12 +22,12 @@ void interchipInit(){
 }
 
 void pollInterchip(){
-    if(HAL_SPI_Receive(&hspi1,(uint8_t *)&dataRX, sizeof(Interchip_AtoS_Packet)/sizeof(uint16_t),500) == HAL_OK){
+    if(HAL_SPI_Receive_DMA(&hspi1,(uint8_t *)&dataRX, sizeof(Interchip_AtoS_Packet)/sizeof(uint16_t)) == HAL_OK){
         printf("SPI Receive: ");
         for(int i =0; i<12; i++){
             printf(", %d",dataRX.PWM[i]);
         }
         debug("\n");
-        HAL_SPI_Transmit(&hspi1, (uint8_t *)&dataTX, sizeof(Interchip_StoA_Packet)/sizeof(uint16_t),500);
+        HAL_SPI_Transmit_DMA(&hspi1, (uint8_t *)&dataTX, sizeof(Interchip_StoA_Packet)/sizeof(uint16_t));
       }
 }
