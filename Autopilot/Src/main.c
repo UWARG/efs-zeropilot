@@ -123,7 +123,7 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM10_Init();
   MX_TIM11_Init();
-  MX_WWDG_Init();
+  // MX_WWDG_Init();
   MX_CRC_Init();
 
   /* USER CODE BEGIN 2 */
@@ -131,8 +131,6 @@ int main(void)
   debug("Compiled on %s at %s", __DATE__, __TIME__);
   
   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
 
   /* USER CODE END 2 */
 
