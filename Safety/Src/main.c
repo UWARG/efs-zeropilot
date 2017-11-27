@@ -108,12 +108,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
   PWM_Init();
 
-  debug("\n\nStarting up...");
+  debug("\r\n\r\nStarting up...");
   debug("Compiled on %s at %s", __DATE__, __TIME__);
 
-  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
 
   // HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
 
@@ -128,12 +126,6 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
     
-    input = PPM_Get();
-
-    for(uint8_t i=0; i<PPM_NUM_CHANNELS; i++){
-      debug("%d: %d", i+1, input[i]);
-    }
-    printf("\r\n");
 
     HAL_Delay(100);
 

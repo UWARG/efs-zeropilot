@@ -127,7 +127,7 @@ int main(void)
   MX_CRC_Init();
 
   /* USER CODE BEGIN 2 */
-  debug("\n\nStarting up...");
+  debug("\r\n\r\nStarting up...");
   debug("Compiled on %s at %s", __DATE__, __TIME__);
   
   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
