@@ -43,12 +43,18 @@ target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS arm_cortexM7lfdp_math)
 set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F765ZGTx_FLASH.ld)
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${LINKER_SCRIPT} -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map,--cref")
 
-set(HEX_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.hex)
 set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.bin)
 
-# objcopy the .elf file to .bin and .hex files for programming
-add_custom_command(TARGET ${ELF_NAME} POST_BUILD
-        COMMAND ${CMAKE_OBJCOPY} -Oihex $<TARGET_FILE:${ELF_NAME}> ${HEX_FILE}
-        COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${ELF_NAME}> ${BIN_FILE}        
-        COMMENT "Building ${HEX_FILE}\nBuilding ${BIN_FILE}"
+# objcopy the .elf file to .bin file for programming
+add_custom_command(OUTPUT ${BIN_FILE}
+        COMMAND "${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${ELF_NAME}> ${BIN_FILE}"        
+        COMMENT "Building ${BIN_FILE}"
+)
+
+set(INSTALL_BIN "ST-LINK_CLI")
+set(INSTALL_OPTS "-c SWD -P \"${BIN_FILE}\" 0x08000000 -NoPrompt -Rst -Run")
+
+add_custom_target(device ${INSTALL_BIN} ${INSTALL_OPTS}
+        DEPENDS ${BIN_FILE}
+        COMMENT "Programming device..."
 )

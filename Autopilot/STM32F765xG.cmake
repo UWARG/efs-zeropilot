@@ -3,11 +3,11 @@ set(CMAKE_SYSTEM_PROCESSOR arm)
 set(CMAKE_SYSTEM_VERSION 1)
 
 # specify the cross compiler
-set(CMAKE_C_COMPILER arm-none-eabi-gcc)
-set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
-set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
-set(CMAKE_OBJCOPY arm-none-eabi-objcopy)
-set(CMAKE_LINKER arm-none-eabi-gcc)
+set(CMAKE_C_COMPILER    arm-none-eabi-gcc)
+set(CMAKE_CXX_COMPILER  arm-none-eabi-g++)
+set(CMAKE_ASM_COMPILER  arm-none-eabi-gcc)
+set(CMAKE_OBJCOPY       arm-none-eabi-objcopy)
+set(CMAKE_LINKER        arm-none-eabi-gcc)
 
 # ARM compiler options
 set(MCU_CPU cortex-m7)
