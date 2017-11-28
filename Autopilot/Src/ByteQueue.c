@@ -3,7 +3,7 @@
  * @author Serge Babayan
  * @date Feb 19, 2017
  * @copyright Waterloo Aerial Robotics Group 2017 \n
- *   https://raw.githubusercontent.com/UWARG/PICpilot/master/LICENCE 
+ *   https://raw.githubusercontent.com/UWARG/ZeroPilot-SW/devel/LICENSE.md 
  */
 
 #include "ByteQueue.h"

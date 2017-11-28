@@ -3,7 +3,7 @@
  * @author Ian Frosst
  * @date  March 26, 2017
  * @copyright Waterloo Aerial Robotics Group 2017 \n
- *  https://raw.githubusercontent.com/UWARG/ZeroPilot-SW/master/LICENSE.md
+ *  https://raw.githubusercontent.com/UWARG/ZeroPilot-SW/devel/LICENSE.md
  */
 
 #ifndef PID_H
