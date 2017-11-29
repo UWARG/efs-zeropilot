@@ -1,3 +1,4 @@
+#include "debug.h"
 /**
   ******************************************************************************
   * File Name          : SPI.c
@@ -160,12 +161,11 @@ void MX_SPI5_Init(void)
 
 void HAL_SPI_MspInit(SPI_HandleTypeDef* spiHandle)
 {
-
   GPIO_InitTypeDef GPIO_InitStruct;
   if(spiHandle->Instance==SPI1)
   {
   /* USER CODE BEGIN SPI1_MspInit 0 */
-
+  
   /* USER CODE END SPI1_MspInit 0 */
     /* SPI1 clock enable */
     __HAL_RCC_SPI1_CLK_ENABLE();
@@ -191,7 +191,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* spiHandle)
     HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
     /* SPI1 interrupt Init */
-    HAL_NVIC_SetPriority(SPI1_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(SPI1_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(SPI1_IRQn);
   /* USER CODE BEGIN SPI1_MspInit 1 */
 

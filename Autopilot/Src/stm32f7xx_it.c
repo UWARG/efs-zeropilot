@@ -201,7 +201,6 @@ void SPI1_IRQHandler(void)
   /* USER CODE BEGIN SPI1_IRQn 0 */
 
   /* USER CODE END SPI1_IRQn 0 */
-  HAL_NVIC_ClearPendingIRQ(SPI1_IRQn);
   HAL_SPI_IRQHandler(&hspi1);
   /* USER CODE BEGIN SPI1_IRQn 1 */
 

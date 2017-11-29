@@ -7,7 +7,7 @@ Interchip_AtoS_Packet dataTX;
 Interchip_StoA_Packet dataRX;
 
 HAL_StatusTypeDef transmit_status;
-
+int hello=0;
 void interchipInit(){
 
     //put random values to test interchip
@@ -16,7 +16,9 @@ void interchipInit(){
     }
     dataTX.autonomous_level = 27;
     debug("sizeof: %d", sizeof(Interchip_StoA_Packet)/sizeof(uint16_t));
-    HAL_SPI_Transmit(&hspi1, (uint8_t*)&dataTX,  sizeof(Interchip_StoA_Packet)/sizeof(uint16_t),100);
+    //hspi1.State = RESET;
+    //HAL_SPI_Init(&hspi1);
+    //HAL_SPI_Transmit(&hspi1, (uint8_t*)&dataTX,  sizeof(Interchip_StoA_Packet)/sizeof(uint16_t),100);
 
     
 }
@@ -25,10 +27,25 @@ HAL_StatusTypeDef interchipUpdate(){
 
     //send data
     
-    HAL_SPI_TransmitReceive_DMA(&hspi1, (uint8_t*)&dataTX, (uint8_t*)&dataRX, sizeof(Interchip_StoA_Packet)/sizeof(uint16_t));
-
+    debug("status: %d, %d", (hspi1.State), HAL_SPI_Transmit_IT(&hspi1, (uint8_t*)&dataTX, /*(uint8_t*)&dataRX,*/ sizeof(Interchip_StoA_Packet)/sizeof(uint16_t)));
+    //debug("%d",hello);
+    dataTX.PWM[0]++;
     if(transmit_status == HAL_OK){
-        debug("TxRx %d", dataRX.PWM[0]);
-      }
+        /*printf("SPI Receive: ");
+        int sum =0;
+        for(int i =0; i<12; i++){
+            sum+=dataRX.PWM[i]
+            printf(", %d",dataRX.PWM[i]);
+        }
+        debug("\n%d\n", sum);*/
+      }else{
+           Error_Handler();
+        }
+
     return transmit_status;
+}
+
+void HAL_SPI_TxHalfCpltCallback(SPI_HandleTypeDef *hspi)
+{ 
+    hello++;
 }

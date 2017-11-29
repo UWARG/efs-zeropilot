@@ -1,3 +1,4 @@
+#include "debug.h"
 /**
   ******************************************************************************
   * @file    stm32f7xx_hal_spi.c
@@ -2238,6 +2239,7 @@ HAL_StatusTypeDef HAL_SPI_DMAStop(SPI_HandleTypeDef *hspi)
   */
 void HAL_SPI_IRQHandler(SPI_HandleTypeDef *hspi)
 {
+  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
   uint32_t itsource = hspi->Instance->CR2;
   uint32_t itflag   = hspi->Instance->SR;
 
