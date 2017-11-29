@@ -1,7 +1,6 @@
 # travis build configuration for ZeroPilot-SW
 
 language: cpp
-dist: trusty
 sudo: false
 
 addons:
@@ -22,7 +21,4 @@ install:
 
 script:
   - cd $TARGET
-  - mkdir -p build
-  - cd build
-  - cmake ../ -DCMAKE_TOOLCHAIN_FILE=STM32F765xG.cmake -G "Unix Makefiles"
-  - make
+  - cmake --build ./build -DCMAKE_TOOLCHAIN_FILE=STM32F765xG.cmake --target all --
