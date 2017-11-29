@@ -21,4 +21,7 @@ install:
 
 script:
   - cd $TARGET
-  - cmake --build ./build -DCMAKE_TOOLCHAIN_FILE=STM32F765xG.cmake --target all --
+  - mkdir -p build
+  - cd build
+  - cmake ../ -DCMAKE_TOOLCHAIN_FILE=STM32F765xG.cmake -G "Unix Makefiles"
+  - make
