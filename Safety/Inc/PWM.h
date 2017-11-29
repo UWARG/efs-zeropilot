@@ -10,10 +10,12 @@
 
 #define PPM_NUM_CHANNELS (8)
 
+#define PPM_OFFSET 24000
+
 void PWM_Init(void);
 
 void PWM_Set(uint8_t channel, int16_t val);
 
-uint16_t PPM_Get(void);
+volatile int16_t* PPM_Get(void);
 
 #endif

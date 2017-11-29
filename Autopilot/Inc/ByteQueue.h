@@ -15,18 +15,24 @@
 #ifndef BYTEQUEUE_H
 #define BYTEQUEUE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdint.h>
+
 /**
  * ByteQueue struct. Use the size property to get the size of the queue
  * All of the fields are declared as volatile as it is expected this class
  * is used within ISR's
  */
 typedef volatile struct _ByteQueue {
-    unsigned char * _data;
-    unsigned int _size; //current size of the queue. Can be accessed directly for convenience
-    unsigned int _total_size; //current total size of the queue
-    unsigned int _initial_size; //Used to make sure that shrink resizing doesn't go below this value
-    unsigned int _max_size; //max size of the queue. It cannot be resized to anything larger than this value
-    unsigned int _start_index;
+    uint8_t *_data;
+    uint32_t _size; //current size of the queue. Can be accessed directly for convenience
+    uint32_t _total_size; //current total size of the queue
+    uint32_t _initial_size; //Used to make sure that shrink resizing doesn't go below this value
+    uint32_t _max_size; //max size of the queue. It cannot be resized to anything larger than this value
+    uint32_t _start_index;
 } ByteQueue;
 
 /**
@@ -38,7 +44,7 @@ typedef volatile struct _ByteQueue {
  * will not grow or shrink.
  * @param queue
  */
-void initBQueue(ByteQueue* queue, unsigned int initial_size, unsigned int max_size);
+void initBQueue(ByteQueue *queue, uint32_t initial_size, uint32_t max_size);
 
 /**
  * Pop an element from the queue. This will decrease the queue size by 1.Make sure
@@ -47,7 +53,7 @@ void initBQueue(ByteQueue* queue, unsigned int initial_size, unsigned int max_si
  * @param queue
  * @return -1 or 256 if the queue is empty, or the value of the next byte if not
  */
-unsigned char popBQueue(ByteQueue* queue);
+uint8_t popBQueue(ByteQueue *queue);
 
 /**
  * Push/add a byte onto the end of the queue. If the size of the queue is exceeded
@@ -56,7 +62,7 @@ unsigned char popBQueue(ByteQueue* queue);
  * @param byte The byte to add to the queue
  * @return 1 if successfully pushed to queue, 0 otherwise. Will fail if queue is full and can't be resized
  */
-unsigned char pushBQueue(ByteQueue* queue, unsigned char byte);
+uint8_t pushBQueue(ByteQueue *queue, uint8_t byte);
 
 /**
  * This function returns the number of bytes that is guaranteed to be pushed to the queue.
@@ -68,20 +74,24 @@ unsigned char pushBQueue(ByteQueue* queue, unsigned char byte);
  * @param queue
  * @return Bytes that can be guaranteed to be pushed to the queue
  */
-unsigned int getBQueueSpace(ByteQueue* queue);
+uint32_t getBQueueSpace(ByteQueue *queue);
 
 /**
  * Returns the current size of the byte queue (amount of data currently stored on there)
  * @param queue
  * @return size 
  */
-unsigned int getBQueueSize(ByteQueue* queue);
+uint32_t getBQueueSize(ByteQueue *queue);
 
 /**
  * Cleans up the byte queue (deallocated its data correctly). If you want to reuse
  * the queue after, make sure to call the initBQueue function on it after words
  * @param queue
  */
-void deleteBQueue(ByteQueue* queue);
+void deleteBQueue(ByteQueue *queue);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* BYTEQUEUE_H */

@@ -9,9 +9,13 @@
 #ifndef PID_H
 #define	PID_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "main.h"
 
-#define PID_RESET_TIME 500000 // timeout to reset I and D terms (us)
+#define PID_RESET_TIME (500000) // timeout to reset I and D terms (us)
 
 /* 
  * Floating-point PID loops for attitude control. 
@@ -42,7 +46,7 @@ typedef struct { //holds values for a generic PID loop
  * @param Kd
  * @param imax Limit for the integral term
  */
-void initPID(PIDVal* pid, float kp, float ki, float kd, int16_t i_max);
+void initPID(PIDVal *pid, float kp, float ki, float kd, int16_t i_max);
 
 /**
  * Calculates output signal from a PID controller
@@ -51,7 +55,11 @@ void initPID(PIDVal* pid, float kp, float ki, float kd, int16_t i_max);
  * @param scale Factor to help with I/O relationships
  * @return Control signal for a PID controller
  */
-float PIDcontrol(PIDVal* pid, float error, float scale);
+float PIDcontrol(PIDVal *pid, float error, float scale);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* PID_H */
 

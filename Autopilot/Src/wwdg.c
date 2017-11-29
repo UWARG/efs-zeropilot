@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * File Name          : USART.h
+  * File Name          : WWDG.c
   * Description        : This file provides code for the configuration
-  *                      of the USART instances.
+  *                      of the WWDG instances.
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -46,50 +46,56 @@
   *
   ******************************************************************************
   */
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __usart_H
-#define __usart_H
-#ifdef __cplusplus
- extern "C" {
-#endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f7xx_hal.h"
-#include "main.h"
+#include "wwdg.h"
 
-/* USER CODE BEGIN Includes */
-#include "ByteQueue.h"
+/* USER CODE BEGIN 0 */
 
-extern ByteQueue uart1_rx;
-extern ByteQueue uart2_rx;
-extern ByteQueue uart3_rx;
-extern ByteQueue uart4_rx;
-/* USER CODE END Includes */
+/* USER CODE END 0 */
 
-extern UART_HandleTypeDef huart4;
-extern UART_HandleTypeDef huart1;
-extern UART_HandleTypeDef huart2;
-extern UART_HandleTypeDef huart3;
+WWDG_HandleTypeDef hwwdg;
 
-/* USER CODE BEGIN Private defines */
+/* WWDG init function */
+void MX_WWDG_Init(void)
+{
 
-/* USER CODE END Private defines */
+  hwwdg.Instance = WWDG;
+  hwwdg.Init.Prescaler = WWDG_PRESCALER_8;
+  hwwdg.Init.Window = 80;
+  hwwdg.Init.Counter = 127;
+  hwwdg.Init.EWIMode = WWDG_EWI_ENABLE;
+  if (HAL_WWDG_Init(&hwwdg) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
 
-extern void _Error_Handler(char *, int);
-
-void MX_UART4_Init(void);
-void MX_USART1_UART_Init(void);
-void MX_USART2_UART_Init(void);
-void MX_USART3_UART_Init(void);
-
-/* USER CODE BEGIN Prototypes */
-
-/* USER CODE END Prototypes */
-
-#ifdef __cplusplus
 }
-#endif
-#endif /*__ usart_H */
+
+void HAL_WWDG_MspInit(WWDG_HandleTypeDef* wwdgHandle)
+{
+
+  if(wwdgHandle->Instance==WWDG)
+  {
+  /* USER CODE BEGIN WWDG_MspInit 0 */
+
+  /* USER CODE END WWDG_MspInit 0 */
+    /* WWDG clock enable */
+    __HAL_RCC_WWDG_CLK_ENABLE();
+
+    /* WWDG interrupt Init */
+    HAL_NVIC_SetPriority(WWDG_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(WWDG_IRQn);
+  /* USER CODE BEGIN WWDG_MspInit 1 */
+
+  /* USER CODE END WWDG_MspInit 1 */
+  }
+}
+ 
+
+/* USER CODE BEGIN 1 */
+
+/* USER CODE END 1 */
 
 /**
   * @}

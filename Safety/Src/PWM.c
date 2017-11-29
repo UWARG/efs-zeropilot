@@ -9,7 +9,7 @@ typedef struct {
 } PWM_Channel;
 
 static __IO uint16_t ppm_last_capture = 0;
-static __IO uint16_t capture_value[PPM_NUM_CHANNELS] = { 0 };
+static __IO int16_t capture_value[PPM_NUM_CHANNELS] = { 0 };
 static __IO uint8_t ppm_index = 0;
 
 static PWM_Channel PWM_GetChannel(uint8_t channel) {
@@ -70,6 +70,7 @@ static PWM_Channel PWM_GetChannel(uint8_t channel) {
 }
 
 void PWM_Init(void) {
+    HAL_TIM_Base_Start_IT(&htim14);
     HAL_TIM_IC_Start_IT(&htim14, TIM_CHANNEL_1);
 
     for (uint8_t i = 1; i <= PWM_NUM_CHANNELS; ++i) {
@@ -82,15 +83,15 @@ void PWM_Init(void) {
 void PWM_Set(uint8_t channel, int16_t val) {
     if (val < PWM_MIN || val > PWM_MAX) return;
 
-    uint16_t pulse = (uint16_t)(val + PWM_OFFSET);
+    uint16_t pulse = val + PWM_OFFSET;
 
     PWM_Channel pwm = PWM_GetChannel(channel);
     __HAL_TIM_SET_COMPARE(pwm.handle, pwm.channel, pulse);
 }
 
 
-uint16_t PPM_Get(void) {
-    return ppm_last_capture;
+volatile int16_t* PPM_Get(void) {
+    return capture_value;
 }
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
@@ -98,7 +99,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
         uint16_t time_diff = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 
         if (ppm_index != 0) { // the first edge doesn't give us any data
-            capture_value[ppm_index - 1] = time_diff;
+            capture_value[ppm_index - 1] = time_diff - PPM_OFFSET;
         }
         ppm_index = (ppm_index + 1) % (PPM_NUM_CHANNELS + 1); // index should reset, but just in case
         __HAL_TIM_SET_COUNTER(htim, 0);

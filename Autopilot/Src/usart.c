@@ -53,7 +53,10 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN 0 */
-
+ByteQueue uart1_rx;
+ByteQueue uart2_rx;
+ByteQueue uart3_rx;
+ByteQueue uart4_rx;
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart4;

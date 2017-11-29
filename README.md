@@ -8,15 +8,17 @@ This repository contains the code that runs on the autopilot board. For the sche
 
 ## Documentation
 
-Documentation for the ZeroPilot software is available [here](http://docs.uwarg.com/zeropilot).
+Documentation for the ZeroPilot software is available [here](https://uwarg-docs.atlassian.net/wiki/spaces/ZP/overview).
 ZeroPilot uses two STM32 microcontrollers to control a vehicle. The code for these MCUs is built on the STM32 HAL library.
 
 ### Autopilot (STM32F765ZG)
 
 * [HAL Documentation](http://www.st.com/resource/en/user_manual/dm00189702.pdf)
-* [Chip datasheet](http://www.st.com/resource/en/datasheet/stm32f765zg.pdf)
+* [Reference Manual](http://www.st.com/resource/en/reference_manual/dm00224583.pdf)
+* [Chip Datasheet](http://www.st.com/resource/en/datasheet/stm32f765zg.pdf)
 
 ### Safety controller (STM32F030RC)
 
 * [HAL Documentation](http://www.st.com/resource/en/user_manual/dm00122015.pdf)
-* [Chip datasheet](http://www.st.com/resource/en/datasheet/stm32f030rc.pdf)
+* [Reference Manual](http://www.st.com/resource/en/reference_manual/dm00091010.pdf)
+* [Chip Datasheet](http://www.st.com/resource/en/datasheet/stm32f030rc.pdf)

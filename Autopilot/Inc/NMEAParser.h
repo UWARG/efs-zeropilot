@@ -12,6 +12,10 @@
 #ifndef NMEA_PARSER_H
 #define	NMEA_PARSER
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "main.h"
 
 /** NMEA header for a GGA string, the packet that provides positional information */
@@ -29,7 +33,7 @@
  * @return True if the given string is a valid NMEA string that meets the checksum
  * criteria, false otherwise
  */
-bool isValidNMEAString(char* string, uint16_t max_length);
+bool isValidNMEAString(char *string, uint16_t max_length);
 
 /**
  * Parses a GGA string and populates the provided parameters.
@@ -53,7 +57,8 @@ bool isValidNMEAString(char* string, uint16_t max_length);
  * @param fix_status
  * @param num_satellites
  */
-void parseGGA(char* data, long double* latitude, long double* longitude, float* utc_time, int16_t* altitude, uint8_t* fix_status, uint8_t* num_satellites);
+void parseGGA(char *data, long double *latitude, long double *longitude, float *utc_time, int16_t *altitude,
+              uint8_t *fix_status, uint8_t *num_satellites);
 
 
 /**
@@ -69,6 +74,10 @@ void parseGGA(char* data, long double* latitude, long double* longitude, float* 
  * @param speed
  * @param heading
  */
-void parseVTG(char* data, float* speed, int16_t* heading);
+void parseVTG(char *data, float *speed, int16_t *heading);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
