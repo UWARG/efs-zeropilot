@@ -1,6 +1,6 @@
 # ZeroPilot-SW
 
-[![Build Status](https://travis-ci.org/UWARG/ZeroPilot-SW.png?branch=devel)](https://travis-ci.org/UWARG/ZeroPilot-SW)
+[![Build Status](https://travis-ci.org/UWARG/ZeroPilot-SW.svg?branch=devel)](https://travis-ci.org/UWARG/ZeroPilot-SW)
 
 ZeroPilot is the next-generation autopilot currently in development at the Waterloo Aerial Robotics Group. It is powered by a high-performance STM32F7 ARM processor running at 216 MHz, and features two isolated on-board power supplies, 12 PWM outputs, and a seperate safety controller that supports direct manual takeover of the aircraft systems.
 
