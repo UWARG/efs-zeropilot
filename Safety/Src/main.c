@@ -97,7 +97,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_I2C1_Init();
-
+  MX_SPI1_Init();
   MX_TIM1_Init();
   MX_TIM3_Init();
   MX_TIM14_Init();
@@ -106,7 +106,6 @@ int main(void)
   MX_TIM17_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
-    MX_SPI1_Init();
 
   /* USER CODE BEGIN 2 */
   PWM_Init();
@@ -131,11 +130,6 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-    /*if(Spi1Flag == 1){
-      debug("Spi flag set");
-      Spi1Flag = 0;
-    }*/
-
   }
   /* USER CODE END 3 */
 

@@ -1,4 +1,3 @@
-#include "debug.h"
 /**
   ******************************************************************************
   * File Name          : SPI.c
@@ -75,7 +74,7 @@ void MX_SPI1_Init(void)
 
 void HAL_SPI_MspInit(SPI_HandleTypeDef* spiHandle)
 {
-  debug("MspInit");
+
   GPIO_InitTypeDef GPIO_InitStruct;
   if(spiHandle->Instance==SPI1)
   {
