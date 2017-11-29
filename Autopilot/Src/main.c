@@ -62,6 +62,7 @@
 /* USER CODE BEGIN Includes */
 #include "debug.h"
 #include "eeprom.h"
+#include "interchip_comm_A.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/

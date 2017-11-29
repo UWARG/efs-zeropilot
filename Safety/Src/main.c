@@ -125,21 +125,11 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  int16_t *input;
   while (1)
   {
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-    
-    input = PPM_Get();
-
-    for(uint8_t i=0; i<PPM_NUM_CHANNELS; i++){
-      debug("%d: %d", i+1, input[i]);
-    }
-    printf("\r\n");
-
-    HAL_Delay(100);
   }
   /* USER CODE END 3 */
 
