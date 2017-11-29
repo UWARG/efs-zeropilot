@@ -113,7 +113,7 @@ int main(void)
   MX_I2C2_Init();
   MX_I2C4_Init();
   MX_USART2_UART_Init();
-  
+  MX_SPI1_Init();
   MX_ADC3_Init();
   MX_ADC2_Init();
   MX_UART4_Init();
@@ -122,7 +122,6 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM10_Init();
   MX_TIM11_Init();
-  MX_SPI1_Init();
 
   /* USER CODE BEGIN 2 */
   debug("\n\nStarting up...");
@@ -134,10 +133,13 @@ int main(void)
 
 
   EEPROM_Init();
-  
-  interchipInit();
+
+  Interchip_StoA_Packet* dataRX = malloc(sizeof(Interchip_StoA_Packet));
+  Interchip_AtoS_Packet* dataTX = malloc(sizeof(Interchip_AtoS_Packet));
+  interchipInit(dataTX, dataRX);
   
   while(1){
+
     interchipUpdate();
     HAL_Delay(100);
   }
