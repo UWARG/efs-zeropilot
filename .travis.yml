@@ -1,0 +1,22 @@
+# travis build configuration for ZeroPilot-SW
+
+language: cpp
+sudo: false
+
+addons:
+  apt:
+    packages:
+    - gcc-arm-none-eabi
+    - libnewlib-arm-none-eabi
+    - cmake
+
+env:
+  - TARGET=Autopilot
+  # - TARGET=Safety # no CMake support on safety yet
+
+script:
+  - cd $TARGET
+  - mkdir -p build
+  - cd build
+  - cmake ../ -DCMAKE_TOOLCHAIN_FILE=STM32F765xG.cmake -G "Unix Makefiles"
+  - make
