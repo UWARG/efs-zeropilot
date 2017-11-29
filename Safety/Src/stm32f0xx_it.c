@@ -147,7 +147,6 @@ void SPI1_IRQHandler(void)
   /* USER CODE END SPI1_IRQn 0 */
   HAL_SPI_IRQHandler(&hspi1);
   /* USER CODE BEGIN SPI1_IRQn 1 */
-  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
   /* USER CODE END SPI1_IRQn 1 */
 }
 

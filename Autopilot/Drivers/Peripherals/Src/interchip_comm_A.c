@@ -5,11 +5,9 @@
 Interchip_AtoS_Packet *dataTX;
 Interchip_StoA_Packet *dataRX;
 
-HAL_StatusTypeDef transmit_status;
-
 void interchipInit(Interchip_AtoS_Packet* ptrTX, Interchip_StoA_Packet* ptrRX){
     dataTX = ptrTX;
-    dataRX = ptrRX;   
+    dataRX = ptrRX;
 }
 
 HAL_StatusTypeDef interchipUpdate(){
