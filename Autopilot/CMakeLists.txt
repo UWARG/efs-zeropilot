@@ -19,6 +19,7 @@ add_library(FreeRTOS ${FREERTOS_SOURCES})
 
 include_directories(
         Inc
+        ../Common/Inc        
         Drivers/Peripherals/Inc
         Drivers/STM32F7xx_HAL_Driver/Inc
         Drivers/CMSIS/Include
