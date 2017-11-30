@@ -110,13 +110,14 @@ int main(void)
   /* USER CODE BEGIN 2 */
   PWM_Init();
 
-  debug("\n\nStarting up...");
+  debug("\r\n\r\nStarting up...");
   debug("Compiled on %s at %s", __DATE__, __TIME__);
 
   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
   //HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
+  
   Interchip_StoA_Packet* dataTX = malloc(sizeof(Interchip_StoA_Packet));
   Interchip_AtoS_Packet* dataRX = malloc(sizeof(Interchip_AtoS_Packet));
   interchipInit(dataTX, dataRX);
