@@ -16,6 +16,8 @@ void PWM_Init(void);
 
 void PWM_Set(uint8_t channel, int16_t val);
 
+void PWM_SetAll(int16_t *vals);
+
 volatile int16_t* PPM_Get(void);
 
 #endif

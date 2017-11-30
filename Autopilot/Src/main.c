@@ -138,6 +138,7 @@ int main(void)
 
   Interchip_StoA_Packet* dataRX = malloc(sizeof(Interchip_StoA_Packet));
   Interchip_AtoS_Packet* dataTX = malloc(sizeof(Interchip_AtoS_Packet));
+  dataTX->autonomous_level = 0x1;
   interchipInit(dataTX, dataRX);
 
   while(1){

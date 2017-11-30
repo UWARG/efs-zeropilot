@@ -49,6 +49,8 @@
 #include "debug.h"
 #include "PWM.h"
 #include "interchip_comm_S.h"
+#include "safety_control.h"
+#include "buzzer.h"
 
 /* USER CODE END Includes */
 
@@ -106,6 +108,7 @@ int main(void)
   MX_TIM17_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
+  MX_TIM6_Init();
 
   /* USER CODE BEGIN 2 */
   PWM_Init();
@@ -117,11 +120,13 @@ int main(void)
   HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
   //HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
-  
-  Interchip_StoA_Packet* dataTX = malloc(sizeof(Interchip_StoA_Packet));
-  Interchip_AtoS_Packet* dataRX = malloc(sizeof(Interchip_AtoS_Packet));
-  interchipInit(dataTX, dataRX);
 
+  //Buzzer_init();
+  //Buzzer_Set(BUZZER_SHORT_FAST);
+  Safety_Init();
+  Safety_Run();
+  
+  //Buzzer_Set(BUZZER_SHORT_SLOW);
   /* USER CODE END 2 */
 
   /* Infinite loop */
