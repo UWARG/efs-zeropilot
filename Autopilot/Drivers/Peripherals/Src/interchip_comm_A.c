@@ -2,8 +2,8 @@
 #include "debug.h"
 #include "spi.h"
 
-Interchip_AtoS_Packet *dataTX;
-Interchip_StoA_Packet *dataRX;
+static Interchip_AtoS_Packet *dataTX;
+static Interchip_StoA_Packet *dataRX;
 
 void interchipInit(Interchip_AtoS_Packet* ptrTX, Interchip_StoA_Packet* ptrRX){
     dataTX = ptrTX;

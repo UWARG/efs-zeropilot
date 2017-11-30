@@ -4,8 +4,8 @@
 #include "spi.h"
 
 
-Interchip_StoA_Packet* dataTX;
-Interchip_AtoS_Packet* dataRX;
+static Interchip_StoA_Packet* dataTX;
+static Interchip_AtoS_Packet* dataRX;
 
 void interchipInit(Interchip_StoA_Packet* ptrTX, Interchip_AtoS_Packet* ptrRX){
     dataTX = ptrTX;
