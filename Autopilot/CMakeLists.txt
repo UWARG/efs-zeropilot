@@ -11,27 +11,21 @@ add_definitions(
         -DARM_MATH_CM7
 )
 
-file(GLOB_RECURSE HAL_SOURCES "Drivers/STM32F7xx_HAL_Driver/Src/*.c")
-add_library(STM32_HAL ${HAL_SOURCES})
-
-file(GLOB_RECURSE FREERTOS_SOURCES "Middlewares/Third_Party/FreeRTOS/Source/*.c")
-add_library(FreeRTOS ${FREERTOS_SOURCES})
-
 include_directories(
         Inc
         Drivers/Peripherals/Inc
-        Drivers/STM32F7xx_HAL_Driver/Inc
         Drivers/CMSIS/Include
-        Drivers/CMSIS/Device/ST/STM32F7xx/Include
-        Middlewares/Third_Party/FreeRTOS/Source/include
-        Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1
-        Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
+        Drivers/CMSIS/Device/ST/STM32F7xx/Include       
 )
 
 # Add ARM math directory for linker to find
 link_directories(
         Drivers/CMSIS/Lib/GCC
 )
+
+add_subdirectory(Drivers/STM32F7xx_HAL_Driver)
+
+add_subdirectory(Middlewares/Third_Party/FreeRTOS)
 
 file(GLOB_RECURSE C_SOURCES "Src/*.c")
 file(GLOB_RECURSE PERI_SOURCES "Drivers/Peripherals/Src/*.c")
