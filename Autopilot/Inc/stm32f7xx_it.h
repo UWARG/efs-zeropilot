@@ -57,6 +57,7 @@ void SysTick_Handler(void);
 void WWDG_IRQHandler(void);
 void TIM1_UP_TIM10_IRQHandler(void);
 void TIM4_IRQHandler(void);
+void SPI1_IRQHandler(void);
 void I2C1_EV_IRQHandler(void);
 void I2C2_EV_IRQHandler(void);
 void USART1_IRQHandler(void);

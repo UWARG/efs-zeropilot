@@ -45,8 +45,10 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
+#include <stdlib.h>
 #include "debug.h"
 #include "PWM.h"
+#include "Interchip_S.h"
 
 /* USER CODE END Includes */
 
@@ -111,24 +113,24 @@ int main(void)
   debug("\r\n\r\nStarting up...");
   debug("Compiled on %s at %s", __DATE__, __TIME__);
 
-  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-
-  // HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+  //HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
+  
+  Interchip_StoA_Packet* dataTX = malloc(sizeof(Interchip_StoA_Packet));
+  Interchip_AtoS_Packet* dataRX = malloc(sizeof(Interchip_AtoS_Packet));
+  Interchip_Init(dataTX, dataRX);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  int16_t *input;
   while (1)
   {
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-    
-
-    HAL_Delay(100);
-
   }
   /* USER CODE END 3 */
 

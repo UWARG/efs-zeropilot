@@ -13,6 +13,7 @@ add_definitions(
 
 include_directories(
         Inc
+        ../Common/Inc        
         Drivers/Peripherals/Inc
         Drivers/CMSIS/Include
         Drivers/CMSIS/Device/ST/STM32F7xx/Include       
