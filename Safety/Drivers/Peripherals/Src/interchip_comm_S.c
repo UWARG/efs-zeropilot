@@ -18,6 +18,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 {
   //Once packet recieved, listen for next packet
   if(hspi->Instance == SPI1){
+    debug("Test %p", dataRX->autonomous_level);
     HAL_SPI_TransmitReceive_IT(&hspi1,(uint8_t *)dataTX,(uint8_t *)dataRX, sizeof(Interchip_AtoS_Packet)/sizeof(uint16_t));
   }
 

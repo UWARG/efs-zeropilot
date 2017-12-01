@@ -124,7 +124,7 @@ int main(void)
   //Buzzer_init();
   //Buzzer_Set(BUZZER_SHORT_FAST);
   Safety_Init();
-  Safety_Run();
+  //Safety_Run();
   
   //Buzzer_Set(BUZZER_SHORT_SLOW);
   /* USER CODE END 2 */

@@ -37,6 +37,8 @@ void Safety_Run(){
 
         //send to Autopilot
         //TODO: block spi during this?
+        //dataTX->PWM = PPM;
+        dataTX->safety_level = isManual;
 
         //if not manual, change values from input PPM to Autopilot PWM values
         if(!isManual){
