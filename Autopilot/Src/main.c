@@ -62,7 +62,7 @@
 /* USER CODE BEGIN Includes */
 #include "debug.h"
 #include "eeprom.h"
-#include "interchip_comm_A.h"
+#include "Interchip_A.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -142,8 +142,9 @@ int main(void)
 
   while(1){
 
-    interchipUpdate();
-    HAL_Delay(100);
+    Interchip_Update();
+    HAL_Delay(2);
+    debug("PWM[0]: %d", dataRX->PWM[0]);
   }
   /* USER CODE END 2 */
 

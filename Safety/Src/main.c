@@ -48,7 +48,7 @@
 #include <stdlib.h>
 #include "debug.h"
 #include "PWM.h"
-#include "interchip_comm_S.h"
+#include "Interchip_S.h"
 
 /* USER CODE END Includes */
 
@@ -120,7 +120,7 @@ int main(void)
   
   Interchip_StoA_Packet* dataTX = malloc(sizeof(Interchip_StoA_Packet));
   Interchip_AtoS_Packet* dataRX = malloc(sizeof(Interchip_AtoS_Packet));
-  interchipInit(dataTX, dataRX);
+  Interchip_Init(dataTX, dataRX);
 
   /* USER CODE END 2 */
 

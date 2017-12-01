@@ -1,4 +1,4 @@
-#include "interchip_comm_S.h"
+#include "Interchip_S.h"
 #include "debug.h"
 #include <stdio.h>
 #include "spi.h"
@@ -7,7 +7,7 @@
 static Interchip_StoA_Packet* dataTX;
 static Interchip_AtoS_Packet* dataRX;
 
-void interchipInit(Interchip_StoA_Packet* ptrTX, Interchip_AtoS_Packet* ptrRX){
+void Interchip_Init(Interchip_StoA_Packet* ptrTX, Interchip_AtoS_Packet* ptrRX){
     dataTX = ptrTX;
     dataRX = ptrRX;
     //start TxRx
