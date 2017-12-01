@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "safety_control.h"
-#include "interchip_comm_S.h"
+#include "Interchip_S.h"
 
 #include "PWM.h"
 #include "buzzer.h"
@@ -21,7 +21,7 @@ void Safety_Init(){
 
     dataTX = calloc(1,sizeof(Interchip_StoA_Packet));
     dataRX = calloc(1,sizeof(Interchip_AtoS_Packet));
-    interchipInit(dataTX, dataRX);
+    Interchip_Init(dataTX, dataRX);
 
 }
 
@@ -31,15 +31,17 @@ void Safety_Run(){
         for(uint8_t i=0; i<PPM_NUM_CHANNELS; i++){
             PPM[i] = PPM_input[i];
         }
-        
+
 
         uint16_t isManual = Safety_isManual(PPM[SAFETY_CHANNEL]);
 
         //send to Autopilot
         //TODO: block spi during this?
-        //dataTX->PWM = PPM;
+        for(uint8_t i=0; i<PPM_NUM_CHANNELS;i++){
+            dataTX->PWM[i] = PPM[i];
+        }
         dataTX->safety_level = isManual;
-
+        
         //if not manual, change values from input PPM to Autopilot PWM values
         if(!isManual){
             uint8_t i;

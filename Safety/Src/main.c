@@ -45,12 +45,8 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
-#include <stdlib.h>
 #include "debug.h"
-#include "PWM.h"
-#include "interchip_comm_S.h"
 #include "safety_control.h"
-#include "buzzer.h"
 
 /* USER CODE END Includes */
 
@@ -111,7 +107,6 @@ int main(void)
   MX_TIM6_Init();
 
   /* USER CODE BEGIN 2 */
-  PWM_Init();
 
   debug("\r\n\r\nStarting up...");
   debug("Compiled on %s at %s", __DATE__, __TIME__);
@@ -119,20 +114,16 @@ int main(void)
   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
-  //HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
 
-  //Buzzer_init();
-  //Buzzer_Set(BUZZER_SHORT_FAST);
   Safety_Init();
-  //Safety_Run();
-  
-  //Buzzer_Set(BUZZER_SHORT_SLOW);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    Safety_Run();
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */

@@ -62,7 +62,7 @@
 /* USER CODE BEGIN Includes */
 #include "debug.h"
 #include "eeprom.h"
-#include "interchip_comm_A.h"
+#include "Interchip_A.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -139,12 +139,15 @@ int main(void)
   Interchip_StoA_Packet* dataRX = malloc(sizeof(Interchip_StoA_Packet));
   Interchip_AtoS_Packet* dataTX = malloc(sizeof(Interchip_AtoS_Packet));
   dataTX->autonomous_level = 0x1;
+  dataTX->PWM[0] = 50;
   interchipInit(dataTX, dataRX);
 
   while(1){
 
-    interchipUpdate();
+    Interchip_Update();
+    dataTX->PWM[0]++;
     HAL_Delay(100);
+    debug("Manual?: %d", dataRX->PWM[0]);
   }
   /* USER CODE END 2 */
 
