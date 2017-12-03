@@ -2,3 +2,5 @@
 #include "Interchip.h"
 
 void Interchip_Init(Interchip_StoA_Packet*, Interchip_AtoS_Packet*);
+void Interchip_Lock();
+void Interchip_Unlock();

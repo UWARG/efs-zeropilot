@@ -6,6 +6,7 @@
 
 static Interchip_StoA_Packet* dataTX;
 static Interchip_AtoS_Packet* dataRX;
+static uint16_t errorCount=0;
 
 void Interchip_Init(Interchip_StoA_Packet* ptrTX, Interchip_AtoS_Packet* ptrRX){
     dataTX = ptrTX;
@@ -14,17 +15,32 @@ void Interchip_Init(Interchip_StoA_Packet* ptrTX, Interchip_AtoS_Packet* ptrRX){
     HAL_SPI_TransmitReceive_IT(&hspi1,(uint8_t *)dataTX,(uint8_t *)dataRX, sizeof(Interchip_AtoS_Packet)/sizeof(uint16_t));
 }
 
+void Interchip_Lock(){
+  hspi1.Lock = HAL_LOCKED;
+}
+
+void Interchip_Unlock(){
+  hspi1.Lock = HAL_UNLOCKED;
+}
+
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 {
   //Once packet recieved, listen for next packet
-  if(hspi->Instance == SPI1 && hspi->sta){
+  if(hspi->Instance == SPI1){
     HAL_SPI_TransmitReceive_IT(&hspi1,(uint8_t *)dataTX,(uint8_t *)dataRX, sizeof(Interchip_AtoS_Packet)/sizeof(uint16_t));
+    debug("Error count: %d", errorCount);
   }
 }
 
 void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
 {
   if(hspi->Instance == SPI1){
-    HAL_SPI_TransmitReceive_IT(&hspi1,(uint8_t *)dataTX,(uint8_t *)dataRX, sizeof(Interchip_AtoS_Packet)/sizeof(uint16_t));
+    //HAL_SPI_DeInit(hspi);
+    debug("Error %d ", hspi->ErrorCode);
+    HAL_SPI_Abort(hspi);
+    //if(hspi->State == HAL_SPI_STATE_READY){
+      HAL_SPI_TransmitReceive_IT(&hspi1,(uint8_t *)dataTX,(uint8_t *)dataRX, sizeof(Interchip_AtoS_Packet)/sizeof(uint16_t));
+    //}
+    errorCount++;
   }
 }
