@@ -140,10 +140,10 @@ int main(void)
   Interchip_AtoS_Packet* dataTX = calloc(1,sizeof(Interchip_AtoS_Packet));
   dataTX->autonomous_level = 0x1;
   dataTX->PWM[0] = 50;
-  dataTX->PWM[1] = 50;
-  dataTX->PWM[2] = 50;
-  dataTX->PWM[3] = 50;
-  dataTX->PWM[11] = 50;
+  dataTX->PWM[1] = 60;
+  dataTX->PWM[2] = 70;
+  dataTX->PWM[3] = 80;
+  dataTX->PWM[11] = 90;
 
   interchipInit(dataTX, dataRX);
 

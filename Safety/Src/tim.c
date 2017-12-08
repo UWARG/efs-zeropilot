@@ -203,9 +203,9 @@ void MX_TIM6_Init(void)
 {
 
   htim6.Instance = TIM6;
-  htim6.Init.Prescaler = 512;
-  htim6.Init.CounterMode = TIM_COUNTERMODE_DOWN;
-  htim6.Init.Period = 20000000;
+  htim6.Init.Prescaler = 0;
+  htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim6.Init.Period = 0;
   htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
   {
@@ -450,7 +450,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
     __HAL_RCC_TIM6_CLK_ENABLE();
 
     /* TIM6 interrupt Init */
-    HAL_NVIC_SetPriority(TIM6_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM6_IRQn, 2, 0);
     HAL_NVIC_EnableIRQ(TIM6_IRQn);
   /* USER CODE BEGIN TIM6_MspInit 1 */
 
@@ -475,7 +475,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
     HAL_GPIO_Init(PPM_GPIO_Port, &GPIO_InitStruct);
 
     /* TIM14 interrupt Init */
-    HAL_NVIC_SetPriority(TIM14_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM14_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(TIM14_IRQn);
   /* USER CODE BEGIN TIM14_MspInit 1 */
 
