@@ -136,8 +136,8 @@ int main(void)
 
   EEPROM_Init();
 
-  Interchip_StoA_Packet* dataRX = calloc(1,sizeof(Interchip_StoA_Packet));
-  Interchip_AtoS_Packet* dataTX = calloc(1,sizeof(Interchip_AtoS_Packet));
+  Interchip_StoA_Packet* dataRX = malloc(sizeof(Interchip_StoA_Packet));
+  Interchip_AtoS_Packet* dataTX = malloc(sizeof(Interchip_AtoS_Packet));
   dataTX->autonomous_level = 0x1;
   dataTX->PWM[0] = 50;
   dataTX->PWM[1] = 60;
