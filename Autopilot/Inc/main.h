@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * File Name          : main.hpp
+  * File Name          : main.h
   * Description        : This file contains the common defines of the application
   ******************************************************************************
   * This notice applies to any and all portions of this file
@@ -48,8 +48,6 @@
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __MAIN_H
 #define __MAIN_H
-  /* Includes ------------------------------------------------------------------*/
-
 /* Includes ------------------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <math.h>

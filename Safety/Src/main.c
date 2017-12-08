@@ -116,14 +116,13 @@ int main(void)
   HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
 
   Safety_Init();
-
+  Safety_Run();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    Safety_Run();
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */

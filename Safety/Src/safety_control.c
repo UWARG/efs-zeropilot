@@ -39,7 +39,7 @@ void Safety_Run(){
             uint8_t i;
             uint16_t offset =1;
             for(i=0; i<PPM_NUM_CHANNELS;i++){
-                if( (dataRX->autonomous_level & offset) !=0){
+                if( dataRX->autonomous_level & offset ){
                     PPM[i] = dataRX->PWM[i];
                     if(PPM[i]<PWM_MIN) PPM[i] = PWM_MIN;
                     if(PPM[i]>PWM_MAX) PPM[i] = PWM_MAX;
