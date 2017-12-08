@@ -1,11 +1,12 @@
 #include "safety_control.h"
+#include <stdbool.h>
 #include "debug.h"
 
 static Interchip_StoA_Packet* dataTX;
 static Interchip_AtoS_Packet* dataRX;
 static int16_t PPM[PPM_NUM_CHANNELS];
 
-uint16_t Safety_isManual(int16_t PWM_Value);
+bool Safety_isManual(int16_t PWM_Value);
 
 void Safety_Init(){
 
@@ -26,7 +27,7 @@ void Safety_Run(){
         }
 
 
-        uint16_t isManual = Safety_isManual(PPM[SAFETY_CHANNEL]);
+        bool isManual = Safety_isManual(PPM[SAFETY_CHANNEL]);
 
         //send to Autopilot
         for(uint8_t i=0; i<PPM_NUM_CHANNELS;i++){
@@ -51,6 +52,6 @@ void Safety_Run(){
     }
 }
 
-uint16_t Safety_isManual(int16_t PWM_Value){
+bool Safety_isManual(int16_t PWM_Value){
     return (PWM_Value>-1500 && PWM_Value>-1000);
 }
