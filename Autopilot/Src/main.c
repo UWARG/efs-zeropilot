@@ -150,7 +150,7 @@ int main(void)
   while(1){
 
     Interchip_Update();
-    HAL_Delay(50);
+    HAL_Delay(1);
     dataTX->PWM[0]+=5;
     if(dataTX->PWM[0]>3000){
       dataTX->PWM[0] = -3000;

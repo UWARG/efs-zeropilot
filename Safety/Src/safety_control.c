@@ -1,17 +1,9 @@
-#include <stdlib.h>
 #include "safety_control.h"
-#include "Interchip_S.h"
-
-#include "PWM.h"
-#include "spi.h"
-#include "buzzer.h"
 #include "debug.h"
-
-#define SAFETY_CHANNEL 4
 
 static Interchip_StoA_Packet* dataTX;
 static Interchip_AtoS_Packet* dataRX;
-static int16_t PPM[12];
+static int16_t PPM[PPM_NUM_CHANNELS];
 
 uint16_t Safety_isManual(int16_t PWM_Value);
 
@@ -61,5 +53,5 @@ void Safety_Run(){
 }
 
 uint16_t Safety_isManual(int16_t PWM_Value){
-    return PWM_Value>0; //TODO improve
+    return (PWM_Value>-1500 && PWM_Value>-1000);
 }
