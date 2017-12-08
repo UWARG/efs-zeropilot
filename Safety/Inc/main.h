@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * File Name          : main.hpp
+  * File Name          : main.h
   * Description        : This file contains the common defines of the application
   ******************************************************************************
   ** This notice applies to any and all portions of this file
