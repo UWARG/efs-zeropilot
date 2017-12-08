@@ -10,7 +10,6 @@ uint16_t Safety_isManual(int16_t PWM_Value);
 void Safety_Init(){
 
     PWM_Init();
-    //Buzzer_init();
 
     dataTX = malloc(sizeof(Interchip_StoA_Packet));
     dataRX = malloc(sizeof(Interchip_AtoS_Packet));
