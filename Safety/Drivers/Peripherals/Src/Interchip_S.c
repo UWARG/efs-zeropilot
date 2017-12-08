@@ -2,7 +2,6 @@
 #include "debug.h"
 #include <stdio.h>
 #include "spi.h"
-#include <stdlib.h>
 
 
 static Interchip_StoA_Packet* dataTX;
