@@ -32,19 +32,27 @@ file(GLOB_RECURSE C_SOURCES "Src/*.c")
 file(GLOB_RECURSE CXX_SOURCES "Src/*.cpp")
 file(GLOB_RECURSE USER_INC "Src/*.h")
 
-add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${USER_INC} startup_stm32f765xx.s)
+add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${USER_INC} Dev/startup_stm32f765xx.s)
 
 target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS arm_cortexM7lfdp_math)
 
 # Add project-specific linker flags (.ld script, .map file)
-set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F765ZGTx_FLASH.ld)
+set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/Dev/STM32F765ZGTx_FLASH.ld)
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${LINKER_SCRIPT} -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map,--cref")
 
 set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.bin)
 
 # objcopy the .elf file to .bin file for programming
 add_custom_target("${PROJECT_NAME}.bin" ALL
-        COMMAND ${CMAKE_OBJCOPY} -Obinary "$<TARGET_FILE:${ELF_NAME}>" "${BIN_FILE}"
+        COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${ELF_NAME}> ${BIN_FILE}
+        DEPENDS ${ELF_NAME}
+)
+
+# Print size information after compiling
+add_custom_command(TARGET ${ELF_NAME} 
+        POST_BUILD
+        COMMENT "Binary size information:"
+        COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${ELF_NAME}>
 )
 
 set(INSTALL_CMD "ST-LINK_CLI")
