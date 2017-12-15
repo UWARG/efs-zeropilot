@@ -27,5 +27,5 @@ script:
   - cd $TARGET
   - mkdir -p build
   - cd build
-  - cmake ../ -DCMAKE_TOOLCHAIN_FILE=STM32F765xG.cmake -G "Unix Makefiles"
+  - cmake ../ -DCMAKE_TOOLCHAIN_FILE=Dev/STM32F765xG.cmake -G "Unix Makefiles"
   - make
