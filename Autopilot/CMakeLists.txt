@@ -12,6 +12,7 @@ add_definitions(
 )
 
 include_directories(
+        Src
         ../Common       
         Drivers/CMSIS/Include
         Drivers/CMSIS/Device/ST/STM32F7xx/Include       
@@ -26,6 +27,7 @@ link_directories(
 add_subdirectory(Drivers/STM32F7xx_HAL_Driver)
 add_subdirectory(Middlewares/Third_Party/FreeRTOS)
 
+# Add files for compilation/project management
 file(GLOB_RECURSE C_SOURCES "Src/*.c")
 file(GLOB_RECURSE CXX_SOURCES "Src/*.cpp")
 file(GLOB_RECURSE USER_INC "Src/*.h")
