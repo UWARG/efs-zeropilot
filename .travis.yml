@@ -3,6 +3,10 @@
 language: cpp
 sudo: false
 
+cache:
+  directories:
+    - $HOME/gcc-arm-none-eabi-6-2017-q2-update
+
 addons:
   apt:
     packages:
