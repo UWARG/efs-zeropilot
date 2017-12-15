@@ -138,13 +138,24 @@ int main(void)
 
   Interchip_StoA_Packet* dataRX = malloc(sizeof(Interchip_StoA_Packet));
   Interchip_AtoS_Packet* dataTX = malloc(sizeof(Interchip_AtoS_Packet));
+  dataTX->autonomous_level = 0x1;
+  dataTX->PWM[0] = 50;
+  dataTX->PWM[1] = 60;
+  dataTX->PWM[2] = 70;
+  dataTX->PWM[3] = 80;
+  dataTX->PWM[11] = 90;
+
   interchipInit(dataTX, dataRX);
 
   while(1){
 
     Interchip_Update();
-    HAL_Delay(2);
-    debug("PWM[0]: %d", dataRX->PWM[0]);
+    HAL_Delay(1);
+    dataTX->PWM[0]+=5;
+    if(dataTX->PWM[0]>3000){
+      dataTX->PWM[0] = -3000;
+    }
+    debug("Manual?: %d", dataTX->PWM[0]);
   }
   /* USER CODE END 2 */
 

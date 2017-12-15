@@ -89,6 +89,12 @@ void PWM_Set(uint8_t channel, int16_t val) {
     __HAL_TIM_SET_COMPARE(pwm.handle, pwm.channel, pulse);
 }
 
+void PWM_SetAll(int16_t *vals) {
+    for(uint8_t i=0; i<PWM_NUM_CHANNELS; i++){
+        PWM_Set(i+1, vals[i]);
+    }
+}
+
 
 volatile int16_t* PPM_Get(void) {
     return capture_value;
@@ -99,9 +105,10 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
         uint16_t time_diff = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 
         if (ppm_index != 0) { // the first edge doesn't give us any data
-            capture_value[ppm_index - 1] = time_diff - PPM_OFFSET;
-        }
-        ppm_index = (ppm_index + 1) % (PPM_NUM_CHANNELS + 1); // index should reset, but just in case
+            capture_value[ppm_index - 1] = (time_diff - PPM_OFFSET) / 2.5; //Divide by 5 to keep PPM and PWM at same scale
+            if(capture_value[ppm_index - 1]<PWM_MIN) capture_value[ppm_index - 1] = PWM_MIN;
+            if(capture_value[ppm_index - 1]>PWM_MAX) capture_value[ppm_index - 1] = PWM_MAX;
+        }        ppm_index = (ppm_index + 1) % (PPM_NUM_CHANNELS + 1); // index should reset, but just in case
         __HAL_TIM_SET_COUNTER(htim, 0);
     }
 }

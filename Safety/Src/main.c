@@ -35,6 +35,7 @@
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f0xx_hal.h"
@@ -45,10 +46,8 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
-#include <stdlib.h>
 #include "debug.h"
-#include "PWM.h"
-#include "Interchip_S.h"
+#include "safety_control.h"
 
 /* USER CODE END Includes */
 
@@ -108,7 +107,6 @@ int main(void)
   MX_USART2_UART_Init();
 
   /* USER CODE BEGIN 2 */
-  PWM_Init();
 
   debug("\r\n\r\nStarting up...");
   debug("Compiled on %s at %s", __DATE__, __TIME__);
@@ -116,12 +114,9 @@ int main(void)
   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
-  //HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
-  
-  Interchip_StoA_Packet* dataTX = malloc(sizeof(Interchip_StoA_Packet));
-  Interchip_AtoS_Packet* dataRX = malloc(sizeof(Interchip_AtoS_Packet));
-  Interchip_Init(dataTX, dataRX);
 
+  Safety_Init();
+  Safety_Run();
   /* USER CODE END 2 */
 
   /* Infinite loop */
