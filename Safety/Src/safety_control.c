@@ -1,6 +1,7 @@
 #include "safety_control.h"
 #include <stdbool.h>
 #include "debug.h"
+#include "stm32f0xx_hal_iwdg.h"
 
 static Interchip_StoA_Packet* dataTX;
 static Interchip_AtoS_Packet* dataRX;
@@ -20,6 +21,7 @@ void Safety_Init(){
 
 void Safety_Run(){
     while(1){
+        HAL_IWDG_Refresh();
 
         volatile int16_t *PPM_input = PPM_Get();
         for(uint8_t i=0; i<PPM_NUM_CHANNELS; i++){
