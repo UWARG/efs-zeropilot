@@ -1,7 +1,6 @@
 #include "Interchip_A.h"
 #include "debug.h"
 #include "spi.h"
-#include "freertos.h"
 
 static Interchip_AtoS_Packet *dataTX;
 static Interchip_StoA_Packet *dataRX;
