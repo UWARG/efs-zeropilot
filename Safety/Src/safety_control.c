@@ -18,13 +18,13 @@ void Safety_Init() {
 }
 
 void Safety_Run(){
-    while(1){
-         HAL_IWDG_Refresh(&hiwdg);
+  while(1){
+    HAL_IWDG_Refresh(&hiwdg);
 
-        volatile int16_t *PPM_input = PPM_Get();
-        for(uint8_t i=0; i<PPM_NUM_CHANNELS; i++){
-            PPM[i] = PPM_input[i];
-        }
+    volatile int16_t *PPM_input = PPM_Get();
+    for(uint8_t i=0; i<PPM_NUM_CHANNELS; i++){
+      PPM[i] = PPM_input[i];
+    }
 
     bool isManual = Safety_isManual(PPM[SAFETY_CHANNEL]);
 
