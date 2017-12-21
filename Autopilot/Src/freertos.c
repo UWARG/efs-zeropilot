@@ -65,7 +65,7 @@ osThreadId InterchipHandle;
 
 /* Function prototypes -------------------------------------------------------*/
 void StartDefaultTask(void const * argument);
-void Interchip_Run(void const * argument);
+extern void Interchip_Run(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -119,21 +119,8 @@ void StartDefaultTask(void const * argument)
   /* USER CODE BEGIN StartDefaultTask */
   // this function will (eventually) start all the threads for the autopilot
 
-  
   vTaskDelete(defaultTaskHandle); // delete task when finished
   /* USER CODE END StartDefaultTask */
-}
-
-/* Interchip_Run function */
-__weak void Interchip_Run(void const * argument)
-{
-  /* USER CODE BEGIN Interchip_Run */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END Interchip_Run */
 }
 
 /* USER CODE BEGIN Application */
