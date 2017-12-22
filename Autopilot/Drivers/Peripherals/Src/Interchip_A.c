@@ -6,7 +6,7 @@
 static Interchip_AtoS_Packet *dataTX;
 static Interchip_StoA_Packet *dataRX;
 
-void Interchip_Run() {
+void Interchip_Run(void const * argument) {
   dataRX = malloc(sizeof(Interchip_StoA_Packet));
   dataTX = malloc(sizeof(Interchip_AtoS_Packet));
 
