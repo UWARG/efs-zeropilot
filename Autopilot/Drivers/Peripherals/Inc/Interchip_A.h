@@ -3,5 +3,7 @@
 
 #define INTERCHIP_TRANSMIT_DELAY 5
 
-Interchip_StoA_Packet Interchip_GetData();
-void Interchip_SetData(Interchip_AtoS_Packet data);
+int16_t *Interchip_GetPWM();
+void Interchip_SetPWM(int16_t *data);
+uint16_t Interchip_GetSafetyLevel();
+void Interchip_SetAutonomousLevel(uint16_t data);

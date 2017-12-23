@@ -1,4 +1,5 @@
 #include "PWM.h"
+#include "Common.h"
 #include "debug.h"
 
 #define PWM_OFFSET (4800)
