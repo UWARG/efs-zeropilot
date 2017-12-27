@@ -50,7 +50,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "cmsis_os.h"
-#include "Interchip_A.h"
 
 /* USER CODE BEGIN Includes */     
 #include "debug.h"
@@ -68,7 +67,7 @@ osThreadId AttitudeHandle;
 /* Function prototypes -------------------------------------------------------*/
 void StartDefaultTask(void const * argument);
 extern void Interchip_Run(void const * argument);
-void Attitude_Run(void const * argument);
+extern void Attitude_Run(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -128,18 +127,6 @@ void StartDefaultTask(void const * argument)
 
   vTaskDelete(defaultTaskHandle); // delete task when finished
   /* USER CODE END StartDefaultTask */
-}
-
-/* Attitude_Run function */
-void Attitude_Run(void const * argument)
-{
-  /* USER CODE BEGIN Attitude_Run */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END Attitude_Run */
 }
 
 /* USER CODE BEGIN Application */
