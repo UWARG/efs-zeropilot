@@ -42,14 +42,14 @@ typedef enum {
 //Misc
 #define COMMAND_HISTORY_SIZE 4
 
-int getRollAngleSetpoint();
-int getPitchAngleSetpoint();
-int getPitchRateSetpoint();
-int getRollRateSetpoint();
-int getYawRateSetpoint();
-int getThrottleSetpoint();
-int getAltitudeSetpoint();
-int getHeadingSetpoint();
+int16_t getRollAngleSetpoint();
+int16_t getPitchAngleSetpoint();
+int16_t getPitchRateSetpoint();
+int16_t getRollRateSetpoint();
+int16_t getYawRateSetpoint();
+int16_t getThrottleSetpoint();
+int16_t getAltitudeSetpoint();
+int16_t getHeadingSetpoint();
 
 void setPitchAngleSetpoint(int16_t setpoint);
 void setRollAngleSetpoint(int16_t setpoint);
@@ -60,14 +60,14 @@ void setThrottleSetpoint(int16_t setpoint);
 void setAltitudeSetpoint(int16_t setpoint);
 void setHeadingSetpoint(int16_t setpoint);
 
-int getPitchAngleInput(char source);
-int getRollAngleInput(char source);
-int getPitchRateInput(char source);
-int getRollRateInput(char source);
-int getYawRateInput(char source);
-int getThrottleInput(char source);
-int getAltitudeInput(char source);
-int getHeadingInput(char source);
-int getFlapInput(char source);
+int16_t getPitchAngleInput(uint8_t source);
+int16_t getRollAngleInput(uint8_t source);
+int16_t getPitchRateInput(uint8_t source);
+int16_t getRollRateInput(uint8_t source);
+int16_t getYawRateInput(uint8_t source);
+int16_t getThrottleInput(uint8_t source);
+int16_t getAltitudeInput(uint8_t source);
+int16_t getHeadingInput(uint8_t source);
+int16_t getFlapInput(uint8_t source);
 
 uint8_t getControlValue(CtrlType type);

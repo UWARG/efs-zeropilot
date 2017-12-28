@@ -8,8 +8,8 @@
 void initialization();
 void armVehicle();
 void dearmVehicle();
-void inputMixing(int* channelIn, int* rollRate, int* pitchRate, int* throttle, int* yawRate);
-void outputMixing(int* channelOut, int* control_Roll, int* control_Pitch, int* control_Throttle, int* control_Yaw);
+void inputMixing(int16_t* channelIn, int16_t* rollRate, int16_t* pitchRate, int16_t* throttle, int16_t* yawRate);
+void outputMixing(int16_t* channelOut, int16_t* control_Roll, int16_t* control_Pitch, int16_t* control_Throttle, int16_t* control_Yaw);
 void checkLimits(int16_t* channelOut);
 void highLevelControl();
 void lowLevelControl();

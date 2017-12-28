@@ -12,22 +12,23 @@
 #include "PID.h"
 #include "OrientationControl.h"
 #include "Sensors.h"
+#include "Interchip_A.h"
 
 #if VEHICLE_TYPE == FIXED_WING
 
 #define AIRSPEED 0
 
 static int16_t outputSignal[PWM_NUM_CHANNELS];
-static int control_Roll, control_Pitch, control_Yaw, control_Throttle;
+static int16_t control_Roll, control_Pitch, control_Yaw, control_Throttle;
 
-int input_RC_Flap;
-int input_GS_Flap;
+int16_t input_RC_Flap;
+int16_t input_GS_Flap;
 
 float adverse_yaw_mix = 0.5; // Roll rate -> yaw rate scaling (to counter adverse yaw)
 float roll_turn_mix = 1.0; // Roll angle -> pitch rate scaling (for banked turns) 
 
 void initialization(){
-    /*int channel;
+    /*int16_t channel;
     for (channel = 0; channel < NUM_CHANNELS; channel++) {
         outputSignal[channel] = 0;
     }
@@ -52,7 +53,7 @@ void armVehicle(){
 }
 
 void dearmVehicle(){
-    /*int i;
+    /*int16_t i;
     for (i = 1; i <= NUM_CHANNELS; i++){
         setPWM(i, MIN_PWM);
     }
@@ -64,7 +65,7 @@ void dearmVehicle(){
     setProgramStatus(MAIN_EXECUTION);*/
 }
 
-void inputMixing(int* channelIn, int* rollRate, int* pitchRate, int* throttle, int* yawRate){
+void inputMixing(int16_t* channelIn, int16_t* rollRate, int16_t* pitchRate, int16_t* throttle, int16_t* yawRate){
     if (getControlValue(THROTTLE_CONTROL_SOURCE) == RC_SOURCE) {
         *throttle = channelIn[THROTTLE_IN_CHANNEL - 1];
     }
@@ -112,7 +113,7 @@ void inputMixing(int* channelIn, int* rollRate, int* pitchRate, int* throttle, i
  * up for standard controller layout (down+right is minimum values on sticks).
  */
 
-void outputMixing(int* channelOut, int* control_Roll, int* control_Pitch, int* control_Throttle, int* control_Yaw){
+void outputMixing(int16_t* channelOut, int16_t* control_Roll, int16_t* control_Pitch, int16_t* control_Throttle, int16_t* control_Yaw){
     *control_Yaw += *control_Roll * adverse_yaw_mix; // mix roll rate into rudder to counter adverse yaw
 
     //code for different tail configurations
@@ -201,7 +202,7 @@ void lowLevelControl(){
     //Error Checking
     checkLimits(outputSignal);
     //Then Output
-
+    Interchip_SetPWM(outputSignal);
     /*if (getProgramStatus() != KILL_MODE) {
         setAllPWM(outputSignal);
     } else{ //if in kill mode, full deflection of all control surfaces

@@ -1,7 +1,8 @@
-#include "Common.h"
-#include "cmsis_os.h"
-#include "Interchip_A.h"
 #include "Attitude.h"
+
+#include "cmsis_os.h"
+
+#include "Common.h"
 #include "OrientationControl.h"
 #include "Spike.h"
 
@@ -21,85 +22,81 @@ static const uint16_t ctrl_mask[16] = {
 };
 
 // Setpoints
-int sp_Throttle = PWM_MIN;
+int16_t sp_Throttle = PWM_MIN;
 
-int sp_RollRate = 0; // Degrees per second
-int sp_PitchRate = 0;
-int sp_YawRate = 0;
+int16_t sp_RollRate = 0; // Degrees per second
+int16_t sp_PitchRate = 0;
+int16_t sp_YawRate = 0;
 
-int sp_RollAngle = 0; // degrees
-int sp_PitchAngle = 0;
+int16_t sp_RollAngle = 0; // degrees
+int16_t sp_PitchAngle = 0;
 
-int sp_Heading = 0;
-int sp_Altitude = 0;
+int16_t sp_Heading = 0;
+int16_t sp_Altitude = 0;
 float sp_GroundSpeed = 0;
 
 //Ground Station Input Signals
-int input_GS_Roll = 0;
-int input_GS_Pitch = 0;
-int input_GS_Throttle = 0;
-int input_GS_Yaw = 0;
-int input_GS_RollRate = 0;
-int input_GS_PitchRate = 0;
-int input_GS_YawRate = 0;
-int input_GS_Altitude = 0;
-int input_GS_Heading = 0;
+int16_t input_GS_Roll = 0;
+int16_t input_GS_Pitch = 0;
+int16_t input_GS_Throttle = 0;
+int16_t input_GS_Yaw = 0;
+int16_t input_GS_RollRate = 0;
+int16_t input_GS_PitchRate = 0;
+int16_t input_GS_YawRate = 0;
+int16_t input_GS_Altitude = 0;
+int16_t input_GS_Heading = 0;
 
-int input_AP_Altitude = 0;
-int input_AP_Heading = 0;
+int16_t input_AP_Altitude = 0;
+int16_t input_AP_Heading = 0;
 
 
-extern int input_RC_Flap; // Flaps need to finish being refactored.
-extern int input_GS_Flap;
+extern int16_t input_RC_Flap; // Flaps need to finish being refactored.
+extern int16_t input_GS_Flap;
 
 //RC Input Signals (Input Capture Values)
-int input_RC_Throttle = PWM_MIN;
-int input_RC_RollRate = 0;
-int input_RC_PitchRate = 0;
-int input_RC_YawRate = 0;
-int input_RC_Aux1 = 0; //0=Roll, 1= Pitch, 2=Yaw
-int input_RC_Aux2 = 0; //0 = Saved Value, 1 = Edit Mode
-int input_RC_Switch1 = 0;
+int16_t input_RC_Throttle = PWM_MIN;
+int16_t input_RC_RollRate = 0;
+int16_t input_RC_PitchRate = 0;
+int16_t input_RC_YawRate = 0;
+int16_t input_RC_Aux1 = 0; //0=Roll, 1= Pitch, 2=Yaw
+int16_t input_RC_Aux2 = 0; //0 = Saved Value, 1 = Edit Mode
+int16_t input_RC_Switch1 = 0;
 
 
-int controlLevel = 0;
+int16_t controlLevel = 0;
 
 void Attitude_Run(void const * argument){
   //Init
-  int16_t PWM[PWM_NUM_CHANNELS] = {};
 
   while(1){
     highLevelControl();
     lowLevelControl();
-
-    //Send PWM data
-    Interchip_SetPWM(PWM);
     osDelay(1); //TODO set delay properly
   }
 }
 
-int getRollAngleSetpoint(){
+int16_t getRollAngleSetpoint(){
     return sp_RollAngle;
 }
-int getPitchAngleSetpoint(){
+int16_t getPitchAngleSetpoint(){
     return sp_PitchAngle;
 }
-int getPitchRateSetpoint(){
+int16_t getPitchRateSetpoint(){
     return sp_PitchRate;
 }
-int getRollRateSetpoint(){
+int16_t getRollRateSetpoint(){
     return sp_RollRate;
 }
-int getYawRateSetpoint(){
+int16_t getYawRateSetpoint(){
     return sp_YawRate;
 }
-int getThrottleSetpoint(){
+int16_t getThrottleSetpoint(){
     return sp_Throttle;
 }
-int getAltitudeSetpoint(){
+int16_t getAltitudeSetpoint(){
     return sp_Altitude;
 }
-int getHeadingSetpoint(){
+int16_t getHeadingSetpoint(){
     return sp_Heading;
 }
 
@@ -133,9 +130,9 @@ void setHeadingSetpoint(int16_t setpoint){
   sp_Heading = setpoint;
 }
 
-int getPitchAngleInput(char source){
+int16_t getPitchAngleInput(uint8_t source){
     if (source == RC_SOURCE){
-        return (int)(input_RC_PitchRate / (HALF_PWM_RANGE / MAX_PITCH_ANGLE));
+        return (int16_t)(input_RC_PitchRate / (HALF_PWM_RANGE / MAX_PITCH_ANGLE));
     }
     else if (source == GS_SOURCE){
         return input_GS_Pitch;
@@ -143,9 +140,9 @@ int getPitchAngleInput(char source){
     else
         return 0;
 }
-int getPitchRateInput(char source){
+int16_t getPitchRateInput(uint8_t source){
     if (source == RC_SOURCE){
-        return (int)(input_RC_PitchRate / (HALF_PWM_RANGE / MAX_PITCH_RATE));
+        return (int16_t)(input_RC_PitchRate / (HALF_PWM_RANGE / MAX_PITCH_RATE));
     }
     else if (source == GS_SOURCE){
         return input_GS_PitchRate;
@@ -153,9 +150,9 @@ int getPitchRateInput(char source){
     else
         return 0;
 }
-int getRollAngleInput(char source){
+int16_t getRollAngleInput(uint8_t source){
     if (source == RC_SOURCE){
-        return (int)(input_RC_RollRate / (HALF_PWM_RANGE / MAX_ROLL_ANGLE));
+        return (int16_t)(input_RC_RollRate / (HALF_PWM_RANGE / MAX_ROLL_ANGLE));
     }
     else if (source == GS_SOURCE){
         return input_GS_Roll;
@@ -164,9 +161,9 @@ int getRollAngleInput(char source){
         return 0;
     }
 }
-int getRollRateInput(char source){
+int16_t getRollRateInput(uint8_t source){
     if (source == RC_SOURCE){
-        return (int)(input_RC_RollRate / (HALF_PWM_RANGE / MAX_ROLL_RATE));
+        return (int16_t)(input_RC_RollRate / (HALF_PWM_RANGE / MAX_ROLL_RATE));
     }
     else if (source == GS_SOURCE){
         return input_GS_RollRate;
@@ -175,9 +172,9 @@ int getRollRateInput(char source){
         return 0;
 }
 
-int getYawRateInput(char source){
+int16_t getYawRateInput(uint8_t source){
     if (source == RC_SOURCE){
-        return (int)(input_RC_YawRate / (HALF_PWM_RANGE / MAX_YAW_RATE));
+        return (int16_t)(input_RC_YawRate / (HALF_PWM_RANGE / MAX_YAW_RATE));
     }
     else if (source == GS_SOURCE){
         return input_GS_YawRate;
@@ -185,7 +182,7 @@ int getYawRateInput(char source){
     else
         return 0;
 }
-int getThrottleInput(char source){
+int16_t getThrottleInput(uint8_t source){
     if (source == RC_SOURCE){
         return input_RC_Throttle;
     }
@@ -200,7 +197,7 @@ int getThrottleInput(char source){
         return 0;
 }
 
-int getFlapInput(char source){
+int16_t getFlapInput(uint8_t source){
     if (source == RC_SOURCE){
         return input_RC_Flap;
     }
@@ -215,7 +212,7 @@ int getFlapInput(char source){
         return 0;
 }
 
-int getAltitudeInput(char source){
+int16_t getAltitudeInput(uint8_t source){
     if (source == ALTITUDE_GS_SOURCE){
         return input_GS_Altitude;
     }
@@ -226,7 +223,7 @@ int getAltitudeInput(char source){
         return 0;
 }
 
-int getHeadingInput(char source){
+int16_t getHeadingInput(uint8_t source){
     if (source == HEADING_GS_SOURCE){
         return input_GS_Heading;
     }
