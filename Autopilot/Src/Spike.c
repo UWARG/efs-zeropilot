@@ -6,19 +6,18 @@
  *   https://raw.githubusercontent.com/UWARG/PICpilot/master/LICENCE
  */
 
-#include "PWM.h"
-#include "AttitudeManager.h"
-#include "FixedWing.h"
-#include "ProgramStatus.h"
-#include "StatusManager.h"
-#include "../Common/Interfaces/InterchipDMA.h"
-#include "../Common/Utilities/Logger.h"
+#include "Spike.h"
+#include "Attitude.h"
+#include "Common.h"
+#include "PID.h"
+#include "OrientationControl.h"
+#include "Sensors.h"
 
 #if VEHICLE_TYPE == FIXED_WING
 
 #define AIRSPEED 0
 
-static int outputSignal[NUM_CHANNELS];
+static int16_t outputSignal[PWM_NUM_CHANNELS];
 static int control_Roll, control_Pitch, control_Yaw, control_Throttle;
 
 int input_RC_Flap;
@@ -28,9 +27,7 @@ float adverse_yaw_mix = 0.5; // Roll rate -> yaw rate scaling (to counter advers
 float roll_turn_mix = 1.0; // Roll angle -> pitch rate scaling (for banked turns) 
 
 void initialization(){
-    setPWM(THROTTLE_OUT_CHANNEL, MIN_PWM);
-
-    int channel;
+    /*int channel;
     for (channel = 0; channel < NUM_CHANNELS; channel++) {
         outputSignal[channel] = 0;
     }
@@ -38,11 +35,11 @@ void initialization(){
 
     while (getProgramStatus() == UNARMED){
         StateMachine(STATEMACHINE_IDLE);
-    }
+    }*/
 }
 
 void armVehicle(){
-    setProgramStatus(ARMING);
+    /*setProgramStatus(ARMING);
     
     resetHeartbeatTimer();
 
@@ -50,12 +47,12 @@ void armVehicle(){
     setPWM(ROLL_OUT_CHANNEL, 0);
     setPWM(L_TAIL_OUT_CHANNEL, 0);
     setPWM(R_TAIL_OUT_CHANNEL, 0);
-    setPWM(FLAP_OUT_CHANNEL, MIN_PWM);
+    setPWM(FLAP_OUT_CHANNEL, MIN_PWM);*/
 
 }
 
 void dearmVehicle(){
-    int i;
+    /*int i;
     for (i = 1; i <= NUM_CHANNELS; i++){
         setPWM(i, MIN_PWM);
     }
@@ -64,7 +61,7 @@ void dearmVehicle(){
     while (getProgramStatus() == UNARMED){
         StateMachine(STATEMACHINE_IDLE);
     }
-    setProgramStatus(MAIN_EXECUTION);
+    setProgramStatus(MAIN_EXECUTION);*/
 }
 
 void inputMixing(int* channelIn, int* rollRate, int* pitchRate, int* throttle, int* yawRate){
@@ -135,8 +132,8 @@ void outputMixing(int* channelOut, int* control_Roll, int* control_Pitch, int* c
     channelOut[THROTTLE_OUT_CHANNEL - 1] = (*control_Throttle);
 }
 
-void checkLimits(int* channelOut){
-    constrain(&(channelOut[THROTTLE_OUT_CHANNEL - 1]), MIN_PWM, MAX_PWM);
+void checkLimits(int16_t* channelOut){
+    constrain(&(channelOut[THROTTLE_OUT_CHANNEL - 1]), PWM_MIN, PWM_MAX);
 
     constrain(&(channelOut[ROLL_OUT_CHANNEL - 1]), MIN_ROLL_PWM, MAX_ROLL_PWM);
 
@@ -144,16 +141,16 @@ void checkLimits(int* channelOut){
 
     constrain(&(channelOut[R_TAIL_OUT_CHANNEL - 1]), MIN_R_TAIL_PWM, MAX_R_TAIL_PWM);
 
-    constrain(&(channelOut[FLAP_OUT_CHANNEL - 1]), MIN_PWM, MAX_PWM);
+    constrain(&(channelOut[FLAP_OUT_CHANNEL - 1]), PWM_MIN, PWM_MAX);
 }
 
 void highLevelControl(){
 
     if (getControlValue(ALTITUDE_CONTROL) == CONTROL_ON) {
         setAltitudeSetpoint(getAltitudeInput(getControlValue(ALTITUDE_CONTROL_SOURCE)));
-        setPitchAngleSetpoint(PIDcontrol(getPID(ALTITUDE), getAltitudeSetpoint() - getAltitude(), 1));
+        setPitchAngleSetpoint(PIDcontrol(getPID(ALTITUDE), getAltitudeSetpoint() - Sensors_getAltitude(), 1));
 #if !AIRSPEED
-        setThrottleSetpoint(PIDcontrol(getPID(ALTITUDE), getAltitudeSetpoint() - getAltitude(), HALF_PWM_RANGE / 2) + getThrottleSetpoint());
+        setThrottleSetpoint(PIDcontrol(getPID(ALTITUDE), getAltitudeSetpoint() - Sensors_getAltitude(), HALF_PWM_RANGE / 2) + getThrottleSetpoint());
 #endif
     } else {
         setPitchAngleSetpoint(getPitchAngleInput(getControlValue(PITCH_CONTROL_SOURCE)));
@@ -170,7 +167,7 @@ void highLevelControl(){
 
     if (getControlValue(HEADING_CONTROL) == CONTROL_ON) {
         setHeadingSetpoint(getHeadingInput(getControlValue(HEADING_CONTROL_SOURCE)));
-        setRollAngleSetpoint(PIDcontrol(getPID(HEADING), wrap_180(getHeadingSetpoint() - getHeading()), 1));
+        setRollAngleSetpoint(PIDcontrol(getPID(HEADING), wrap_180(getHeadingSetpoint() - Sensors_getHeading()), 1));
     } else {
         setRollAngleSetpoint(getRollAngleInput(getControlValue(ROLL_CONTROL_SOURCE)));
     }
@@ -178,22 +175,22 @@ void highLevelControl(){
 
 void lowLevelControl(){
     if (getControlValue(ROLL_CONTROL_TYPE) == ANGLE_CONTROL || getControlValue(HEADING_CONTROL) == CONTROL_ON) {
-        setRollRateSetpoint(PIDcontrol(getPID(ROLL_ANGLE), getRollAngleSetpoint() - getRoll(), MAX_ROLL_RATE / MAX_ROLL_ANGLE));
+        setRollRateSetpoint(PIDcontrol(getPID(ROLL_ANGLE), getRollAngleSetpoint() - Sensors_getRoll(), MAX_ROLL_RATE / MAX_ROLL_ANGLE));
     } else {
         setRollRateSetpoint(getRollRateInput(getControlValue(ROLL_CONTROL_SOURCE)));
         setYawRateSetpoint(getYawRateInput(getControlValue(ROLL_CONTROL_SOURCE))); // No bit for yaw. If they have roll, they probably need yaw too.
     }
 
     if (getControlValue(PITCH_CONTROL_TYPE) == ANGLE_CONTROL || getControlValue(ALTITUDE_CONTROL) == CONTROL_ON){
-        setPitchRateSetpoint(PIDcontrol(getPID(PITCH_ANGLE), getPitchAngleSetpoint() - getPitch(), MAX_PITCH_RATE / MAX_PITCH_ANGLE));
+        setPitchRateSetpoint(PIDcontrol(getPID(PITCH_ANGLE), getPitchAngleSetpoint() - Sensors_getPitch(), MAX_PITCH_RATE / MAX_PITCH_ANGLE));
     } else {
         setPitchRateSetpoint(getPitchRateInput(getControlValue(PITCH_CONTROL_SOURCE)));
     }
-    setPitchRateSetpoint(getPitchRateSetpoint() + (fabsf(getRoll()) * roll_turn_mix)); //Apply Coordinated Turn //Linear Function
+    setPitchRateSetpoint(getPitchRateSetpoint() + (fabsf(Sensors_getRoll()) * roll_turn_mix)); //Apply Coordinated Turn //Linear Function
 
-    control_Roll = PIDcontrol(getPID(ROLL_RATE), getRollRateSetpoint() - getRollRate(), HALF_PWM_RANGE / MAX_ROLL_RATE);
-    control_Pitch = PIDcontrol(getPID(PITCH_RATE), getPitchRateSetpoint() - getPitchRate(), HALF_PWM_RANGE / MAX_PITCH_RATE);
-    control_Yaw = PIDcontrol(getPID(YAW_RATE), getYawRateSetpoint() - getYawRate(), HALF_PWM_RANGE / MAX_YAW_RATE);
+    control_Roll = PIDcontrol(getPID(ROLL_RATE), getRollRateSetpoint() - Sensors_getRollRate(), HALF_PWM_RANGE / MAX_ROLL_RATE);
+    control_Pitch = PIDcontrol(getPID(PITCH_RATE), getPitchRateSetpoint() - Sensors_getPitchRate(), HALF_PWM_RANGE / MAX_PITCH_RATE);
+    control_Yaw = PIDcontrol(getPID(YAW_RATE), getYawRateSetpoint() - Sensors_getYawRate(), HALF_PWM_RANGE / MAX_YAW_RATE);
     control_Throttle = getThrottleSetpoint();
 
     outputSignal[FLAP_OUT_CHANNEL - 1] = getFlapInput(getControlValue(FLAP_CONTROL_SOURCE)); // don't need to mix the flaps
@@ -205,14 +202,14 @@ void lowLevelControl(){
     checkLimits(outputSignal);
     //Then Output
 
-    if (getProgramStatus() != KILL_MODE) {
+    /*if (getProgramStatus() != KILL_MODE) {
         setAllPWM(outputSignal);
     } else{ //if in kill mode, full deflection of all control surfaces
-        setPWM(THROTTLE_OUT_CHANNEL, MIN_PWM);  //Throttle
-        setPWM(ROLL_OUT_CHANNEL, MIN_PWM);      //Roll
-        setPWM(L_TAIL_OUT_CHANNEL, MIN_PWM);    //Pitch
-        setPWM(R_TAIL_OUT_CHANNEL, MIN_PWM);    //Yaw
-    }
+        setPWM(THROTTLE_OUT_CHANNEL, PWM_MIN);  //Throttle
+        setPWM(ROLL_OUT_CHANNEL, PWM_MIN);      //Roll
+        setPWM(L_TAIL_OUT_CHANNEL, PWM_MIN);    //Pitch
+        setPWM(R_TAIL_OUT_CHANNEL, PWM_MIN);    //Yaw
+    }*/
 
     //Check for kill mode
 #if COMP_MODE

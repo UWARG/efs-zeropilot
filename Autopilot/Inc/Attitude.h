@@ -1,3 +1,5 @@
+#include "main.h"
+
 void Attitude_Run(void const * argument);
 
 //Bit Mask Bit Shifts
@@ -49,14 +51,14 @@ int getThrottleSetpoint();
 int getAltitudeSetpoint();
 int getHeadingSetpoint();
 
-void setPitchAngleSetpoint(int setpoint);
-void setRollAngleSetpoint(int setpoint);
-void setPitchRateSetpoint(int setpoint);
-void setRollRateSetpoint(int setpoint);
-void setYawRateSetpoint(int setpoint);
-void setThrottleSetpoint(int setpoint);
-void setAltitudeSetpoint(int setpoint);
-void setHeadingSetpoint(int setpoint);
+void setPitchAngleSetpoint(int16_t setpoint);
+void setRollAngleSetpoint(int16_t setpoint);
+void setPitchRateSetpoint(int16_t setpoint);
+void setRollRateSetpoint(int16_t setpoint);
+void setYawRateSetpoint(int16_t setpoint);
+void setThrottleSetpoint(int16_t setpoint);
+void setAltitudeSetpoint(int16_t setpoint);
+void setHeadingSetpoint(int16_t setpoint);
 
 int getPitchAngleInput(char source);
 int getRollAngleInput(char source);
