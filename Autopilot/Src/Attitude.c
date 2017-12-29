@@ -58,12 +58,8 @@ int16_t input_RC_Throttle = PWM_MIN;
 int16_t input_RC_RollRate = 0;
 int16_t input_RC_PitchRate = 0;
 int16_t input_RC_YawRate = 0;
-int16_t input_RC_Aux1 = 0; //0=Roll, 1= Pitch, 2=Yaw
-int16_t input_RC_Aux2 = 0; //0 = Saved Value, 1 = Edit Mode
-int16_t input_RC_Switch1 = 0;
 
-
-int16_t controlLevel = 0;
+uint16_t controlLevel = 0;
 
 void Attitude_Run(void const * argument){
   //Init
