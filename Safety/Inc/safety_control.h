@@ -9,7 +9,7 @@
 #include "PWM.h"
 #include "spi.h"
 
-void Safety_Init();
-void Safety_Run();
+void Safety_Init(void);
+void Safety_Run(void);
 
-#endif // SAFETY_CONTROL_H
+#endif  // SAFETY_CONTROL_H
