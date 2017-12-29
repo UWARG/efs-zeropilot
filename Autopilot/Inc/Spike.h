@@ -5,14 +5,12 @@
 
 #include "main.h"
 // Function Prototypes
-void initialization();
-void armVehicle();
-void dearmVehicle();
-void inputMixing(int16_t* channelIn, int16_t* rollRate, int16_t* pitchRate, int16_t* throttle, int16_t* yawRate);
-void outputMixing(int16_t* channelOut, int16_t* control_Roll, int16_t* control_Pitch, int16_t* control_Throttle, int16_t* control_Yaw);
-void checkLimits(int16_t* channelOut);
-void highLevelControl();
-void lowLevelControl();
+void Vehicle_Initialization();
+void Vehicle_Arm();
+void Vehicle_Dearm();
+void Vehicle_GetInputRC(int16_t* roll, int16_t* pitch, int16_t* throttle, int16_t* yaw);
+void Vehicle_HighLevelControl();
+void Vehicle_LowLevelControl();
 
 // Constants
 #define MAX_ROLL_PWM (PWM_MAX - 87) //This was - 20

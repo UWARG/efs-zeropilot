@@ -67,10 +67,11 @@ int16_t controlLevel = 0;
 
 void Attitude_Run(void const * argument){
   //Init
-
+  Vehicle_Initialization();
   while(1){
-    highLevelControl();
-    lowLevelControl();
+    Vehicle_GetInputRC(&input_RC_RollRate, &input_RC_PitchRate, &input_RC_Throttle, &input_RC_YawRate);
+    Vehicle_HighLevelControl();
+    Vehicle_LowLevelControl();
     osDelay(1); //TODO set delay properly
   }
 }
