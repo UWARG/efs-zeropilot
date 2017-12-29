@@ -29,11 +29,12 @@ add_subdirectory(Drivers/STM32F7xx_HAL_Driver)
 add_subdirectory(Middlewares/Third_Party/FreeRTOS)
 
 file(GLOB_RECURSE C_SOURCES "Src/*.c")
+file(GLOB_RECURSE COMMON_SOURCES "../Common/Src/*.c")
 file(GLOB_RECURSE PERI_SOURCES "Drivers/Peripherals/Src/*.c")
 file(GLOB_RECURSE CXX_SOURCES "Src/*.cpp")
 file(GLOB_RECURSE USER_INC "Inc/*.h")
 
-add_executable(${ELF_NAME} ${C_SOURCES} ${PERI_SOURCES} ${CXX_SOURCES} ${USER_INC} startup_stm32f765xx.s)
+add_executable(${ELF_NAME} ${C_SOURCES} ${COMMON_SOURCES} ${PERI_SOURCES} ${CXX_SOURCES} ${USER_INC} startup_stm32f765xx.s)
 
 target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS arm_cortexM7lfdp_math)
 
