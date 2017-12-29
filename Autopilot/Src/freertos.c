@@ -51,12 +51,14 @@
 #include "task.h"
 #include "cmsis_os.h"
 
-/* USER CODE BEGIN Includes */
+/* USER CODE BEGIN Includes */     
 #include "debug.h"
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
 osThreadId defaultTaskHandle;
+osThreadId InterchipHandle;
+osThreadId AttitudeHandle;
 
 /* USER CODE BEGIN Variables */
 
@@ -64,6 +66,8 @@ osThreadId defaultTaskHandle;
 
 /* Function prototypes -------------------------------------------------------*/
 void StartDefaultTask(void const * argument);
+extern void Interchip_Run(void const * argument);
+extern void Attitude_Run(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -97,6 +101,14 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
+  /* definition and creation of Interchip */
+  osThreadDef(Interchip, Interchip_Run, osPriorityNormal, 0, 128);
+  InterchipHandle = osThreadCreate(osThread(Interchip), NULL);
+
+  /* definition and creation of Attitude */
+  osThreadDef(Attitude, Attitude_Run, osPriorityNormal, 0, 128);
+  AttitudeHandle = osThreadCreate(osThread(Attitude), NULL);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -113,7 +125,6 @@ void StartDefaultTask(void const * argument)
   /* USER CODE BEGIN StartDefaultTask */
   // this function will (eventually) start all the threads for the autopilot
 
-  
   vTaskDelete(defaultTaskHandle); // delete task when finished
   /* USER CODE END StartDefaultTask */
 }

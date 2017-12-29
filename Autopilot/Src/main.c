@@ -62,7 +62,6 @@
 /* USER CODE BEGIN Includes */
 #include "debug.h"
 #include "eeprom.h"
-#include "Interchip_A.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -125,7 +124,7 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM10_Init();
   MX_TIM11_Init();
-  // MX_WWDG_Init();
+  MX_WWDG_Init();
   MX_CRC_Init();
 
   /* USER CODE BEGIN 2 */
@@ -135,28 +134,6 @@ int main(void)
   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
 
   EEPROM_Init();
-
-  Interchip_StoA_Packet* dataRX = malloc(sizeof(Interchip_StoA_Packet));
-  Interchip_AtoS_Packet* dataTX = malloc(sizeof(Interchip_AtoS_Packet));
-  dataTX->autonomous_level = 0x1;
-  dataTX->PWM[0] = 50;
-  dataTX->PWM[1] = 60;
-  dataTX->PWM[2] = 70;
-  dataTX->PWM[3] = 80;
-  dataTX->PWM[11] = 90;
-
-  interchipInit(dataTX, dataRX);
-
-  while(1){
-
-    Interchip_Update();
-    HAL_Delay(1);
-    dataTX->PWM[0]+=5;
-    if(dataTX->PWM[0]>3000){
-      dataTX->PWM[0] = -3000;
-    }
-    debug("Manual?: %d", dataTX->PWM[0]);
-  }
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
