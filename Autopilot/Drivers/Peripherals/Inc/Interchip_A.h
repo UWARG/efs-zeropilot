@@ -3,7 +3,7 @@
 
 #define INTERCHIP_TRANSMIT_DELAY 5
 
-int16_t *Interchip_GetPWM();
+int16_t *Interchip_GetPWM(void);
 void Interchip_SetPWM(int16_t *data);
-uint16_t Interchip_GetSafetyLevel();
+uint16_t Interchip_GetSafetyLevel(void);
 void Interchip_SetAutonomousLevel(uint16_t data);

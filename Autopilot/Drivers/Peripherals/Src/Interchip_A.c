@@ -1,14 +1,15 @@
 #include "Interchip_A.h"
 #include "Common.h"
+#include "cmsis_os.h"
 #include "debug.h"
 #include "spi.h"
-#include "cmsis_os.h"
+
 
 static Interchip_AtoS_Packet *dataTX;
 static Interchip_StoA_Packet *dataRX;
 osMutexId Interchip_MutexHandle;
 
-void Interchip_Run(void const * argument) {
+void Interchip_Run(void const *argument) {
   dataRX = malloc(sizeof(Interchip_StoA_Packet));
   dataTX = malloc(sizeof(Interchip_AtoS_Packet));
 
@@ -16,7 +17,7 @@ void Interchip_Run(void const * argument) {
   Interchip_MutexHandle = osMutexCreate(osMutex(Interchip_Mutex));
 
   while (1) {
-    osMutexWait(Interchip_MutexHandle,0);
+    osMutexWait(Interchip_MutexHandle, 0);
 
     HAL_StatusTypeDef transmit_status = HAL_SPI_TransmitReceive_IT(
         &hspi1, (uint8_t *)dataTX, (uint8_t *)dataRX,
@@ -33,21 +34,17 @@ void Interchip_Run(void const * argument) {
 
 // Public Functions to get and set data
 
-int16_t *Interchip_GetPWM(){
-  return dataRX->PWM;
-}
-void Interchip_SetPWM(int16_t *data){
-  osMutexWait(Interchip_MutexHandle,0);
-  for(uint8_t i=0; i<PWM_NUM_CHANNELS;i++){
+int16_t *Interchip_GetPWM(void) { return dataRX->PWM; }
+void Interchip_SetPWM(int16_t *data) {
+  osMutexWait(Interchip_MutexHandle, 0);
+  for (uint8_t i = 0; i < PWM_NUM_CHANNELS; i++) {
     dataTX->PWM[i] = data[i];
   }
   osMutexRelease(Interchip_MutexHandle);
 }
-uint16_t Interchip_GetSafetyLevel(){
-  return dataRX->safety_level;
-}
-void Interchip_SetAutonomousLevel(uint16_t data){
-  osMutexWait(Interchip_MutexHandle,0);
+uint16_t Interchip_GetSafetyLevel(void) { return dataRX->safety_level; }
+void Interchip_SetAutonomousLevel(uint16_t data) {
+  osMutexWait(Interchip_MutexHandle, 0);
   dataTX->autonomous_level = data;
   osMutexRelease(&Interchip_MutexHandle);
 }
