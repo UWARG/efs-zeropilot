@@ -1,5 +1,5 @@
 /**
- * @file   FixedWing.c
+ * @file   Spike.c
  * @author Chris Hajduk
  * @date July 2, 2015
  * @copyright Waterloo Aerial Robotics Group 2017 \n
@@ -161,7 +161,7 @@ void checkLimits(int16_t* channelOut){
 }
 
 void setDefaultPWM(){
-  for (uint8_t i = 1; i <= PWM_NUM_CHANNELS; i++){
+  for (uint8_t i = 0; i < PWM_NUM_CHANNELS; i++){
     outputSignal[i] = PWM_MIN;
   }
 

@@ -1,4 +1,4 @@
-#include "main.h"
+#include <stdint.h>
 #define PWM_NUM_CHANNELS (12)
 #define PWM_MAX (3200) // 500 us pulse
 #define PWM_MIN (-3200) // 2500 us pulse
