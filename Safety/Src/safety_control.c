@@ -2,6 +2,7 @@
 #include "Common.h"
 #include <stdbool.h>
 #include "debug.h"
+#include "iwdg.h"
 
 static Interchip_StoA_Packet* dataTX;
 static Interchip_AtoS_Packet* dataRX;
@@ -9,7 +10,7 @@ static int16_t PPM[PPM_NUM_CHANNELS];
 
 bool Safety_isManual(int16_t PWM_Value);
 
-void Safety_Init() {
+void Safety_Init(void) {
   PWM_Init();
 
   dataTX = malloc(sizeof(Interchip_StoA_Packet));
@@ -17,8 +18,10 @@ void Safety_Init() {
   Interchip_Init(dataTX, dataRX);
 }
 
-void Safety_Run() {
+void Safety_Run(void) {
   while (1) {
+    HAL_IWDG_Refresh(&hiwdg);
+
     volatile int16_t* PPM_input = PPM_Get();
     for (uint8_t i = 0; i < PPM_NUM_CHANNELS; i++) {
       PPM[i] = PPM_input[i];
