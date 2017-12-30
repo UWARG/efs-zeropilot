@@ -12,13 +12,30 @@ copy = '''\
  * @file {0}
  * @author {1}
  * @date {2}
- * @copyright Waterloo Aerial Robotics Group {4} \\n
+ * @copyright Waterloo Aerial Robotics Group {3} \\n
  *  https://raw.githubusercontent.com/UWARG/ZeroPilot-SW/devel/LICENSE.md
  */\n
 '''
 
 fnc = filename + '.c'
 fnh = filename + '.h'
+
+h_templ = '''
+#ifndef {0}
+#define {0}
+
+#ifdef __cplusplus
+extern "C" {{
+#endif
+
+/* declarations go here */
+
+#ifdef __cplusplus
+}}
+#endif
+
+#endif /* {0} */
+'''.format(filename.upper() + '_H')
 
 with open(dirn + 'Src/' + fnc, 'w') as f:
     f.write(copy.format(fnc, author, datetime.date.today().isoformat(), datetime.date.today().year))
@@ -27,7 +44,4 @@ with open(dirn + 'Src/' + fnc, 'w') as f:
 
 with open(dirn + 'Inc/' + fnh, 'w') as f:
     f.write(copy.format(fnh, author, datetime.date.today().isoformat(), datetime.date.today().year))
-    defn = filename.upper() + '_H'
-    f.write('#ifndef ' + defn + '\n')
-    f.write('#define ' + defn + '\n' * 3)
-    f.write('#endif /* ' + defn + ' */\n')
+    f.write(h_templ)
