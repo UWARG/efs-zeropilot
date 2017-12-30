@@ -2,10 +2,11 @@
 
 import sys
 import datetime
+import getpass
 
 dirn = './'
 filename = sys.argv[1]
-author = "Ian Frosst"
+author = getpass.getuser()
 
 copy = '''\
 /**
