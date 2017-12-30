@@ -3,11 +3,12 @@ set(CMAKE_SYSTEM_PROCESSOR arm)
 set(CMAKE_SYSTEM_VERSION 1)
 
 # specify the cross compiler
-set(CMAKE_C_COMPILER    arm-none-eabi-gcc)
-set(CMAKE_CXX_COMPILER  arm-none-eabi-g++)
-set(CMAKE_ASM_COMPILER  arm-none-eabi-gcc)
-set(CMAKE_OBJCOPY       arm-none-eabi-objcopy)
-set(CMAKE_LINKER        arm-none-eabi-gcc)
+set(CMAKE_C_COMPILER arm-none-eabi-gcc)
+set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
+set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
+set(CMAKE_OBJCOPY arm-none-eabi-objcopy CACHE INTERNAL "")
+set(CMAKE_SIZE arm-none-eabi-size CACHE INTERNAL "")
+
 
 # ARM compiler options
 set(MCU_CPU cortex-m7)
@@ -23,7 +24,7 @@ endif ()
 set(COMMON_FLAGS "${MCU_FLAGS} -Wall -ffunction-sections -fdata-sections")
 
 set(CMAKE_C_FLAGS "${COMMON_FLAGS} -std=gnu11" CACHE INTERNAL "")
-set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -std=gnu++11" CACHE INTERNAL "")
+set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -std=gnu++11 -fno-rtti -fno-exceptions -fno-unwind-tables" CACHE INTERNAL "")
 set(CMAKE_ASM_FLAGS "${COMMON_FLAGS} -x assembler-with-cpp" CACHE INTERNAL "")
 set(CMAKE_EXE_LINKER_FLAGS "${MCU_FLAGS} -specs=nosys.specs -specs=nano.specs -Wl,-gc-sections" CACHE INTERNAL "")
 
