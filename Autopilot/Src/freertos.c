@@ -59,7 +59,6 @@
 /* Variables -----------------------------------------------------------------*/
 osThreadId defaultTaskHandle;
 osThreadId InterchipHandle;
-osThreadId AttitudeHandle;
 
 /* USER CODE BEGIN Variables */
 
@@ -68,7 +67,6 @@ osThreadId AttitudeHandle;
 /* Function prototypes -------------------------------------------------------*/
 void StartDefaultTask(void const * argument);
 extern void Interchip_Run(void const * argument);
-void Attitude_Run(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -106,10 +104,6 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(Interchip, Interchip_Run, osPriorityNormal, 0, 128);
   InterchipHandle = osThreadCreate(osThread(Interchip), NULL);
 
-  /* definition and creation of Attitude */
-  osThreadDef(Attitude, Attitude_Run, osPriorityNormal, 0, 128);
-  AttitudeHandle = osThreadCreate(osThread(Attitude), NULL);
-
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -130,17 +124,6 @@ void StartDefaultTask(void const * argument)
   /* USER CODE END StartDefaultTask */
 }
 
-/* Attitude_Run function */
-void Attitude_Run(void const * argument)
-{
-  /* USER CODE BEGIN Attitude_Run */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END Attitude_Run */
-}
 
 /* USER CODE BEGIN Application */
 

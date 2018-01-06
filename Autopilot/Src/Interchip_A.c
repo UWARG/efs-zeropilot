@@ -4,7 +4,6 @@
 #include "debug.h"
 #include "spi.h"
 
-
 static Interchip_AtoS_Packet *dataTX;
 static Interchip_StoA_Packet *dataRX;
 osMutexId Interchip_MutexHandle;
@@ -42,6 +41,8 @@ void Interchip_SetPWM(int16_t *data) {
   }
   osMutexRelease(Interchip_MutexHandle);
 }
+
+
 uint16_t Interchip_GetSafetyLevel(void) { return dataRX->safety_level; }
 void Interchip_SetAutonomousLevel(uint16_t data) {
   osMutexWait(Interchip_MutexHandle, 0);
