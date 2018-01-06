@@ -2,32 +2,47 @@
 
 import sys
 import datetime
+import getpass
 
 dirn = './'
 filename = sys.argv[1]
-author = "Ian Frosst"
+author = getpass.getuser()
 
 copy = '''\
 /**
  * @file {0}
  * @author {1}
  * @date {2}
- * @copyright Waterloo Aerial Robotics Group 2017 \\n
- *  https://raw.githubusercontent.com/UWARG/ZeroPilot-SW/master/LICENSE.md
+ * @copyright Waterloo Aerial Robotics Group {3} \\n
+ *  https://raw.githubusercontent.com/UWARG/ZeroPilot-SW/devel/LICENSE.md
  */\n
 '''
 
 fnc = filename + '.c'
 fnh = filename + '.h'
 
+h_templ = '''
+#ifndef {0}
+#define {0}
+
+#ifdef __cplusplus
+extern "C" {{
+#endif
+
+/* declarations go here */
+
+#ifdef __cplusplus
+}}
+#endif
+
+#endif /* {0} */
+'''.format(filename.upper() + '_H')
+
 with open(dirn + 'Src/' + fnc, 'w') as f:
-    f.write(copy.format(fnc, author, datetime.date.today().isoformat()))
+    f.write(copy.format(fnc, author, datetime.date.today().isoformat(), datetime.date.today().year))
     f.write('#include "' + fnh + '"\n')
 
 
 with open(dirn + 'Inc/' + fnh, 'w') as f:
-    f.write(copy.format(fnh, author, datetime.date.today().isoformat()))
-    defn = filename.upper() + '_H'
-    f.write('#ifndef ' + defn + '\n')
-    f.write('#define ' + defn + '\n' * 3)
-    f.write('#endif /* ' + defn + ' */\n')
+    f.write(copy.format(fnh, author, datetime.date.today().isoformat(), datetime.date.today().year))
+    f.write(h_templ)
