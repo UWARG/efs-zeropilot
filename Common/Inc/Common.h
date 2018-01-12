@@ -1,0 +1,3 @@
+#define PWM_NUM_CHANNELS (12)
+
+#define SAFETY_CHANNEL 4
