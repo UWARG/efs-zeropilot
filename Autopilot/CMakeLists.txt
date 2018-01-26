@@ -33,12 +33,20 @@ file(GLOB_RECURSE C_SOURCES "Src/*.c")
 file(GLOB_RECURSE CXX_SOURCES "Src/*.cpp")
 file(GLOB_RECURSE USER_INC "Inc/*.h")
 
-add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${USER_INC} startup_stm32f765xx.s)
+if(NOT NUCLEO)
+        set(STARTUP_ASM startup_stm32f765xx.s)
+        set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F765ZGTx_FLASH.ld)
+else(NOT NUCLEO)
+        set(STARTUP_ASM startup_stm32f767xx.s)
+        set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F767ZITx_FLASH.ld)
+endif(NOT NUCLEO)
+
+
+add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${USER_INC} ${STARTUP_ASM})
 
 target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS arm_cortexM7lfdp_math)
 
 # Add project-specific linker flags (.ld script, .map file)
-set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F765ZGTx_FLASH.ld)
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${LINKER_SCRIPT} -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map,--cref")
 
 set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.bin)
