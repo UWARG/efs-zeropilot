@@ -17,45 +17,21 @@ extern "C" {
 
 #define PID_RESET_TIME (500000) // timeout to reset I and D terms (us)
 
-/* 
- * Floating-point PID loops for attitude control. 
- * Inspired by ArduPilot control code.
- * TODO: convert to fixed-point (integers) for increased speed, decreased size.
- * (could probably do with tenth- or hundredth-degree integers)
- * Floating-point math on the dsPIC33 is done via emulation, and is very slow.
- */
+class PIDController {
+ public:
+  PIDController(float kp, float ki, float kd, float _scale, int16_t i_max);
+  float PIDControl(float error);
 
-typedef struct { //holds values for a generic PID loop
-    // Gains
-    float kp;
-    float ki;
-    float kd;
+ private:
+  float kp, kd, ki;
+  int16_t i_max;
 
-    uint64_t last_time; // for derivative control
-    float last_err;
-    float last_der; // last derivative, for filtering
-    float integral;
-    int16_t i_max; // maximum value for integral
-} PIDVal;
-
-/**
- * Initializes a generic PID controller
- * @param pid Pointer to the PIDVal struct to initialize
- * @param Kp
- * @param Ki
- * @param Kd
- * @param imax Limit for the integral term
- */
-void initPID(PIDVal *pid, float kp, float ki, float kd, int16_t i_max);
-
-/**
- * Calculates output signal from a PID controller
- * @param pid Pointer to the PIDVal struct to be updated
- * @param error Error value (setpoint - position)
- * @param scale Factor to help with I/O relationships
- * @return Control signal for a PID controller
- */
-float PIDcontrol(PIDVal *pid, float error, float scale);
+  uint64_t last_time;  // for derivative control
+  float last_err;
+  float last_der;  // last derivative, for filtering
+  float integral;
+  float scale;
+};
 
 #ifdef __cplusplus
 }
