@@ -28,3 +28,9 @@ build/
 .settings/
 .project
 mx.scratch
+
+# Generated environment files
+**/*flash.gdbinit
+
+# Temp files
+*.swp
