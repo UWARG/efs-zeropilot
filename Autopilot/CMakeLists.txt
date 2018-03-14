@@ -58,7 +58,7 @@ add_custom_target("${PROJECT_NAME}.bin" ALL
 )
 
 # Print size information after compiling
-add_custom_command(TARGET ${ELF_NAME} 
+add_custom_command(TARGET ${ELF_NAME}
         POST_BUILD
         COMMENT "Binary size information:"
         COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${ELF_NAME}>
