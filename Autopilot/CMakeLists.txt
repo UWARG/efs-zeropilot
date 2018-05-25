@@ -18,6 +18,7 @@ include_directories(
         ../Common/Inc
         Drivers/CMSIS/Include
         Drivers/CMSIS/Device/ST/STM32F7xx/Include
+        Lib
 )
 
 # Add ARM math directory for linker to find
@@ -31,7 +32,8 @@ add_subdirectory(Middlewares/Third_Party/FreeRTOS)
 
 file(GLOB_RECURSE C_SOURCES "Src/*.c")
 file(GLOB_RECURSE CXX_SOURCES "Src/*.cpp")
-file(GLOB_RECURSE USER_INC "Inc/*.h")
+file(GLOB_RECURSE C_INC "Inc/*.h")
+file(GLOB_RECURSE CXX_INC "Inc/*.hpp")
 
 if(NOT NUCLEO)
         set(STARTUP_ASM startup_stm32f765xx.s)
@@ -42,7 +44,7 @@ else(NOT NUCLEO)
 endif(NOT NUCLEO)
 
 
-add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${USER_INC} ${STARTUP_ASM})
+add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${C_INC} ${CXX_INC} ${STARTUP_ASM})
 
 target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS arm_cortexM7lfdp_math)
 

@@ -21,7 +21,7 @@
 .cproject
 
 # Build Directory
-build/
+*build*/
 .dep/
 
 # IDE stuff
