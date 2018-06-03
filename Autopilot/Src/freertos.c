@@ -9,7 +9,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * Copyright (c) 2017 STMicroelectronics International N.V. 
+  * Copyright (c) 2018 STMicroelectronics International N.V. 
   * All rights reserved.
   *
   * Redistribution and use in source and binary forms, with or without 
@@ -50,7 +50,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "cmsis_os.h"
-#include "Interchip_A.h"
 
 /* USER CODE BEGIN Includes */     
 #include "debug.h"
@@ -123,7 +122,6 @@ void StartDefaultTask(void const * argument)
   vTaskDelete(defaultTaskHandle); // delete task when finished
   /* USER CODE END StartDefaultTask */
 }
-
 
 /* USER CODE BEGIN Application */
 

@@ -9,7 +9,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * Copyright (c) 2017 STMicroelectronics International N.V. 
+  * Copyright (c) 2018 STMicroelectronics International N.V. 
   * All rights reserved.
   *
   * Redistribution and use in source and binary forms, with or without 
@@ -56,7 +56,6 @@
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
-#include "wwdg.h"
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
@@ -124,8 +123,8 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM10_Init();
   MX_TIM11_Init();
-  //MX_WWDG_Init();
   MX_CRC_Init();
+  MX_TIM6_Init();
 
   /* USER CODE BEGIN 2 */
   debug("\n\nStarting up...");
@@ -141,7 +140,7 @@ int main(void)
 
   /* Start scheduler */
   osKernelStart();
-
+  
   /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
