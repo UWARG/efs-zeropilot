@@ -7,12 +7,15 @@
  */
 
 #include "PID.h"
+#include "tim.h"
 
 /**
  * Filtering constant for derivative. Between 0 and 1.
  * The larger this is, the more twitchy D control is.
  */
 #define FILTER (0.4f)
+
+#define TIMER htim6
 
 /* Generic PID functions. Can be used to PID other things (flaps, etc) */
 
@@ -28,14 +31,19 @@ PIDController::PIDController(float _kp, float _ki, float _kd, float _scale, int1
   last_time = 0;
   last_err = 0;
   last_der = 0;
+
+  if(HAL_TIM_Base_GetState(&TIMER) == HAL_TIM_STATE_RESET){
+      HAL_TIM_Base_Start(&TIMER);
+  }
 }
 
 // PID loop function. error is (setpointValue - currentValue)
 float PIDController::PIDControl(float error) {
   float output = 0;
-
-  uint64_t now = 0;  // getTimeUs(); TODO
-  uint32_t delta_usec = (now - last_time);
+   
+  uint32_t now = __HAL_TIM_GetCounter(&TIMER);
+  if(now < last_time){now+=TIMER.Period;} //check for roll over
+  uint32_t delta_usec = now - last_time;
 
   // check if we've gone too long without updating (keeps the I and D from
   // freaking out)

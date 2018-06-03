@@ -26,7 +26,7 @@ class PIDController {
   float kp, kd, ki;
   int16_t i_max;
 
-  uint64_t last_time;  // for derivative control
+  uint32_t last_time;  // for derivative control
   float last_err;
   float last_der;  // last derivative, for filtering
   float integral;
