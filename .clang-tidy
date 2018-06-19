@@ -1,0 +1,7 @@
+---
+Checks: '*,-android-*,-cert-*,-fuchsia-*,-mpi-*,-llvm-*,-objc-*,-zircon-*'
+WarningsAsErrors: ''
+HeaderFilterRegex: '(Autopilot|Safety|Common)/Inc'
+AnalyzeTemporaryDtors: false
+FormatStyle: file
+...
