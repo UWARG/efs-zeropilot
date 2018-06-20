@@ -2,7 +2,7 @@
 
 # local variables
 USER=$(whoami)
-AUTOPILOT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
+AUTOPILOT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 AUTOPILOT_ENVSHELL="/bin/bash"
 AUTOPILOT_ENVRC_SRC="autopilot.envrc"
 AUTOPILOT_ENVRC="/tmp/autopilot_${USER}_bashrc"
@@ -23,4 +23,4 @@ echo "Switching to ZeroPilot Autopilot development environment...";
 echo ""
 
 # start environment
-$AUTOPILOT_ENVSHELL --rcfile $AUTOPILOT_ENVRC
+exec $AUTOPILOT_ENVSHELL --rcfile $AUTOPILOT_ENVRC

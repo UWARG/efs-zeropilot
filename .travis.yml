@@ -5,27 +5,24 @@ sudo: false
 
 cache:
   directories:
-    - $HOME/gcc-arm-none-eabi-6-2017-q2-update
+    - $HOME/gcc-arm-none-eabi-7-2017-q4-major
 
 addons:
   apt:
     packages:
-    - cmake
+    - ninja-build
 
 env:
   - TARGET=Autopilot
   # - TARGET=Safety # no CMake support on safety yet
 
 install:
-  - export GCC_DIR=$HOME/gcc-arm-none-eabi-6-2017-q2-update
-  - export GCC_ARCHIVE=$HOME/gcc-arm-none-eabi-6-2017-q2-update-linux.tar.bz2
-  - export GCC_URL=https://developer.arm.com/-/media/Files/downloads/gnu-rm/6-2017q2/gcc-arm-none-eabi-6-2017-q2-update-linux.tar.bz2
+  - export GCC_DIR=$HOME/gcc-arm-none-eabi-7-2017-q4-major
+  - export GCC_ARCHIVE=$HOME/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2
+  - export GCC_URL=https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2
   - if [ ! -e $GCC_DIR/bin/arm-none-eabi-g++ ]; then wget $GCC_URL -O $GCC_ARCHIVE; tar xfj $GCC_ARCHIVE -C $HOME; fi
   - export PATH=$GCC_DIR/bin:$PATH
 
 script:
   - cd $TARGET
-  - mkdir -p build
-  - cd build
-  - cmake ../ -DCMAKE_TOOLCHAIN_FILE=STM32F765xG.cmake -G "Unix Makefiles"
-  - make
+  - ./Tools/build.bash
