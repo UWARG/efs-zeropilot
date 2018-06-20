@@ -10,7 +10,6 @@ cache:
 addons:
   apt:
     packages:
-    - cmake
     - ninja-build
 
 env:
