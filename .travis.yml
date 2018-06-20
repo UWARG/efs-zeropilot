@@ -11,6 +11,7 @@ addons:
   apt:
     packages:
     - cmake
+    - ninja-build
 
 env:
   - TARGET=Autopilot
@@ -25,4 +26,4 @@ install:
 
 script:
   - cd $TARGET
-  - ./Tools/build.sh
+  - ./Tools/build.bash

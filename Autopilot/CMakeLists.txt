@@ -1,29 +1,29 @@
-project(Autopilot C CXX ASM)
 cmake_minimum_required(VERSION 3.2.0)
+project(Autopilot C CXX ASM)
 
 set(ELF_NAME ${PROJECT_NAME}.elf)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_definitions(
-        -DUSE_HAL_LIB
-        -DSTM32F7xx
-        -DSTM32F765xx
-        -DSTM32F765xG
-        -DARM_MATH_CM7
+  -DUSE_HAL_LIB
+  -DSTM32F7xx
+  -DSTM32F765xx
+  -DSTM32F765xG
+  -DARM_MATH_CM7
 )
 
 include_directories(
-        Inc
-        ../Common/Inc
-        Drivers/CMSIS/Include
-        Drivers/CMSIS/Device/ST/STM32F7xx/Include
-        Lib
+  Inc
+  ../Common/Inc
+  Drivers/CMSIS/Include
+  Drivers/CMSIS/Device/ST/STM32F7xx/Include
+  Lib
 )
 
 # Add ARM math directory for linker to find
 link_directories(
-        Drivers/CMSIS/Lib/GCC
+  Drivers/CMSIS/Lib/GCC
 )
 
 # Libraries
@@ -36,11 +36,11 @@ file(GLOB_RECURSE C_INC "Inc/*.h")
 file(GLOB_RECURSE CXX_INC "Inc/*.hpp")
 
 if(NOT NUCLEO)
-        set(STARTUP_ASM startup_stm32f765xx.s)
-        set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F765ZGTx_FLASH.ld)
+  set(STARTUP_ASM startup_stm32f765xx.s)
+  set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F765ZGTx_FLASH.ld)
 else(NOT NUCLEO)
-        set(STARTUP_ASM startup_stm32f767xx.s)
-        set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F767ZITx_FLASH.ld)
+  set(STARTUP_ASM startup_stm32f767xx.s)
+  set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F767ZITx_FLASH.ld)
 endif(NOT NUCLEO)
 
 
@@ -55,22 +55,22 @@ set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.bin)
 
 # objcopy the .elf file to .bin file for programming
 add_custom_target("${PROJECT_NAME}.bin" ALL
-        COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${ELF_NAME}> ${BIN_FILE}
-        DEPENDS ${ELF_NAME}
+  COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${ELF_NAME}> ${BIN_FILE}
+  DEPENDS ${ELF_NAME}
 )
 
 # Print size information after compiling
 add_custom_command(TARGET ${ELF_NAME}
-        POST_BUILD
-        COMMENT "Binary size information:"
-        COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${ELF_NAME}>
+  POST_BUILD
+  COMMENT "Binary size information:"
+  COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${ELF_NAME}>
 )
 
 set(INSTALL_CMD "ST-LINK_CLI")
 set(INSTALL_OPTS "-c SWD -P \"${BIN_FILE}\" 0x08000000 -NoPrompt -Rst -Run")
 
 install(CODE
-        "execute_process(
-                COMMAND ${INSTALL_CMD} ${INSTALL_OPTS}
-        )"
+  "execute_process(
+    COMMAND ${INSTALL_CMD} ${INSTALL_OPTS}
+  )"
 )

@@ -17,13 +17,13 @@
 set -o errtrace
 set -o nounset
 
-THREADS=1
 CLEAN=false
 TEST=false
 FLASH=false
 BUILD_TYPE="Debug"
+GENERATOR="Unix Makefiles"
 
-while getopts "c,t,h,f,j:,r" opt; do
+while getopts "c,t,h,f,r" opt; do
     case $opt in
         c)
             CLEAN=true
@@ -34,26 +34,29 @@ while getopts "c,t,h,f,j:,r" opt; do
         f)
             FLASH=true
         ;;
-        j)
-            THREADS=$OPTARG
-        ;;
         r)
             BUILD_TYPE="Release"
         ;;
         h|\?)
-            printf "%s\n" "Usage: $0 [OPTIONS]" \
+            printf "%s\n" "Usage: $0 [OPTIONS]"\
                 "Script to build the WARG Autopilot project"\
-                "    -c                 - removes previous build files before building" \
-                "    -h                 - outputs this message" \
+                "    -f                 - flashes the Autopilot after building"\
+                "    -c                 - removes previous build files before building"\
+                "    -h                 - outputs this message"\
                 "    -t                 - runs tests after building if build is successful"\
-                "    -j [threads]       - builds using the given number of threads"\
-                "                         default is 1 and is recommended for debugging"\
                 "    -r                 - Sets the build type to release"
             exit 1
         ;;
     esac
 done
 
+if command -v ninja >/dev/null 2>&1; then
+    GENERATOR="Ninja"
+elif command -v make >/dev/null 2>&1; then
+    GENERATOR="Unix Makefiles"
+elif command -v mingw32-make >/dev/null 2>&1; then
+    GENERATOR="MinGW Makefiles"
+fi
 
 die() {
     echo ""
@@ -80,15 +83,15 @@ fi
 # Build commands
 mkdir -p build
 cd build
-cmake ../ -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" -DCMAKE_TOOLCHAIN_FILE="STM32F765xG.cmake" -G "Unix Makefiles"
-make -j$THREADS
+cmake ../ -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" -DCMAKE_TOOLCHAIN_FILE="STM32F765xG.cmake" -G "${GENERATOR}"
+cmake --build .
 
 if [[ $TEST == true ]] ; then
-    make test
+    cmake --build . --target test
 fi
 
 if [[ $FLASH == true ]] ; then
-    make install
+    cmake --build . --target install
 fi
 
 # Final status display
