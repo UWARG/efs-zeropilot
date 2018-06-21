@@ -68,30 +68,36 @@ die() {
 # Set up exit condition
 trap 'die $? $LINENO' ERR
 
+BUILD_DIR="build"
+
+if [[ $CLEAN == true ]]; then
+    echo "Cleaning old build environment"
+    cmake -E remove_directory $BUILD_DIR
+fi
+
 # Prebuild info display
 echo "Building Autopilot..."
 # if [[ $# > 0 ]]; then
 #     echo "with cmake parameters: $@"
 # fi
-echo ""
-
-if [[ $CLEAN == true ]]; then
-    echo "Cleaning old build environment"
-    rm -rf ./build/*
-fi
 
 # Build commands
-mkdir -p build
-cd build
-cmake ../ -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" -DCMAKE_TOOLCHAIN_FILE="STM32F765xG.cmake" -G "${GENERATOR}"
-cmake --build .
+cmake -E make_directory $BUILD_DIR
+cmake -E chdir $BUILD_DIR \
+  cmake \
+    -G "${GENERATOR}" \
+    -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+    -DCMAKE_TOOLCHAIN_FILE="STM32F765xG.cmake" \
+    ../
+
+cmake --build $BUILD_DIR
 
 if [[ $TEST == true ]] ; then
-    cmake --build . --target test
+    cmake --build $BUILD_DIR --target test
 fi
 
 if [[ $FLASH == true ]] ; then
-    cmake --build . --target install
+    cmake --build $BUILD_DIR --target install
 fi
 
 # Final status display
