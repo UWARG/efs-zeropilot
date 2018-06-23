@@ -61,7 +61,6 @@
 /* USER CODE BEGIN Includes */
 #include "debug.h"
 #include "eeprom.h"
-#include "PID.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -133,7 +132,6 @@ int main(void) {
   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
 
   EEPROM_Init();
-  
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
@@ -146,7 +144,6 @@ int main(void) {
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  
   while (1) {
   /* USER CODE END WHILE */
 
