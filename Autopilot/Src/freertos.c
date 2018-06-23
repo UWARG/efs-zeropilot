@@ -50,6 +50,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "cmsis_os.h"
+#include "Interchip_A.h"
 
 /* USER CODE BEGIN Includes */     
 #include "debug.h"
