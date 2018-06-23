@@ -109,7 +109,9 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
             capture_value[ppm_index - 1] = (time_diff - PPM_OFFSET) / 2.5; //Divide by 5 to keep PPM and PWM at same scale
             if(capture_value[ppm_index - 1]<PWM_MIN) capture_value[ppm_index - 1] = PWM_MIN;
             if(capture_value[ppm_index - 1]>PWM_MAX) capture_value[ppm_index - 1] = PWM_MAX;
-        }        ppm_index = (ppm_index + 1) % (PPM_NUM_CHANNELS + 1); // index should reset, but just in case
+        }
+
+        ppm_index = (ppm_index + 1) % (PPM_NUM_CHANNELS + 1); // index should reset, but just in case
         __HAL_TIM_SET_COUNTER(htim, 0);
     }
 }

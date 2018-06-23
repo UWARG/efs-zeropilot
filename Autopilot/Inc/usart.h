@@ -75,7 +75,7 @@ extern UART_HandleTypeDef huart3;
 
 /* USER CODE END Private defines */
 
-extern void _Error_Handler(char *, int);
+extern void _Error_Handler(const char *, int);
 
 void MX_UART4_Init(void);
 void MX_USART1_UART_Init(void);
