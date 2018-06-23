@@ -53,6 +53,7 @@
 
 /* USER CODE BEGIN Includes */     
 #include "debug.h"
+#include "PID.h"
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -118,6 +119,11 @@ void StartDefaultTask(void const * argument)
 
   /* USER CODE BEGIN StartDefaultTask */
   // this function will (eventually) start all the threads for the autopilot
+  PIDController pid(0,0,0,0,0);
+  while(1){
+    pid.PIDControl(0);
+    HAL_Delay(10);
+  }
 
   vTaskDelete(defaultTaskHandle); // delete task when finished
   /* USER CODE END StartDefaultTask */
