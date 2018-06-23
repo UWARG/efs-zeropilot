@@ -19,8 +19,8 @@
 
 /* Generic PID functions. Can be used to PID other things (flaps, etc) */
 
-
-PIDController::PIDController(float _kp, float _ki, float _kd, float _scale, int16_t _i_max){
+PIDController::PIDController(float _kp, float _ki, float _kd, float _scale,
+                             int16_t _i_max) {
   kp = _kp;
   kd = _kd;
   ki = _ki;
@@ -32,18 +32,20 @@ PIDController::PIDController(float _kp, float _ki, float _kd, float _scale, int1
   last_err = 0;
   last_der = 0;
 
-  if(HAL_TIM_Base_GetState(&TIMER) == HAL_TIM_STATE_RESET){
-      HAL_TIM_Base_Start(&TIMER);
-  }
+    HAL_TIM_Base_Start(&TIMER);
 }
 
 // PID loop function. error is (setpointValue - currentValue)
 float PIDController::PIDControl(float error) {
   float output = 0;
-   
+  uint32_t delta_usec;
   uint32_t now = __HAL_TIM_GetCounter(&TIMER);
-  if(now < last_time){now+=TIMER.Period;} //check for roll over
-  uint32_t delta_usec = now - last_time;
+
+  if (now < last_time) { // check for roll over
+    delta_usec = now + TIMER.Init.Period - last_time;
+  }else{
+    delta_usec = now - last_time;
+  }
 
   // check if we've gone too long without updating (keeps the I and D from
   // freaking out)
