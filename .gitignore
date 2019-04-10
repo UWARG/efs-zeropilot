@@ -28,6 +28,7 @@
 .settings/
 .project
 mx.scratch
+.idea/
 
 # Generated environment files
 **/*flash.gdbinit
