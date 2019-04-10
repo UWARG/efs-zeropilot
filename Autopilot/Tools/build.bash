@@ -88,6 +88,8 @@ cmake -E chdir $BUILD_DIR \
     -G "${GENERATOR}" \
     -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
     -DCMAKE_TOOLCHAIN_FILE="STM32F765xG.cmake" \
+    -Wdev\
+    -Wdeprecated\
     ../
 
 cmake --build $BUILD_DIR
