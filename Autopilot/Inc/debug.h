@@ -16,10 +16,6 @@ extern "C" {
 #define DBG_TYPE DBG_UART
 #endif
 
-#ifndef NDEBUG
-#define DEBUG
-#endif
-
 #ifdef DEBUG
 #define debug(fmt, ...) { \
     vTaskSuspendAll(); \

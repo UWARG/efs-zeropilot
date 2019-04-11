@@ -18,8 +18,8 @@
   <component name="ChangeListManager">
     <list default="true" id="9984d8f7-7223-452e-ba43-118cfa81d3bf" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Inc/debug.h" beforeDir="false" afterPath="$PROJECT_DIR$/Inc/debug.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/STM32F765xG.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/STM32F765xG.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Src/main.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Safety/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Safety/STM32F030xx.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/STM32F030xx.cmake" afterDir="false" />
     </list>
@@ -33,7 +33,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Release" />
   <component name="FileEditorManager">
     <leaf>
       <file pinned="false" current-in-tab="false">
@@ -63,18 +63,22 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/STM32F765xG.cmake">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="558">
-              <caret line="31" column="62" selection-start-line="31" selection-start-column="62" selection-end-line="31" selection-end-column="62" />
+            <state relative-caret-position="612">
+              <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Src/NMEAParser.c">
-          <provider selected="true" editor-type-id="text-editor" />
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Inc/debug.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="288">
+              <caret line="18" column="12" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
+            </state>
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
@@ -150,6 +154,7 @@
         <option value="$PROJECT_DIR$/Autopilot/STM32F765xG.cmake" />
         <option value="$PROJECT_DIR$/Src/main.cpp" />
         <option value="$PROJECT_DIR$/STM32F765xG.cmake" />
+        <option value="$PROJECT_DIR$/Inc/debug.h" />
       </list>
     </option>
   </component>
@@ -275,12 +280,12 @@
       <workItem from="1554998974895" duration="351000" />
       <workItem from="1554999430598" duration="145000" />
       <workItem from="1554999716525" duration="63000" />
-      <workItem from="1555000541635" duration="675000" />
+      <workItem from="1555000541635" duration="1205000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="28098000" />
+    <option name="totallyTimeSpent" value="28628000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1280" y="23" width="1280" height="1326" extended-state="0" />
@@ -314,7 +319,6 @@
     </ignored-roots>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Autopilot/Src/i2c.c" />
     <entry file="file:///Volumes/USB/ZeropilotV1/Src/i2c.c" />
     <entry file="file://$PROJECT_DIR$/Autopilot/Inc/main.h" />
     <entry file="file://$PROJECT_DIR$/Autopilot/Src/eeprom.c" />
@@ -418,8 +422,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/STM32F765xG.cmake">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="558">
-          <caret line="31" column="62" selection-start-line="31" selection-start-column="62" selection-end-line="31" selection-end-column="62" />
+        <state relative-caret-position="612">
+          <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Inc/debug.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="18" column="12" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
         </state>
       </provider>
     </entry>
