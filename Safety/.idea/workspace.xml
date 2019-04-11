@@ -15,21 +15,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b5be5f50-f4c4-463e-8fde-f7ee0b375f2a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../.idea/runConfigurations/Autopilot_elf_ZeropilotV1_STLINKV2.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/runConfigurations/OCD_ZeropilotV1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/STM32F765xG.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/STM32F765xG.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/ZeropilotRev1.ioc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/stlinkv2-1-openocd.cfg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/stlinkv2-openocd.cfg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Drivers/Peripherals/Inc/Interchip_S.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Drivers/Peripherals/Src/Interchip_S.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Safety.ioc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project.mk" beforeDir="false" />
-    </list>
+    <list default="true" id="b5be5f50-f4c4-463e-8fde-f7ee0b375f2a" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/cmake-build-release/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -136,12 +122,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1554995831945</updated>
-      <workItem from="1554995833341" duration="716000" />
+      <workItem from="1554995833341" duration="1017000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="716000" />
+    <option name="totallyTimeSpent" value="1017000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1280" y="23" width="1280" height="1326" extended-state="0" />
