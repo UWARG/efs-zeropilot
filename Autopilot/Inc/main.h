@@ -49,7 +49,13 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 /* Includes ------------------------------------------------------------------*/
+#include "stm32f7xx_hal.h"
+
 /* USER CODE BEGIN Includes */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -58,6 +64,8 @@
 /* USER CODE END Includes */
 
 /* Private define ------------------------------------------------------------*/
+
+void Error_Handler(void);
 
 #define AIRSPD_ADC_Pin GPIO_PIN_0
 #define AIRSPD_ADC_GPIO_Port GPIOC
@@ -73,10 +81,6 @@
 #define LED3_GPIO_Port GPIOE
 #define MEM_WC_Pin GPIO_PIN_13
 #define MEM_WC_GPIO_Port GPIOE
-#define PW_GOOD_EXT_Pin GPIO_PIN_14
-#define PW_GOOD_EXT_GPIO_Port GPIOE
-#define PW_GOOD_INT_Pin GPIO_PIN_15
-#define PW_GOOD_INT_GPIO_Port GPIOE
 #define USONIC_IC_Pin GPIO_PIN_8
 #define USONIC_IC_GPIO_Port GPIOB
 #define USONIC_OC_Pin GPIO_PIN_9
@@ -95,12 +99,6 @@ typedef uint16_t halfword_t;
 typedef uint32_t word_t;
 /* USER CODE END Private defines */
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-void _Error_Handler(const char *, int);
-
-#define Error_Handler() _Error_Handler(__FILE__, __LINE__)
 #ifdef __cplusplus
 }
 #endif
