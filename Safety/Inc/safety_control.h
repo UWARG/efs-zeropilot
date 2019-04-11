@@ -3,7 +3,7 @@
 #define SAFETY_CONTROL_H
 
 #include <stdlib.h>
-#include "Interchip_S.h"
+#include "interchip_S.h"
 #include "PWM.h"
 #include "spi.h"
 

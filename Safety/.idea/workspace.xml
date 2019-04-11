@@ -16,11 +16,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5be5f50-f4c4-463e-8fde-f7ee0b375f2a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../Autopilot/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Inc/debug.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Inc/debug.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/STM32F765xG.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/STM32F765xG.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/STM32F030xx.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/STM32F030xx.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Inc/safety_control.h" beforeDir="false" afterPath="$PROJECT_DIR$/Inc/safety_control.h" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/cmake-build-release/" />
@@ -42,7 +38,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Src/interchip_S.c">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="54">
@@ -50,6 +46,15 @@
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Inc/safety_control.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="90">
+              <caret line="5" column="11" selection-start-line="5" selection-start-column="11" selection-end-line="5" selection-end-column="11" />
             </state>
           </provider>
         </entry>
@@ -92,6 +97,7 @@
         <option value="$PROJECT_DIR$/Src/interchip_S.c" />
         <option value="$PROJECT_DIR$/STM32F030xx.cmake" />
         <option value="$PROJECT_DIR$/Inc/debug.h" />
+        <option value="$PROJECT_DIR$/Inc/safety_control.h" />
       </list>
     </option>
   </component>
@@ -199,12 +205,12 @@
       <option name="presentableId" value="Default" />
       <updated>1554995831945</updated>
       <workItem from="1554995833341" duration="1017000" />
-      <workItem from="1554999781330" duration="1822000" />
+      <workItem from="1554999781330" duration="1872000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2839000" />
+    <option name="totallyTimeSpent" value="2889000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="1326" extended-state="0" />
@@ -274,6 +280,13 @@
           <folding>
             <element signature="e#0#24#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Inc/safety_control.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="5" column="11" selection-start-line="5" selection-start-column="11" selection-end-line="5" selection-end-column="11" />
         </state>
       </provider>
     </entry>
