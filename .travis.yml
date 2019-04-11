@@ -25,4 +25,4 @@ install:
 
 script:
   - cd $TARGET
-  - ./Tools/build.bash
+  - ./Tools/build.bash -c
