@@ -74,3 +74,9 @@ install(CODE
     COMMAND ${INSTALL_CMD} ${INSTALL_OPTS}
   )"
 )
+
+add_custom_target(UPLOAD
+        arm-none-eabi-gdb -iex "target remote tcp:127.0.0.1:3333"
+        -iex "monitor program $<TARGET_FILE:${PROJECT_NAME}.elf>"
+        -iex "monitor reset init"
+        -iex "disconnect" -iex "quit")
