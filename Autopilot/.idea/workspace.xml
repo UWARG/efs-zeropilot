@@ -17,14 +17,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9984d8f7-7223-452e-ba43-118cfa81d3bf" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/ZeroPilot-SW.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/runConfigurations/Autopilot_elf___ZeropilotV1___STLINKV2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Safety/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/Autopilot/cmake-build-debug/" />
@@ -81,9 +74,9 @@
     </option>
   </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="23" />
-    <option name="width" value="2560" />
+    <option name="width" value="1280" />
     <option name="height" value="1326" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -92,7 +85,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane" />
       <pane id="Scope">
         <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
           <expand>
@@ -104,12 +96,14 @@
           <select />
         </subPane>
       </pane>
+      <pane id="ProjectPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.C/C++" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -128,7 +122,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="OpenOCD Download &amp; Run.Autopilot.elf | NUCLEO DISCOVERY">
+  <component name="RunManager" selected="Application.Autopilot">
     <configuration name="Autopilot" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Autopilot" TARGET_NAME="Autopilot.elf" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Autopilot" RUN_TARGET_NAME="Autopilot.elf">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -163,9 +157,9 @@
     </configuration>
     <list>
       <item itemvalue="Application.Autopilot" />
-      <item itemvalue="Application.UPLOAD" />
-      <item itemvalue="Application.STM32_HAL" />
       <item itemvalue="Application.FreeRTOS" />
+      <item itemvalue="Application.STM32_HAL" />
+      <item itemvalue="Application.UPLOAD" />
       <item itemvalue="OpenOCD Download &amp; Run.Autopilot.elf | NUCLEO DISCOVERY" />
       <item itemvalue="OpenOCD Download &amp; Run.Autopilot.elf | ZeropilotV1 | STLINKV2" />
       <item itemvalue="OpenOCD Download &amp; Run.Autopilot.elf | ZeropilotV1 | STLINKV2.1" />
@@ -189,17 +183,22 @@
       <workItem from="1554949940421" duration="3263000" />
       <workItem from="1554995697745" duration="1229000" />
       <workItem from="1554996952863" duration="99000" />
-      <workItem from="1554997070246" duration="23000" />
+      <workItem from="1554997070246" duration="662000" />
+      <workItem from="1554997819913" duration="650000" />
+      <workItem from="1554998644833" duration="288000" />
+      <workItem from="1554998974895" duration="351000" />
+      <workItem from="1554999430598" duration="145000" />
+      <workItem from="1554999716525" duration="63000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="25287000" />
+    <option name="totallyTimeSpent" value="27423000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="2560" height="1326" extended-state="0" />
+    <frame x="0" y="23" width="2560" height="1326" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27323273" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16481334" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -227,7 +226,6 @@
     </ignored-roots>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file:///Volumes/USB/ZeropilotV1/Inc/adc.h" />
     <entry file="file:///Volumes/USB/ZeropilotV1/Inc/FreeRTOSConfig.h" />
     <entry file="file://$PROJECT_DIR$/Autopilot/Inc/gpio.h" />
     <entry file="file:///Volumes/USB/ZeropilotV1/Inc/gpio.h" />
@@ -266,13 +264,6 @@
     <entry file="file://$PROJECT_DIR$/Autopilot/.project" />
     <entry file="file://$PROJECT_DIR$/Autopilot/.cproject" />
     <entry file="file://$PROJECT_DIR$/Autopilot/build/CMakeCache.txt" />
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="202">
-          <caret line="37" column="5" lean-forward="true" selection-start-line="37" selection-start-column="5" selection-end-line="37" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Autopilot/autopilot.envrc" />
     <entry file="file://$PROJECT_DIR$/Autopilot/Middlewares/Third_Party/FreeRTOS/Source/tasks.c" />
     <entry file="file://$PROJECT_DIR$/Autopilot/stlinkv2-1-openocd.cfg" />
@@ -284,5 +275,13 @@
     <entry file="file://$PROJECT_DIR$/Autopilot/STM32F765xG.cmake" />
     <entry file="file://$PROJECT_DIR$/Autopilot/CMakeLists.txt" />
     <entry file="file://$PROJECT_DIR$/README.md" />
+    <entry file="file://$PROJECT_DIR$/.gitignore" />
+    <entry file="file://$PROJECT_DIR$/Src/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2250">
+          <caret line="98" lean-forward="true" selection-start-line="98" selection-end-line="98" />
+        </state>
+      </provider>
+    </entry>
   </component>
 </project>
