@@ -1,4 +1,4 @@
-#include "Interchip_S.h"
+#include "interchip_S.h"
 #include "debug.h"
 #include <stdio.h>
 #include "spi.h"
