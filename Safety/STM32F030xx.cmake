@@ -2,7 +2,6 @@
 # Use the -DCMAKE_TOOLCHAIN_FILE flag in cmake
 # Sometimes we need to compile for x86 for things like unit tests, in which case this file
 # shouldn't be included in the toolchain
-
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 set(CMAKE_SYSTEM_VERSION 1)
@@ -16,15 +15,9 @@ set(CMAKE_SIZE arm-none-eabi-size CACHE INTERNAL "")
 
 
 # ARM compiler options
-set(MCU_CPU cortex-m7)
-set(MCU_FPU fpv5-d16)
-set(MCU_FLOAT_ABI hard)
-
-
+set(MCU_CPU cortex-m0)
+set(MCU_FLOAT_ABI soft) # since we don't have a floating point unit on this chip. Otherwise should be hard
 set(MCU_FLAGS "-mcpu=${MCU_CPU} -mthumb -mfloat-abi=${MCU_FLOAT_ABI}")
-if (MCU_FLOAT_ABI STREQUAL hard)
-    set(MCU_FLAGS "${MCU_FLAGS} -mfpu=${MCU_FPU}")
-endif ()
 
 set(COMMON_FLAGS "${MCU_FLAGS} -Wall -ffunction-sections -fdata-sections")
 

@@ -16,6 +16,10 @@
 *.hex
 *.bin
 
+# Regular Makefiles arent necessary since we're using Cmake as our buildsystem for everything
+Makefile
+project.mk
+
 # STM32CubeMX generated files
 .mxproject
 
@@ -36,7 +40,6 @@ mx.scratch
 
 # Temp files
 *.swp
-
 
 # Created by https://www.gitignore.io/api/clion
 # Edit at https://www.gitignore.io/?templates=clion
