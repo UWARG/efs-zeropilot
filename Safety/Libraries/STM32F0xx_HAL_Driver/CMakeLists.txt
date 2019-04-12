@@ -8,5 +8,5 @@ file(GLOB_RECURSE HAL_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/Inc/*.h")
 add_library(${PROJECT_NAME} STATIC ${HAL_SOURCES} ${HAL_HEADERS})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/Inc
+        Inc
 )

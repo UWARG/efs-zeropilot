@@ -13,15 +13,17 @@ add_definitions(
 include_directories(
   Inc
   ../Common/Inc
-  Drivers/CMSIS/Include
-  Drivers/CMSIS/Device/ST/STM32F0xx/Include
+        Libraries/CMSIS/Include
+        Libraries/CMSIS/Device/ST/STM32F0xx/Include
   Lib
 )
 
 
 # Libraries
-add_subdirectory(Drivers/STM32F0xx_HAL_Driver)
+add_subdirectory(Libraries/STM32F0xx_HAL_Driver)
 
+# Tests
+add_subdirectory(Tests)
 
 file(GLOB_RECURSE C_SOURCES "Src/*.c")
 file(GLOB_RECURSE CXX_SOURCES "Src/*.cpp")
@@ -64,6 +66,7 @@ install(CODE
     COMMAND ${INSTALL_CMD} ${INSTALL_OPTS}
   )"
 )
+
 
 add_custom_target(UPLOAD
         arm-none-eabi-gdb -iex "target remote tcp:127.0.0.1:3333"

@@ -17,7 +17,72 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9984d8f7-7223-452e-ba43-118cfa81d3bf" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../Safety/Inc/safety_control.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Inc/safety_control.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Safety/Tests/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Device/ST/STM32F0xx/Include/stm32f030xc.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Device/ST/STM32F0xx/Include/stm32f030xc.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Device/ST/STM32F0xx/Include/stm32f0xx.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Device/ST/STM32F0xx/Include/stm32f0xx.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Device/ST/STM32F0xx/Include/system_stm32f0xx.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Device/ST/STM32F0xx/Include/system_stm32f0xx.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/arm_common_tables.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/arm_common_tables.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/arm_const_structs.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/arm_const_structs.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/arm_math.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/arm_math.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/cmsis_armcc.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/cmsis_armcc.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/cmsis_armcc_V6.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/cmsis_armcc_V6.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/cmsis_gcc.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/cmsis_gcc.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/core_cm0.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/core_cm0.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/core_cm0plus.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/core_cm0plus.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/core_cm3.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/core_cm3.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/core_cm4.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/core_cm4.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/core_cm7.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/core_cm7.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/core_cmFunc.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/core_cmFunc.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/core_cmInstr.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/core_cmInstr.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/core_cmSimd.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/core_cmSimd.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/core_sc000.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/core_sc000.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/CMSIS/Include/core_sc300.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/CMSIS/Include/core_sc300.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_cortex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_cortex.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_def.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_def.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_dma.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_dma.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_dma_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_dma_ex.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_flash.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_flash.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_flash_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_flash_ex.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_gpio.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_gpio.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_gpio_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_gpio_ex.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_i2c.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_i2c.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_i2c_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_i2c_ex.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_iwdg.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_iwdg.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_pwr.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_pwr.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_pwr_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_pwr_ex.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_rcc.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_rcc.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_rcc_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_rcc_ex.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_spi.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_spi.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_spi_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_spi_ex.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim_ex.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_cortex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_cortex.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_dma.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_dma.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_flash.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_flash.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_flash_ex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_flash_ex.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_gpio.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_gpio.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_i2c.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_i2c.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_i2c_ex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_i2c_ex.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_iwdg.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_iwdg.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_pwr.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_pwr.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_pwr_ex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_pwr_ex.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rcc.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rcc.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rcc_ex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rcc_ex.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi_ex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi_ex.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim_ex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim_ex.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_uart.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_uart.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_uart_ex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_uart_ex.c" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/Autopilot/cmake-build-debug/" />
@@ -43,68 +108,12 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Src/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="578">
-              <caret line="200" column="35" selection-start-line="200" selection-start-column="35" selection-end-line="200" selection-end-column="35" />
+            <state relative-caret-position="484">
+              <caret line="215" column="22" selection-start-line="215" selection-start-column="22" selection-end-line="215" selection-end-column="22" />
             </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-780" />
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/STM32F765xG.cmake">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="612">
-              <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Inc/debug.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="23" column="5" lean-forward="true" selection-start-line="23" selection-start-column="5" selection-end-line="23" selection-end-column="5" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Src/PID.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-730" />
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Src/spi.c">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Src/reset_cause.c">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Src/stm32f7xx_hal_msp.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1432" />
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Src/usart.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-6022" />
           </provider>
         </entry>
       </file>
@@ -161,7 +170,9 @@
     <option name="width" value="1280" />
     <option name="height" value="1326" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectView">
     <navigator currentView="Scope" currentSubView="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope" proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -276,12 +287,12 @@
       <workItem from="1554998974895" duration="351000" />
       <workItem from="1554999430598" duration="145000" />
       <workItem from="1554999716525" duration="63000" />
-      <workItem from="1555000541635" duration="1254000" />
+      <workItem from="1555000541635" duration="2807000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="28677000" />
+    <option name="totallyTimeSpent" value="30230000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1280" y="23" width="1280" height="1326" extended-state="0" />
@@ -404,13 +415,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Src/main.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="578">
-          <caret line="200" column="35" selection-start-line="200" selection-start-column="35" selection-end-line="200" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-780" />
@@ -425,8 +429,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/STM32F765xG.cmake">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
+        <state relative-caret-position="342">
+          <caret line="19" column="5" selection-start-line="19" selection-start-column="5" selection-end-line="19" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="484">
+          <caret line="215" column="22" selection-start-line="215" selection-start-column="22" selection-end-line="215" selection-end-column="22" />
         </state>
       </provider>
     </entry>
