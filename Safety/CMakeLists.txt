@@ -11,13 +11,14 @@ add_definitions(
 )
 
 include_directories(
-  Inc
-  ../Common/Inc
+        Inc
+        ../Common/Inc
         Libraries/CMSIS/Include
         Libraries/CMSIS/Device/ST/STM32F0xx/Include
-  Lib
+        Libraries/Drivers/Inc
+        Libraries/Drivers/Inc/stm32f0
+        Lib
 )
-
 
 # Libraries
 add_subdirectory(Libraries/STM32F0xx_HAL_Driver)
@@ -25,17 +26,13 @@ add_subdirectory(Libraries/STM32F0xx_HAL_Driver)
 # Tests
 add_subdirectory(Tests)
 
-file(GLOB_RECURSE C_SOURCES "Src/*.c")
-file(GLOB_RECURSE CXX_SOURCES "Src/*.cpp")
-file(GLOB_RECURSE C_INC "Inc/*.h")
-file(GLOB_RECURSE CXX_INC "Inc/*.hpp")
-
+file(GLOB_RECURSE C_SOURCES "Src/*.c" "Libraries/Drivers/Src/stm32f0/*.c")
+file(GLOB_RECURSE CXX_SOURCES "Src/*.cpp" "Libraries/Drivers/Src/stm32f0/*.cpp")
 
 set(STARTUP_ASM startup_stm32f030xc.s)
 set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F030RCTx_FLASH.ld)
 
-
-add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${C_INC} ${CXX_INC} ${STARTUP_ASM})
+add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${STARTUP_ASM})
 
 target_link_libraries(${ELF_NAME} STM32_HAL)
 
