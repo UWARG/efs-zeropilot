@@ -1,11 +1,9 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
+    <option name="AUTODETECT_INDENTS" value="false" />
     <Objective-C>
       <option name="INDENT_NAMESPACE_MEMBERS" value="0" />
-      <option name="INDENT_C_STRUCT_MEMBERS" value="2" />
-      <option name="INDENT_CLASS_MEMBERS" value="2" />
       <option name="INDENT_VISIBILITY_KEYWORDS" value="1" />
-      <option name="INDENT_INSIDE_CODE_BLOCK" value="2" />
       <option name="KEEP_STRUCTURES_IN_ONE_LINE" value="true" />
       <option name="KEEP_CASE_EXPRESSIONS_IN_ONE_LINE" value="true" />
       <option name="FUNCTION_NON_TOP_AFTER_RETURN_TYPE_WRAP" value="0" />
@@ -31,8 +29,8 @@
       <option name="FOR_STATEMENT_WRAP" value="1" />
       <option name="ASSIGNMENT_WRAP" value="1" />
       <indentOptions>
-        <option name="INDENT_SIZE" value="2" />
         <option name="CONTINUATION_INDENT_SIZE" value="4" />
+        <option name="USE_TAB_CHARACTER" value="true" />
       </indentOptions>
     </codeStyleSettings>
   </code_scheme>
