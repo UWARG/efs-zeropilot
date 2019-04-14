@@ -18,15 +18,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5be5f50-f4c4-463e-8fde-f7ee0b375f2a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Inc/main.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Inc/gpio.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Inc/i2c.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/STM32F030xx.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/STM32F030xx.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Src/gpio.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Src/i2c.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Src/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/Src/main.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Inc/iwdg.h" beforeDir="false" afterPath="$PROJECT_DIR$/Inc/iwdg.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Inc/main.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Inc/spi.h" beforeDir="false" afterPath="$PROJECT_DIR$/Inc/spi.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Inc/tim.h" beforeDir="false" afterPath="$PROJECT_DIR$/Inc/tim.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Inc/usart.h" beforeDir="false" afterPath="$PROJECT_DIR$/Inc/usart.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Inc/GPIO.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Inc/GPIO.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Inc/I2C.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Inc/I2C.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_hal_conf.h" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_hal_conf.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_it.h" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_it.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/GPIO.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/GPIO.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/I2C.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/I2C.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/x86/GPIO.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/x86/GPIO.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Src/PWM.c" beforeDir="false" afterPath="$PROJECT_DIR$/Src/PWM.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Src/debug.c" beforeDir="false" afterPath="$PROJECT_DIR$/Src/debug.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Src/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/Src/main.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Src/tim.c" beforeDir="false" afterPath="$PROJECT_DIR$/Src/tim.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Src/usart.c" beforeDir="false" afterPath="$PROJECT_DIR$/Src/usart.c" afterDir="false" />
     </list>
@@ -43,10 +51,13 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/Status.hpp">
+        <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/GPIO.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="5" column="23" selection-start-line="5" selection-start-column="23" selection-end-line="5" selection-end-column="23" />
+            <state relative-caret-position="1350">
+              <caret line="75" selection-start-line="75" selection-end-line="75" />
+              <folding>
+                <element signature="e#277#296#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -54,54 +65,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/GPIO.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="8" column="4" selection-start-line="8" selection-start-column="4" selection-end-line="8" selection-end-column="4" />
+            <state relative-caret-position="444">
+              <caret line="93" selection-start-line="93" selection-end-line="99" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Src/spi.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="17" column="24" selection-start-line="17" selection-start-column="24" selection-end-line="17" selection-end-column="24" />
-              <folding>
-                <marker date="1552924068529" expanded="true" signature="0:5165" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Src/tim.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret selection-end-line="691" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Src/main.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="18">
-              <caret line="44" column="18" selection-start-line="44" selection-start-column="18" selection-end-line="44" selection-end-column="18" />
-              <folding>
-                <element signature="e#2287#2304#0" expanded="true" />
-                <marker date="1555181066240" expanded="false" signature="3521:4079" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Libraries/CMSIS/Device/ST/STM32F0xx/Include/stm32f030xc.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="895">
-              <caret line="562" column="13" selection-start-line="562" selection-start-column="8" selection-end-line="562" selection-end-column="13" />
             </state>
           </provider>
         </entry>
@@ -109,8 +77,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/x86/GPIO.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="720">
-              <caret line="40" column="43" selection-start-line="40" selection-start-column="43" selection-end-line="40" selection-end-column="43" />
+            <state relative-caret-position="774">
+              <caret line="43" column="33" selection-start-line="43" selection-start-column="33" selection-end-line="43" selection-end-column="33" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -119,32 +87,75 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Src/usart.c">
+        <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/x86/I2C.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="577">
-              <caret line="57" column="34" lean-forward="true" selection-start-line="57" selection-start-column="34" selection-end-line="57" selection-end-column="34" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Src/PWM.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="18">
-              <caret line="123" lean-forward="true" selection-start-line="123" selection-end-line="123" />
+            <state relative-caret-position="252">
+              <caret line="14" selection-start-line="14" selection-end-line="14" />
               <folding>
-                <element signature="e#0#16#0" expanded="true" />
-                <marker date="1552924068528" expanded="false" signature="0:3423" ph="..." />
+                <element signature="e#0#18#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/GPIO.hpp">
+        <entry file="file://$PROJECT_DIR$/Src/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="342">
-              <caret line="19" column="19" selection-start-line="19" selection-start-column="19" selection-end-line="19" selection-end-column="19" />
+            <state relative-caret-position="546">
+              <caret line="97" selection-start-line="97" selection-end-line="97" />
+              <folding>
+                <element signature="e#2287#2304#0" expanded="true" />
+                <element signature="e#2364#2382#0" expanded="true" />
+                <marker date="1555258461098" expanded="true" signature="3501:4165" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Inc/main.hpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="306">
+              <caret line="17" column="16" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="16" />
+              <folding>
+                <element signature="e#1734#1746#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="21">
+              <caret line="17" column="29" selection-start-line="17" selection-start-column="29" selection-end-line="17" selection-end-column="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_hal_conf.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="756">
+              <caret line="42" selection-start-line="42" selection-end-line="42" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_it.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="437">
+              <caret line="42" column="26" selection-start-line="42" selection-start-column="26" selection-end-line="42" selection-end-column="26" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_gpio.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="251">
+              <caret line="304" column="3" selection-start-line="304" selection-start-column="3" selection-end-line="304" selection-end-column="3" />
             </state>
           </provider>
         </entry>
@@ -158,6 +169,8 @@
       <find>GPIO_speed</find>
       <find>GPIO_mode</find>
       <find>HAL_GPIO_WritePin</find>
+      <find>DMA</find>
+      <find>PWM1_Pin</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -173,24 +186,30 @@
         <option value="$PROJECT_DIR$/Tests/CMakeLists.cmake" />
         <option value="$PROJECT_DIR$/Tests/main.cpp" />
         <option value="$PROJECT_DIR$/Tests/Src/main.cpp" />
-        <option value="$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/Tests/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/Src/i2c.c" />
         <option value="$PROJECT_DIR$/STM32F030xx.cmake" />
-        <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/I2C.hpp" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Src/x86/I2C.cpp" />
-        <option value="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/I2C.cpp" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/SPI.cpp" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/SPI.hpp" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/Status.hpp" />
-        <option value="$PROJECT_DIR$/Libraries/Drivers/Src/x86/GPIO.cpp" />
-        <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/GPIO.hpp" />
-        <option value="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/GPIO.cpp" />
         <option value="$PROJECT_DIR$/Src/usart.c" />
         <option value="$PROJECT_DIR$/Src/tim.c" />
+        <option value="$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_i2c.h" />
+        <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/I2C.hpp" />
+        <option value="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/I2C.cpp" />
+        <option value="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/GPIO.cpp" />
+        <option value="$PROJECT_DIR$/Libraries/Drivers/Src/x86/GPIO.cpp" />
+        <option value="$PROJECT_DIR$/Inc/main.h" />
         <option value="$PROJECT_DIR$/Src/main.c" />
+        <option value="$PROJECT_DIR$/Src/main.cpp" />
+        <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/GPIO.hpp" />
+        <option value="$PROJECT_DIR$/Inc/main.hpp" />
+        <option value="$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_hal_conf.h" />
+        <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_it.h" />
       </list>
     </option>
   </component>
@@ -364,12 +383,12 @@
       <updated>1554995831945</updated>
       <workItem from="1554995833341" duration="1017000" />
       <workItem from="1554999781330" duration="14017000" />
-      <workItem from="1555138792269" duration="12828000" />
+      <workItem from="1555138792269" duration="19300000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="27862000" />
+    <option name="totallyTimeSpent" value="34334000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="2560" height="1326" extended-state="6" />
@@ -458,11 +477,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_it.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-387" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/stm32f0xx_hal_msp.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="56">
@@ -470,27 +484,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_hal_conf.h">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_dma.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="93" column="21" selection-start-line="93" selection-start-column="21" selection-end-line="93" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Tests/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="252">
           <caret line="14" column="28" lean-forward="true" selection-start-line="14" selection-start-column="28" selection-end-line="14" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="12" selection-start-line="12" selection-end-line="12" />
         </state>
       </provider>
     </entry>
@@ -539,20 +536,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_dma.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2718">
-          <caret line="151" column="2" selection-start-line="151" selection-start-column="2" selection-end-line="151" selection-end-column="2" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_i2c.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="236">
-          <caret line="539" selection-start-line="539" selection-end-line="546" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Inc/i2c.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="266">
@@ -561,13 +544,6 @@
             <element signature="e#2412#2424#0" expanded="true" />
             <element signature="e#2514#2540#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="786">
-          <caret line="48" lean-forward="true" selection-start-line="48" selection-end-line="48" />
         </state>
       </provider>
     </entry>
@@ -583,23 +559,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Inc/main.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
-          <caret line="58" column="30" selection-start-line="58" selection-start-column="19" selection-end-line="58" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/x86/I2C.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="14" selection-start-line="14" selection-end-line="14" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../Autopilot/Tools/file.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="162">
@@ -611,23 +570,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
           <caret line="495" column="8" selection-start-line="495" selection-start-column="8" selection-end-line="495" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/I2C.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-334">
-          <caret line="21" column="29" lean-forward="true" selection-start-line="21" selection-start-column="29" selection-end-line="21" selection-end-column="29" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_gpio.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
-          <caret line="391" column="7" selection-start-line="391" selection-end-line="391" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -663,61 +605,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/I2C.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="594">
-          <caret line="33" column="51" selection-start-line="33" selection-start-column="51" selection-end-line="33" selection-end-column="51" />
-          <folding>
-            <element signature="e#14#33#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_gpio.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="277">
-          <caret line="278" column="5" lean-forward="true" selection-start-line="278" selection-start-column="5" selection-end-line="278" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/CMSIS/Device/ST/STM32F0xx/Include/stm32f030xc.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="895">
-          <caret line="562" column="13" selection-start-line="562" selection-start-column="8" selection-end-line="562" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/x86/GPIO.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="720">
-          <caret line="40" column="43" selection-start-line="40" selection-start-column="43" selection-end-line="40" selection-end-column="43" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/Status.hpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
           <caret line="5" column="23" selection-start-line="5" selection-start-column="23" selection-end-line="5" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/GPIO.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="19" column="19" selection-start-line="19" selection-start-column="19" selection-end-line="19" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/GPIO.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" column="4" selection-start-line="8" selection-start-column="4" selection-end-line="8" selection-end-column="4" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -731,14 +622,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Src/PWM.c">
+    <entry file="file://$PROJECT_DIR$/Src/tim.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="123" lean-forward="true" selection-start-line="123" selection-end-line="123" />
-          <folding>
-            <element signature="e#0#16#0" expanded="true" />
-            <marker date="1552924068528" expanded="false" signature="0:3423" ph="..." />
-          </folding>
+        <state>
+          <caret selection-end-line="691" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/CMSIS/Device/ST/STM32F0xx/Include/stm32f030xc.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="895">
+          <caret line="562" column="13" selection-start-line="562" selection-start-column="8" selection-end-line="562" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -749,21 +643,173 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Src/tim.c">
+    <entry file="file://$PROJECT_DIR$/Src/PWM.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="691" />
+        <state relative-caret-position="18">
+          <caret line="123" lean-forward="true" selection-start-line="123" selection-end-line="123" />
+          <folding>
+            <element signature="e#0#16#0" expanded="true" />
+            <marker date="1552924068528" expanded="false" signature="0:3423" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Src/main.c">
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_dma.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="44" column="18" selection-start-line="44" selection-start-column="18" selection-end-line="44" selection-end-column="18" />
+        <state relative-caret-position="358">
+          <caret line="130" column="28" selection-start-line="130" selection-start-column="24" selection-end-line="130" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_i2c.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="691">
+          <caret line="568" column="28" selection-start-line="568" selection-start-column="28" selection-end-line="568" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_i2c.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="513">
+          <caret line="427" column="4" selection-start-line="427" selection-start-column="4" selection-end-line="427" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_gpio.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="266">
+          <caret line="136" column="9" selection-start-line="136" selection-start-column="9" selection-end-line="136" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/I2C.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1548">
+          <caret line="86" column="16" selection-start-line="86" selection-start-column="16" selection-end-line="86" selection-end-column="16" />
+          <folding>
+            <element signature="e#285#304#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/I2C.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="560">
+          <caret line="124" column="15" selection-start-line="124" selection-start-column="15" selection-end-line="124" selection-end-column="15" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_gpio.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="251">
+          <caret line="304" column="3" selection-start-line="304" selection-start-column="3" selection-end-line="304" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/x86/GPIO.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="774">
+          <caret line="43" column="33" selection-start-line="43" selection-start-column="33" selection-end-line="43" selection-end-column="33" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/x86/I2C.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Inc/tim.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="66" column="5" selection-start-line="66" selection-start-column="5" selection-end-line="66" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/GPIO.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="444">
+          <caret line="93" selection-start-line="93" selection-end-line="99" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="546">
+          <caret line="97" selection-start-line="97" selection-end-line="97" />
           <folding>
             <element signature="e#2287#2304#0" expanded="true" />
-            <marker date="1555181066240" expanded="false" signature="3521:4079" ph="..." />
+            <element signature="e#2364#2382#0" expanded="true" />
+            <marker date="1555258461098" expanded="true" signature="3501:4165" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/GPIO.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1350">
+          <caret line="75" selection-start-line="75" selection-end-line="75" />
+          <folding>
+            <element signature="e#277#296#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_dma.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1674">
+          <caret line="93" selection-start-line="93" selection-end-line="93" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="21">
+          <caret line="17" column="29" selection-start-line="17" selection-start-column="29" selection-end-line="17" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Inc/main.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="17" column="16" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="16" />
+          <folding>
+            <element signature="e#1734#1746#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_hal_conf.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="756">
+          <caret line="42" selection-start-line="42" selection-end-line="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_it.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="437">
+          <caret line="42" column="26" selection-start-line="42" selection-start-column="26" selection-end-line="42" selection-end-column="26" />
         </state>
       </provider>
     </entry>

@@ -37,18 +37,13 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
+#include "main.hpp"
 #include "stm32f0xx_hal.h"
-#include "i2c.h"
-#include "iwdg.h"
-#include "spi.h"
-#include "tim.h"
-#include "usart.h"
-#include "gpio.h"
 
 /* USER CODE BEGIN Includes */
 #include "debug.h"
 #include "safety_control.h"
+#include "GPIO.hpp"
 
 /* USER CODE END Includes */
 
@@ -95,9 +90,15 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_I2C1_Init();
-  MX_SPI1_Init();
+
+  StatusCode status;
+
+  status = gpio_init();
+
+
+
+
+//  MX_SPI1_Init();
   MX_TIM1_Init();
   MX_TIM3_Init();
   MX_TIM14_Init();
@@ -106,13 +107,14 @@ int main(void)
   MX_TIM17_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
-  MX_IWDG_Init();
+//  MX_IWDG_Init();
 
   /* USER CODE BEGIN 2 */
 
   debug("\r\n\r\nStarting up...");
   debug("Compiled on %s at %s", __DATE__, __TIME__);
 
+  GPIOPort led1 = GPIOPin(LED1_GPIO_PORT, LED1_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
