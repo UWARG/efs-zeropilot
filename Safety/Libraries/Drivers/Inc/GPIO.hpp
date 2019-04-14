@@ -7,12 +7,13 @@
 
 #pragma once
 
+#include <stdint.h>
 #include "Status.hpp"
 
 /**
  * Available GPIO ports. Not all may be valid for the system! Read the datasheet
  */
-typedef enum {
+typedef enum GPIOPort {
 	GPIO_PORT_A = 0,
 	GPIO_PORT_B,
 	GPIO_PORT_C,
@@ -27,7 +28,7 @@ typedef uint8_t GPIOPinNum;
  * Direction of the GPIO pin. Can be input, output, our open-drain (OD) output
  * Use the ALT modes if the GPIO pin is being used for another purpose, such as SPI, I2C, etc..
  */
-typedef enum {
+typedef enum GPIOMode {
 	GPIO_INPUT = 0,
 	GPIO_OUTPUT, //output push-pull
 	GPIO_OUTPUT_OD, //output open-drain
@@ -38,7 +39,7 @@ typedef enum {
 /**
  * State of the pin. Only valid if its an output. High or Low
  */
-typedef enum {
+typedef enum GPIOState {
 	GPIO_STATE_LOW = 0,
 	GPIO_STATE_HIGH
 } GPIOState;
@@ -46,7 +47,7 @@ typedef enum {
 /**
  * Internal pull-up/pull-down resistor state of the pin
  */
-typedef enum {
+typedef enum GPIOResistorState {
 	GPIO_RES_NONE = 0,
 	GPIO_RES_PULLUP,
 	GPIO_RES_PULLDOWN
@@ -55,7 +56,7 @@ typedef enum {
 /**
  * Low speeds for regular GPIO functions. High speeds when they're used for interfaces like SPI, I2C, etc..
  */
-typedef enum {
+typedef enum GPIOSpeed {
 	GPIO_SPEED_LOW,
 	GPIO_SPEED_MED,
 	GPIO_SPEED_HIGH
@@ -104,6 +105,12 @@ class GPIOPin {
 	 * @return
 	 */
 	StatusCode get_state(GPIOState &state);
+
+	/**
+	 * Resets the pin to its default state.
+	 * @return
+	 */
+	StatusCode reset_pin();
 
  private:
 	GPIOState current_state;

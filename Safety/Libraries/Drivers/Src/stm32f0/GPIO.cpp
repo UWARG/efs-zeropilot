@@ -91,6 +91,13 @@ StatusCode GPIOPin::toggle_state() {
 	return this->set_state(GPIO_STATE_LOW);
 }
 
+StatusCode GPIOPin::reset_pin() {
+	auto mcu_pin = (uint16_t) get_mcu_pin(this->num);
+	GPIO_TypeDef *mcu_port = get_mcu_port(this->port);
+	HAL_GPIO_DeInit(mcu_port, mcu_pin);
+	return STATUS_CODE_OK;
+}
+
 static GPIO_TypeDef *get_mcu_port(GPIOPort port) {
 	switch (port) {
 		case GPIO_PORT_A: return GPIOA;

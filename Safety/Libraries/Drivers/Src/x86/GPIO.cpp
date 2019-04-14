@@ -40,3 +40,8 @@ StatusCode GPIOPin::set_state(GpioState new_state) {
 StatusCode GPIOPin::toggle_state() {
 	return this->set_state(!current_state);
 }
+
+StatusCode GPIOPin::reset_pin() {
+	return STATUS_CODE_OK;
+}
+
