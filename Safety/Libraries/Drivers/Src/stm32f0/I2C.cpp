@@ -2,65 +2,145 @@
 #include "Status.hpp"
 #include "stm32f0xx_hal.h"
 
-I2C_HandleTypeDef hi2c1;
+//safety chip specific constants
+static const GPIOPort I2C1_SDA_PORT = GPIO_PORT_B;
+static const GPIOPort I2C1_SCL_PORT = GPIO_PORT_B;
+static const GPIOPinNum I2C1_SDA_PIN_NUM = 9;
+static const GPIOPinNum  I2C1_SCL_PIN_NUM = 8;
 
-bool is_valid_port(I2CPort port){
-  return port == I2C_PORT1; //only I2C1 is valid for safety chip
+//only i2c1 valid for safety chip
+static I2C_HandleTypeDef hi2c1;
+
+static I2C_HandleTypeDef* get_i2c_handle_from_port(I2CPortNum num);
+
+
+I2CPort::I2CPort(I2CPortNum port_num, I2CSpeed speed, I2CAddress address){
+	port = port_num;
+	this->address = static_cast<I2CAddress>(address & (0xFF >> 1)); //force 7-bit mask
+
+	//only i2c1 is valid
+	sda = GPIOPin(I2C1_SDA_PORT, I2C1_SDA_PIN_NUM, GPIO_ALT_OD, GPIO_STATE_LOW, GPIO_RES_PULLUP, GPIO_SPEED_HIGH, GPIO_AF1_I2C1);
+	scl = GPIOPin(I2C1_SCL_PORT, I2C1_SCL_PIN_NUM, GPIO_ALT_OD, GPIO_STATE_LOW, GPIO_RES_PULLUP, GPIO_SPEED_HIGH, GPIO_AF1_I2C1);
 }
 
-StatusCode i2c_init(I2CPort port, I2CSettings settings){
-  if ( !is_valid_port(port)){
-    return STATUS_CODE_INVALID_ARGS;
-  }
+static StatusCode get_status_code(HAL_StatusTypeDef status);
 
-  //the following was generated using stm cube
-  hi2c1.Instance = I2C1;
-  hi2c1.Init.Timing = 0x0000020B;
-  hi2c1.Init.OwnAddress1 = 0;
-  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c1.Init.OwnAddress2 = 0;
-  hi2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
-  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
-  {
-    return STATUS_CODE_INTERNAL_ERROR;
-  }
+StatusCode I2CPort::setup(){
+	if (port == I2C_PORT1){
 
-  /**Configure Analogue filter
-  */
-  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
-  {
-    return STATUS_CODE_INTERNAL_ERROR;
-  }
+		sda.setup();
+		scl.setup();
 
-  /**Configure Digital filter
-  */
-  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
-  {
-    return STATUS_CODE_INTERNAL_ERROR;
-  }
+		//start hardware clock
+		__HAL_RCC_I2C1_CLK_ENABLE();
 
-  return STATUS_CODE_OK;
+		//the following was generated using stm cube
+		hi2c1.Instance = I2C1;
+		hi2c1.Init.Timing = 0x0000020B;
+		hi2c1.Init.OwnAddress1 = address;
+		hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+		hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+		hi2c1.Init.OwnAddress2 = 0;
+		hi2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+		hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+		hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+
+		if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+		{
+			return STATUS_CODE_INTERNAL_ERROR;
+		}
+
+		/**Configure Analogue filter
+		*/
+		if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+		{
+			return STATUS_CODE_INTERNAL_ERROR;
+		}
+
+		/**Configure Digital filter
+		*/
+		if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
+		{
+			return STATUS_CODE_INTERNAL_ERROR;
+		}
+
+		return STATUS_CODE_OK;
+	}
+	return STATUS_CODE_INVALID_ARGS;
 }
 
-StatusCode i2c_read(I2CPort i2c, I2CAddress addr, uint8_t *rx_data, size_t rx_len){
-
-  return STATUS_CODE_OK;
+StatusCode I2CPort::read_bytes(I2CAddress addr, uint8_t *rx_data, size_t rx_len){
+	if (port == I2C_PORT1){
+		HAL_StatusTypeDef status = HAL_I2C_Master_Receive(get_i2c_handle_from_port(port),addr, rx_data, (uint16_t)rx_len, 100); //100ms timeout
+		return get_status_code(status);
+	}
+	return STATUS_CODE_INVALID_ARGS;
 }
 
-StatusCode i2c_write(I2CPort i2c, I2CAddress addr, uint8_t *tx_data, size_t tx_len){
-  return STATUS_CODE_OK;
+StatusCode I2CPort::read_bytes(uint8_t *rx_data, size_t rx_len){
+	if (port == I2C_PORT1){
+		HAL_StatusTypeDef status = HAL_I2C_Slave_Receive(get_i2c_handle_from_port(port), rx_data, (uint16_t)rx_len, 100); //100ms timeout
+		return get_status_code(status);
+	}
+	return STATUS_CODE_INVALID_ARGS;
 }
 
-StatusCode i2c_read_reg(I2CPort i2c, I2CAddress addr, uint8_t reg, uint8_t *rx_data, size_t rx_len){
-  return STATUS_CODE_OK;
+StatusCode I2CPort::write_bytes(I2CAddress addr, uint8_t *tx_data, size_t tx_len){
+	if (port == I2C_PORT1){
+		HAL_StatusTypeDef status = HAL_I2C_Master_Transmit(get_i2c_handle_from_port(port), addr, tx_data, (uint16_t)tx_len, 100); //100ms timeout
+		return get_status_code(status);
+	}
+	return STATUS_CODE_INVALID_ARGS;
 }
 
-StatusCode i2c_write_reg(I2CPort i2c, I2CAddress addr, uint8_t reg, uint8_t *tx_data,
-                         size_t tx_len){
-  return STATUS_CODE_OK;
+StatusCode I2CPort::write_bytes(uint8_t *tx_data, size_t tx_len){
+	if (port == I2C_PORT1){
+		HAL_StatusTypeDef status = HAL_I2C_Slave_Transmit(get_i2c_handle_from_port(port), tx_data, (uint16_t)tx_len, 100); //100ms timeout
+		return get_status_code(status);
+	}
+	return STATUS_CODE_INVALID_ARGS;
+}
+
+StatusCode I2CPort::read_register(I2CAddress addr, uint16_t register_address, size_t register_address_size, uint8_t *rx_data, size_t rx_len){
+	if (port == I2C_PORT1){
+		HAL_StatusTypeDef status = HAL_I2C_Mem_Read(get_i2c_handle_from_port(port), addr, register_address, register_address, rx_data, (uint16_t)rx_len, 100); //100ms timeout
+		return get_status_code(status);
+	}
+	return STATUS_CODE_INVALID_ARGS;
+}
+
+StatusCode I2CPort::write_register(I2CAddress addr, uint16_t register_address, size_t register_address_size, uint8_t *tx_data, size_t tx_len){
+	if (port == I2C_PORT1){
+		HAL_StatusTypeDef status = HAL_I2C_Mem_Write(get_i2c_handle_from_port(port), addr, register_address, register_address, tx_data, (uint16_t)tx_len, 100); //100ms timeout
+		return get_status_code(status);
+	}
+	return STATUS_CODE_INVALID_ARGS;
+}
+
+StatusCode I2CPort::reset() {
+	if (port == I2C_PORT1){
+		__HAL_RCC_I2C1_CLK_DISABLE();
+		StatusCode code1 = scl.reset();
+		sda.reset();
+		return code1;
+	}
+	return STATUS_CODE_INVALID_ARGS;
+}
+
+static I2C_HandleTypeDef* get_i2c_handle_from_port(I2CPortNum num){
+	if (num == I2C_PORT1){
+		return &hi2c1;
+	}
+	return nullptr;
+}
+
+static StatusCode get_status_code(HAL_StatusTypeDef status){
+	switch (status) {
+		case HAL_OK: return STATUS_CODE_OK;
+		case HAL_BUSY: return STATUS_CODE_RESOURCE_EXHAUSTED;
+		case HAL_TIMEOUT: return STATUS_CODE_TIMEOUT;
+		default: return STATUS_CODE_INTERNAL_ERROR;
+	}
 }
 
 //this function is called by the stm32 hal when we call HAL_I2C_Init
@@ -68,52 +148,11 @@ StatusCode i2c_write_reg(I2CPort i2c, I2CAddress addr, uint8_t reg, uint8_t *tx_
 //It was generated by STM32CUBE, don't touch
 void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
 {
-
-  GPIO_InitTypeDef GPIO_InitStruct;
-  if(i2cHandle->Instance==I2C1)
-  {
-    /* USER CODE BEGIN I2C1_MspInit 0 */
-
-    /* USER CODE END I2C1_MspInit 0 */
-
-    /**I2C1 GPIO Configuration
-    PB8     ------> I2C1_SCL
-    PB9     ------> I2C1_SDA
-    */
-    GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF1_I2C1;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-    /* I2C1 clock enable */
-    __HAL_RCC_I2C1_CLK_ENABLE();
-    /* USER CODE BEGIN I2C1_MspInit 1 */
-
-    /* USER CODE END I2C1_MspInit 1 */
-  }
+	//do nothing. We configured the gpio pins beforehand
 }
 
 void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
 {
 
-  if(i2cHandle->Instance==I2C1)
-  {
-    /* USER CODE BEGIN I2C1_MspDeInit 0 */
-
-    /* USER CODE END I2C1_MspDeInit 0 */
-    /* Peripheral clock disable */
-    __HAL_RCC_I2C1_CLK_DISABLE();
-
-    /**I2C1 GPIO Configuration
-    PB8     ------> I2C1_SCL
-    PB9     ------> I2C1_SDA
-    */
-    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_8|GPIO_PIN_9);
-
-    /* USER CODE BEGIN I2C1_MspDeInit 1 */
-
-    /* USER CODE END I2C1_MspDeInit 1 */
-  }
+  //do nothing. This is implemented in I2C::reset_state()
 }

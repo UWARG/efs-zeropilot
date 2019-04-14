@@ -75,6 +75,8 @@ StatusCode gpio_init();
  */
 class GPIOPin {
  public:
+	GPIOPin(); //need to have default constructor for compilation. Don't use it
+
 	/**
 	 * @param alternate_function Theres no typedef for this. These are defined inside stm32f0xx_hal_gpio.h
 	 */
@@ -85,6 +87,11 @@ class GPIOPin {
 			GPIOResistorState resistor_state = GPIO_RES_NONE,
 			GPIOSpeed speed = GPIO_SPEED_LOW,
 			uint8_t alternate_function = 0);
+	/**
+	 * Initializes the GPIO with the HAL appropriately
+	 * @return
+	 */
+	StatusCode setup();
 
 	/**
 	 * Sets the state of the pin
@@ -110,11 +117,14 @@ class GPIOPin {
 	 * Resets the pin to its default state.
 	 * @return
 	 */
-	StatusCode reset_pin();
+	StatusCode reset();
 
  private:
 	GPIOState current_state;
 	GPIOMode mode;
 	GPIOPort port;
 	GPIOPinNum num;
+	GPIOResistorState resistor_state;
+	GPIOSpeed speed;
+	uint8_t alternate_function;
 };

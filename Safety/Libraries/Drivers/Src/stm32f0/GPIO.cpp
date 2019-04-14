@@ -31,11 +31,22 @@ GPIOPin::GPIOPin(GPIOPort port,
 				 GPIOSpeed speed,
 				 uint8_t alternate_function) {
 
-	uint32_t mcu_pin = get_mcu_pin(pin);
+	this->mode = mode;
+	this->num = pin;
+	this->port = port;
+	this->current_state = initial_state;
+	this->resistor_state = resistor_state;
+	this->speed = speed;
+	this->alternate_function = alternate_function;
+
+}
+
+StatusCode GPIOPin::setup(){
+	uint32_t mcu_pin = get_mcu_pin(num);
 	GPIO_TypeDef *mcu_port = get_mcu_port(port);
 
 	if (mcu_port == nullptr) { //invalid port for the system given
-		return;
+		return STATUS_CODE_INVALID_ARGS;
 	}
 
 	//set the pin to reset
@@ -50,11 +61,7 @@ GPIOPin::GPIOPin(GPIOPort port,
 	GPIO_InitStruct.Alternate = alternate_function;
 
 	HAL_GPIO_Init(mcu_port, &GPIO_InitStruct);
-
-	this->mode = mode;
-	this->num = pin;
-	this->port = port;
-	this->set_state(initial_state);
+	return this->set_state(current_state);
 }
 
 StatusCode GPIOPin::get_state(GPIOState &state) {
@@ -91,7 +98,7 @@ StatusCode GPIOPin::toggle_state() {
 	return this->set_state(GPIO_STATE_LOW);
 }
 
-StatusCode GPIOPin::reset_pin() {
+StatusCode GPIOPin::reset() {
 	auto mcu_pin = (uint16_t) get_mcu_pin(this->num);
 	GPIO_TypeDef *mcu_port = get_mcu_port(this->port);
 	HAL_GPIO_DeInit(mcu_port, mcu_pin);
