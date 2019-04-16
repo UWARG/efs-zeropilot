@@ -1,6 +1,6 @@
 #pragma once
 
-typedef enum {
+typedef enum StatusCode {
 	STATUS_CODE_OK = 0,
 	STATUS_CODE_UNKNOWN,
 	STATUS_CODE_INVALID_ARGS,
