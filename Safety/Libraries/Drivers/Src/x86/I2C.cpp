@@ -11,30 +11,39 @@ StatusCode I2CPort::setup(){
 	return STATUS_CODE_OK;
 }
 
-StatusCode I2CPort::read_bytes(I2CAddress addr, uint8_t *rx_data, size_t rx_len){
-	return STATUS_CODE_OK;
-}
-
-StatusCode I2CPort::read_bytes(uint8_t *rx_data, size_t rx_len){
-	return STATUS_CODE_OK;
-}
-
-StatusCode I2CPort::write_bytes(I2CAddress addr, uint8_t *tx_data, size_t tx_len){
-	return STATUS_CODE_OK;
-}
-
-StatusCode I2CPort::write_bytes(uint8_t *tx_data, size_t tx_len){
-	return STATUS_CODE_OK;
-}
-
-StatusCode I2CPort::read_register(I2CAddress addr, uint16_t register_address, size_t register_address_size, uint8_t *rx_data, size_t rx_len){
-	return STATUS_CODE_OK;
-}
-
-StatusCode I2CPort::write_register(I2CAddress addr, uint16_t register_address, size_t register_address_size, uint8_t *tx_data, size_t tx_len){
-	return STATUS_CODE_OK;
-}
-
 StatusCode I2CPort::reset() {
 	return STATUS_CODE_ISTATUS_CODE_OKNVALID_ARGS;
 }
+
+StatusCode I2CSlavePort::setup() {
+	return STATUS_CODE_OK;
+}
+
+StatusCode I2CSlavePort::read_bytes(uint8_t *rx_data, size_t rx_len){
+	return STATUS_CODE_OK;
+}
+
+StatusCode I2CSlavePort::write_bytes(uint8_t *tx_data, size_t tx_len){
+	return STATUS_CODE_OK;
+}
+
+StatusCode I2CMasterPort::setup(){
+	return STATUS_CODE_OK;
+}
+
+StatusCode I2CMasterPort::read_bytes(I2CAddress addr, uint8_t *rx_data, size_t rx_len){
+	return STATUS_CODE_OK;
+}
+
+StatusCode I2CMasterPort::write_bytes(I2CAddress addr, uint8_t *tx_data, size_t tx_len){
+	return STATUS_CODE_OK;
+}
+
+StatusCode I2CMasterPort::read_register(I2CAddress addr, uint16_t register_address, size_t register_address_size, uint8_t *rx_data, size_t rx_len){
+	return STATUS_CODE_OK;
+}
+
+StatusCode I2CMasterPort::write_register(I2CAddress addr, uint16_t register_address, size_t register_address_size, uint8_t *tx_data, size_t tx_len){
+	return STATUS_CODE_OK;
+}
+
