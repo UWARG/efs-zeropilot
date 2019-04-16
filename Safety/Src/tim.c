@@ -6,7 +6,7 @@
   ******************************************************************************
   ** This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
-  * USER CODE END. Other portions of this file, whether 
+  * USER CODE END. Other portions of this file, whether
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
@@ -40,7 +40,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "tim.h"
 
-#include "gpio.h"
+#include "pinconfig.h"
 
 /* USER CODE BEGIN 0 */
 #include "debug.h"
@@ -432,9 +432,9 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE END TIM14_MspInit 0 */
     /* TIM14 clock enable */
     __HAL_RCC_TIM14_CLK_ENABLE();
-  
-    /**TIM14 GPIO Configuration    
-    PB1     ------> TIM14_CH1 
+
+    /**TIM14 GPIO Configuration
+    PB1     ------> TIM14_CH1
     */
     GPIO_InitStruct.Pin = PPM_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -493,11 +493,11 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
   /* USER CODE BEGIN TIM1_MspPostInit 0 */
 
   /* USER CODE END TIM1_MspPostInit 0 */
-    /**TIM1 GPIO Configuration    
+    /**TIM1 GPIO Configuration
     PA8     ------> TIM1_CH1
     PA9     ------> TIM1_CH2
     PA10     ------> TIM1_CH3
-    PA11     ------> TIM1_CH4 
+    PA11     ------> TIM1_CH4
     */
     GPIO_InitStruct.Pin = PWM9_Pin|PWM10_Pin|PWM11_Pin|PWM12_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -515,12 +515,12 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
   /* USER CODE BEGIN TIM3_MspPostInit 0 */
 
   /* USER CODE END TIM3_MspPostInit 0 */
-  
-    /**TIM3 GPIO Configuration    
+
+    /**TIM3 GPIO Configuration
     PC6     ------> TIM3_CH1
     PC7     ------> TIM3_CH2
     PC8     ------> TIM3_CH3
-    PC9     ------> TIM3_CH4 
+    PC9     ------> TIM3_CH4
     */
     GPIO_InitStruct.Pin = PWM5_Pin|PWM6_Pin|PWM7_Pin|PWM8_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -538,10 +538,10 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
   /* USER CODE BEGIN TIM15_MspPostInit 0 */
 
   /* USER CODE END TIM15_MspPostInit 0 */
-  
-    /**TIM15 GPIO Configuration    
+
+    /**TIM15 GPIO Configuration
     PB14     ------> TIM15_CH1
-    PB15     ------> TIM15_CH2 
+    PB15     ------> TIM15_CH2
     */
     GPIO_InitStruct.Pin = PWM3_Pin|PWM4_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -559,9 +559,9 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
   /* USER CODE BEGIN TIM16_MspPostInit 0 */
 
   /* USER CODE END TIM16_MspPostInit 0 */
-  
-    /**TIM16 GPIO Configuration    
-    PA6     ------> TIM16_CH1 
+
+    /**TIM16 GPIO Configuration
+    PA6     ------> TIM16_CH1
     */
     GPIO_InitStruct.Pin = PWM1_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -579,9 +579,9 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
   /* USER CODE BEGIN TIM17_MspPostInit 0 */
 
   /* USER CODE END TIM17_MspPostInit 0 */
-  
-    /**TIM17 GPIO Configuration    
-    PA7     ------> TIM17_CH1 
+
+    /**TIM17 GPIO Configuration
+    PA7     ------> TIM17_CH1
     */
     GPIO_InitStruct.Pin = PWM2_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -629,9 +629,9 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE END TIM14_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_TIM14_CLK_DISABLE();
-  
-    /**TIM14 GPIO Configuration    
-    PB1     ------> TIM14_CH1 
+
+    /**TIM14 GPIO Configuration
+    PB1     ------> TIM14_CH1
     */
     HAL_GPIO_DeInit(PPM_GPIO_Port, PPM_Pin);
 
@@ -674,7 +674,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 
   /* USER CODE END TIM17_MspDeInit 1 */
   }
-} 
+}
 
 /* USER CODE BEGIN 1 */
 

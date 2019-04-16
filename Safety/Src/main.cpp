@@ -91,22 +91,21 @@ int main(void)
 
   /* Initialize all configured peripherals */
 
-  StatusCode status;
 
-  status = gpio_init();
+  gpio_init();
 
 
 
 
 //  MX_SPI1_Init();
-  MX_TIM1_Init();
-  MX_TIM3_Init();
-  MX_TIM14_Init();
-  MX_TIM15_Init();
-  MX_TIM16_Init();
-  MX_TIM17_Init();
-  MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
+//  MX_TIM1_Init();
+//  MX_TIM3_Init();
+//  MX_TIM14_Init();
+//  MX_TIM15_Init();
+//  MX_TIM16_Init();
+//  MX_TIM17_Init();
+//  MX_USART1_UART_Init();
+//  MX_USART2_UART_Init();
 //  MX_IWDG_Init();
 
   /* USER CODE BEGIN 2 */
@@ -114,13 +113,18 @@ int main(void)
   debug("\r\n\r\nStarting up...");
   debug("Compiled on %s at %s", __DATE__, __TIME__);
 
-  GPIOPort led1 = GPIOPin(LED1_GPIO_PORT, LED1_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
-  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+  GPIOPin led1 = GPIOPin(LED1_GPIO_PORT, LED1_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
+  GPIOPin led2 = GPIOPin(LED2_GPIO_PORT, LED2_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
+  GPIOPin led3 = GPIOPin(LED3_GPIO_PORT, LED3_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
 
-  Safety_Init();
-  Safety_Run();
+  led1.setup();
+  led2.setup();
+  led3.setup();
+
+  led1.set_state(GPIO_STATE_HIGH);
+
+//  Safety_Init();
+//  Safety_Run();
   /* USER CODE END 2 */
 
   /* Infinite loop */
