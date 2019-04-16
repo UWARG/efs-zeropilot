@@ -19,6 +19,10 @@ GPIOPin::GPIOPin(GPIOPort port,
 	this->set_state(initial_state);
 }
 
+StatusCode GPIOPin::setup(){
+	return STATUS_CODE_OK;
+}
+
 StatusCode GPIOPin::get_state(GPIOState &state) {
 	if (this->mode == GPIO_OUTPUT_OD || this->mode == GPIO_OUTPUT) {
 		state = this->current_state;
