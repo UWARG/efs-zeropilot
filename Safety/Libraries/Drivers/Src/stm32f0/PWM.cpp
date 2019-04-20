@@ -72,8 +72,6 @@ void PWMChannel::setLimits(uint32_t min, uint32_t max){
 void PWMChannel::set(uint8_t percent){
 	if (percent > 100){
 		percent = 100;
-	} else if (percent < 0) {
-		percent = 0;
 	}
 
 	auto pulse = static_cast<uint16_t>((percent*(max_signal - min_signal)) / 100 + min_signal);
@@ -265,7 +263,7 @@ static TIM_MasterConfigTypeDef getMasterConfig() {
 	return sMasterConfig;
 }
 
-static StatusCode init_timer(TIM_HandleTypeDef &timer,
+static StatusCode init_timer(TIM_HandleTypeDef *timer,
 							 TIM_TypeDef *instance,
 							 uint32_t period,
 							 int32_t num_channels,
@@ -280,60 +278,60 @@ static StatusCode init_timer(TIM_HandleTypeDef &timer,
 
 	struct PWMCounterSettings counter = getCounterSettings(period);
 
-	timer.Instance = instance;
-	timer.Init.Prescaler = counter.prescaler;
-	timer.Init.Period = counter.period;
-	timer.Init.CounterMode = TIM_COUNTERMODE_UP;
-	timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	timer.Init.RepetitionCounter = 0;
-	timer.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	timer->Instance = instance;
+	timer->Init.Prescaler = counter.prescaler;
+	timer->Init.Period = counter.period;
+	timer->Init.CounterMode = TIM_COUNTERMODE_UP;
+	timer->Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	timer->Init.RepetitionCounter = 0;
+	timer->Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 
 	HAL_StatusTypeDef status;
 
-	status = HAL_TIM_Base_Init(&timer);
+	status = HAL_TIM_Base_Init(timer);
 
 	if (status != HAL_OK) {
 		return get_status_code(status);
 	}
 
-	status = HAL_TIM_ConfigClockSource(&timer, &sClockSourceConfig);
+	status = HAL_TIM_ConfigClockSource(timer, &sClockSourceConfig);
 
 	if (status != HAL_OK) {
 		return get_status_code(status);
 	}
 
-	status = HAL_TIM_PWM_Init(&timer);
+	status = HAL_TIM_PWM_Init(timer);
 
 	if (status != HAL_OK) {
 		return get_status_code(status);
 	}
 
 	if (config_master) {
-		status = HAL_TIMEx_MasterConfigSynchronization(&timer, &sMasterConfig);
+		status = HAL_TIMEx_MasterConfigSynchronization(timer, &sMasterConfig);
 
 		if (status != HAL_OK) {
 			return get_status_code(status);
 		}
 	}
 
-	status = HAL_TIM_PWM_ConfigChannel(&timer, &sConfigOC, TIM_CHANNEL_1);
+	status = HAL_TIM_PWM_ConfigChannel(timer, &sConfigOC, TIM_CHANNEL_1);
 
 	if (status != HAL_OK) {
 		return get_status_code(status);
 	}
 
 	switch (num_channels) {
-		case 4: status = HAL_TIM_PWM_ConfigChannel(&timer, &sConfigOC, TIM_CHANNEL_4);
+		case 4: status = HAL_TIM_PWM_ConfigChannel(timer, &sConfigOC, TIM_CHANNEL_4);
 			if (status != HAL_OK) return get_status_code(status);
-		case 3: status = HAL_TIM_PWM_ConfigChannel(&timer, &sConfigOC, TIM_CHANNEL_3);
+		case 3: status = HAL_TIM_PWM_ConfigChannel(timer, &sConfigOC, TIM_CHANNEL_3);
 			if (status != HAL_OK) return get_status_code(status);
-		case 2: status = HAL_TIM_PWM_ConfigChannel(&timer, &sConfigOC, TIM_CHANNEL_2);
+		case 2: status = HAL_TIM_PWM_ConfigChannel(timer, &sConfigOC, TIM_CHANNEL_2);
 			if (status != HAL_OK) return get_status_code(status);
 		default: break;
 	}
 
 	if (config_breaktime) {
-		status = HAL_TIMEx_ConfigBreakDeadTime(&timer, &sBreakDeadTimeConfig);
+		status = HAL_TIMEx_ConfigBreakDeadTime(timer, &sBreakDeadTimeConfig);
 		if (status != HAL_OK) {
 			return get_status_code(status);
 		}

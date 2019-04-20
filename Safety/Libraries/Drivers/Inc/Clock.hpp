@@ -1,6 +1,14 @@
 #pragma once
 
 #include <stdint.h>
+#include "Status.hpp"
+
+/**
+ * Initializes clock to use the external crystal, etc..
+ * Should be called once, and should be called first
+ * @return
+ */
+StatusCode initialize_system_clock();
 
 /**
  * Retrieves the system clock rate
