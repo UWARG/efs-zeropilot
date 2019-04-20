@@ -3,6 +3,8 @@
 #include "safety_control.h"
 #include "GPIO.hpp"
 #include "Clock.hpp"
+#include "UART.hpp"
+#include "stm32f0xx_hal.h"
 
 int main(void) {
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
@@ -12,6 +14,19 @@ int main(void) {
 	initialize_system_clock();
 
 	gpio_init();
+
+	UARTSettings settings = {
+		9600,
+		1,
+		UART_NO_PARITY,
+		false
+	};
+
+	UARTPort debug_port = UARTPort(UART_PORT1, settings);
+
+	char string[] = "hello how are you this is a test \n";
+
+	debug_port.transmit((uint8_t*) string, 16);
 
 //  MX_SPI1_Init();
 //  MX_TIM1_Init();
@@ -26,8 +41,8 @@ int main(void) {
 
   /* USER CODE BEGIN 2 */
 
-  debug("\r\n\r\nStarting up...");
-  debug("Compiled on %s at %s", __DATE__, __TIME__);
+//  debug("\r\n\r\nStarting up...");
+//  debug("Compiled on %s at %s", __DATE__, __TIME__);
 
   GPIOPin led1 = GPIOPin(LED1_GPIO_PORT, LED1_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
   GPIOPin led2 = GPIOPin(LED2_GPIO_PORT, LED2_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
@@ -48,7 +63,7 @@ int main(void) {
   while (1)
   {
   /* USER CODE END WHILE */
-
+  	debug_port.transmit((uint8_t*) string, 16);
   /* USER CODE BEGIN 3 */
   }
 }

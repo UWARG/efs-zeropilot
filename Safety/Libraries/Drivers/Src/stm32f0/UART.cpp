@@ -1,7 +1,7 @@
 #include "UART.hpp"
 #include "GPIO.hpp"
-#include "stm32f0xx_hal.h"
 #include "Status.hpp"
+#include "stm32f0xx_hal.h"
 
 static uint32_t UART_TIMEOUT = 50;
 
@@ -57,7 +57,10 @@ UARTPort::UARTPort(UARTPortNum port, UARTSettings settings) {
 							 GPIO_SPEED_HIGH,
 							 GPIO_AF1_USART2);
 			break;
-		default: return;
+		default:
+			rx_pin = GPIOPin();
+			tx_pin = GPIOPin();
+			break;
 	}
 }
 

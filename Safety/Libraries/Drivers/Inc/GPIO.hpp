@@ -75,7 +75,7 @@ StatusCode gpio_init();
  */
 class GPIOPin {
  public:
-	GPIOPin(); //need to have default constructor for compilation. Don't use it
+	GPIOPin() = default; //need to have default constructor for compilation. Don't use it
 
 	/**
 	 * @param alternate_function Theres no typedef for this. These are defined inside stm32f0xx_hal_gpio.h

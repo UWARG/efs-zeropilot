@@ -2,7 +2,6 @@
 #define DEBUG_H
 
 #include <stdio.h>
-#include "usart.h"
 
 #define DBG_UART 0
 #define DBG_ITM  1
