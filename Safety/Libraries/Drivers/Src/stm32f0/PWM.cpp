@@ -1,9 +1,7 @@
 #include "PWM.hpp"
 #include "GPIO.hpp"
 #include "Clock.hpp"
-#include "stm32f0xx_hal_tim.h"
-#include "stm32f0xx_hal_gpio_ex.h"
-#include "stm32f0xx_hal_rcc.h"
+#include "stm32f0xx_hal.h"
 
 typedef struct PWMPinConfig {
 	GPIOPinNum num;
@@ -188,10 +186,10 @@ StatusCode PWMManager::reset(){
 	}
 
 	__HAL_RCC_TIM16_CLK_DISABLE();
-	__HAL_RCC_TIM16_CLK_DISABLE();
-	__HAL_RCC_TIM16_CLK_DISABLE();
-	__HAL_RCC_TIM16_CLK_DISABLE();
-	__HAL_RCC_TIM16_CLK_DISABLE();
+	__HAL_RCC_TIM17_CLK_DISABLE();
+	__HAL_RCC_TIM15_CLK_DISABLE();
+	__HAL_RCC_TIM3_CLK_DISABLE();
+	__HAL_RCC_TIM1_CLK_DISABLE();
 
 	is_setup = false;
 	return STATUS_CODE_OK;

@@ -26,6 +26,10 @@
 
 typedef uint8_t PWMChannelNum;
 
+/**
+ * Represents a group of PWM outputs that map to a single timer
+ * Settings can be changed on a per-group basis
+ */
 typedef enum PWMGroup {
 	PWM_GROUP_1,
 	PWM_GROUP_2,
