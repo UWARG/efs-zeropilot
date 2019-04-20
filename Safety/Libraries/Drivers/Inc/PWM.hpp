@@ -48,7 +48,7 @@ typedef struct PWMGroupSetting {
 class PWMChannel {
  public:
 	PWMChannel() = default;
-	PWMChannel(GPIOPort port, GPIOPinNum pin_num, uint8_t alternate_function, void* timer, uint16_t channel);
+	PWMChannel(GPIOPort port, GPIOPinNum pin_num, uint8_t alternate_function, void *timer, uint16_t channel);
 
 	/**
 	 * Initializes the GPIO, timers, interrupts, etc..
@@ -78,7 +78,7 @@ class PWMChannel {
 
  private:
 	GPIOPin pin;
-	void* timer;
+	void *timer;
 	uint16_t timer_channel;
 	uint32_t min_signal;
 	uint32_t max_signal;
@@ -95,7 +95,7 @@ class PWMManager {
 	 * Gets an instance of the singleton, or initializes it
 	 * @return
 	 */
-	static PWMManager& getInstance();
+	static PWMManager &getInstance();
 
 	/**
 	 * Configure a PWM port with the appropriate frequency, etc..
@@ -124,7 +124,7 @@ class PWMManager {
 	 * @param num
 	 * @return Returns the first channel if invalid channel num is given
 	 */
-	PWMChannel& channel(PWMChannelNum num);
+	PWMChannel &channel(PWMChannelNum num);
 
 	/**
 	 * Sets all output channels
@@ -134,8 +134,8 @@ class PWMManager {
 	StatusCode set_all(uint8_t percent);
 
 	//disable copy and assignment constructors
-	PWMManager(PWMManager const&)               = delete;
-	void operator=(PWMManager const&)  = delete;
+	PWMManager(PWMManager const &) = delete;
+	void operator=(PWMManager const &) = delete;
 
  private:
 	PWMManager() = default; //force initialization through getInstance()

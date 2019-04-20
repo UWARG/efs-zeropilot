@@ -145,27 +145,24 @@ StatusCode UARTPort::adjustBaudrate(uint32_t baudrate) {
 	return setup();
 }
 
-StatusCode UARTPort::read_byte(uint8_t& data) {
+StatusCode UARTPort::read_byte(uint8_t &data) {
 	size_t read;
 
-	return read_bytes(&data, 1 , read);
+	return read_bytes(&data, 1, read);
 }
 
 //synchronous implementation for now. Use DMA later
-StatusCode UARTPort::read_bytes(uint8_t* data, size_t len, size_t &bytes_read) {
+StatusCode UARTPort::read_bytes(uint8_t *data, size_t len, size_t &bytes_read) {
 	if (is_setup) return STATUS_CODE_UNINITIALIZED;
 
 	StatusCode status;
 
-	switch (port){
-		case UART_PORT1:
-			status = get_status_code(HAL_UART_Receive(&huart1, data, (uint16_t)len, UART_TIMEOUT));
+	switch (port) {
+		case UART_PORT1: status = get_status_code(HAL_UART_Receive(&huart1, data, (uint16_t) len, UART_TIMEOUT));
 			break;
-		case UART_PORT2:
-			status = get_status_code(HAL_UART_Receive(&huart2, data, (uint16_t)len, UART_TIMEOUT));
+		case UART_PORT2: status = get_status_code(HAL_UART_Receive(&huart2, data, (uint16_t) len, UART_TIMEOUT));
 			break;
-		default:
-			return STATUS_CODE_INVALID_ARGS;
+		default: return STATUS_CODE_INVALID_ARGS;
 
 	}
 
@@ -174,20 +171,17 @@ StatusCode UARTPort::read_bytes(uint8_t* data, size_t len, size_t &bytes_read) {
 	return status;
 }
 
-StatusCode UARTPort::transmit(uint8_t* data, size_t len) {
+StatusCode UARTPort::transmit(uint8_t *data, size_t len) {
 	if (is_setup) return STATUS_CODE_UNINITIALIZED;
 
 	StatusCode status;
 
-	switch (port){
-		case UART_PORT1:
-			status = get_status_code(HAL_UART_Transmit(&huart1, data, (uint16_t)len, UART_TIMEOUT));
+	switch (port) {
+		case UART_PORT1: status = get_status_code(HAL_UART_Transmit(&huart1, data, (uint16_t) len, UART_TIMEOUT));
 			break;
-		case UART_PORT2:
-			status = get_status_code(HAL_UART_Transmit(&huart2, data, (uint16_t)len, UART_TIMEOUT));
+		case UART_PORT2: status = get_status_code(HAL_UART_Transmit(&huart2, data, (uint16_t) len, UART_TIMEOUT));
 			break;
-		default:
-			return STATUS_CODE_INVALID_ARGS;
+		default: return STATUS_CODE_INVALID_ARGS;
 
 	}
 

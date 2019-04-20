@@ -41,7 +41,7 @@ GPIOPin::GPIOPin(GPIOPort port,
 
 }
 
-StatusCode GPIOPin::setup(){
+StatusCode GPIOPin::setup() {
 	uint32_t mcu_pin = get_mcu_pin(num);
 	GPIO_TypeDef *mcu_port = get_mcu_port(port);
 

@@ -24,7 +24,7 @@ class PPMChannel {
 	 * Usually this is only 8
 	 * @param num_channels
 	 */
-	 explicit PPMChannel(uint8_t num_channels = 8);
+	explicit PPMChannel(uint8_t num_channels = 8);
 
 	/**
 	 * Reconfigure number of channels

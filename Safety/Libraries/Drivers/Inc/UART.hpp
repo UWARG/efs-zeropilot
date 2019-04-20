@@ -64,7 +64,7 @@ class UARTPort {
 	 * @param data The byte read will be written to here
 	 * @return STATUS_CODE_EMPTY if nothing in rx buffer.
 	 */
-	StatusCode read_byte(uint8_t& data);
+	StatusCode read_byte(uint8_t &data);
 
 	/**
 	 * Retrieve a request number of bytes
@@ -73,7 +73,7 @@ class UARTPort {
 	 * @param bytes_read Returns the actual number of bytes read from the buffer
 	 * @return STATUS_CODE_EMPTY if nothing in buffer.
 	 */
-	StatusCode read_bytes(uint8_t* data, size_t len, size_t& bytes_read);
+	StatusCode read_bytes(uint8_t *data, size_t len, size_t &bytes_read);
 
 	/**
 	 * Transmit a set of data
@@ -81,7 +81,7 @@ class UARTPort {
 	 * @param len
 	 * @return If not enough space in buffer, will return a STATUS_CODE_RESOURCE_EXAUSTED and not transmit
 	 */
-	StatusCode transmit(uint8_t* data, size_t len);
+	StatusCode transmit(uint8_t *data, size_t len);
 
  private:
 	GPIOPin rx_pin;

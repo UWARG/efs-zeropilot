@@ -15,19 +15,19 @@
 const int MAX_SPI_SLAVES = 5;
 
 typedef enum SPIPortNum {
-  SPI_PORT1 = 0,
-  SPI_PORT2,
-  SPI_PORT3,
-  SPI_PORT4,
-  SPI_PORT5,
-  SPI_PORT6
+	SPI_PORT1 = 0,
+	SPI_PORT2,
+	SPI_PORT3,
+	SPI_PORT4,
+	SPI_PORT5,
+	SPI_PORT6
 } SPIPortNum;
 
-typedef enum SPIMode{
-  SPI_MODE_0 = 0,  // CPOL: 0 CPHA: 0
-  SPI_MODE_1,      // CPOL: 0 CPHA: 1
-  SPI_MODE_2,      // CPOL: 1 CPHA: 0
-  SPI_MODE_3      // CPOL: 1 CPHA: 1
+typedef enum SPIMode {
+	SPI_MODE_0 = 0,  // CPOL: 0 CPHA: 0
+	SPI_MODE_1,      // CPOL: 0 CPHA: 1
+	SPI_MODE_2,      // CPOL: 1 CPHA: 0
+	SPI_MODE_3      // CPOL: 1 CPHA: 1
 } SPIMode;
 
 typedef struct SPISettings {
@@ -78,7 +78,7 @@ class SPIPort {
 	 * @param length
 	 * @return STATUS_CODE_INVALID_ARGS if both tx and rx buffers are null
 	 */
-	StatusCode exchange_data(uint8_t* tx_data, uint8_t* rx_data, size_t length);
+	StatusCode exchange_data(uint8_t *tx_data, uint8_t *rx_data, size_t length);
 
 	/**
 	 * Resets the port to its default state, resetting all the GPIOs

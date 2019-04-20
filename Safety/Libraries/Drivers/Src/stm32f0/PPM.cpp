@@ -17,19 +17,18 @@ static const GPIOPort PPM_PORT = GPIO_PORT_B;
 static const uint16_t TIMER_PRESCALER = 2;
 static const uint16_t TIMER_PERIOD = 48000;
 
-
 uint8_t PPMChannel::num_channels = 0;
 volatile uint8_t PPMChannel::ppm_index = 0;
 volatile uint16_t PPMChannel::capture_value[] = {0};
 
 PPMChannel::PPMChannel(uint8_t channels) {
-	if (channels > MAX_PPM_CHANNELS || channels <= 0){
+	if (channels > MAX_PPM_CHANNELS || channels <= 0) {
 		PPMChannel::num_channels = 8;
 	}
 
 	PPMChannel::ppm_index = 0;
 
-	for (int i = 0; i < MAX_PPM_CHANNELS; i++){
+	for (int i = 0; i < MAX_PPM_CHANNELS; i++) {
 		PPMChannel::capture_value[i] = 0;
 	}
 
@@ -38,7 +37,7 @@ PPMChannel::PPMChannel(uint8_t channels) {
 }
 
 StatusCode PPMChannel::setLimits(uint8_t channel, uint32_t min, uint32_t max) {
-	if (channel <= 0 || channel > PPMChannel::num_channels || min >= max){
+	if (channel <= 0 || channel > PPMChannel::num_channels || min >= max) {
 		return STATUS_CODE_INVALID_ARGS;
 	}
 
@@ -49,15 +48,15 @@ StatusCode PPMChannel::setLimits(uint8_t channel, uint32_t min, uint32_t max) {
 }
 
 StatusCode PPMChannel::setNumChannels(uint8_t num_channels) {
-	if (num_channels <= 0 || num_channels > MAX_PPM_CHANNELS){
+	if (num_channels <= 0 || num_channels > MAX_PPM_CHANNELS) {
 		return STATUS_CODE_INVALID_ARGS;
 	}
 	PPMChannel::num_channels = num_channels;
 	return STATUS_CODE_OK;
 }
 
-uint8_t PPMChannel::get(PWMChannelNum num){
-	if (num <= 0 || num > PPMChannel::num_channels){
+uint8_t PPMChannel::get(PWMChannelNum num) {
+	if (num <= 0 || num > PPMChannel::num_channels) {
 		return 0;
 	}
 
@@ -65,7 +64,7 @@ uint8_t PPMChannel::get(PWMChannelNum num){
 
 	// 1 tick is prescaler / 8000000Hz (internal clock)
 	//therefore capture in us = capture * prescaler * 1E6 / 8E6
-	uint32_t num_us = (capture*TIMER_PRESCALER*(1000000U))/ get_internal_clock();
+	uint32_t num_us = (capture * TIMER_PRESCALER * (1000000U)) / get_internal_clock();
 
 	return static_cast<uint8_t>(num_us / (this->max_values[num] - this->min_values[num]));
 }
@@ -84,7 +83,7 @@ StatusCode PPMChannel::setup() {
 	HAL_NVIC_SetPriority(TIM14_IRQn, 1, 0);
 	HAL_NVIC_EnableIRQ(TIM14_IRQn);
 
-	TIM_IC_InitTypeDef sConfigIC = {0,0,0,0};
+	TIM_IC_InitTypeDef sConfigIC = {0, 0, 0, 0};
 
 	htim14.Instance = TIM14;
 	htim14.Init.Prescaler = TIMER_PRESCALER;
@@ -118,8 +117,8 @@ StatusCode PPMChannel::setup() {
 	return STATUS_CODE_OK;
 }
 
-StatusCode PPMChannel::reset(){
-	if (!is_setup){
+StatusCode PPMChannel::reset() {
+	if (!is_setup) {
 		return STATUS_CODE_INVALID_ARGS;
 	}
 
@@ -135,11 +134,11 @@ StatusCode PPMChannel::reset(){
 //our interrupt callback for when we get a pulse capture
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM14) {
-		auto time_diff = (uint16_t)HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+		auto time_diff = (uint16_t) HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 
 		PPMChannel::capture_value[PPMChannel::ppm_index] = time_diff;
 
-		PPMChannel::ppm_index = (uint8_t)(PPMChannel::ppm_index + 1) % PPMChannel::num_channels;
+		PPMChannel::ppm_index = (uint8_t) (PPMChannel::ppm_index + 1) % PPMChannel::num_channels;
 		__HAL_TIM_SET_COUNTER(htim, 0);
 	}
 }
