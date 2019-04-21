@@ -1,9 +1,12 @@
 #include "UART.hpp"
 #include "GPIO.hpp"
 #include "Status.hpp"
+#include <stdlib.h>
+#include <queue>
 #include "stm32f0xx_hal.h"
 
 static uint32_t UART_TIMEOUT = 50;
+static size_t UART_RECEIVE_BUFFER_SIZE = 512;
 
 static const GPIOPort UART1_RX_PORT = GPIO_PORT_B;
 static const GPIOPort UART1_TX_PORT = GPIO_PORT_B;
@@ -17,6 +20,11 @@ static const GPIOPinNum UART2_TX_PIN = 3;
 
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart2_rx;
+
+static uint8_t* uart2_rx_dma_buffer;
+static size_t uart2_rx_dma_buffer_len;
+std::deque<uint8_t> uart2_rx_queue;
 
 extern StatusCode get_status_code(HAL_StatusTypeDef status);
 
@@ -142,6 +150,69 @@ StatusCode UARTPort::reset() {
 	return STATUS_CODE_OK;
 }
 
+StatusCode UARTPort::setupDMA(size_t tx_buffer_size, size_t rx_buffer_size) {
+	if (rx_buffer_size == 0){
+		return STATUS_CODE_INVALID_ARGS;
+	}
+
+	if (port == UART_PORT2){
+		hdma_usart2_rx.Instance = DMA1_Channel1;
+		hdma_usart2_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+		hdma_usart2_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+		hdma_usart2_rx.Init.MemInc = DMA_MINC_ENABLE;
+		hdma_usart2_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+		hdma_usart2_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+		hdma_usart2_rx.Init.Mode = DMA_CIRCULAR;
+		hdma_usart2_rx.Init.Priority = DMA_PRIORITY_LOW;
+
+		StatusCode status = get_status_code(HAL_DMA_Init(&hdma_usart2_rx));
+		if (status != STATUS_CODE_OK) return status;
+
+		__HAL_DMA1_REMAP(HAL_DMA1_CH1_USART2_RX);
+
+		__HAL_LINKDMA(&huart2,hdmarx,hdma_usart2_rx);
+
+		HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+		HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+
+		uart2_rx_dma_buffer = (uint8_t*)malloc(rx_buffer_size*sizeof(uint8_t));
+
+		uart2_rx_queue.resize(UART_RECEIVE_BUFFER_SIZE);
+		rx_queue = &uart2_rx_queue;
+
+		if (uart2_rx_dma_buffer == nullptr){
+			return STATUS_CODE_RESOURCE_EXHAUSTED;
+		}
+		uart2_rx_dma_buffer_len = rx_buffer_size;
+
+		//init circular dma transfer
+		HAL_UART_Receive_DMA(&huart2, uart2_rx_dma_buffer, (uint16_t)uart2_rx_dma_buffer_len);
+
+		dma_setup_rx = true;
+
+		return STATUS_CODE_OK;
+	}
+
+	return STATUS_CODE_UNIMPLEMENTED; //only port 2 supported for stm32f0
+}
+
+StatusCode UARTPort::resetDMA() {
+	if (port != UART_PORT2) return STATUS_CODE_UNIMPLEMENTED;
+	if (!dma_setup_rx) return STATUS_CODE_INVALID_ARGS;
+
+	StatusCode status;
+	status = get_status_code(HAL_DMA_DeInit(&hdma_usart2_rx));
+	if (status != STATUS_CODE_OK) return status;
+
+	free(uart2_rx_dma_buffer);
+
+	HAL_NVIC_DisableIRQ(DMA1_Channel1_IRQn);
+
+	dma_setup_rx = false;
+
+	return STATUS_CODE_OK;
+}
+
 StatusCode UARTPort::adjustBaudrate(uint32_t baudrate) {
 	reset();
 	settings.baudrate = baudrate;
@@ -158,15 +229,28 @@ StatusCode UARTPort::read_byte(uint8_t &data) {
 StatusCode UARTPort::read_bytes(uint8_t *data, size_t len, size_t &bytes_read) {
 	if (is_setup) return STATUS_CODE_UNINITIALIZED;
 
-	StatusCode status;
+	StatusCode status = STATUS_CODE_OK;
 
-	switch (port) {
-		case UART_PORT1: status = get_status_code(HAL_UART_Receive(&huart1, data, (uint16_t) len, UART_TIMEOUT));
-			break;
-		case UART_PORT2: status = get_status_code(HAL_UART_Receive(&huart2, data, (uint16_t) len, UART_TIMEOUT));
-			break;
-		default: return STATUS_CODE_INVALID_ARGS;
+	if (dma_setup_rx){
+		bytes_read = 0;
 
+		if (rx_queue == nullptr) abort("RX QUEUE IS NULL!", __FILE__, __LINE__);
+
+		while (bytes_read < len && !rx_queue->empty()){
+			data[bytes_read] = rx_queue->front();
+			rx_queue->pop_front();
+			bytes_read++;
+		}
+
+	} else {
+		switch (port) {
+			case UART_PORT1: status = get_status_code(HAL_UART_Receive(&huart1, data, (uint16_t) len, UART_TIMEOUT));
+				break;
+			case UART_PORT2: status = get_status_code(HAL_UART_Receive(&huart2, data, (uint16_t) len, UART_TIMEOUT));
+				break;
+			default: return STATUS_CODE_INVALID_ARGS;
+
+		}
 	}
 
 	bytes_read = len;
@@ -189,4 +273,36 @@ StatusCode UARTPort::transmit(uint8_t *data, size_t len) {
 	}
 
 	return status;
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+	if (huart->Instance == USART2) {
+		for (size_t i = uart2_rx_dma_buffer_len/2; i < uart2_rx_dma_buffer_len; i++){
+			uart2_rx_queue.push_back(uart2_rx_dma_buffer[i]);
+		}
+	}
+}
+void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart){
+	if (huart->Instance == USART2) {
+		for (size_t i = 0; i < uart2_rx_dma_buffer_len/2; i++){
+			uart2_rx_queue.push_back(uart2_rx_dma_buffer[i]);
+		}
+	}
+}
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart){
+	//todo: handle diff error types here
+}
+void HAL_UART_AbortCpltCallback (UART_HandleTypeDef *huart){
+
+}
+
+void DMA1_Channel1_IRQHandler(void)
+{
+	/* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
+
+	/* USER CODE END DMA1_Channel1_IRQn 0 */
+	HAL_DMA_IRQHandler(&hdma_usart2_rx);
+	/* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
+
+	/* USER CODE END DMA1_Channel1_IRQn 1 */
 }

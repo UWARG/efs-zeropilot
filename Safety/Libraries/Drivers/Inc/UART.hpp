@@ -4,6 +4,15 @@
  * @author Serj Babayan
  * @copyright Waterloo Aerial Robotics Group 2019
  *  https://raw.githubusercontent.com/UWARG/ZeroPilot-SW/devel/LICENSE.md
+ *
+ *  Notes on DMA:
+ *  - You should only setup DMA on the interface if you're expecting to receive constant size packets. Variable size
+ *  packets may work, however then you should pick a common multiple of the different sizes of packets. This is because
+ *  a DMA interrupt only triggers when the buffer is half full or full, so if the device has sent data that doesn't fill
+ *  the buffer, you'll have to wait until enough bytes are received before being able to read it!
+ *
+ *  Note that this isn't an issue when sending TX through DMA (just make sure that the dma send buffer is large enough to
+ *  fill your largest packet
  */
 
 #pragma once
@@ -11,6 +20,7 @@
 #include "GPIO.hpp"
 #include <stdint.h>
 #include <stdlib.h>
+#include <queue>
 
 //only ports 1 and 2 supported on safety chip
 //only 1, 2, 3, 4 supported on autopilot
@@ -60,6 +70,21 @@ class UARTPort {
 	StatusCode reset();
 
 	/**
+	 * Sets up DMA transfers transparently, if the hardware can support it. If possible, attempts to do both tx and RX
+	 * using DMA. If not, may only do RX. If either the parameters are 0, will only enable either the RX/TX buffers respectively
+	 * @param tx_buffer_size Size of DMA buffer when transmitting (used if possible). Try to make this as large as the largest
+	 * 	packet you could possible send
+	 * @param rx_buffer_size Size of DMA buffer when receiving. Make this the size of the smallest packet you're expected to receive
+	 * @return
+	 */
+	StatusCode setupDMA(size_t tx_buffer_size, size_t rx_buffer_size);
+
+	/**
+	 * If DMA was setup for this channel, resets it so that synchronous transfers are done instead
+	 */
+	StatusCode resetDMA();
+
+	/**
 	 * Get a byte received on the buffer
 	 * @param data The byte read will be written to here
 	 * @return STATUS_CODE_EMPTY if nothing in rx buffer.
@@ -89,4 +114,7 @@ class UARTPort {
 	UARTPortNum port;
 	UARTSettings settings;
 	bool is_setup = false;
+	bool dma_setup_rx = false;
+	bool dma_setup_tx = false;
+	std::deque<uint8_t>* rx_queue;
 };
