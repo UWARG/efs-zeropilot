@@ -19,7 +19,7 @@ set(MCU_CPU cortex-m0)
 set(MCU_FLOAT_ABI soft) # since we don't have a floating point unit on this chip. Otherwise should be hard
 set(MCU_FLAGS "-mcpu=${MCU_CPU} -mthumb -mfloat-abi=${MCU_FLOAT_ABI}")
 
-set(COMMON_FLAGS "${MCU_FLAGS} -Wall -Wextra -Wno-unused-parameter -ffunction-sections -fdata-sections")
+set(COMMON_FLAGS "${MCU_FLAGS} -g -Wall -Wextra -Wno-unused-parameter -ffunction-sections -fdata-sections")
 
 set(CMAKE_C_FLAGS "${COMMON_FLAGS} -std=gnu11" CACHE INTERNAL "")
 set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -Wno-implicit-fallthrough -Wno-register -std=c++17 -fno-rtti -fno-exceptions -fno-unwind-tables" CACHE INTERNAL "")

@@ -86,9 +86,8 @@ StatusCode GPIOPin::set_state(GPIOState new_state) {
 
 		HAL_GPIO_WritePin(mcu_port, mcu_pin, static_cast<GPIO_PinState>(new_state));
 		current_state = new_state;
-		return STATUS_CODE_OK;
 	}
-	return STATUS_CODE_INVALID_ARGS; //only makes sense if the pin is an output
+	return STATUS_CODE_OK;
 }
 
 StatusCode GPIOPin::toggle_state() {

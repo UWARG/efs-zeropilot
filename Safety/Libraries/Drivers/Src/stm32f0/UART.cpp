@@ -18,13 +18,13 @@ static const GPIOPort UART2_TX_PORT = GPIO_PORT_A;
 static const GPIOPinNum UART2_RX_PIN = 2;
 static const GPIOPinNum UART2_TX_PIN = 3;
 
-UART_HandleTypeDef huart1;
-UART_HandleTypeDef huart2;
-DMA_HandleTypeDef hdma_usart2_rx;
+static UART_HandleTypeDef huart1;
+static UART_HandleTypeDef huart2;
+static DMA_HandleTypeDef hdma_usart2_rx;
 
 static uint8_t* uart2_rx_dma_buffer;
 static size_t uart2_rx_dma_buffer_len;
-std::deque<uint8_t> uart2_rx_queue;
+static std::deque<uint8_t> uart2_rx_queue;
 
 extern StatusCode get_status_code(HAL_StatusTypeDef status);
 
@@ -151,6 +151,7 @@ StatusCode UARTPort::reset() {
 }
 
 StatusCode UARTPort::setupDMA(size_t tx_buffer_size, size_t rx_buffer_size) {
+	if (!is_setup) return STATUS_CODE_UNINITIALIZED;
 	if (rx_buffer_size == 0){
 		return STATUS_CODE_INVALID_ARGS;
 	}
@@ -227,7 +228,7 @@ StatusCode UARTPort::read_byte(uint8_t &data) {
 
 //synchronous implementation for now. Use DMA later
 StatusCode UARTPort::read_bytes(uint8_t *data, size_t len, size_t &bytes_read) {
-	if (is_setup) return STATUS_CODE_UNINITIALIZED;
+	if (!is_setup) return STATUS_CODE_UNINITIALIZED;
 
 	StatusCode status = STATUS_CODE_OK;
 
@@ -259,7 +260,7 @@ StatusCode UARTPort::read_bytes(uint8_t *data, size_t len, size_t &bytes_read) {
 }
 
 StatusCode UARTPort::transmit(uint8_t *data, size_t len) {
-	if (is_setup) return STATUS_CODE_UNINITIALIZED;
+	if (!is_setup) return STATUS_CODE_UNINITIALIZED;
 
 	StatusCode status;
 
