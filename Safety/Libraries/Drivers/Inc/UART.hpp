@@ -48,6 +48,7 @@ typedef struct UARTSettings {
 
 class UARTPort {
  public:
+	UARTPort() = default;
 	UARTPort(UARTPortNum port, UARTSettings settings);
 
 	/**

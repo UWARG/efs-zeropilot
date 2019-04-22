@@ -1,69 +1,67 @@
 #include "main.hpp"
-#include "debug.h"
+#include "Debug.hpp"
 #include "safety_control.h"
 #include "GPIO.hpp"
 #include "Clock.hpp"
 #include "UART.hpp"
 #include "stm32f0xx_hal.h"
+#include "PWM.hpp"
 
-int main(void) {
+extern UARTPort port;
+
+int main() {
+	StatusCode status;
+
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
 
 	//set clock sources
 	initialize_system_clock();
-
 	gpio_init();
+	init_debug();
 
-	UARTSettings settings = {
-		9600,
-		1,
-		UART_NO_PARITY,
-		false
-	};
+	PWMManager &manager = PWMManager::getInstance();
+	status = manager.setup();
 
-	UARTPort debug_port = UARTPort(UART_PORT1, settings);
+	manager.channel(1).set(50);
 
-	char string[] = "hello how are you this is a test \n";
+	info("\r\n\r\nStarting up...");
+	char buffer[100];
+	sprintf(buffer, "Compiled on %s at %s", __DATE__, __TIME__);
+	info(buffer);
 
-	debug_port.transmit((uint8_t*) string, 16);
+	GPIOPin led1 = GPIOPin(LED1_GPIO_PORT, LED1_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
+	GPIOPin led2 = GPIOPin(LED2_GPIO_PORT, LED2_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
+	GPIOPin led3 = GPIOPin(LED3_GPIO_PORT, LED3_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
 
-//  MX_SPI1_Init();
-//  MX_TIM1_Init();
-//  MX_TIM3_Init();
-//  MX_TIM14_Init();
-//  MX_TIM15_Init();
-//  MX_TIM16_Init();
-//  MX_TIM17_Init();
-//  MX_USART1_UART_Init();
-//  MX_USART2_UART_Init();
-//  MX_IWDG_Init();
+	GPIOPin buzzer = GPIOPin(BUZZER_GPIO_PORT, BUZZER_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
 
-  /* USER CODE BEGIN 2 */
+	led1.setup();
+	led2.setup();
+	led3.setup();
+	buzzer.setup();
 
-//  debug("\r\n\r\nStarting up...");
-//  debug("Compiled on %s at %s", __DATE__, __TIME__);
-
-  GPIOPin led1 = GPIOPin(LED1_GPIO_PORT, LED1_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
-  GPIOPin led2 = GPIOPin(LED2_GPIO_PORT, LED2_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
-  GPIOPin led3 = GPIOPin(LED3_GPIO_PORT, LED3_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
-
-  led1.setup();
-  led2.setup();
-  led3.setup();
-
-  led1.set_state(GPIO_STATE_HIGH);
+	led1.set_state(GPIO_STATE_LOW);
+	led2.set_state(GPIO_STATE_HIGH);
 
 //  Safety_Init();
 //  Safety_Run();
-  /* USER CODE END 2 */
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-  /* USER CODE END WHILE */
-  	debug_port.transmit((uint8_t*) string, 16);
-  /* USER CODE BEGIN 3 */
-  }
+	bool test = false;
+	while (1) {
+		if (test) {
+			//buzzer.set_state(GPIO_STATE_HIGH);
+			led2.set_state(GPIO_STATE_LOW);
+			test = false;
+		} else {
+			//buzzer.set_state(GPIO_STATE_LOW);
+			led2.set_state(GPIO_STATE_HIGH);
+			test = true;
+		}
+
+		//debug("tick");
+		//status = port.transmit((uint8_t*) string, 16);
+
+		HAL_Delay(1000);
+	}
 }

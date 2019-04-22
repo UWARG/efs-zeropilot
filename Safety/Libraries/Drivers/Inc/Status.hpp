@@ -14,5 +14,3 @@ typedef enum StatusCode {
 	STATUS_CODE_INTERNAL_ERROR,
 	NUM_STATUS_CODES,
 } StatusCode;
-
-void abort(const char *msg, const char *file, int line);

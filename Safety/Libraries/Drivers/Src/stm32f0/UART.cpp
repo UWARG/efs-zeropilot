@@ -1,9 +1,10 @@
 #include "UART.hpp"
 #include "GPIO.hpp"
 #include "Status.hpp"
+#include "Debug.hpp"
+#include "stm32f0xx_hal.h"
 #include <stdlib.h>
 #include <queue>
-#include "stm32f0xx_hal.h"
 
 static uint32_t UART_TIMEOUT = 50;
 static size_t UART_RECEIVE_BUFFER_SIZE = 512;

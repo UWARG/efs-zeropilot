@@ -64,6 +64,15 @@ install(CODE
   )"
 )
 
+message("CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
+
+IF(CMAKE_BUILD_TYPE MATCHES Debug)
+    message("Debug build.")
+ELSEIF(CMAKE_BUILD_TYPE MATCHES Release)
+    message("Release build.")
+ELSE()
+    message("Some other build type.")
+ENDIF()
 
 add_custom_target(UPLOAD
         arm-none-eabi-gdb -iex "target remote tcp:127.0.0.1:3333"
