@@ -2,6 +2,7 @@
 #include "GPIO.hpp"
 #include "Clock.hpp"
 #include "stm32f0xx_hal.h"
+#include <math.h>
 
 typedef struct PWMPinConfig {
 	GPIOPinNum num;
@@ -74,9 +75,12 @@ void PWMChannel::set(uint8_t percent) {
 		percent = 100;
 	}
 
-	auto pulse = static_cast<uint16_t>((percent * (max_signal - min_signal)) / 100 + min_signal);
+	//in us
+	uint32_t prescaler = (static_cast<TIM_HandleTypeDef*>(this->timer))->Init.Prescaler;
+	uint32_t us = ((percent * (max_signal - min_signal)) / 100 + min_signal);
+	double ticks = us*(get_internal_clock() / 1000000.0 /prescaler);
 
-	__HAL_TIM_SET_COMPARE((TIM_HandleTypeDef *) this->timer, this->timer_channel, pulse);
+	__HAL_TIM_SET_COMPARE((TIM_HandleTypeDef *) this->timer, this->timer_channel, (uint32_t)ticks);
 }
 
 StatusCode PWMChannel::setup() {
@@ -132,6 +136,9 @@ StatusCode PWMManager::setup() {
 		if (status != STATUS_CODE_OK) {
 			return status;
 		}
+
+		status = get_status_code(HAL_TIM_PWM_Start(PWM_CONFIG[i].timer, PWM_CONFIG[i].timer_channel));
+		if (status != STATUS_CODE_OK) return status;
 	}
 
 	is_setup = true;
@@ -140,20 +147,24 @@ StatusCode PWMManager::setup() {
 
 StatusCode PWMManager::configure(PWMGroup group, PWMGroupSetting setting) {
 	switch (group) {
-		case PWM_GROUP_1: __HAL_RCC_TIM16_CLK_ENABLE();
+		case PWM_GROUP_1:
+			__HAL_RCC_TIM16_CLK_ENABLE();
 			init_timer(&htim16, TIM16, setting.period, 1, true, false);
 			channels[0].setLimits(setting.min_length, setting.max_length);
 			break;
-		case PWM_GROUP_2: __HAL_RCC_TIM17_CLK_ENABLE();
+		case PWM_GROUP_2:
+			__HAL_RCC_TIM17_CLK_ENABLE();
 			init_timer(&htim17, TIM17, setting.period, 1, true, false);
 			channels[1].setLimits(setting.min_length, setting.max_length);
 			break;
-		case PWM_GROUP_3_4: __HAL_RCC_TIM15_CLK_ENABLE();
+		case PWM_GROUP_3_4:
+			__HAL_RCC_TIM15_CLK_ENABLE();
 			init_timer(&htim15, TIM15, setting.period, 2, true, true);
 			channels[2].setLimits(setting.min_length, setting.max_length);
 			channels[3].setLimits(setting.min_length, setting.max_length);
 			break;
-		case PWM_GROUP_5_8: __HAL_RCC_TIM3_CLK_ENABLE();
+		case PWM_GROUP_5_8:
+			__HAL_RCC_TIM3_CLK_ENABLE();
 			init_timer(&htim3, TIM3, setting.period, 4, false, true);
 			channels[4].setLimits(setting.min_length, setting.max_length);
 			channels[5].setLimits(setting.min_length, setting.max_length);
@@ -199,8 +210,8 @@ StatusCode PWMManager::set_all(uint8_t percent) {
 }
 
 PWMChannel &PWMManager::channel(PWMChannelNum num) {
-	if (num < 12) {
-		return channels[num];
+	if (num < 12 && num > 0) {
+		return channels[num - 1];
 	}
 	return channels[0];
 }
@@ -216,10 +227,12 @@ static struct PWMCounterSettings getCounterSettings(uint32_t period) {
 		if (settings.prescaler == 0xFFFF) { // if we couldn't find a prescaler value
 			return {0, 0};
 		}
-		ticks = (get_internal_clock() / 1000000U) * period / settings.prescaler;
+		double tmp = (get_internal_clock() / 1000000.0) * period / settings.prescaler;
+		ticks = (uint32_t)round(tmp);
 	} while (ticks > 0xFFFF);
 
 	settings.period = (uint16_t) ticks;
+
 	return settings;
 }
 

@@ -22,8 +22,14 @@ int main() {
 
 	PWMManager &manager = PWMManager::getInstance();
 	status = manager.setup();
+//	PWMGroupSetting pset;
+//	pset.period = 20000;
+//	pset.min_length = 1000;
+//	pset.max_length = 2000;
+//	pset.inverted = false;
+//	manager.configure(PWM_GROUP_1, pset);
 
-	manager.channel(1).set(50);
+	manager.channel(1).set(0);
 
 	info("\r\n\r\nStarting up...");
 	char buffer[100];
@@ -58,9 +64,6 @@ int main() {
 			led2.set_state(GPIO_STATE_HIGH);
 			test = true;
 		}
-
-		//debug("tick");
-		//status = port.transmit((uint8_t*) string, 16);
 
 		HAL_Delay(1000);
 	}

@@ -80,8 +80,8 @@ class PWMChannel {
 	GPIOPin pin;
 	void *timer;
 	uint16_t timer_channel;
-	uint32_t min_signal;
-	uint32_t max_signal;
+	uint32_t min_signal = 1000; //standard for 50hz pwm signal
+	uint32_t max_signal = 2000;
 };
 
 /**
@@ -141,4 +141,5 @@ class PWMManager {
 	PWMManager() = default; //force initialization through getInstance()
 	PWMChannel channels[12];
 	bool is_setup = false;
+	uint16_t prescaler;
 };
