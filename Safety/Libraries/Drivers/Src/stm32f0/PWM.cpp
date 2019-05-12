@@ -151,17 +151,30 @@ StatusCode PWMManager::configure(PWMGroup group, PWMGroupSetting setting) {
 			__HAL_RCC_TIM16_CLK_ENABLE();
 			init_timer(&htim16, TIM16, setting.period, 1, true, false);
 			channels[0].setLimits(setting.min_length, setting.max_length);
+
+			if (is_setup){ //if we're reconfiguring the channel, rather than completly setting it up again
+				return get_status_code(HAL_TIM_PWM_Start(PWM_CONFIG[0].timer, PWM_CONFIG[0].timer_channel));
+			}
 			break;
 		case PWM_GROUP_2:
 			__HAL_RCC_TIM17_CLK_ENABLE();
 			init_timer(&htim17, TIM17, setting.period, 1, true, false);
 			channels[1].setLimits(setting.min_length, setting.max_length);
+
+			if (is_setup){
+				return get_status_code(HAL_TIM_PWM_Start(PWM_CONFIG[1].timer, PWM_CONFIG[1].timer_channel));
+			}
 			break;
 		case PWM_GROUP_3_4:
 			__HAL_RCC_TIM15_CLK_ENABLE();
 			init_timer(&htim15, TIM15, setting.period, 2, true, true);
 			channels[2].setLimits(setting.min_length, setting.max_length);
 			channels[3].setLimits(setting.min_length, setting.max_length);
+
+			if (is_setup){
+				HAL_TIM_PWM_Start(PWM_CONFIG[2].timer, PWM_CONFIG[2].timer_channel);
+				return get_status_code(HAL_TIM_PWM_Start(PWM_CONFIG[3].timer, PWM_CONFIG[3].timer_channel));
+			}
 			break;
 		case PWM_GROUP_5_8:
 			__HAL_RCC_TIM3_CLK_ENABLE();
@@ -170,6 +183,13 @@ StatusCode PWMManager::configure(PWMGroup group, PWMGroupSetting setting) {
 			channels[5].setLimits(setting.min_length, setting.max_length);
 			channels[6].setLimits(setting.min_length, setting.max_length);
 			channels[7].setLimits(setting.min_length, setting.max_length);
+
+			if (is_setup){
+				HAL_TIM_PWM_Start(PWM_CONFIG[4].timer, PWM_CONFIG[4].timer_channel);
+				HAL_TIM_PWM_Start(PWM_CONFIG[5].timer, PWM_CONFIG[5].timer_channel);
+				HAL_TIM_PWM_Start(PWM_CONFIG[6].timer, PWM_CONFIG[6].timer_channel);
+				return get_status_code(HAL_TIM_PWM_Start(PWM_CONFIG[7].timer, PWM_CONFIG[7].timer_channel));
+			}
 			break;
 		case PWM_GROUP_9_12: __HAL_RCC_TIM1_CLK_ENABLE();
 			init_timer(&htim1, TIM1, setting.period, 4, true, true);
@@ -177,6 +197,13 @@ StatusCode PWMManager::configure(PWMGroup group, PWMGroupSetting setting) {
 			channels[9].setLimits(setting.min_length, setting.max_length);
 			channels[10].setLimits(setting.min_length, setting.max_length);
 			channels[11].setLimits(setting.min_length, setting.max_length);
+
+			if (is_setup){
+				HAL_TIM_PWM_Start(PWM_CONFIG[8].timer, PWM_CONFIG[8].timer_channel);
+				HAL_TIM_PWM_Start(PWM_CONFIG[9].timer, PWM_CONFIG[9].timer_channel);
+				HAL_TIM_PWM_Start(PWM_CONFIG[10].timer, PWM_CONFIG[10].timer_channel);
+				return get_status_code(HAL_TIM_PWM_Start(PWM_CONFIG[11].timer, PWM_CONFIG[11].timer_channel));
+			}
 			break;
 		default: return STATUS_CODE_INVALID_ARGS;
 	}
@@ -191,6 +218,12 @@ StatusCode PWMManager::reset() {
 	for (int i = 0; i < 12; i++) {
 		channels[i].reset();
 	}
+
+	HAL_TIM_Base_DeInit(&htim16);
+	HAL_TIM_Base_DeInit(&htim17);
+	HAL_TIM_Base_DeInit(&htim15);
+	HAL_TIM_Base_DeInit(&htim3);
+	HAL_TIM_Base_DeInit(&htim1);
 
 	__HAL_RCC_TIM16_CLK_DISABLE();
 	__HAL_RCC_TIM17_CLK_DISABLE();

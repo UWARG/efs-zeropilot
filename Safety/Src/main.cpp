@@ -22,14 +22,22 @@ int main() {
 
 	PWMManager &manager = PWMManager::getInstance();
 	status = manager.setup();
-//	PWMGroupSetting pset;
-//	pset.period = 20000;
-//	pset.min_length = 1000;
-//	pset.max_length = 2000;
-//	pset.inverted = false;
-//	manager.configure(PWM_GROUP_1, pset);
 
+	if (status != STATUS_CODE_OK) info("PWMManager::setup failed to setup pwm ports!");
+
+	PWMGroupSetting setting;
+
+	setting.inverted = false;
+	setting.max_length = 3000;
+	setting.min_length = 1000;
+	setting.period = 40000;
 	manager.channel(1).set(50);
+	manager.configure(PWM_GROUP_1, setting);
+	manager.configure(PWM_GROUP_2, setting);
+	manager.configure(PWM_GROUP_3_4, setting);
+	manager.configure(PWM_GROUP_5_8, setting);
+	manager.configure(PWM_GROUP_9_12, setting);
+
 	manager.channel(2).set(50);
 	manager.channel(3).set(50);
 	manager.channel(4).set(50);
@@ -59,26 +67,26 @@ int main() {
 	buzzer.setup();
 
 	led1.set_state(GPIO_STATE_LOW);
-	led2.set_state(GPIO_STATE_HIGH);
+	led2.set_state(GPIO_STATE_LOW);
 
-//  Safety_Init();
-//  Safety_Run();
+	//  Safety_Init();
+	//  Safety_Run();
 
-uint32_t clock = HAL_RCC_GetHCLKFreq();
-clock = HAL_RCC_GetPCLK1Freq();
+	uint32_t clock = HAL_RCC_GetHCLKFreq();
+	clock = HAL_RCC_GetPCLK1Freq();
 
 	bool test = false;
 	while (1) {
-		if (test) {
-			//buzzer.set_state(GPIO_STATE_HIGH);
-			led2.set_state(GPIO_STATE_LOW);
-			test = false;
-		} else {
-			//buzzer.set_state(GPIO_STATE_LOW);
-			led2.set_state(GPIO_STATE_HIGH);
-			test = true;
-		}
-
-		HAL_Delay(1000);
+//		if (test) {
+//			//buzzer.set_state(GPIO_STATE_HIGH);
+//			led2.set_state(GPIO_STATE_LOW);
+//			test = false;
+//		} else {
+//			//buzzer.set_state(GPIO_STATE_LOW);
+//			led2.set_state(GPIO_STATE_HIGH);
+//			test = true;
+//		}
+//
+//		HAL_Delay(500);
 	}
 }
