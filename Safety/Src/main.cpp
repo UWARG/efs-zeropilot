@@ -5,7 +5,9 @@
 #include "Clock.hpp"
 #include "UART.hpp"
 #include "stm32f0xx_hal.h"
+#include "stm32f0xx_hal_rcc.h"
 #include "PWM.hpp"
+#include "PPM.hpp"
 
 extern UARTPort port;
 
@@ -20,17 +22,23 @@ int main() {
 	gpio_init();
 	init_debug();
 
+	info("\r\n\r\nStarting up...");
+	char buffer[100];
+	sprintf(buffer, "Compiled on %s at %s", __DATE__, __TIME__);
+	info(buffer);
+
+
+
 	PWMManager &manager = PWMManager::getInstance();
 	status = manager.setup();
-
-	if (status != STATUS_CODE_OK) info("PWMManager::setup failed to setup pwm ports!");
+	info("PWMSetup", status);
 
 	PWMGroupSetting setting;
 
-	setting.inverted = true;
-	setting.max_length = 3000;
+	setting.inverted = false;
+	setting.max_length = 2000;
 	setting.min_length = 1000;
-	setting.period = 40000;
+	setting.period = 2000;
 	manager.channel(1).set(50);
 	manager.configure(PWM_GROUP_1, setting);
 	manager.configure(PWM_GROUP_2, setting);
@@ -38,9 +46,9 @@ int main() {
 	manager.configure(PWM_GROUP_5_8, setting);
 	manager.configure(PWM_GROUP_9_12, setting);
 
-	manager.channel(2).set(50);
-	manager.channel(3).set(50);
-	manager.channel(4).set(50);
+	manager.channel(2).set(25);
+	manager.channel(3).set(75);
+	manager.channel(4).set(100);
 	manager.channel(5).set(50);
 	manager.channel(6).set(50);
 	manager.channel(7).set(50);
@@ -50,10 +58,17 @@ int main() {
 	manager.channel(11).set(50);
 	manager.channel(12).set(50);
 
-	info("\r\n\r\nStarting up...");
-	char buffer[100];
-	sprintf(buffer, "Compiled on %s at %s", __DATE__, __TIME__);
-	info(buffer);
+
+
+
+
+	PPMChannel ppm;
+
+	ppm.setNumChannels(8);
+	ppm.setLimits(1, 1000,2000);
+	status = ppm.setup();
+
+	info("PPM Setup", status);
 
 	GPIOPin led1 = GPIOPin(LED1_GPIO_PORT, LED1_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
 	GPIOPin led2 = GPIOPin(LED2_GPIO_PORT, LED2_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
@@ -77,6 +92,12 @@ int main() {
 
 	bool test = false;
 	while (1) {
+		uint32_t  t =         HAL_RCC_GetSysClockFreq();
+		uint32_t   t2=        HAL_RCC_GetHCLKFreq();
+		uint32_t       t3 =   HAL_RCC_GetPCLK1Freq();
+
+		sprintf(buffer, "PPMChannel1: %d", ppm.capture_value[3]);
+		info(buffer);
 //		if (test) {
 //			//buzzer.set_state(GPIO_STATE_HIGH);
 //			led2.set_state(GPIO_STATE_LOW);
@@ -86,7 +107,7 @@ int main() {
 //			led2.set_state(GPIO_STATE_HIGH);
 //			test = true;
 //		}
-//
-//		HAL_Delay(500);
+
+		HAL_Delay(1000);
 	}
 }
