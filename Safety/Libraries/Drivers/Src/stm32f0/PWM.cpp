@@ -56,8 +56,9 @@ static StatusCode init_timer(TIM_HandleTypeDef *timer,
 							 TIM_TypeDef *instance,
 							 uint32_t period,
 							 int32_t num_channels,
-							 bool config_breaktime = false,
-							 bool config_master = false);
+							 bool config_breaktime,
+							 bool config_master,
+							 bool inverted);
 
 PWMChannel::PWMChannel(GPIOPort port, GPIOPinNum pin_num, uint8_t alternate_function, void *timer, uint16_t channel) {
 	pin = GPIOPin(port, pin_num, GPIO_ALT_PP, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_SPEED_LOW, alternate_function);
@@ -149,7 +150,7 @@ StatusCode PWMManager::configure(PWMGroup group, PWMGroupSetting setting) {
 	switch (group) {
 		case PWM_GROUP_1:
 			__HAL_RCC_TIM16_CLK_ENABLE();
-			init_timer(&htim16, TIM16, setting.period, 1, true, false);
+			init_timer(&htim16, TIM16, setting.period, 1, true, false, setting.inverted);
 			channels[0].setLimits(setting.min_length, setting.max_length);
 
 			if (is_setup){ //if we're reconfiguring the channel, rather than completly setting it up again
@@ -158,7 +159,7 @@ StatusCode PWMManager::configure(PWMGroup group, PWMGroupSetting setting) {
 			break;
 		case PWM_GROUP_2:
 			__HAL_RCC_TIM17_CLK_ENABLE();
-			init_timer(&htim17, TIM17, setting.period, 1, true, false);
+			init_timer(&htim17, TIM17, setting.period, 1, true, false, setting.inverted);
 			channels[1].setLimits(setting.min_length, setting.max_length);
 
 			if (is_setup){
@@ -167,7 +168,7 @@ StatusCode PWMManager::configure(PWMGroup group, PWMGroupSetting setting) {
 			break;
 		case PWM_GROUP_3_4:
 			__HAL_RCC_TIM15_CLK_ENABLE();
-			init_timer(&htim15, TIM15, setting.period, 2, true, true);
+			init_timer(&htim15, TIM15, setting.period, 2, true, true, setting.inverted);
 			channels[2].setLimits(setting.min_length, setting.max_length);
 			channels[3].setLimits(setting.min_length, setting.max_length);
 
@@ -178,7 +179,7 @@ StatusCode PWMManager::configure(PWMGroup group, PWMGroupSetting setting) {
 			break;
 		case PWM_GROUP_5_8:
 			__HAL_RCC_TIM3_CLK_ENABLE();
-			init_timer(&htim3, TIM3, setting.period, 4, false, true);
+			init_timer(&htim3, TIM3, setting.period, 4, false, true, setting.inverted);
 			channels[4].setLimits(setting.min_length, setting.max_length);
 			channels[5].setLimits(setting.min_length, setting.max_length);
 			channels[6].setLimits(setting.min_length, setting.max_length);
@@ -192,7 +193,7 @@ StatusCode PWMManager::configure(PWMGroup group, PWMGroupSetting setting) {
 			}
 			break;
 		case PWM_GROUP_9_12: __HAL_RCC_TIM1_CLK_ENABLE();
-			init_timer(&htim1, TIM1, setting.period, 4, true, true);
+			init_timer(&htim1, TIM1, setting.period, 4, true, true, setting.inverted);
 			channels[8].setLimits(setting.min_length, setting.max_length);
 			channels[9].setLimits(setting.min_length, setting.max_length);
 			channels[10].setLimits(setting.min_length, setting.max_length);
@@ -272,8 +273,11 @@ static struct PWMCounterSettings getCounterSettings(uint32_t period) {
 static TIM_OC_InitTypeDef getChannelConfig(bool inverted) {
 	TIM_OC_InitTypeDef sConfigOC = {0, 0, 0, 0, 0, 0, 0};
 
-	//TODO: Support for inverted PWM
-	sConfigOC.OCMode = TIM_OCMODE_PWM1;
+	if (inverted){
+		sConfigOC.OCMode = TIM_OCMODE_PWM2;
+	} else {
+		sConfigOC.OCMode = TIM_OCMODE_PWM1;
+	}
 	sConfigOC.Pulse = 0;
 	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
 	sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
@@ -311,12 +315,13 @@ static StatusCode init_timer(TIM_HandleTypeDef *timer,
 							 uint32_t period,
 							 int32_t num_channels,
 							 bool config_breaktime,
-							 bool config_master) {
+							 bool config_master,
+							 bool inverted) {
 	TIM_ClockConfigTypeDef sClockSourceConfig = {0, 0, 0, 0};
 	sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
 
 	TIM_MasterConfigTypeDef sMasterConfig = getMasterConfig();
-	TIM_OC_InitTypeDef sConfigOC = getChannelConfig(false);
+	TIM_OC_InitTypeDef sConfigOC = getChannelConfig(inverted);
 	TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = getBreaktimeConfig();
 
 	struct PWMCounterSettings counter = getCounterSettings(period);

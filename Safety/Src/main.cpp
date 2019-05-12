@@ -27,7 +27,7 @@ int main() {
 
 	PWMGroupSetting setting;
 
-	setting.inverted = false;
+	setting.inverted = true;
 	setting.max_length = 3000;
 	setting.min_length = 1000;
 	setting.period = 40000;
