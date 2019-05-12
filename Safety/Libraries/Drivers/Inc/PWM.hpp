@@ -87,7 +87,7 @@ class PWMChannel {
 /**
  * Singleton class that should be used for managing the PWM interface
  * By default configures all the ports for 50Hz output. Call the configure()
- * function if you want something different
+ * function if you want something different. ie. 500Hz on some ESC, 50Hz on the servos, etc..
  */
 class PWMManager {
  public:

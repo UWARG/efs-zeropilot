@@ -12,7 +12,7 @@ StatusCode initialize_system_clock();
 
 /**
  * Retrieves the system clock rate
- * @return Frequency in Mhz
+ * @return Frequency in Hz
  */
 uint32_t get_system_clock();
 
@@ -30,8 +30,3 @@ uint32_t get_peripheral_clock_apb1();
  * @return Frequency in Hz
  */
 uint32_t get_peripheral_clock_apb2();
-
-/**
- * Returns the chip's internal HSI clock, in Hz
- */
-uint32_t get_internal_clock();

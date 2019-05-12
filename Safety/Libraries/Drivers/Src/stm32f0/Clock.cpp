@@ -3,30 +3,16 @@
 
 StatusCode get_status_code(HAL_StatusTypeDef status);
 
-//TODO: Dynamically create these values
 uint32_t get_system_clock() {
 	return HAL_RCC_GetSysClockFreq();
-	//return 48000000U;
 }
 
 uint32_t get_peripheral_clock_apb1() {
 	return HAL_RCC_GetPCLK1Freq();
-	//return 48000000U;
 }
 
 uint32_t get_peripheral_clock_apb2() {
 	return get_peripheral_clock_apb1();
-}
-
-/**
- * TODO: Figure out why the internal clock on the safety chip is actually 44.8Mhz rather
- * than the expected 48Mhz. The internal clock uses the 8Mhz internal clock, which has an accuracy
- * of +-1%, so even the inaccuracy shouldnt really account for it...
- * This function is primararily used to calculate the appropriate PWM timings
- * @return
- */
-uint32_t get_internal_clock() {
-	return 44800000U;
 }
 
 //code is generated from STM32CubeMX

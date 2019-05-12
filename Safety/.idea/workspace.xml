@@ -18,16 +18,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5be5f50-f4c4-463e-8fde-f7ee0b375f2a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Inc/Debug.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Inc/Debug.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Inc/Clock.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Inc/Clock.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Inc/PPM.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Inc/PPM.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Inc/PWM.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Inc/PWM.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Clock.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Clock.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PPM.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PPM.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PWM.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PWM.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/UART.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/UART.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Src/Debug.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Src/Debug.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Src/main.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/cmake-build-release/" />
@@ -89,7 +86,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PWM.cpp">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="278">
@@ -97,6 +94,18 @@
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
                 <marker date="1557704960127" expanded="true" signature="0:8294" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/Clock.hpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="252">
+              <caret line="14" column="26" selection-start-line="14" selection-start-column="26" selection-end-line="14" selection-end-column="26" />
+              <folding>
+                <element signature="e#14#33#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -206,7 +215,6 @@
         <option value="$PROJECT_DIR$/Libraries/Drivers/Src/x86/SPI.cpp" />
         <option value="$PROJECT_DIR$/Src/timer_new.c" />
         <option value="$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim.h" />
-        <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/Clock.hpp" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/SPI.hpp" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Helpers.cpp" />
         <option value="$PROJECT_DIR$/Src/debug.cpp" />
@@ -228,6 +236,7 @@
         <option value="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Clock.cpp" />
         <option value="$PROJECT_DIR$/Src/main.cpp" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PWM.cpp" />
+        <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/Clock.hpp" />
       </list>
     </option>
   </component>
@@ -399,12 +408,12 @@
       <workItem from="1555895812943" duration="445000" />
       <workItem from="1555981541422" duration="502000" />
       <workItem from="1557511556594" duration="4133000" />
-      <workItem from="1557682570874" duration="12210000" />
+      <workItem from="1557682570874" duration="12310000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="123724000" />
+    <option name="totallyTimeSpent" value="123824000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -419,12 +428,12 @@
     <frame x="207" y="28" width="2560" height="1326" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.27084988" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27084988" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.16568047" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32901135" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32901135" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3987034" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -679,15 +688,6 @@
         <state relative-caret-position="-784" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/Clock.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#14#33#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../ZeroPilot-STM32CubeMx/rev0/ZeroPilot-Safety/Src/main.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2844">
@@ -827,6 +827,16 @@
           <folding>
             <element signature="e#0#18#0" expanded="true" />
             <marker date="1557704960127" expanded="true" signature="0:8294" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/Clock.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="14" column="26" selection-start-line="14" selection-start-column="26" selection-end-line="14" selection-end-column="26" />
+          <folding>
+            <element signature="e#14#33#0" expanded="true" />
           </folding>
         </state>
       </provider>

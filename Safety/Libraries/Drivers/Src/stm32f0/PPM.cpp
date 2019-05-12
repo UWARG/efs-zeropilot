@@ -14,8 +14,8 @@ extern StatusCode get_status_code(HAL_StatusTypeDef status);
 static const GPIOPinNum PPM_PIN_NUM = 1;
 static const GPIOPort PPM_PORT = GPIO_PORT_B;
 
-static const uint16_t TIMER_PRESCALER = 2;
-static const uint16_t TIMER_PERIOD = 48000;
+static const uint16_t TIMER_PRESCALER = 8;
+static const uint16_t TIMER_PERIOD = 0xFFFF;
 
 uint8_t PPMChannel::num_channels = 0;
 volatile uint8_t PPMChannel::ppm_index = 0;
@@ -30,6 +30,8 @@ PPMChannel::PPMChannel(uint8_t channels) {
 
 	for (int i = 0; i < MAX_PPM_CHANNELS; i++) {
 		PPMChannel::capture_value[i] = 0;
+		min_values[i] = 1000;
+		max_values[i] = 2000;
 	}
 
 	ppm_pin =
@@ -98,7 +100,7 @@ StatusCode PPMChannel::setup() {
 	status = get_status_code(HAL_TIM_IC_Init(&htim14));
 	if (status != STATUS_CODE_OK) return status;
 
-	sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+	sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_BOTHEDGE;
 	sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
 	sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
 	sConfigIC.ICFilter = 0;
