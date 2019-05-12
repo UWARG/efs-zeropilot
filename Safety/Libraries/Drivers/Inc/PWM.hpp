@@ -120,7 +120,7 @@ class PWMManager {
 	StatusCode reset();
 
 	/**
-	 * Returns a reference to the requested channel
+	 * Returns a reference to the requested channel. Note that this is 1-indexed!
 	 * @param num
 	 * @return Returns the first channel if invalid channel num is given
 	 */

@@ -29,7 +29,18 @@ int main() {
 //	pset.inverted = false;
 //	manager.configure(PWM_GROUP_1, pset);
 
-	manager.channel(1).set(0);
+	manager.channel(1).set(50);
+	manager.channel(2).set(50);
+	manager.channel(3).set(50);
+	manager.channel(4).set(50);
+	manager.channel(5).set(50);
+	manager.channel(6).set(50);
+	manager.channel(7).set(50);
+	manager.channel(8).set(50);
+	manager.channel(9).set(50);
+	manager.channel(10).set(50);
+	manager.channel(11).set(50);
+	manager.channel(12).set(50);
 
 	info("\r\n\r\nStarting up...");
 	char buffer[100];
@@ -52,6 +63,9 @@ int main() {
 
 //  Safety_Init();
 //  Safety_Run();
+
+uint32_t clock = HAL_RCC_GetHCLKFreq();
+clock = HAL_RCC_GetPCLK1Freq();
 
 	bool test = false;
 	while (1) {

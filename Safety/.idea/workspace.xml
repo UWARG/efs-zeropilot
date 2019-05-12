@@ -2,9 +2,9 @@
 <project version="4">
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
+      <config projectName="Safety" targetName="Safety.elf" />
       <config projectName="Safety" targetName="UPLOAD" />
       <config projectName="Safety" targetName="STM32_HAL" />
-      <config projectName="Safety" targetName="Safety.elf" />
       <config projectName="Safety" targetName="safety_tests" />
       <config projectName="Safety" targetName="Safety.bin" />
     </generated>
@@ -18,10 +18,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5be5f50-f4c4-463e-8fde-f7ee0b375f2a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../Autopilot/.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/.idea/runConfigurations/Autopilot_elf___ZeropilotV1___STLINKV2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/.idea/runConfigurations/Autopilot_elf___ZeropilotV1___STLINKV2.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Src/main.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Inc/PWM.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Inc/PWM.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Clock.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Clock.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PWM.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PWM.cpp" afterDir="false" />
@@ -39,14 +36,26 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Src/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="234">
-              <caret line="24" selection-start-line="24" selection-start-column="2" selection-end-line="29" selection-end-column="41" />
+            <state relative-caret-position="372">
+              <caret line="23" column="23" lean-forward="true" selection-start-line="23" selection-start-column="23" selection-end-line="23" selection-end-column="23" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
-                <marker date="1555895185137" expanded="true" signature="685:1392" ph="..." />
+                <marker date="1557681236823" expanded="true" signature="1008:1788" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Src/Debug.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="378">
+              <caret line="21" column="23" selection-start-line="21" selection-start-column="23" selection-end-line="21" selection-end-column="23" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -55,8 +64,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../ZeroPilot-STM32CubeMx/rev0/ZeroPilot-Safety/Src/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
-              <caret line="154" column="2" lean-forward="true" selection-start-line="154" selection-start-column="2" selection-end-line="194" selection-end-column="66" />
+            <state relative-caret-position="1148">
+              <caret line="158" column="44" selection-start-line="158" selection-start-column="38" selection-end-line="158" selection-end-column="44" />
               <folding>
                 <element signature="e#6733#7259#0" expanded="true" />
               </folding>
@@ -67,8 +76,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Clock.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="284">
-              <caret line="67" column="24" selection-start-line="67" selection-start-column="24" selection-end-line="67" selection-end-column="24" />
+            <state relative-caret-position="180">
+              <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
               </folding>
@@ -77,14 +86,41 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rcc.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1134">
+              <caret line="1149" column="29" selection-start-line="1149" selection-start-column="9" selection-end-line="1149" selection-end-column="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PWM.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="232" lean-forward="true" selection-start-line="232" selection-end-line="232" />
+            <state relative-caret-position="2147">
+              <caret line="143" selection-start-line="143" selection-end-line="143" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
-                <marker date="1555895017625" expanded="true" signature="0:6839" ph="..." />
+                <marker date="1557512761348" expanded="true" signature="0:6839" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_gpio_ex.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="266">
+              <caret line="464" column="8" selection-start-line="464" selection-start-column="8" selection-end-line="464" selection-end-column="8" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_rcc.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="30114">
+              <caret line="1673" column="37" selection-start-line="1673" selection-start-column="18" selection-end-line="1673" selection-end-column="37" />
             </state>
           </provider>
         </entry>
@@ -92,8 +128,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/PWM.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="38">
-              <caret line="80" column="16" selection-start-line="80" selection-start-column="16" selection-end-line="80" selection-end-column="16" />
+            <state relative-caret-position="751">
+              <caret line="126" column="20" lean-forward="true" selection-start-line="126" selection-start-column="20" selection-end-line="126" selection-end-column="20" />
             </state>
           </provider>
         </entry>
@@ -101,8 +137,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../ZeroPilot-STM32CubeMx/rev0/ZeroPilot-Safety/Src/tim.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4739">
-              <caret line="313" column="3" lean-forward="true" selection-start-line="274" selection-start-column="1" selection-end-line="313" selection-end-column="3" />
+            <state relative-caret-position="5058">
+              <caret line="281" column="52" selection-start-line="281" selection-start-column="52" selection-end-line="281" selection-end-column="52" />
             </state>
           </provider>
         </entry>
@@ -206,8 +242,8 @@
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectFrameBounds">
     <option name="y" value="23" />
-    <option name="width" value="1680" />
-    <option name="height" value="941" />
+    <option name="width" value="2560" />
+    <option name="height" value="1326" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
@@ -217,7 +253,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -246,13 +281,6 @@
               <item name="Safety" type="462c0819:PsiDirectoryNode" />
               <item name="Libraries" type="462c0819:PsiDirectoryNode" />
               <item name="Drivers" type="462c0819:PsiDirectoryNode" />
-              <item name="Inc" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Safety" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Safety" type="462c0819:PsiDirectoryNode" />
-              <item name="Libraries" type="462c0819:PsiDirectoryNode" />
-              <item name="Drivers" type="462c0819:PsiDirectoryNode" />
               <item name="Src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -262,6 +290,19 @@
               <item name="Drivers" type="462c0819:PsiDirectoryNode" />
               <item name="Src" type="462c0819:PsiDirectoryNode" />
               <item name="stm32f0" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Safety" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Safety" type="462c0819:PsiDirectoryNode" />
+              <item name="Libraries" type="462c0819:PsiDirectoryNode" />
+              <item name="STM32F0xx_HAL_Driver" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Safety" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Safety" type="462c0819:PsiDirectoryNode" />
+              <item name="Libraries" type="462c0819:PsiDirectoryNode" />
+              <item name="STM32F0xx_HAL_Driver" type="462c0819:PsiDirectoryNode" />
+              <item name="Inc" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Safety" type="b2602c69:ProjectViewProjectNode" />
@@ -277,6 +318,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -366,12 +408,15 @@
       <workItem from="1554995833341" duration="1017000" />
       <workItem from="1554999781330" duration="14017000" />
       <workItem from="1555138792269" duration="31514000" />
-      <workItem from="1555448114682" duration="59750000" />
+      <workItem from="1555448114682" duration="59886000" />
+      <workItem from="1555895812943" duration="445000" />
+      <workItem from="1555981541422" duration="502000" />
+      <workItem from="1557511556594" duration="4133000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="106298000" />
+    <option name="totallyTimeSpent" value="111514000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -383,22 +428,21 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1680" height="941" extended-state="0" />
-    <editor active="true" />
+    <frame x="0" y="23" width="2560" height="1326" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26068377" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26886418" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.16568047" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32979977" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39929327" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32901135" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.3987034" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32979977" />
       <window_info anchor="bottom" id="Database Changes" order="7" />
-      <window_info anchor="bottom" id="Messages" order="8" weight="0.32155478" />
-      <window_info anchor="bottom" id="Terminal" order="9" weight="0.32979977" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.32090762" />
+      <window_info anchor="bottom" id="Terminal" order="9" weight="0.32901135" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.3286219" />
       <window_info anchor="bottom" id="CMake" order="12" weight="0.3286219" />
@@ -418,28 +462,18 @@
       </list>
     </option>
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PWM.cpp</url>
+          <line>143</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_dma_ex.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="558">
-          <caret line="31" column="3" selection-start-line="31" selection-start-column="3" selection-end-line="31" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../ZeroPilot-STM32CubeMx/rev0/ZeroPilot-Safety/Src/spi.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="358">
-          <caret line="131" column="36" selection-start-line="124" selection-start-column="28" selection-end-line="124" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_def.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="383">
-          <caret line="84" column="36" lean-forward="true" selection-start-line="84" selection-start-column="36" selection-end-line="84" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_dma.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="653">
@@ -565,13 +599,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gdbinit">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="12" selection-start-column="12" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/.gdbinit" />
     <entry file="file://$PROJECT_DIR$/Tools/build.bash">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
@@ -621,16 +649,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Status.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="54">
-          <caret line="3" selection-start-line="3" selection-end-line="3" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Status.cpp" />
     <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/stm32f0xx_hal_msp.c">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -651,9 +670,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Inc/Debug.h">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/Inc/Debug.h" />
     <entry file="file:///Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/usr/include/tic.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="160">
@@ -685,16 +702,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Src/Debug.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="86">
-          <caret line="30" column="9" selection-start-line="30" selection-start-column="9" selection-end-line="30" selection-end-column="9" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../ZeroPilot-STM32CubeMx/rev0/ZeroPilot-Safety/Src/stm32f0xx_it.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1911">
@@ -707,27 +714,10 @@
         <state relative-caret-position="-784" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../ZeroPilot-STM32CubeMx/rev0/ZeroPilot-Safety/Src/tim.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4739">
-          <caret line="313" column="3" lean-forward="true" selection-start-line="274" selection-start-column="1" selection-end-line="313" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
           <caret line="1090" column="18" selection-start-line="1090" selection-start-column="18" selection-end-line="1090" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="157">
-          <caret line="577" column="32" selection-start-line="577" selection-start-column="8" selection-end-line="577" selection-end-column="32" />
-          <folding>
-            <element signature="e#2266#2296#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -736,26 +726,6 @@
         <state>
           <folding>
             <element signature="e#14#33#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../ZeroPilot-STM32CubeMx/rev0/ZeroPilot-Safety/Src/main.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="154" column="2" lean-forward="true" selection-start-line="154" selection-start-column="2" selection-end-line="194" selection-end-column="66" />
-          <folding>
-            <element signature="e#6733#7259#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Clock.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="284">
-          <caret line="67" column="24" selection-start-line="67" selection-start-column="24" selection-end-line="67" selection-end-column="24" />
-          <folding>
-            <element signature="e#0#20#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -769,31 +739,99 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PWM.cpp">
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="232" lean-forward="true" selection-start-line="232" selection-end-line="232" />
+        <state relative-caret-position="10242">
+          <caret line="569" column="8" selection-start-line="569" selection-start-column="8" selection-end-line="569" selection-end-column="8" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
-            <marker date="1555895017625" expanded="true" signature="0:6839" ph="..." />
+            <element signature="e#2266#2296#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_rcc.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30114">
+          <caret line="1673" column="37" selection-start-line="1673" selection-start-column="18" selection-end-line="1673" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../ZeroPilot-STM32CubeMx/rev0/ZeroPilot-Safety/Src/tim.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5058">
+          <caret line="281" column="52" selection-start-line="281" selection-start-column="52" selection-end-line="281" selection-end-column="52" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/PWM.hpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="38">
-          <caret line="80" column="16" selection-start-line="80" selection-start-column="16" selection-end-line="80" selection-end-column="16" />
+        <state relative-caret-position="751">
+          <caret line="126" column="20" lean-forward="true" selection-start-line="126" selection-start-column="20" selection-end-line="126" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rcc.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1134">
+          <caret line="1149" column="29" selection-start-line="1149" selection-start-column="9" selection-end-line="1149" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Clock.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../ZeroPilot-STM32CubeMx/rev0/ZeroPilot-Safety/Src/main.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1148">
+          <caret line="158" column="44" selection-start-line="158" selection-start-column="38" selection-end-line="158" selection-end-column="44" />
+          <folding>
+            <element signature="e#6733#7259#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_gpio_ex.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="266">
+          <caret line="464" column="8" selection-start-line="464" selection-start-column="8" selection-end-line="464" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/Debug.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="378">
+          <caret line="21" column="23" selection-start-line="21" selection-start-column="23" selection-end-line="21" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Src/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="24" selection-start-line="24" selection-start-column="2" selection-end-line="29" selection-end-column="41" />
+        <state relative-caret-position="372">
+          <caret line="23" column="23" lean-forward="true" selection-start-line="23" selection-start-column="23" selection-end-line="23" selection-end-column="23" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
-            <marker date="1555895185137" expanded="true" signature="685:1392" ph="..." />
+            <marker date="1557681236823" expanded="true" signature="1008:1788" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PWM.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2147">
+          <caret line="143" selection-start-line="143" selection-end-line="143" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+            <marker date="1557512761348" expanded="true" signature="0:6839" ph="..." />
           </folding>
         </state>
       </provider>
