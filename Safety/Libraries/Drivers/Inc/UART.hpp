@@ -44,6 +44,8 @@ typedef struct UARTSettings {
 	uint8_t stop_bits = 1;
 	UARTParity parity;
 	bool cts_rts = false; //weather to enable cts/rts (ie. hardware flow control)
+	bool rx_inverted = false; //useful for inverted UART protocols like S.BUS
+	bool tx_inverted = false;
 } UARTSettings;
 
 class UARTPort {

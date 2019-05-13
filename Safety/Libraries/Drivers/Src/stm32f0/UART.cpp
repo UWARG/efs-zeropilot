@@ -114,6 +114,18 @@ StatusCode UARTPort::setup() {
 
 	uart->Init.Mode = UART_MODE_TX_RX;
 
+	if (settings.rx_inverted){
+		uart->AdvancedInit.RxPinLevelInvert = UART_ADVFEATURE_RXINV_ENABLE;
+	} else {
+		uart->AdvancedInit.RxPinLevelInvert = UART_ADVFEATURE_RXINV_DISABLE;
+	}
+
+	if (settings.tx_inverted){
+		uart->AdvancedInit.TxPinLevelInvert = UART_ADVFEATURE_TXINV_ENABLE;
+	} else {
+		uart->AdvancedInit.TxPinLevelInvert = UART_ADVFEATURE_TXINV_DISABLE;
+	}
+
 	if (settings.cts_rts) {
 		uart->Init.HwFlowCtl = UART_HWCONTROL_RTS_CTS;
 	} else {
@@ -179,12 +191,13 @@ StatusCode UARTPort::setupDMA(size_t tx_buffer_size, size_t rx_buffer_size) {
 
 		uart2_rx_dma_buffer = (uint8_t*)malloc(rx_buffer_size*sizeof(uint8_t));
 
-		uart2_rx_queue.resize(UART_RECEIVE_BUFFER_SIZE);
-		rx_queue = &uart2_rx_queue;
-
 		if (uart2_rx_dma_buffer == nullptr){
 			return STATUS_CODE_RESOURCE_EXHAUSTED;
 		}
+
+		uart2_rx_queue.resize(UART_RECEIVE_BUFFER_SIZE);
+		rx_queue = &uart2_rx_queue;
+
 		uart2_rx_dma_buffer_len = rx_buffer_size;
 
 		//init circular dma transfer
