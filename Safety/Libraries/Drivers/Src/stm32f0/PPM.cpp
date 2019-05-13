@@ -18,6 +18,7 @@ static const uint16_t TIMER_PERIOD = 0xFFFF;
 static uint8_t num_channels = 0;
 static volatile uint8_t ppm_index = 0;
 static volatile uint16_t capture_value[MAX_PPM_CHANNELS] = {0};
+static volatile uint32_t last_received_time = 0;
 
 // 1 tick is prescaler / 48000000Hz (internal clock)
 //therefore capture in us = capture * prescaler * 1E6 / 8E6
@@ -25,12 +26,13 @@ inline static uint32_t convert_ticks_to_us(int32_t ticks){
 	return (ticks * (TIMER_PRESCALER + 1)) / (get_system_clock() / (1000000UL));
 }
 
-PPMChannel::PPMChannel(uint8_t channels) {
+PPMChannel::PPMChannel(uint8_t channels, uint32_t timeout) {
 	if (channels > MAX_PPM_CHANNELS || channels <= 0) {
 		num_channels = 8;
 	}
 
 	ppm_index = 0;
+	this->disconnect_timeout = timeout;
 
 	for (int i = 0; i < MAX_PPM_CHANNELS; i++) {
 		capture_value[i] = 0;
@@ -53,6 +55,14 @@ StatusCode PPMChannel::setLimits(uint8_t channel, uint32_t min, uint32_t max, ui
 	this->deadzones[channel - 1] = deadzone;
 
 	return STATUS_CODE_OK;
+}
+
+StatusCode PPMChannel::setTimeout(uint32_t timeout){
+	if (timeout > 0){
+		this->disconnect_timeout = timeout;
+		return STATUS_CODE_OK;
+	}
+	return STATUS_CODE_INVALID_ARGS;
 }
 
 StatusCode PPMChannel::setNumChannels(uint8_t num) {
@@ -160,6 +170,10 @@ StatusCode PPMChannel::reset() {
 	return status;
 }
 
+bool PPMChannel::is_disconnected(uint32_t sys_time){
+	return (sys_time - last_received_time) >= this->disconnect_timeout;
+}
+
 //our interrupt callback for when we get a pulse capture
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM14) {
@@ -168,6 +182,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 		// by the time we're reading it, the pulse should be at its low
 		//the reason for doing this is because the HAL will actually capture both the lengths of the positive and negative pulses!
 		if (!high){
+			last_received_time = get_system_time();
 			auto time_diff = (uint16_t) HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 
 			capture_value[ppm_index] = time_diff;

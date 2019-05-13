@@ -27,8 +27,9 @@ class PPMChannel {
 	 * How many channels are we expecting in the input port?
 	 * Usually this is only 8
 	 * @param num_channels
+	 * @param disconnect_timeout Number of ms to wait before we consider channel disconnected
 	 */
-	explicit PPMChannel(uint8_t num_channels = 8);
+	explicit PPMChannel(uint8_t num_channels = 8, uint32_t disconnect_timeout = 1000);
 
 	/**
 	 * Reconfigure number of channels
@@ -45,6 +46,13 @@ class PPMChannel {
 	 * 		with a 1050us length will still be considered 0%
 	 */
 	StatusCode setLimits(uint8_t channel, uint32_t min, uint32_t max, uint32_t deadzone);
+
+	/**
+	 * Set the disconnect timeout
+	 * @param timeout
+	 * @return
+	 */
+	StatusCode setTimeout(uint32_t timeout);
 
 	/**
 	 * Setup timer14 with interrupts, gpios, etc..
@@ -73,10 +81,18 @@ class PPMChannel {
 	 */
 	uint32_t get_us(PWMChannelNum num);
 
+	/**
+	 * Wether the channel has disconnected based on the timeout
+	 * @param sys_time Current system time in ms
+	 * @return
+	 */
+	bool is_disconnected(uint32_t sys_time);
+
  private:
 	int32_t deadzones[MAX_PPM_CHANNELS];
 	int32_t min_values[MAX_PPM_CHANNELS]; //stores min tick values for each channel
 	int32_t max_values[MAX_PPM_CHANNELS]; //stores max tick values for each channel
+	uint32_t disconnect_timeout;
 	bool is_setup = false;
 	GPIOPin ppm_pin;
 };

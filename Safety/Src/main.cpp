@@ -61,6 +61,10 @@ int main() {
 	ppm.setLimits(1, 1000,2000, 50);
 	status = ppm.setup();
 
+	ppm.reset();
+	ppm.setTimeout(200);
+	status = ppm.setup();
+
 	info("PPM Setup", status);
 
 	GPIOPin led1 = GPIOPin(LED1_GPIO_PORT, LED1_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
@@ -105,7 +109,8 @@ int main() {
 //			led2.set_state(GPIO_STATE_HIGH);
 //			test = true;
 //		}
-
+		sprintf(buffer, "\r\nPPM Disconnected? : %d\r\n", ppm.is_disconnected(get_system_time()));
+		info(buffer);
 		sprintf(buffer, "System Time (ms): %u", get_system_time());
 		info(buffer);
 
