@@ -4,8 +4,6 @@
 
 extern StatusCode get_status_code(HAL_StatusTypeDef status);
 
-static volatile uint32_t sys_time = 0;
-
 uint32_t get_system_clock() {
 	return HAL_RCC_GetSysClockFreq();
 }
@@ -19,7 +17,7 @@ uint32_t get_peripheral_clock_apb2() {
 }
 
 uint32_t get_system_time(){
-	return sys_time;
+	return HAL_GetTick();
 }
 
 void delay(uint32_t ms){
@@ -75,9 +73,4 @@ StatusCode initialize_system_clock() {
 	HAL_RCC_MCOConfig(RCC_MCO, RCC_MCO1SOURCE_SYSCLK, RCC_MCODIV_1);
 
 	return STATUS_CODE_OK;
-}
-
-//systick interrupt routine. Increments so we can track of current system time
-void HAL_SYSTICK_Callback(){
-	sys_time++;
 }
