@@ -1,6 +1,10 @@
 /**
  * Implements PPM driver. Support variable PPM, where the input can be
- * from 8-12 channels.
+ * from 8-12 channels. Note that the assumption is that we're going to be
+ * reading signals that range from 1-2ms. If you're trying to read outside of this range,
+ * modify the prescaler in the implementation, as we may get a timer overflow or get really bad precision!
+ * Its fine if the signals we're reading are around the same ranges however, like 800us to 2200us. In that case
+ * just modify the setLimits() so the percentages received are correct
  * @author Serj Babayan
  * @copyright Waterloo Aerial Robotics Group 2019
  *  https://raw.githubusercontent.com/UWARG/ZeroPilot-SW/devel/LICENSE.md
@@ -37,8 +41,10 @@ class PPMChannel {
 	 * @param channel
 	 * @param min Min time in us (for a 0% signal)
 	 * @param max Max time in us (for 100% signal)
+	 * @param deadzone time in us for deadzone. ie. if deadzone is set to 50, a signal that is received
+	 * 		with a 1050us length will still be considered 0%
 	 */
-	StatusCode setLimits(uint8_t channel, uint32_t min, uint32_t max);
+	StatusCode setLimits(uint8_t channel, uint32_t min, uint32_t max, uint32_t deadzone);
 
 	/**
 	 * Setup timer14 with interrupts, gpios, etc..
@@ -53,19 +59,22 @@ class PPMChannel {
 	StatusCode reset();
 
 	/**
-	 * Returns a percent value that was most recently received from the PPM channel
+	 * Returns a percent value that was most recently received from the PPM channel, as a percentage
+	 * from 0-100
 	 * @param num
 	 * @return 0 if an invalid channel number was given
 	 */
 	uint8_t get(PWMChannelNum num);
 
-	//static below since our interrupt handler needs access to these
-	//don't access these!
-	static uint8_t num_channels;
-	static volatile uint16_t capture_value[MAX_PPM_CHANNELS]; //support up to 12 channels
-	static volatile uint8_t ppm_index;
+	/**
+	 * Same as above function, but returns the captured value in microseconds instead
+	 * @param num
+	 * @return 0 if an invalid channel number was given
+	 */
+	uint32_t get_us(PWMChannelNum num);
 
  private:
+	int32_t deadzones[MAX_PPM_CHANNELS];
 	int32_t min_values[MAX_PPM_CHANNELS]; //stores min tick values for each channel
 	int32_t max_values[MAX_PPM_CHANNELS]; //stores max tick values for each channel
 	bool is_setup = false;

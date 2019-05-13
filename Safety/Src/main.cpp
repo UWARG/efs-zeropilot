@@ -23,7 +23,7 @@ int main() {
 	init_debug();
 
 	info("\r\n\r\nStarting up...");
-	char buffer[100];
+	char buffer[200];
 	sprintf(buffer, "Compiled on %s at %s", __DATE__, __TIME__);
 	info(buffer);
 
@@ -38,7 +38,7 @@ int main() {
 	setting.inverted = false;
 	setting.max_length = 2000;
 	setting.min_length = 1000;
-	setting.period = 2000;
+	setting.period = 2500;
 	manager.channel(1).set(50);
 	manager.configure(PWM_GROUP_1, setting);
 	manager.configure(PWM_GROUP_2, setting);
@@ -65,7 +65,7 @@ int main() {
 	PPMChannel ppm;
 
 	ppm.setNumChannels(8);
-	ppm.setLimits(1, 1000,2000);
+	ppm.setLimits(1, 1000,2000, 50);
 	status = ppm.setup();
 
 	info("PPM Setup", status);
@@ -92,11 +92,18 @@ int main() {
 
 	bool test = false;
 	while (1) {
-		uint32_t  t =         HAL_RCC_GetSysClockFreq();
-		uint32_t   t2=        HAL_RCC_GetHCLKFreq();
-		uint32_t       t3 =   HAL_RCC_GetPCLK1Freq();
 
-		sprintf(buffer, "PPMChannel1: %d", ppm.capture_value[3]);
+		sprintf(buffer,
+			"CH1 (p, us): %d %d\r\nCH2 (p, us): %d %d\r\n"
+   "CH3 (p, us): %d %d\r\nCH4 (p, us): %d %d\r\nCH5 (p, us): %d %d\r\nCH6 (p, us): %d %d\r\nCH7 (p, us): %d %d\r\nCH8 (p, us): %d %d\r\n",
+			ppm.get(1), ppm.get_us(1),
+		ppm.get(2), ppm.get_us(2),
+			ppm.get(3), ppm.get_us(3),
+			ppm.get(4), ppm.get_us(4),
+			ppm.get(5), ppm.get_us(5),
+			ppm.get(6), ppm.get_us(6),
+			ppm.get(7), ppm.get_us(7),
+			ppm.get(8), ppm.get_us(8));
 		info(buffer);
 //		if (test) {
 //			//buzzer.set_state(GPIO_STATE_HIGH);
