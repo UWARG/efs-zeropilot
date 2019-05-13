@@ -5,7 +5,6 @@
 #include "Clock.hpp"
 #include "UART.hpp"
 #include "stm32f0xx_hal.h"
-#include "stm32f0xx_hal_rcc.h"
 #include "PWM.hpp"
 #include "PPM.hpp"
 
@@ -81,8 +80,6 @@ int main() {
 	//  Safety_Init();
 	//  Safety_Run();
 
-	uint32_t clock = HAL_RCC_GetHCLKFreq();
-	clock = HAL_RCC_GetPCLK1Freq();
 
 	bool test = false;
 	while (1) {
@@ -112,6 +109,6 @@ int main() {
 		sprintf(buffer, "System Time (ms): %u", get_system_time());
 		info(buffer);
 
-		HAL_Delay(1000);
+		delay(1000);
 	}
 }

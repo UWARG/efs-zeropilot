@@ -36,3 +36,9 @@ uint32_t get_peripheral_clock_apb2();
  * @return
  */
 uint32_t get_system_time();
+
+/**
+ * Block for a certain amount of ms
+ * @param ms
+ */
+void delay(uint32_t ms);
