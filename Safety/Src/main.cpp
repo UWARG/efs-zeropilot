@@ -27,8 +27,6 @@ int main() {
 	sprintf(buffer, "Compiled on %s at %s", __DATE__, __TIME__);
 	info(buffer);
 
-
-
 	PWMManager &manager = PWMManager::getInstance();
 	status = manager.setup();
 	info("PWMSetup", status);
@@ -57,10 +55,6 @@ int main() {
 	manager.channel(10).set(50);
 	manager.channel(11).set(50);
 	manager.channel(12).set(50);
-
-
-
-
 
 	PPMChannel ppm;
 
@@ -114,6 +108,9 @@ int main() {
 //			led2.set_state(GPIO_STATE_HIGH);
 //			test = true;
 //		}
+
+		sprintf(buffer, "System Time (ms): %u", get_system_time());
+		info(buffer);
 
 		HAL_Delay(1000);
 	}

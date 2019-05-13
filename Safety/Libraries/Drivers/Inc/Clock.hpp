@@ -30,3 +30,9 @@ uint32_t get_peripheral_clock_apb1();
  * @return Frequency in Hz
  */
 uint32_t get_peripheral_clock_apb2();
+
+/**
+ * Returns the system time since boot in ms
+ * @return
+ */
+uint32_t get_system_time();

@@ -2,11 +2,7 @@
 #include "GPIO.hpp"
 #include "Clock.hpp"
 #include <stdint.h>
-#include "stm32f0xx_hal_tim.h"
-#include "stm32f0xx_hal_gpio.h"
-#include "stm32f0xx_hal_gpio_ex.h"
-#include "stm32f0xx_hal_rcc.h"
-#include "stm32f0xx_hal_cortex.h"
+#include "stm32f0xx_hal.h"
 
 TIM_HandleTypeDef htim14;
 

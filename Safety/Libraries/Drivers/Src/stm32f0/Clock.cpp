@@ -1,6 +1,9 @@
 #include "Clock.hpp"
 #include "stm32f0xx_hal.h"
 
+
+static volatile uint32_t sys_time = 0;
+
 StatusCode get_status_code(HAL_StatusTypeDef status);
 
 uint32_t get_system_clock() {
@@ -13,6 +16,10 @@ uint32_t get_peripheral_clock_apb1() {
 
 uint32_t get_peripheral_clock_apb2() {
 	return get_peripheral_clock_apb1();
+}
+
+uint32_t get_system_time(){
+	return sys_time;
 }
 
 //code is generated from STM32CubeMX
@@ -65,4 +72,9 @@ StatusCode initialize_system_clock() {
 	HAL_RCC_MCOConfig(RCC_MCO, RCC_MCO1SOURCE_SYSCLK, RCC_MCODIV_1);
 
 	return STATUS_CODE_OK;
+}
+
+//systick interrupt routine. Increments so we can track of current system time
+void HAL_SYSTICK_Callback(){
+	sys_time++;
 }
