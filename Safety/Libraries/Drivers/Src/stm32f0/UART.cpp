@@ -6,7 +6,10 @@
 #include <stdlib.h>
 #include <queue>
 
-static uint32_t UART_TIMEOUT = 50;
+/**
+ * The below buffer size is the initial size of the uart buffer
+ * The uart buffer is an internal buffer that is only used when DMA is enabled!
+ */
 static size_t UART_RECEIVE_BUFFER_SIZE = 512;
 
 static const GPIOPort UART1_RX_PORT = GPIO_PORT_B;
@@ -16,8 +19,8 @@ static const GPIOPinNum UART1_TX_PIN = 6;
 
 static const GPIOPort UART2_RX_PORT = GPIO_PORT_A;
 static const GPIOPort UART2_TX_PORT = GPIO_PORT_A;
-static const GPIOPinNum UART2_RX_PIN = 2;
-static const GPIOPinNum UART2_TX_PIN = 3;
+static const GPIOPinNum UART2_RX_PIN = 3;
+static const GPIOPinNum UART2_TX_PIN = 2;
 
 static UART_HandleTypeDef huart1;
 static UART_HandleTypeDef huart2;
@@ -26,6 +29,12 @@ static DMA_HandleTypeDef hdma_usart2_rx;
 static uint8_t* uart2_rx_dma_buffer;
 static size_t uart2_rx_dma_buffer_len;
 static std::deque<uint8_t> uart2_rx_queue;
+
+//due to how the dequeue works, we need an external variable tracking the current num of elements in our uart buffer
+//this is because we wan't to avoid constant allocations/deallocations in the queue size, so we call resize() on our
+//queue which sets the total number of elements held in the queue
+//More info: http://www.cplusplus.com/reference/deque/deque/
+static size_t uart2_rx_elements = 0;
 
 extern StatusCode get_status_code(HAL_StatusTypeDef status);
 
@@ -115,15 +124,13 @@ StatusCode UARTPort::setup() {
 	uart->Init.Mode = UART_MODE_TX_RX;
 
 	if (settings.rx_inverted){
+		uart->AdvancedInit.AdvFeatureInit |= UART_ADVFEATURE_RXINV_ENABLE;
 		uart->AdvancedInit.RxPinLevelInvert = UART_ADVFEATURE_RXINV_ENABLE;
-	} else {
-		uart->AdvancedInit.RxPinLevelInvert = UART_ADVFEATURE_RXINV_DISABLE;
 	}
 
 	if (settings.tx_inverted){
+		uart->AdvancedInit.AdvFeatureInit |= UART_ADVFEATURE_TXINV_ENABLE;
 		uart->AdvancedInit.TxPinLevelInvert = UART_ADVFEATURE_TXINV_ENABLE;
-	} else {
-		uart->AdvancedInit.TxPinLevelInvert = UART_ADVFEATURE_TXINV_DISABLE;
 	}
 
 	if (settings.cts_rts) {
@@ -134,8 +141,11 @@ StatusCode UARTPort::setup() {
 
 	uart->Init.OverSampling = UART_OVERSAMPLING_16;
 	uart->Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-	uart->AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_SWAP_INIT;
-	uart->AdvancedInit.Swap = UART_ADVFEATURE_SWAP_ENABLE;
+
+	if (settings.flip_tx_rx){
+		uart->AdvancedInit.AdvFeatureInit |= UART_ADVFEATURE_SWAP_INIT;
+		uart->AdvancedInit.Swap = UART_ADVFEATURE_SWAP_ENABLE;
+	}
 
 	status = get_status_code(HAL_UART_Init(uart));
 	is_setup = true;
@@ -165,6 +175,7 @@ StatusCode UARTPort::reset() {
 
 StatusCode UARTPort::setupDMA(size_t tx_buffer_size, size_t rx_buffer_size) {
 	if (!is_setup) return STATUS_CODE_UNINITIALIZED;
+	if (dma_setup_rx) return STATUS_CODE_INVALID_ARGS; //should call this without calling reset() first
 	if (rx_buffer_size == 0){
 		return STATUS_CODE_INVALID_ARGS;
 	}
@@ -190,6 +201,7 @@ StatusCode UARTPort::setupDMA(size_t tx_buffer_size, size_t rx_buffer_size) {
 		HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 
 		uart2_rx_dma_buffer = (uint8_t*)malloc(rx_buffer_size*sizeof(uint8_t));
+		uart2_rx_elements = 0;
 
 		if (uart2_rx_dma_buffer == nullptr){
 			return STATUS_CODE_RESOURCE_EXHAUSTED;
@@ -240,7 +252,6 @@ StatusCode UARTPort::read_byte(uint8_t &data) {
 	return read_bytes(&data, 1, read);
 }
 
-//synchronous implementation for now. Use DMA later
 StatusCode UARTPort::read_bytes(uint8_t *data, size_t len, size_t &bytes_read) {
 	if (!is_setup) return STATUS_CODE_UNINITIALIZED;
 
@@ -251,24 +262,25 @@ StatusCode UARTPort::read_bytes(uint8_t *data, size_t len, size_t &bytes_read) {
 
 		if (rx_queue == nullptr) abort("RX QUEUE IS NULL!", __FILE__, __LINE__);
 
-		while (bytes_read < len && !rx_queue->empty()){
+		while (bytes_read < len && uart2_rx_elements > 0){
 			data[bytes_read] = rx_queue->front();
 			rx_queue->pop_front();
 			bytes_read++;
+			uart2_rx_elements--;
 		}
 
 	} else {
 		switch (port) {
-			case UART_PORT1: status = get_status_code(HAL_UART_Receive(&huart1, data, (uint16_t) len, UART_TIMEOUT));
+			case UART_PORT1: status = get_status_code(HAL_UART_Receive(&huart1, data, (uint16_t) len, settings.timeout));
 				break;
-			case UART_PORT2: status = get_status_code(HAL_UART_Receive(&huart2, data, (uint16_t) len, UART_TIMEOUT));
+			case UART_PORT2: status = get_status_code(HAL_UART_Receive(&huart2, data, (uint16_t) len, settings.timeout));
 				break;
 			default: return STATUS_CODE_INVALID_ARGS;
 
 		}
-	}
 
-	bytes_read = len;
+		status == STATUS_CODE_OK ? bytes_read = len: bytes_read = 0;
+	}
 
 	return status;
 }
@@ -279,9 +291,9 @@ StatusCode UARTPort::transmit(uint8_t *data, size_t len) {
 	StatusCode status;
 
 	switch (port) {
-		case UART_PORT1: status = get_status_code(HAL_UART_Transmit(&huart1, data, (uint16_t) len, UART_TIMEOUT));
+		case UART_PORT1: status = get_status_code(HAL_UART_Transmit(&huart1, data, (uint16_t) len, settings.timeout));
 			break;
-		case UART_PORT2: status = get_status_code(HAL_UART_Transmit(&huart2, data, (uint16_t) len, UART_TIMEOUT));
+		case UART_PORT2: status = get_status_code(HAL_UART_Transmit(&huart2, data, (uint16_t) len, settings.timeout));
 			break;
 		default: return STATUS_CODE_INVALID_ARGS;
 
@@ -291,28 +303,34 @@ StatusCode UARTPort::transmit(uint8_t *data, size_t len) {
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+	debug("call back received half");
 	if (huart->Instance == USART2) {
 		for (size_t i = uart2_rx_dma_buffer_len/2; i < uart2_rx_dma_buffer_len; i++){
 			uart2_rx_queue.push_back(uart2_rx_dma_buffer[i]);
+			uart2_rx_elements++;
 		}
 	}
 }
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart){
+	debug("call back received complete");
 	if (huart->Instance == USART2) {
 		for (size_t i = 0; i < uart2_rx_dma_buffer_len/2; i++){
 			uart2_rx_queue.push_back(uart2_rx_dma_buffer[i]);
+			uart2_rx_elements++;
 		}
 	}
 }
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart){
+	debug("call back received error");
 	//todo: handle diff error types here
 }
 void HAL_UART_AbortCpltCallback (UART_HandleTypeDef *huart){
-
+	debug("call back received abort");
 }
 
 void DMA1_Channel1_IRQHandler(void)
 {
+	debug("dma ch1");
 	/* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
 
 	/* USER CODE END DMA1_Channel1_IRQn 0 */

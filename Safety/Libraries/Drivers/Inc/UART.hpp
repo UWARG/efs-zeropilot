@@ -46,6 +46,8 @@ typedef struct UARTSettings {
 	bool cts_rts = false; //weather to enable cts/rts (ie. hardware flow control)
 	bool rx_inverted = false; //useful for inverted UART protocols like S.BUS
 	bool tx_inverted = false;
+	uint32_t timeout = 50; //when we're in blocking mode (no DMA), how long to wait before we abort a read/transmit in ms
+	bool flip_tx_rx = false; //wether to flip the tx/rx pins. Useful in case of wiring(or routing) issues
 } UARTSettings;
 
 class UARTPort {

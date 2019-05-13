@@ -10,7 +10,7 @@ static const uint32_t DEBUG_BAUDRATE = 115200;
 UARTPort port;
 bool port_setup = false;
 
-static char buffer[512];
+static char buffer[512]; //allocate a static buffer we can use for prepping messages
 
 static const char* get_status_string(StatusCode status){
 	switch (status){
@@ -47,6 +47,7 @@ StatusCode init_debug(){
 	settings.cts_rts = false;
 	settings.parity = UART_NO_PARITY;
 	settings.stop_bits = 1;
+	settings.flip_tx_rx = true; //NOTE: We should revert this in an upcoming hardware revision
 
 	port = UARTPort(DEBUG_UART_PORT, settings);
 
@@ -59,6 +60,21 @@ static void print_msg(const char* string, size_t len){
 	if (port_setup){
 		port.transmit((uint8_t*)string, len);
 	}
+}
+
+void debug_array(const char* string, uint8_t* data, size_t data_size, bool display_char) {
+	int len = sprintf(buffer, "[DATA] %s: ", string);
+	int end = 0;
+	for (size_t i = 0; i < data_size; i++) {
+		if (display_char) {
+			end = len + i*1 + sprintf(&buffer[len + i*1],"%c ", data[i]);
+		} else {
+			end = len + i*3 + sprintf(&buffer[len + i*3],"%02x ", data[i]);
+		}
+	}
+
+	sprintf(&buffer[end],"\r\n");
+	print_msg(buffer, end + 3);
 }
 
 void debug(const char* string){

@@ -28,6 +28,9 @@ typedef enum {
 	I2C_PORT4 = 3
 } I2CPortNum;
 
+/**
+ * Don't use this class directly. Use either I2CSlavePort or I2CMasterPort, based on your needs
+ */
 class I2CPort {
  public:
 	I2CPort(I2CPortNum port_num, I2CSpeed speed);
