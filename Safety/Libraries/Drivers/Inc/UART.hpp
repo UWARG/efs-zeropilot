@@ -46,7 +46,8 @@ typedef struct UARTSettings {
 	bool cts_rts = false; //weather to enable cts/rts (ie. hardware flow control)
 	bool rx_inverted = false; //useful for inverted UART protocols like S.BUS
 	bool tx_inverted = false;
-	uint32_t timeout = 50; //when we're in blocking mode (no DMA), how long to wait before we abort a read/transmit in ms
+	uint32_t
+		timeout = 50; //when we're in blocking mode (no DMA), how long to wait before we abort a read/transmit in ms
 	bool flip_tx_rx = false; //wether to flip the tx/rx pins. Useful in case of wiring(or routing) issues
 } UARTSettings;
 
@@ -79,7 +80,8 @@ class UARTPort {
 	 * using DMA. If not, may only do RX. If either the parameters are 0, will only enable either the RX/TX buffers respectively
 	 * @param tx_buffer_size Size of DMA buffer when transmitting (used if possible). Try to make this as large as the largest
 	 * 	packet you could possible send
-	 * @param rx_buffer_size Size of DMA buffer when receiving. Make this the size of the smallest packet you're expected to receive
+	 * @param rx_buffer_size Size of DMA buffer when receiving. Make this the size of the largest packet you're expecting
+	 * to receive
 	 * @return
 	 */
 	StatusCode setupDMA(size_t tx_buffer_size, size_t rx_buffer_size);
@@ -92,16 +94,22 @@ class UARTPort {
 	/**
 	 * Get a byte received on the buffer
 	 * @param data The byte read will be written to here
-	 * @return STATUS_CODE_EMPTY if nothing in rx buffer.
+	 * @return STATUS_CODE_EMPTY if nothing in rx buffer (with DMA). STATUS_CODE_TIMEOUT if nothing received within the timeout
+	 * and DMA isn't enabled
 	 */
 	StatusCode read_byte(uint8_t &data);
 
 	/**
-	 * Retrieve a request number of bytes
+	 * Retrieve a request number of bytes. NOTE: IF you're using this function whilst NOT in DMA mode, make sure to
+	 * request EXACTLY or multiple of the amount of bytes you expect to receive! Otherwise you'll be receiving constant
+	 * timeouts after the first couple of transactions. Ie. if a device is sending out packets of 24 bytes in length,
+	 * you should only request to read 24, or 48, or 72..etc bytes using this function. If a device is sending out
+	 * variable amounts of data, use the read_byte() function instead. This is a STM32 HAL limitation :(
 	 * @param data
 	 * @param len
 	 * @param bytes_read Returns the actual number of bytes read from the buffer
-	 * @return STATUS_CODE_EMPTY if nothing in buffer.
+	 * @return STATUS_CODE_EMPTY if nothing in rx buffer (with DMA). STATUS_CODE_TIMEOUT if nothing received within the timeout
+	 * and DMA isn't enabled
 	 */
 	StatusCode read_bytes(uint8_t *data, size_t len, size_t &bytes_read);
 
@@ -121,5 +129,5 @@ class UARTPort {
 	bool is_setup = false;
 	bool dma_setup_rx = false;
 	bool dma_setup_tx = false;
-	std::deque<uint8_t>* rx_queue;
+	std::deque<uint8_t> *rx_queue;
 };

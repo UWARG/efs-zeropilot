@@ -92,6 +92,16 @@ void info(const char* string, StatusCode status){
 	print_msg(buffer, (size_t)len);
 }
 
+void error(const char* string){
+	int len = sprintf(buffer, "[ERROR] %s\r\n", string);
+	print_msg(buffer, (size_t)len);
+}
+
+void error(const char* string, uint32_t code){
+	int len = sprintf(buffer, "[ERROR] %s! Code: 0x%02x\r\n", string, code);
+	print_msg(buffer, (size_t)len);
+}
+
 void abort(const char* msg,const char* file, int line){
 	int len = sprintf(buffer, "[ABORTED] %s FILE: %s LINE %d", msg, file, line);
 	print_msg(buffer, (size_t)len);

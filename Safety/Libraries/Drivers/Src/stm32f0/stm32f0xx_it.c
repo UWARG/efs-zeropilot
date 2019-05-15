@@ -61,7 +61,12 @@
 extern SPI_HandleTypeDef hspi1;
 extern TIM_HandleTypeDef htim14;
 extern DMA_HandleTypeDef hdma_usart2_rx;
+extern UART_HandleTypeDef huart2;
+extern volatile uint8_t hdma_uart2_idle_line;
 /* USER CODE BEGIN EV */
+
+volatile uint32_t hdma_uart2_timer = 0;
+const uint32_t UART2_DMA_TIMEOUT = 50;
 
 /* USER CODE END EV */
 
@@ -87,7 +92,7 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-
+  __asm("BKPT #0\n") ; // Break into the debugger
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
@@ -108,6 +113,15 @@ void SVC_Handler(void)
 
   /* USER CODE END SVC_IRQn 1 */
 }
+
+//void Reset_Handler(void){
+//
+////	while (1)
+////	{
+////		/* USER CODE BEGIN W1_HardFault_IRQn 0 */
+////		/* USER CODE END W1_HardFault_IRQn 0 */
+////	}
+//}
 
 /**
   * @brief This function handles Pendable request for system service.
@@ -132,6 +146,14 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
+
+  if (hdma_uart2_timer == 1){
+	//call uart2 transfer complete with idle flag on
+	  hdma_uart2_idle_line = 1;
+	  hdma_usart2_rx.XferCpltCallback(&hdma_usart2_rx);
+  }
+
+  if (hdma_uart2_timer) hdma_uart2_timer--;
 
   /* USER CODE END SysTick_IRQn 1 */
 }
@@ -166,7 +188,7 @@ void DMA1_Channel4_5_IRQHandler(void)
   /* USER CODE BEGIN DMA1_Channel4_5_IRQn 0 */
 
   /* USER CODE END DMA1_Channel4_5_IRQn 0 */
-  //HAL_DMA_IRQHandler(&hdma_usart2_rx);
+  HAL_DMA_IRQHandler(&hdma_usart2_rx);
   /* USER CODE BEGIN DMA1_Channel4_5_IRQn 1 */
 
   /* USER CODE END DMA1_Channel4_5_IRQn 1 */
@@ -199,6 +221,20 @@ void SPI1_IRQHandler(void)
 
   /* USER CODE END SPI1_IRQn 1 */
 }
+
+void USART2_IRQHandler(void)
+{
+	/* UART IDLE Interrupt */
+	if((USART2->ISR & USART_ISR_IDLE) != RESET)
+	{
+		USART2->ICR = UART_CLEAR_IDLEF;
+		/* Start DMA timer */
+		hdma_uart2_timer = UART2_DMA_TIMEOUT;
+	}
+
+	HAL_UART_IRQHandler(&huart2);
+}
+
 
 /* USER CODE BEGIN 1 */
 

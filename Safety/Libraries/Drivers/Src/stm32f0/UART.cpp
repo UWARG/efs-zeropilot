@@ -1,3 +1,9 @@
+/**
+ * DMA implementation uses UART Idle line detection to support variable size reads. More info can be found
+ * on: https://github.com/akospasztor/stm32-dma-uart
+ * Which is what this code is based off
+ */
+
 #include "UART.hpp"
 #include "GPIO.hpp"
 #include "Status.hpp"
@@ -5,12 +11,6 @@
 #include "stm32f0xx_hal.h"
 #include <stdlib.h>
 #include <queue>
-
-/**
- * The below buffer size is the initial size of the uart buffer
- * The uart buffer is an internal buffer that is only used when DMA is enabled!
- */
-static size_t UART_RECEIVE_BUFFER_SIZE = 512;
 
 static const GPIOPort UART1_RX_PORT = GPIO_PORT_B;
 static const GPIOPort UART1_TX_PORT = GPIO_PORT_B;
@@ -23,20 +23,20 @@ static const GPIOPinNum UART2_RX_PIN = 3;
 static const GPIOPinNum UART2_TX_PIN = 2;
 
 static UART_HandleTypeDef huart1;
-static UART_HandleTypeDef huart2;
-static DMA_HandleTypeDef hdma_usart2_rx;
 
-static uint8_t* uart2_rx_dma_buffer;
+//stm32f0xx_it.c needs this, so don't make static
+UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart2_rx;
+volatile uint8_t hdma_uart2_idle_line = 0; // so we know if we got an idle line interrupt
+volatile size_t hdma_uart2_prev_position = 0; //prev position in dma index
+volatile bool hard_dma_error_occurred = false;
+
+static uint8_t *uart2_rx_dma_buffer;
 static size_t uart2_rx_dma_buffer_len;
 static std::deque<uint8_t> uart2_rx_queue;
 
-//due to how the dequeue works, we need an external variable tracking the current num of elements in our uart buffer
-//this is because we wan't to avoid constant allocations/deallocations in the queue size, so we call resize() on our
-//queue which sets the total number of elements held in the queue
-//More info: http://www.cplusplus.com/reference/deque/deque/
-static size_t uart2_rx_elements = 0;
-
 extern StatusCode get_status_code(HAL_StatusTypeDef status);
+void USART2_DMA_ErrorCallback(DMA_HandleTypeDef *dma);
 
 UARTPort::UARTPort(UARTPortNum port, UARTSettings settings) {
 	this->port = port;
@@ -75,8 +75,7 @@ UARTPort::UARTPort(UARTPortNum port, UARTSettings settings) {
 							 GPIO_SPEED_HIGH,
 							 GPIO_AF1_USART2);
 			break;
-		default:
-			rx_pin = GPIOPin();
+		default: rx_pin = GPIOPin();
 			tx_pin = GPIOPin();
 			break;
 	}
@@ -123,12 +122,12 @@ StatusCode UARTPort::setup() {
 
 	uart->Init.Mode = UART_MODE_TX_RX;
 
-	if (settings.rx_inverted){
+	if (settings.rx_inverted) {
 		uart->AdvancedInit.AdvFeatureInit |= UART_ADVFEATURE_RXINV_ENABLE;
 		uart->AdvancedInit.RxPinLevelInvert = UART_ADVFEATURE_RXINV_ENABLE;
 	}
 
-	if (settings.tx_inverted){
+	if (settings.tx_inverted) {
 		uart->AdvancedInit.AdvFeatureInit |= UART_ADVFEATURE_TXINV_ENABLE;
 		uart->AdvancedInit.TxPinLevelInvert = UART_ADVFEATURE_TXINV_ENABLE;
 	}
@@ -142,7 +141,7 @@ StatusCode UARTPort::setup() {
 	uart->Init.OverSampling = UART_OVERSAMPLING_16;
 	uart->Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
 
-	if (settings.flip_tx_rx){
+	if (settings.flip_tx_rx) {
 		uart->AdvancedInit.AdvFeatureInit |= UART_ADVFEATURE_SWAP_INIT;
 		uart->AdvancedInit.Swap = UART_ADVFEATURE_SWAP_ENABLE;
 	}
@@ -155,10 +154,16 @@ StatusCode UARTPort::setup() {
 StatusCode UARTPort::reset() {
 	if (!is_setup) return STATUS_CODE_INVALID_ARGS;
 
+	if (dma_setup_rx || dma_setup_tx) {
+		resetDMA();
+	}
+
 	switch (port) {
 		case UART_PORT1: __HAL_RCC_USART1_CLK_DISABLE();
+			HAL_UART_DeInit(&huart1);
 			break;
 		case UART_PORT2: __HAL_RCC_USART2_CLK_DISABLE();
+			HAL_UART_DeInit(&huart2);
 			break;
 		default: return STATUS_CODE_INVALID_ARGS;
 	}
@@ -176,44 +181,61 @@ StatusCode UARTPort::reset() {
 StatusCode UARTPort::setupDMA(size_t tx_buffer_size, size_t rx_buffer_size) {
 	if (!is_setup) return STATUS_CODE_UNINITIALIZED;
 	if (dma_setup_rx) return STATUS_CODE_INVALID_ARGS; //should call this without calling reset() first
-	if (rx_buffer_size == 0){
+	if (rx_buffer_size == 0) {
 		return STATUS_CODE_INVALID_ARGS;
 	}
 
-	if (port == UART_PORT2){
-		hdma_usart2_rx.Instance = DMA1_Channel1;
+	if (port == UART_PORT2) {
+
+		__HAL_RCC_DMA1_CLK_ENABLE();
+		hdma_usart2_rx.Instance = DMA1_Channel5;
 		hdma_usart2_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
 		hdma_usart2_rx.Init.PeriphInc = DMA_PINC_DISABLE;
 		hdma_usart2_rx.Init.MemInc = DMA_MINC_ENABLE;
 		hdma_usart2_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
 		hdma_usart2_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
 		hdma_usart2_rx.Init.Mode = DMA_CIRCULAR;
-		hdma_usart2_rx.Init.Priority = DMA_PRIORITY_LOW;
+		hdma_usart2_rx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
 
 		StatusCode status = get_status_code(HAL_DMA_Init(&hdma_usart2_rx));
 		if (status != STATUS_CODE_OK) return status;
 
-		__HAL_DMA1_REMAP(HAL_DMA1_CH1_USART2_RX);
+		__HAL_DMA1_REMAP(HAL_DMA1_CH5_USART2_RX);
+		__HAL_LINKDMA(&huart2, hdmarx, hdma_usart2_rx);
 
-		__HAL_LINKDMA(&huart2,hdmarx,hdma_usart2_rx);
+		HAL_DMA_RegisterCallback(&hdma_usart2_rx, HAL_DMA_XFER_ERROR_CB_ID, USART2_DMA_ErrorCallback);
 
-		HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
-		HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+		/* UART2 IDLE Interrupt Configuration */
+		SET_BIT(huart2.Instance->CR1, USART_CR1_IDLEIE);
+		HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
+		HAL_NVIC_EnableIRQ(USART2_IRQn);
 
-		uart2_rx_dma_buffer = (uint8_t*)malloc(rx_buffer_size*sizeof(uint8_t));
-		uart2_rx_elements = 0;
+		/* Disable Half Transfer Interrupt */
 
-		if (uart2_rx_dma_buffer == nullptr){
+		HAL_NVIC_SetPriority(DMA1_Channel4_5_IRQn, 0, 0);
+		HAL_NVIC_EnableIRQ(DMA1_Channel4_5_IRQn);
+
+		//don't allocate memory if we hadn't free'd it
+		if (uart2_rx_dma_buffer == nullptr) {
+			uart2_rx_dma_buffer = (uint8_t *) malloc(rx_buffer_size * sizeof(uint8_t));
+		}
+
+		if (uart2_rx_dma_buffer == nullptr) {
 			return STATUS_CODE_RESOURCE_EXHAUSTED;
 		}
 
-		uart2_rx_queue.resize(UART_RECEIVE_BUFFER_SIZE);
 		rx_queue = &uart2_rx_queue;
 
 		uart2_rx_dma_buffer_len = rx_buffer_size;
+		hdma_uart2_prev_position = uart2_rx_dma_buffer_len;
 
 		//init circular dma transfer
-		HAL_UART_Receive_DMA(&huart2, uart2_rx_dma_buffer, (uint16_t)uart2_rx_dma_buffer_len);
+		status =
+			get_status_code(HAL_UART_Receive_DMA(&huart2, uart2_rx_dma_buffer, (uint16_t) uart2_rx_dma_buffer_len));
+		if (status != STATUS_CODE_OK) return status;
+
+		//disable the DMA half interrupt since we're using idle line detection instead
+		__HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
 
 		dma_setup_rx = true;
 
@@ -227,13 +249,21 @@ StatusCode UARTPort::resetDMA() {
 	if (port != UART_PORT2) return STATUS_CODE_UNIMPLEMENTED;
 	if (!dma_setup_rx) return STATUS_CODE_INVALID_ARGS;
 
+	//disable dma interrupts
+	CLEAR_BIT(huart2.Instance->CR1, USART_CR1_IDLEIE);
+	HAL_NVIC_DisableIRQ(USART2_IRQn);
+	HAL_NVIC_DisableIRQ(DMA1_Channel4_5_IRQn);
+
 	StatusCode status;
 	status = get_status_code(HAL_DMA_DeInit(&hdma_usart2_rx));
 	if (status != STATUS_CODE_OK) return status;
 
-	free(uart2_rx_dma_buffer);
-
-	HAL_NVIC_DisableIRQ(DMA1_Channel1_IRQn);
+	//avoid uneccessary re-allocations in case of dma error
+	if (!hard_dma_error_occurred) {
+		free(uart2_rx_dma_buffer);
+		uart2_rx_dma_buffer = nullptr;
+		uart2_rx_queue.erase(uart2_rx_queue.begin(), uart2_rx_queue.end());
+	}
 
 	dma_setup_rx = false;
 
@@ -257,29 +287,44 @@ StatusCode UARTPort::read_bytes(uint8_t *data, size_t len, size_t &bytes_read) {
 
 	StatusCode status = STATUS_CODE_OK;
 
-	if (dma_setup_rx){
+	if (dma_setup_rx) {
 		bytes_read = 0;
+
+		//by default if something as simple as a frame error occurs, the HAL aborts all transfers
+		//in this case, re-setup the DMA connection
+		if (hard_dma_error_occurred) {
+			reset();
+			setup();
+			setupDMA(0, uart2_rx_dma_buffer_len);
+			hard_dma_error_occurred = false;
+			return STATUS_CODE_INTERNAL_ERROR; //let user know we're reconfiguring
+		}
 
 		if (rx_queue == nullptr) abort("RX QUEUE IS NULL!", __FILE__, __LINE__);
 
-		while (bytes_read < len && uart2_rx_elements > 0){
+		while (bytes_read < len && !uart2_rx_queue.empty()) {
 			data[bytes_read] = rx_queue->front();
 			rx_queue->pop_front();
 			bytes_read++;
-			uart2_rx_elements--;
 		}
 
 	} else {
 		switch (port) {
-			case UART_PORT1: status = get_status_code(HAL_UART_Receive(&huart1, data, (uint16_t) len, settings.timeout));
+			case UART_PORT1:
+				status = get_status_code(HAL_UART_Receive(&huart1, data, (uint16_t) len, settings.timeout));
 				break;
-			case UART_PORT2: status = get_status_code(HAL_UART_Receive(&huart2, data, (uint16_t) len, settings.timeout));
+			case UART_PORT2:
+				status = get_status_code(HAL_UART_Receive(&huart2, data, (uint16_t) len, settings.timeout));
 				break;
 			default: return STATUS_CODE_INVALID_ARGS;
 
 		}
 
-		status == STATUS_CODE_OK ? bytes_read = len: bytes_read = 0;
+		status == STATUS_CODE_OK ? bytes_read = len : bytes_read = 0;
+	}
+
+	if (bytes_read == 0) {
+		return STATUS_CODE_EMPTY;
 	}
 
 	return status;
@@ -302,40 +347,73 @@ StatusCode UARTPort::transmit(uint8_t *data, size_t len) {
 	return status;
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	debug("call back received half");
+//Below code based off: https://github.com/akospasztor/stm32-dma-uart/blob/master/Src/main.c
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if (huart->Instance == USART2) {
-		for (size_t i = uart2_rx_dma_buffer_len/2; i < uart2_rx_dma_buffer_len; i++){
-			uart2_rx_queue.push_back(uart2_rx_dma_buffer[i]);
-			uart2_rx_elements++;
+		size_t i, pos, start, length;
+
+		//number of remaining data bytes in the DMA buffer (before complete event is triggered)
+		uint32_t currCNDTR = __HAL_DMA_GET_COUNTER(huart2.hdmarx);
+
+		/* Ignore IDLE Timeout when the received characters exactly filled up the DMA buffer and DMA Rx Complete IT is generated, but there is no new character during timeout */
+		if (hdma_uart2_idle_line && currCNDTR == uart2_rx_dma_buffer_len) {
+			hdma_uart2_idle_line = 0;
+			return;
+		}
+
+		/* Determine start position in DMA buffer based on previous CNDTR value */
+		start =
+			(hdma_uart2_prev_position < uart2_rx_dma_buffer_len) ? (uart2_rx_dma_buffer_len - hdma_uart2_prev_position)
+																 : 0;
+
+		if (hdma_uart2_idle_line)    /* Timeout event */
+		{
+			/* Determine new data length based on previous DMA_CNDTR value:
+			 *  If previous CNDTR is less than DMA buffer size: there is old data in DMA buffer (from previous timeout) that has to be ignored.
+			 *  If CNDTR == DMA buffer size: entire buffer content is new and has to be processed.
+			*/
+			length = (hdma_uart2_prev_position < uart2_rx_dma_buffer_len) ? (hdma_uart2_prev_position - currCNDTR) : (
+				uart2_rx_dma_buffer_len - currCNDTR);
+			hdma_uart2_prev_position = currCNDTR;
+			hdma_uart2_idle_line = 0;
+		} else                /* DMA Rx Complete event */
+		{
+			length = uart2_rx_dma_buffer_len - start;
+			hdma_uart2_prev_position = uart2_rx_dma_buffer_len;
+		}
+
+		/* Copy and Process new data */
+		for (i = 0, pos = start; i < length; ++i, ++pos) {
+			uart2_rx_queue.push_back(uart2_rx_dma_buffer[pos]);
 		}
 	}
 }
-void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart){
-	debug("call back received complete");
-	if (huart->Instance == USART2) {
-		for (size_t i = 0; i < uart2_rx_dma_buffer_len/2; i++){
-			uart2_rx_queue.push_back(uart2_rx_dma_buffer[i]);
-			uart2_rx_elements++;
-		}
+void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
+	error("half called");
+	UNUSED(huart);
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
+	if (huart->Instance == USART1) {
+		error("USART1 Error received", huart->ErrorCode);
+	} else if (huart->Instance == USART2) {
+		error("USART2 Error received", huart->ErrorCode);
+		hard_dma_error_occurred = true;
+	} else {
+		error("Unknown USART port got an error callback");
 	}
 }
-void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart){
-	debug("call back received error");
-	//todo: handle diff error types here
-}
-void HAL_UART_AbortCpltCallback (UART_HandleTypeDef *huart){
-	debug("call back received abort");
+
+void USART2_DMA_ErrorCallback(DMA_HandleTypeDef *dma) {
+	error("USART 2 DMA Error received!", dma->ErrorCode);
 }
 
-void DMA1_Channel1_IRQHandler(void)
-{
-	debug("dma ch1");
-	/* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
-
-	/* USER CODE END DMA1_Channel1_IRQn 0 */
-	HAL_DMA_IRQHandler(&hdma_usart2_rx);
-	/* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
-
-	/* USER CODE END DMA1_Channel1_IRQn 1 */
+void HAL_UART_AbortCpltCallback(UART_HandleTypeDef *huart) {
+	if (huart->Instance == USART1) {
+		error("USART1 Abort received");
+	}
+	if (huart->Instance == USART2) {
+		error("USART2 Abort received");
+	}
 }
+

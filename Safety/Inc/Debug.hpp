@@ -9,6 +9,10 @@ void debug(const char* string);
 
 void info(const char* string);
 
+void error(const char* string);
+
+void error(const char* string, uint32_t code);
+
 void info(const char* string, StatusCode status);
 
 /**
