@@ -29,7 +29,8 @@ UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_rx;
 volatile uint8_t hdma_uart2_idle_line = 0; // so we know if we got an idle line interrupt
 volatile size_t hdma_uart2_prev_position = 0; //prev position in dma index
-volatile bool hard_dma_error_occurred = false;
+static volatile bool hard_dma_error_occurred = false;
+static bool reallocate = true;
 
 static uint8_t *uart2_rx_dma_buffer;
 static size_t uart2_rx_dma_buffer_len;
@@ -259,7 +260,7 @@ StatusCode UARTPort::resetDMA() {
 	if (status != STATUS_CODE_OK) return status;
 
 	//avoid uneccessary re-allocations in case of dma error
-	if (!hard_dma_error_occurred) {
+	if (reallocate) {
 		free(uart2_rx_dma_buffer);
 		uart2_rx_dma_buffer = nullptr;
 		uart2_rx_queue.erase(uart2_rx_queue.begin(), uart2_rx_queue.end());
@@ -293,9 +294,11 @@ StatusCode UARTPort::read_bytes(uint8_t *data, size_t len, size_t &bytes_read) {
 		//by default if something as simple as a frame error occurs, the HAL aborts all transfers
 		//in this case, re-setup the DMA connection
 		if (hard_dma_error_occurred) {
+			reallocate = false;
 			reset();
 			setup();
 			setupDMA(0, uart2_rx_dma_buffer_len);
+			reallocate = true;
 			hard_dma_error_occurred = false;
 			return STATUS_CODE_INTERNAL_ERROR; //let user know we're reconfiguring
 		}
