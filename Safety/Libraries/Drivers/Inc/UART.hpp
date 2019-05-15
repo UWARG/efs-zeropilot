@@ -92,16 +92,22 @@ class UARTPort {
 	/**
 	 * Get a byte received on the buffer
 	 * @param data The byte read will be written to here
-	 * @return STATUS_CODE_EMPTY if nothing in rx buffer.
+	 * @return STATUS_CODE_EMPTY if nothing in rx buffer (with DMA). STATUS_CODE_TIMEOUT if nothing received within the timeout
+	 * and DMA isn't enabled
 	 */
 	StatusCode read_byte(uint8_t &data);
 
 	/**
-	 * Retrieve a request number of bytes
+	 * Retrieve a request number of bytes. NOTE: IF you're using this function, make sure to request EXACTLY or multiple
+	 * of the amount of bytes you expect to receive! Otherwise you'll be receiving constant timeouts after the first couple of
+	 * transactions. Ie. if a device is sending out packets of 24 bytes in length, you should only request to read 24, or 48, or 72..etc
+	 * bytes using this function. If a device is sending out variable amounts of data, use the read_byte() function instead
+	 * This is a STM32 HAL limitation :(
 	 * @param data
 	 * @param len
 	 * @param bytes_read Returns the actual number of bytes read from the buffer
-	 * @return STATUS_CODE_EMPTY if nothing in buffer.
+	 * @return STATUS_CODE_EMPTY if nothing in rx buffer (with DMA). STATUS_CODE_TIMEOUT if nothing received within the timeout
+	 * and DMA isn't enabled
 	 */
 	StatusCode read_bytes(uint8_t *data, size_t len, size_t &bytes_read);
 

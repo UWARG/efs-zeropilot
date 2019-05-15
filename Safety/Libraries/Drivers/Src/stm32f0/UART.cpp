@@ -181,24 +181,32 @@ StatusCode UARTPort::setupDMA(size_t tx_buffer_size, size_t rx_buffer_size) {
 	}
 
 	if (port == UART_PORT2){
-		hdma_usart2_rx.Instance = DMA1_Channel1;
+
+		//__HAL_RCC_DMA1_CLK_ENABLE();
+		hdma_usart2_rx.Instance = DMA1_Channel5;
 		hdma_usart2_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
 		hdma_usart2_rx.Init.PeriphInc = DMA_PINC_DISABLE;
 		hdma_usart2_rx.Init.MemInc = DMA_MINC_ENABLE;
 		hdma_usart2_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
 		hdma_usart2_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
 		hdma_usart2_rx.Init.Mode = DMA_CIRCULAR;
-		hdma_usart2_rx.Init.Priority = DMA_PRIORITY_LOW;
+		hdma_usart2_rx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
 
 		StatusCode status = get_status_code(HAL_DMA_Init(&hdma_usart2_rx));
 		if (status != STATUS_CODE_OK) return status;
 
-		__HAL_DMA1_REMAP(HAL_DMA1_CH1_USART2_RX);
+
+
+		__HAL_DMA1_REMAP(HAL_DMA1_CH5_USART2_RX);
+
+
 
 		__HAL_LINKDMA(&huart2,hdmarx,hdma_usart2_rx);
 
-		HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
-		HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+
+
+		HAL_NVIC_SetPriority(DMA1_Channel4_5_IRQn, 0, 0);
+		HAL_NVIC_EnableIRQ(DMA1_Channel4_5_IRQn);
 
 		uart2_rx_dma_buffer = (uint8_t*)malloc(rx_buffer_size*sizeof(uint8_t));
 		uart2_rx_elements = 0;
@@ -213,7 +221,8 @@ StatusCode UARTPort::setupDMA(size_t tx_buffer_size, size_t rx_buffer_size) {
 		uart2_rx_dma_buffer_len = rx_buffer_size;
 
 		//init circular dma transfer
-		HAL_UART_Receive_DMA(&huart2, uart2_rx_dma_buffer, (uint16_t)uart2_rx_dma_buffer_len);
+		status = get_status_code(HAL_UART_Receive_DMA(&huart2, uart2_rx_dma_buffer, (uint16_t)uart2_rx_dma_buffer_len));
+		if (status != STATUS_CODE_OK) return status;
 
 		dma_setup_rx = true;
 
@@ -303,7 +312,7 @@ StatusCode UARTPort::transmit(uint8_t *data, size_t len) {
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	debug("call back received half");
+//	debug("call back received half");
 	if (huart->Instance == USART2) {
 		for (size_t i = uart2_rx_dma_buffer_len/2; i < uart2_rx_dma_buffer_len; i++){
 			uart2_rx_queue.push_back(uart2_rx_dma_buffer[i]);
@@ -312,7 +321,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	}
 }
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart){
-	debug("call back received complete");
+//	debug("call back received complete");
 	if (huart->Instance == USART2) {
 		for (size_t i = 0; i < uart2_rx_dma_buffer_len/2; i++){
 			uart2_rx_queue.push_back(uart2_rx_dma_buffer[i]);
@@ -321,16 +330,41 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart){
 	}
 }
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart){
-	debug("call back received error");
+//	debug("call back received error");
 	//todo: handle diff error types here
 }
 void HAL_UART_AbortCpltCallback (UART_HandleTypeDef *huart){
-	debug("call back received abort");
+//	debug("call back received abort");
 }
 
-void DMA1_Channel1_IRQHandler(void)
+//void DMA1_Channel1_IRQHandler(void)
+//{
+//	/* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
+//
+//	/* USER CODE END DMA1_Channel1_IRQn 0 */
+//	HAL_DMA_IRQHandler(&hdma_usart2_rx);
+//	/* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
+//
+//	/* USER CODE END DMA1_Channel1_IRQn 1 */
+//}
+
+///**
+//  * @brief This function handles DMA1 channel 2 and 3 interrupts.
+//  */
+//void DMA1_Channel2_3_IRQHandler(void)
+//{
+//	/* USER CODE BEGIN DMA1_Channel2_3_IRQn 0 */
+//
+//	/* USER CODE END DMA1_Channel2_3_IRQn 0 */
+//	HAL_DMA_IRQHandler(&hdma_spi1_rx);
+//	HAL_DMA_IRQHandler(&hdma_i2c1_rx);
+//	/* USER CODE BEGIN DMA1_Channel2_3_IRQn 1 */
+//
+//	/* USER CODE END DMA1_Channel2_3_IRQn 1 */
+//}
+
+void DMA1_Channel4_5_IRQHandler(void)
 {
-	debug("dma ch1");
 	/* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
 
 	/* USER CODE END DMA1_Channel1_IRQn 0 */
