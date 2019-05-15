@@ -171,7 +171,16 @@ StatusCode PPMChannel::reset() {
 }
 
 bool PPMChannel::is_disconnected(uint32_t sys_time){
-	return (sys_time - last_received_time) >= this->disconnect_timeout;
+	bool disconnected = (sys_time - last_received_time) >= this->disconnect_timeout;
+
+	if (disconnected){ //reset capture states if we get a disconnect timeout
+		for (int i = 0; i < num_channels; i++){
+			capture_value[i] = 0;
+		}
+		ppm_index = 0;
+	}
+
+	return disconnected;
 }
 
 //our interrupt callback for when we get a pulse capture
