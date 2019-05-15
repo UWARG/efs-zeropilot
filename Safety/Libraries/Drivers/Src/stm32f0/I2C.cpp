@@ -23,8 +23,9 @@ static I2C_HandleTypeDef hi2c1;
 static I2C_HandleTypeDef *get_i2c_handle_from_port(I2CPortNum num);
 extern StatusCode get_status_code(HAL_StatusTypeDef status);
 
-I2CPort::I2CPort(I2CPortNum port_num, I2CSpeed speed) {
+I2CPort::I2CPort(I2CPortNum port_num,  I2CSettings settings) {
 	port = port_num;
+	this->settings = settings;
 
 	//only i2c1 is valid
 	sda = GPIOPin(I2C1_SDA_PORT,
@@ -94,15 +95,15 @@ StatusCode I2CPort::reset() {
 	return STATUS_CODE_INVALID_ARGS;
 }
 
-I2CSlavePort::I2CSlavePort(I2CPortNum port_num, I2CSpeed speed, I2CAddress address) : I2CPort(port_num, speed) {
+I2CSlavePort::I2CSlavePort(I2CPortNum port_num, I2CSettings settings, I2CAddress address) : I2CPort(port_num, settings) {
 	this->address = static_cast<I2CAddress>(address & (0xFF >> 1)); //force 7-bit mask
 }
 
 StatusCode I2CSlavePort::setup() {
 	if (port == I2C_PORT1) {
-		if (speed == I2C_SPEED_FAST) {
+		if (settings.speed == I2C_SPEED_FAST) {
 			hi2c1.Init.Timing = FAST_MODE_SLAVE_TIMING;
-		} else if (speed == I2C_SPEED_STANDARD) {
+		} else if (settings.speed == I2C_SPEED_STANDARD) {
 			hi2c1.Init.Timing = STD_MODE_SLAVE_TIMING;
 		}
 
@@ -133,9 +134,9 @@ StatusCode I2CSlavePort::write_bytes(uint8_t *tx_data, size_t tx_len) {
 
 StatusCode I2CMasterPort::setup() {
 	if (port == I2C_PORT1) {
-		if (speed == I2C_SPEED_FAST) {
+		if (settings.speed == I2C_SPEED_FAST) {
 			hi2c1.Init.Timing = FAST_MODE_MASTER_TIMING;
-		} else if (speed == I2C_SPEED_STANDARD) {
+		} else if (settings.speed == I2C_SPEED_STANDARD) {
 			hi2c1.Init.Timing = STD_MODE_MASTER_TIMING;
 		}
 
@@ -221,6 +222,5 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *i2cHandle) {
 }
 
 void HAL_I2C_MspDeInit(I2C_HandleTypeDef *i2cHandle) {
-
 	//do nothing. This is implemented in I2C::reset_state()
 }

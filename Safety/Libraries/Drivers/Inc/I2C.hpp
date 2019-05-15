@@ -28,12 +28,16 @@ typedef enum {
 	I2C_PORT4 = 3
 } I2CPortNum;
 
+typedef struct I2CSettings {
+	I2CSpeed speed;
+} I2CSettings;
+
 /**
  * Don't use this class directly. Use either I2CSlavePort or I2CMasterPort, based on your needs
  */
 class I2CPort {
  public:
-	I2CPort(I2CPortNum port_num, I2CSpeed speed);
+	I2CPort(I2CPortNum port_num, I2CSettings settings);
 
 	/**
 	 * Initializes the connection. Sets up the sda and scl pins to be pulled-up.
@@ -50,7 +54,7 @@ class I2CPort {
 
  protected:
 	I2CPortNum port;
-	I2CSpeed speed;
+	I2CSettings settings;
 	GPIOPin sda;
 	GPIOPin scl;
 };
@@ -63,7 +67,7 @@ class I2CSlavePort : private I2CPort {
 	 * @param speed
 	 * @param address The address of this device (use if in slave mode). Use 7-bit address
 	 */
-	I2CSlavePort(I2CPortNum port_num, I2CSpeed speed, I2CAddress address = 0x08);
+	I2CSlavePort(I2CPortNum port_num, I2CSettings settings, I2CAddress address = 0x08);
 
 	StatusCode setup();
 
