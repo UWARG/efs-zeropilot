@@ -98,7 +98,7 @@ void error(const char* string){
 }
 
 void error(const char* string, uint32_t code){
-	int len = sprintf(buffer, "[ERROR] %s! Code: 0x%02x\r\n", string, code);
+	int len = sprintf(buffer, "[ERROR] %s! Code: 0x%02lx\r\n", string, code);
 	print_msg(buffer, (size_t)len);
 }
 

@@ -24,7 +24,7 @@ include_directories(
 add_subdirectory(Libraries/STM32F0xx_HAL_Driver)
 
 # Tests
-add_subdirectory(Tests)
+#add_subdirectory(Tests)
 
 file(GLOB_RECURSE C_SOURCES "Src/*.c" , "Libraries/Drivers/Src/stm32f0/*.c")
 file(GLOB_RECURSE CXX_SOURCES "Src/*.cpp" , "Libraries/Drivers/Src/stm32f0/*.cpp")

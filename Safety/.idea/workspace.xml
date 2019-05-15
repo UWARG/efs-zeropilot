@@ -18,14 +18,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5be5f50-f4c4-463e-8fde-f7ee0b375f2a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/externalDependencies.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Inc/Debug.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Inc/Debug.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Inc/UART.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Inc/UART.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/UART.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/UART.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/stm32f0xx_it.c" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/stm32f0xx_it.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Src/Debug.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Src/Debug.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Src/main.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/cmake-build-release/" />
@@ -36,14 +30,14 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Tests" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Src/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="355">
-              <caret line="118" column="9" lean-forward="true" selection-start-line="118" selection-start-column="9" selection-end-line="118" selection-end-column="9" />
+              <caret line="118" column="9" selection-start-line="118" selection-start-column="9" selection-end-line="118" selection-end-column="9" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -54,8 +48,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/UART.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="341">
-              <caret line="301" lean-forward="true" selection-start-line="301" selection-end-line="301" />
+            <state relative-caret-position="3628">
+              <caret line="290" column="22" selection-start-line="290" selection-start-column="22" selection-end-line="290" selection-end-column="22" />
               <folding>
                 <element signature="e#12#31#0" expanded="true" />
               </folding>
@@ -64,36 +58,40 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h">
+        <entry file="file://$PROJECT_DIR$/Src/Debug.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="578">
-              <caret line="272" column="62" selection-start-line="272" selection-start-column="55" selection-end-line="272" selection-end-column="62" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/system_stm32f0xx.c">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/stm32f0xx_it.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="129">
-              <caret line="212" column="4" lean-forward="true" selection-start-line="212" selection-start-column="4" selection-end-line="212" selection-end-column="4" />
+            <state relative-caret-position="662">
+              <caret line="105" column="80" selection-start-line="105" selection-start-column="80" selection-end-line="105" selection-end-column="80" />
               <folding>
-                <element signature="e#854#880#0" expanded="true" />
+                <element signature="e#0#18#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_uart.c">
+        <entry file="file://$PROJECT_DIR$/Tests/Src/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="940">
-              <caret line="1764" column="7" lean-forward="true" selection-start-line="1764" selection-start-column="7" selection-end-line="1764" selection-end-column="7" />
+            <state relative-caret-position="72">
+              <caret line="4" column="1" selection-start-line="4" selection-start-column="1" selection-end-line="4" selection-end-column="1" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Tests/CMakeLists.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="144">
+              <caret line="8" column="29" selection-start-line="8" selection-start-column="18" selection-end-line="8" selection-end-column="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="307">
+              <caret line="26" column="1" selection-start-line="26" selection-start-column="1" selection-end-line="26" selection-end-column="1" />
             </state>
           </provider>
         </entry>
@@ -102,7 +100,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>HAL_DMA_Init</find>
       <find>assert</find>
       <find>main</find>
       <find>Reset_Handler</find>
@@ -132,6 +129,7 @@
       <find>Error</find>
       <find>DMA1_Channel4_5_IRQHandler</find>
       <find>while</find>
+      <find>test</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -169,7 +167,6 @@
         <option value="$PROJECT_DIR$/Src/debug.cpp" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/GPIO.hpp" />
         <option value="$PROJECT_DIR$/.gdbinit" />
-        <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/STM32F030xx.cmake" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/GPIO.cpp" />
         <option value="$PROJECT_DIR$/Inc/debug.h" />
@@ -185,12 +182,13 @@
         <option value="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PPM.cpp" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_it.h" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/UART.hpp" />
-        <option value="$PROJECT_DIR$/Src/Debug.cpp" />
         <option value="$PROJECT_DIR$/Inc/Debug.hpp" />
         <option value="$PROJECT_DIR$/startup_stm32f030xc.s" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/stm32f0xx_it.c" />
         <option value="$PROJECT_DIR$/Src/main.cpp" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/UART.cpp" />
+        <option value="$PROJECT_DIR$/Src/Debug.cpp" />
+        <option value="$PROJECT_DIR$/CMakeLists.txt" />
       </list>
     </option>
   </component>
@@ -265,19 +263,17 @@
             <path>
               <item name="Safety" type="b2602c69:ProjectViewProjectNode" />
               <item name="Safety" type="462c0819:PsiDirectoryNode" />
-              <item name="Libraries" type="462c0819:PsiDirectoryNode" />
-              <item name="STM32F0xx_HAL_Driver" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Safety" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Safety" type="462c0819:PsiDirectoryNode" />
-              <item name="Libraries" type="462c0819:PsiDirectoryNode" />
-              <item name="STM32F0xx_HAL_Driver" type="462c0819:PsiDirectoryNode" />
               <item name="Src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Safety" type="b2602c69:ProjectViewProjectNode" />
               <item name="Safety" type="462c0819:PsiDirectoryNode" />
+              <item name="Tests" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Safety" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Safety" type="462c0819:PsiDirectoryNode" />
+              <item name="Tests" type="462c0819:PsiDirectoryNode" />
               <item name="Src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -318,7 +314,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="OpenOCD Download &amp; Run.Safety.elf | STLinkV2">
+  <component name="RunManager" selected="Application.safety_tests">
     <configuration name="STM32_HAL" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Safety" TARGET_NAME="STM32_HAL" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -385,12 +381,12 @@
       <workItem from="1557511556594" duration="4133000" />
       <workItem from="1557682570874" duration="41598000" />
       <workItem from="1557879958104" duration="1725000" />
-      <workItem from="1557881985788" duration="13133000" />
+      <workItem from="1557881985788" duration="13721000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="167970000" />
+    <option name="totallyTimeSpent" value="168558000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -405,18 +401,18 @@
     <frame x="0" y="23" width="2560" height="1326" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.27482128" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27482128" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.16568047" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32901135" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32901135" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3987034" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32979977" />
       <window_info anchor="bottom" id="Database Changes" order="7" />
-      <window_info anchor="bottom" id="Messages" order="8" weight="0.32090762" />
+      <window_info anchor="bottom" id="Messages" order="8" visible="true" weight="0.32090762" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32901135" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.3286219" />
@@ -499,8 +495,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../ZeroPilot-STM32CubeMx/rev0/ZeroPilot-Safety/Src/stm32f0xx_it.c" />
-    <entry file="file://$PROJECT_DIR$/../../ZeroPilot-STM32CubeMx/rev0/ZeroPilot-Safety/Src/gpio.c" />
     <entry file="file://$PROJECT_DIR$/../../ZeroPilot-STM32CubeMx/rev0/ZeroPilot-Safety/Src/main.c" />
     <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_gpio_ex.h">
       <provider selected="true" editor-type-id="text-editor">
@@ -625,13 +619,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../ZeroPilot-STM32CubeMx/rev0/Safety/Src/stm32f0xx_it.c" />
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="558">
-          <caret line="50" column="30" selection-start-line="50" selection-start-column="30" selection-end-line="50" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_hal_conf.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-3292">
@@ -739,16 +726,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Src/Debug.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="81" selection-start-line="81" selection-end-line="81" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Clock.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="230">
@@ -804,9 +781,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/system_stm32f0xx.c">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/Libraries/CMSIS/Device/ST/STM32F0xx/Include/stm32f030xc.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2996">
@@ -814,29 +788,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="578">
-          <caret line="272" column="62" selection-start-line="272" selection-start-column="55" selection-end-line="272" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Src/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="355">
-          <caret line="118" column="9" lean-forward="true" selection-start-line="118" selection-start-column="9" selection-end-line="118" selection-end-column="9" />
+          <caret line="118" column="9" selection-start-line="118" selection-start-column="9" selection-end-line="118" selection-end-column="9" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/UART.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="341">
-          <caret line="301" lean-forward="true" selection-start-line="301" selection-end-line="301" />
-          <folding>
-            <element signature="e#12#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -848,6 +805,57 @@
           <folding>
             <element signature="e#854#880#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/system_stm32f0xx.c">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="578">
+          <caret line="272" column="62" selection-start-line="272" selection-start-column="55" selection-end-line="272" selection-end-column="62" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/UART.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3628">
+          <caret line="290" column="22" selection-start-line="290" selection-start-column="22" selection-end-line="290" selection-end-column="22" />
+          <folding>
+            <element signature="e#12#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/Debug.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="662">
+          <caret line="105" column="80" selection-start-line="105" selection-start-column="80" selection-end-line="105" selection-end-column="80" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tests/Src/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="72">
+          <caret line="4" column="1" selection-start-line="4" selection-start-column="1" selection-end-line="4" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tests/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="8" column="29" selection-start-line="8" selection-start-column="18" selection-end-line="8" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="307">
+          <caret line="26" column="1" selection-start-line="26" selection-start-column="1" selection-end-line="26" selection-end-column="1" />
         </state>
       </provider>
     </entry>
