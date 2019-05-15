@@ -55,10 +55,10 @@ int main() {
 	GPIOPin led2 = GPIOPin(LED2_GPIO_PORT, LED2_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
 	GPIOPin led3 = GPIOPin(LED3_GPIO_PORT, LED3_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
 	GPIOPin buzzer = GPIOPin(BUZZER_GPIO_PORT, BUZZER_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
-	led1.setup();
-	led2.setup();
-	led3.setup();
-	buzzer.setup();
+//	led1.setup();
+//	led2.setup();
+//	led3.setup();
+//	buzzer.setup();
 	led1.set_state(GPIO_STATE_LOW);
 	led2.set_state(GPIO_STATE_LOW);
 

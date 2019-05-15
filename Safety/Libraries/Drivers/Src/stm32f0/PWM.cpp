@@ -79,7 +79,7 @@ void PWMChannel::set(uint8_t percent) {
 	//in us
 	uint32_t prescaler = (static_cast<TIM_HandleTypeDef*>(this->timer))->Init.Prescaler;
 	uint32_t us = ((percent * (max_signal - min_signal)) / 100 + min_signal);
-	double ticks = us*(get_system_clock() / 1000000.0 / (prescaler + 1));
+	uint32_t ticks = (us*(get_system_clock() / 1000000UL))/(prescaler + 1);
 
 	__HAL_TIM_SET_COMPARE((TIM_HandleTypeDef *) this->timer, this->timer_channel, (uint32_t)ticks);
 }
@@ -105,7 +105,7 @@ StatusCode PWMManager::setup() {
 
 	//default 50hz PWM pulse
 	PWMGroupSetting default_settings = {
-		2000, //20ms period
+		20000, //20ms period
 		1000, //1ms min pulse length
 		1500, //2ms max pulse length
 		false //not inverted
