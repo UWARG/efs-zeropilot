@@ -244,7 +244,7 @@ StatusCode PWMManager::set_all(uint8_t percent) {
 }
 
 PWMChannel &PWMManager::channel(PWMChannelNum num) {
-	if (num < 12 && num > 0) {
+	if (num <= 12 && num > 0) {
 		return channels[num - 1];
 	}
 	return channels[0];
