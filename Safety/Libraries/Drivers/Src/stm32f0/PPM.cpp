@@ -137,7 +137,7 @@ StatusCode PPMChannel::setup() {
 	status = get_status_code(HAL_TIM_IC_Init(&htim14));
 	if (status != STATUS_CODE_OK) return status;
 
-	sConfigIC.ICPolarity = TIM_ICPOLARITY_BOTHEDGE;
+	sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_BOTHEDGE;
 	sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
 	sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
 	sConfigIC.ICFilter = 0;

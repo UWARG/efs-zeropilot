@@ -61,9 +61,9 @@ int main() {
 	ppm.setLimits(1, 1000,2000, 50);
 	status = ppm.setup();
 
-	ppm.reset();
+	//ppm.reset();
 	ppm.setTimeout(200);
-	status = ppm.setup();
+	//status = ppm.setup();
 
 	info("PPM Setup", status);
 
@@ -109,25 +109,25 @@ int main() {
 	bool test = false;
 	while (1) {
 
-		status = serial.read_bytes((uint8_t*)&data, 23, bytes_read);
+//		status = serial.read_bytes((uint8_t*)&data, 23, bytes_read);
+//
+//		sprintf(buffer, "read bytes: %d", bytes_read);
+//		info(buffer, status);
+//		debug_array("uart2", (uint8_t*)&data, 23);
+//		debug_array("uart2", (uint8_t*)&data, 23, true);
 
-		sprintf(buffer, "read bytes: %d", bytes_read);
-		info(buffer, status);
-		debug_array("uart2", (uint8_t*)&data, 23);
-		debug_array("uart2", (uint8_t*)&data, 23, true);
-
-//		sprintf(buffer,
-//			"CH1 (p, us): %d %d\r\nCH2 (p, us): %d %d\r\n"
-//   "CH3 (p, us): %d %d\r\nCH4 (p, us): %d %d\r\nCH5 (p, us): %d %d\r\nCH6 (p, us): %d %d\r\nCH7 (p, us): %d %d\r\nCH8 (p, us): %d %d\r\n",
-//			ppm.get(1), ppm.get_us(1),
-//		ppm.get(2), ppm.get_us(2),
-//			ppm.get(3), ppm.get_us(3),
-//			ppm.get(4), ppm.get_us(4),
-//			ppm.get(5), ppm.get_us(5),
-//			ppm.get(6), ppm.get_us(6),
-//			ppm.get(7), ppm.get_us(7),
-//			ppm.get(8), ppm.get_us(8));
-//		info(buffer);
+		sprintf(buffer,
+			"CH1 (p, us): %d %d\r\nCH2 (p, us): %d %d\r\n"
+   "CH3 (p, us): %d %d\r\nCH4 (p, us): %d %d\r\nCH5 (p, us): %d %d\r\nCH6 (p, us): %d %d\r\nCH7 (p, us): %d %d\r\nCH8 (p, us): %d %d\r\n",
+			ppm.get(1), ppm.get_us(1),
+		ppm.get(2), ppm.get_us(2),
+			ppm.get(3), ppm.get_us(3),
+			ppm.get(4), ppm.get_us(4),
+			ppm.get(5), ppm.get_us(5),
+			ppm.get(6), ppm.get_us(6),
+			ppm.get(7), ppm.get_us(7),
+			ppm.get(8), ppm.get_us(8));
+		info(buffer);
 ////		if (test) {
 ////			//buzzer.set_state(GPIO_STATE_HIGH);
 ////			led2.set_state(GPIO_STATE_LOW);
@@ -137,11 +137,11 @@ int main() {
 ////			led2.set_state(GPIO_STATE_HIGH);
 ////			test = true;
 ////		}
-//		sprintf(buffer, "\r\nPPM Disconnected? : %d\r\n", ppm.is_disconnected(get_system_time()));
-//		info(buffer);
-//		sprintf(buffer, "System Time (ms): %u", get_system_time());
-//		info(buffer);
+		sprintf(buffer, "\r\nPPM Disconnected? : %d\r\n", ppm.is_disconnected(get_system_time()));
+		info(buffer);
+		sprintf(buffer, "System Time (ms): %u", get_system_time());
+		info(buffer);
 
-		//delay(100);
+		delay(1000);
 	}
 }
