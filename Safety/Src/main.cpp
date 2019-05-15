@@ -8,7 +8,9 @@
 #include "PWM.hpp"
 #include "PPM.hpp"
 
-extern UARTPort port;
+char buffer[200]; //buffer for printing
+
+void print_ppm_state(char* buffer, PPMChannel &ppm);
 
 int main() {
 	StatusCode status;
@@ -22,7 +24,6 @@ int main() {
 	init_debug();
 
 	info("\r\n\r\nStarting up...");
-	char buffer[200];
 	sprintf(buffer, "Compiled on %s at %s", __DATE__, __TIME__);
 	info(buffer);
 
@@ -30,130 +31,76 @@ int main() {
 	status = manager.setup();
 	info("PWMSetup", status);
 
-	PWMGroupSetting setting;
-
-	setting.inverted = false;
-	setting.max_length = 2000;
-	setting.min_length = 1000;
-	setting.period = 2500;
 	manager.channel(1).set(50);
-	manager.configure(PWM_GROUP_1, setting);
-	manager.configure(PWM_GROUP_2, setting);
-	manager.configure(PWM_GROUP_3_4, setting);
-	manager.configure(PWM_GROUP_5_8, setting);
-	manager.configure(PWM_GROUP_9_12, setting);
-
 	manager.channel(2).set(25);
 	manager.channel(3).set(75);
 	manager.channel(4).set(100);
-	manager.channel(5).set(50);
-	manager.channel(6).set(50);
-	manager.channel(7).set(50);
-	manager.channel(8).set(50);
+	manager.channel(5).set(25);
+	manager.channel(6).set(75);
+	manager.channel(7).set(100);
+	manager.channel(8).set(25);
 	manager.channel(9).set(50);
-	manager.channel(10).set(50);
-	manager.channel(11).set(50);
+	manager.channel(10).set(75);
+	manager.channel(11).set(100);
 	manager.channel(12).set(50);
 
 	PPMChannel ppm;
-
 	ppm.setNumChannels(8);
 	ppm.setLimits(1, 1000,2000, 50);
 	status = ppm.setup();
-
-	//ppm.reset();
 	ppm.setTimeout(200);
-	//status = ppm.setup();
-
 	info("PPM Setup", status);
 
 	GPIOPin led1 = GPIOPin(LED1_GPIO_PORT, LED1_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
 	GPIOPin led2 = GPIOPin(LED2_GPIO_PORT, LED2_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
 	GPIOPin led3 = GPIOPin(LED3_GPIO_PORT, LED3_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
-
 	GPIOPin buzzer = GPIOPin(BUZZER_GPIO_PORT, BUZZER_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
-
 	led1.setup();
 	led2.setup();
 	led3.setup();
 	buzzer.setup();
-
 	led1.set_state(GPIO_STATE_LOW);
 	led2.set_state(GPIO_STATE_LOW);
-
-	UARTSettings uart2;
-	uart2.baudrate = 115200;
-	uart2.parity = UART_NO_PARITY;
-	uart2.stop_bits = 1;
-	uart2.cts_rts = false;
-	uart2.tx_inverted = false;
-	uart2.rx_inverted = false;
-	uart2.flip_tx_rx = false;
- 	uart2.timeout = 5000;
-	UARTPort serial = UARTPort(UART_PORT2, uart2);
-
-	status = serial.setup();
-
-	info("UART2 setup", status);
-	int num = 24;
-	unsigned char data[100];
-	status = serial.setupDMA(24,25);
-
-	info("UART2 DMA: ", status);
-	size_t bytes_read = 100;
-
 
 	//  Safety_Init();
 	//  Safety_Run();
 
-	bool test = false;
-	while (1) {
+	bool toggle = false;
+	while (true) {
+		print_ppm_state(buffer, ppm);
+		info(buffer);
 
-
-		status = serial.read_bytes((uint8_t*)&data, num, bytes_read);
-//
-		if (bytes_read > 0){
-			int j;
-//		for(j = 0; j < num; j++){
-//			serial.read_byte((data[j]));
-//		}
-			sprintf(buffer, "read bytes: %d", bytes_read);
-			info(buffer, status);
-			debug_array("uart2", (uint8_t*)&data, num);
-			debug_array("uart2", (uint8_t*)&data, num, true);
-
-			for(j = 0; j < num; j++){
-				data[j] = 0;
-			}
+		if (toggle) {
+			//buzzer.set_state(GPIO_STATE_HIGH);
+			led2.set_state(GPIO_STATE_LOW);
+			toggle = false;
+		} else {
+			//buzzer.set_state(GPIO_STATE_LOW);
+			led2.set_state(GPIO_STATE_HIGH);
+			toggle = true;
 		}
 
-
-//		sprintf(buffer,
-//			"CH1 (p, us): %d %d\r\nCH2 (p, us): %d %d\r\n"
-//   "CH3 (p, us): %d %d\r\nCH4 (p, us): %d %d\r\nCH5 (p, us): %d %d\r\nCH6 (p, us): %d %d\r\nCH7 (p, us): %d %d\r\nCH8 (p, us): %d %d\r\n",
-//			ppm.get(1), ppm.get_us(1),
-//		ppm.get(2), ppm.get_us(2),
-//			ppm.get(3), ppm.get_us(3),
-//			ppm.get(4), ppm.get_us(4),
-//			ppm.get(5), ppm.get_us(5),
-//			ppm.get(6), ppm.get_us(6),
-//			ppm.get(7), ppm.get_us(7),
-//			ppm.get(8), ppm.get_us(8));
-//		info(buffer);
-////		if (test) {
-////			//buzzer.set_state(GPIO_STATE_HIGH);
-////			led2.set_state(GPIO_STATE_LOW);
-////			test = false;
-////		} else {
-////			//buzzer.set_state(GPIO_STATE_LOW);
-////			led2.set_state(GPIO_STATE_HIGH);
-////			test = true;
-////		}
-//		sprintf(buffer, "\r\nPPM Disconnected? : %d\r\n", ppm.is_disconnected(get_system_time()));
-//		info(buffer);
-		sprintf(buffer, "System Time (ms): %u", get_system_time());
+		sprintf(buffer, "System Time (ms): %lu", get_system_time());
 		info(buffer);
 
 		delay(1000);
 	}
+}
+
+void print_ppm_state(char* buffer, PPMChannel &ppm){
+	int len = sprintf(buffer,
+			"CH1 (p, us): %d %lu\r\nCH2 (p, us): %d %lu\r\n"
+			"CH3 (p, us): %d %lu\r\nCH4 (p, us): %d %lu\r\n"
+			"CH5 (p, us): %d %lu\r\nCH6 (p, us): %d %lu\r\n"
+			"CH7 (p, us): %d %lu\r\nCH8 (p, us): %d %lu\r\n",
+			ppm.get(1), ppm.get_us(1),
+			ppm.get(2), ppm.get_us(2),
+			ppm.get(3), ppm.get_us(3),
+			ppm.get(4), ppm.get_us(4),
+			ppm.get(5), ppm.get_us(5),
+			ppm.get(6), ppm.get_us(6),
+			ppm.get(7), ppm.get_us(7),
+			ppm.get(8), ppm.get_us(8));
+
+	sprintf(&buffer[len], "PPM Disconnected? : %d\r\n", ppm.is_disconnected(get_system_time()));
 }
