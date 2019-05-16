@@ -6,6 +6,9 @@
 
 TIM_HandleTypeDef htim14;
 
+//number of milliseconds expected between subsequent PPM packets
+uint32_t PPM_PACKET_TIMEOUT = 3;
+
 extern StatusCode get_status_code(HAL_StatusTypeDef status);
 
 //if modifying the below pin numbers, also modify the ISR routine down below to match
@@ -16,9 +19,12 @@ static const uint16_t TIMER_PRESCALER = 2; // since we're capturing 2000us max s
 static const uint16_t TIMER_PERIOD = 0xFFFF;
 
 static uint8_t num_channels = 0;
-static volatile uint8_t ppm_index = 0;
 static volatile uint16_t capture_value[MAX_PPM_CHANNELS] = {0};
-static volatile uint32_t last_received_time = 0;
+static volatile uint8_t ppm_index = 0;
+
+//these variables are used in the systick interrupt routine
+volatile uint32_t ppm_last_received_time = 0;
+volatile uint8_t ppm_packet_timeout_reached = 1;
 
 // 1 tick is prescaler / 48000000Hz (internal clock)
 //therefore capture in us = capture * prescaler * 1E6 / 8E6
@@ -137,7 +143,7 @@ StatusCode PPMChannel::setup() {
 	status = get_status_code(HAL_TIM_IC_Init(&htim14));
 	if (status != STATUS_CODE_OK) return status;
 
-	sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_BOTHEDGE;
+	sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
 	sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
 	sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
 	sConfigIC.ICFilter = 0;
@@ -171,7 +177,7 @@ StatusCode PPMChannel::reset() {
 }
 
 bool PPMChannel::is_disconnected(uint32_t sys_time){
-	bool disconnected = (sys_time - last_received_time) >= this->disconnect_timeout;
+	bool disconnected = (sys_time - ppm_last_received_time) >= this->disconnect_timeout;
 
 	if (disconnected){ //reset capture states if we get a disconnect timeout
 		for (int i = 0; i < num_channels; i++){
@@ -186,17 +192,16 @@ bool PPMChannel::is_disconnected(uint32_t sys_time){
 //our interrupt callback for when we get a pulse capture
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM14) {
-		bool high = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1); //do direct HAL read since we're in an ISR
+		ppm_last_received_time = get_system_time();
+		auto time_diff = (uint16_t) HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 
-		// by the time we're reading it, the pulse should be at its low
-		//the reason for doing this is because the HAL will actually capture both the lengths of the positive and negative pulses!
-		if (!high){
-			last_received_time = get_system_time();
-			auto time_diff = (uint16_t) HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-
-			capture_value[ppm_index] = time_diff;
-			ppm_index = (uint8_t) (ppm_index + 1) % num_channels;
+		if (ppm_packet_timeout_reached){
+			ppm_packet_timeout_reached = 0;
+			ppm_index = 0;
 		}
+
+		capture_value[ppm_index] = time_diff;
+		ppm_index = (uint8_t) (ppm_index + 1) % num_channels;
 		__HAL_TIM_SET_COUNTER(htim, 0);
 	}
 }

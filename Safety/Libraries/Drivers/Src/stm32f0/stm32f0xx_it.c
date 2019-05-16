@@ -66,6 +66,10 @@ extern I2C_HandleTypeDef hi2c1;
 extern DMAConfig i2c1_dma_config;
 extern DMAConfig uart2_dma_config;
 
+//ppm stuff
+extern volatile uint32_t ppm_last_received_time;
+extern volatile uint8_t ppm_packet_timeout_reached;
+extern uint32_t PPM_PACKET_TIMEOUT;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -148,6 +152,10 @@ void SysTick_Handler(void) {
 	}
 
 	if (uart2_dma_config.timer) uart2_dma_config.timer--;
+
+	if (HAL_GetTick() - ppm_last_received_time >= PPM_PACKET_TIMEOUT){
+		ppm_packet_timeout_reached = 1;
+	}
 
 	/* USER CODE END SysTick_IRQn 1 */
 }
