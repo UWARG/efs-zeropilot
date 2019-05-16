@@ -2,6 +2,8 @@
  * Implements a synchronous, polling I2C driver. Calls the underlying stm32HAL, and should be used in place of it
  * Don't initialize this class more than once for a single i2c port, unless you also called
  * reset()
+ *
+ * Receives are always blocking, however DMA for i2c receives when a slave have been enabled.
  * @author Serj Babayan
  * @copyright Waterloo Aerial Robotics Group 2019
  *  https://raw.githubusercontent.com/UWARG/ZeroPilot-SW/devel/LICENSE.md
@@ -13,6 +15,7 @@
 #include <stdint.h>
 #include "Status.hpp"
 #include "GPIO.hpp"
+#include <deque>
 
 typedef uint8_t I2CAddress;
 
@@ -57,6 +60,7 @@ class I2CPort {
 	I2CSettings settings;
 	GPIOPin sda;
 	GPIOPin scl;
+	bool is_setup = false;
 };
 
 class I2CSlavePort : private I2CPort {
@@ -72,11 +76,27 @@ class I2CSlavePort : private I2CPort {
 	StatusCode setup();
 
 	/**
+	 * Sets up DMA transfers transparently, if the hardware can support it. If possible, attempts to do both tx and RX
+	 * using DMA. If not, may only do RX. If either the parameters are 0, will only enable either the RX/TX buffers respectively
+	 * @param tx_buffer_size Size of DMA buffer when transmitting (used if possible). Try to make this as large as the largest
+	 * 	packet you could possible send
+	 * @param rx_buffer_size Size of DMA buffer when receiving. Make this the size of the largest packet you're expecting
+	 * to receive
+	 * @return
+	 */
+	StatusCode setupDMA(size_t tx_buffer_size, size_t rx_buffer_size);
+
+	/**
+	 * If DMA was setup for this channel, resets it so that synchronous transfers are done instead
+	 */
+	StatusCode resetDMA();
+
+	/**
 	 * Read bytes as a slave
 	 * @param rx_data Buffer to write data to
 	 * @param rx_len
 	 */
-	StatusCode read_bytes(uint8_t *rx_data, size_t rx_len);
+	StatusCode read_bytes(uint8_t *rx_data, size_t rx_len, size_t &bytes_read);
 
 	/**
 	 * Write bytes as a slave
@@ -85,8 +105,30 @@ class I2CSlavePort : private I2CPort {
 	 */
 	StatusCode write_bytes(uint8_t *tx_data, size_t tx_len);
 
+	/**
+	 * Gets called when the slave receieves a complete DMA packet
+	 * Call read inside the callback if you want to process it
+	 * If you don't register a callback whilst in DMA, you'll have to poll the
+	 * read_bytes() function
+	 * @param f Callback function
+	 * @return
+	 */
+	StatusCode registerDMAReceiveCallback(void (*f)());
+
+	/**
+	 * Note the callback isn't automatically cleared when calling resetDMA()
+	 * If you don't want a callback being fired anymore, make sure to call this
+	 * function
+	 * @return
+	 */
+	StatusCode clearDMAReceiveCallback();
+
  private:
 	I2CAddress address; //the devices i2c address
+	std::deque<uint8_t> *rx_queue;
+	bool dma_setup_tx = false;
+	bool dma_setup_rx = false;
+	bool reallocate_dma_buffer = true;
 };
 
 class I2CMasterPort : public I2CPort {

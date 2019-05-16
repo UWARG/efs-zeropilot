@@ -129,5 +129,6 @@ class UARTPort {
 	bool is_setup = false;
 	bool dma_setup_rx = false;
 	bool dma_setup_tx = false;
+	bool reallocate_dma_buffer = true;
 	std::deque<uint8_t> *rx_queue;
 };
