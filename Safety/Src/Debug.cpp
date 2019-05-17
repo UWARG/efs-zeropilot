@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "Debug.hpp"
-#include "UART.hpp"
-#include "Status.hpp"
+#include "../Common/Inc/UART.hpp"
+#include "../Common/Inc/Status.hpp"
 #include <string.h>
 
 static const UARTPortNum DEBUG_UART_PORT = UART_PORT1;

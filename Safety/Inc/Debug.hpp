@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdio.h>
-#include "Status.hpp"
+#include "../Common/Inc/Status.hpp"
 
 StatusCode init_debug();
 

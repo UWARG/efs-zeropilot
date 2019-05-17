@@ -16,8 +16,8 @@
  */
 
 #include <stdint.h>
-#include "GPIO.hpp"
-#include "PWM.hpp"
+#include "../../../Common/Inc/GPIO.hpp"
+#include "../../../Common/Inc/PWM.hpp"
 
 static const int32_t MAX_PPM_CHANNELS = 12;
 

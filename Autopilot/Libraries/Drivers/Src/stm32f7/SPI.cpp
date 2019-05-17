@@ -1,8 +1,8 @@
-#include "Status.hpp"
+#include "../../../../Common/Inc/Status.hpp"
 #include "stm32f0xx_hal.h"
-#include "SPI.hpp"
-#include "GPIO.hpp"
-#include "Clock.hpp"
+#include "../../../../Common/Inc/SPI.hpp"
+#include "../../../../Common/Inc/GPIO.hpp"
+#include "../../../../Common/Inc/Clock.hpp"
 
 const uint32_t SPI_SYNCHRONOUS_TIMEOUT = 50; //50ms timeout for synchronous implementation
 

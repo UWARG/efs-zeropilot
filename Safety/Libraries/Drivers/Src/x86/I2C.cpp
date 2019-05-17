@@ -1,5 +1,5 @@
-#include "I2C.hpp"
-#include "Status.hpp"
+#include "../../../../Common/Inc/I2C.hpp"
+#include "../../../../Common/Inc/Status.hpp"
 
 I2CPort::I2CPort(I2CPortNum port_num, I2CSpeed speed, I2CAddress address){
 	//we need to initialize these at the very least

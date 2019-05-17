@@ -4,9 +4,9 @@
  * Which is what this code is based off
  */
 
-#include "UART.hpp"
-#include "GPIO.hpp"
-#include "Status.hpp"
+#include "../../../../Common/Inc/UART.hpp"
+#include "../../../../Common/Inc/GPIO.hpp"
+#include "../../../../Common/Inc/Status.hpp"
 #include "Debug.hpp"
 #include "stm32f0xx_hal.h"
 #include <stdlib.h>

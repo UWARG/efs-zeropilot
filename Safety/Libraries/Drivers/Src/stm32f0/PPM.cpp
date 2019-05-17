@@ -1,6 +1,6 @@
 #include "PPM.hpp"
-#include "GPIO.hpp"
-#include "Clock.hpp"
+#include "../../../../Common/Inc/GPIO.hpp"
+#include "../../../../Common/Inc/Clock.hpp"
 #include <stdint.h>
 #include "stm32f0xx_hal.h"
 

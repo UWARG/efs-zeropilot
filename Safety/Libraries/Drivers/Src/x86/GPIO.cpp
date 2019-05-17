@@ -1,5 +1,5 @@
-#include "GPIO.hpp"
-#include "Status.hpp"
+#include "../../../../Common/Inc/GPIO.hpp"
+#include "../../../../Common/Inc/Status.hpp"
 #include <stdint.h>
 
 StatusCode gpio_init() {

@@ -1,5 +1,5 @@
-#include "SPI.hpp"
-#include "Status.hpp"
+#include "../../../../Common/Inc/SPI.hpp"
+#include "../../../../Common/Inc/Status.hpp"
 
 SPIPort::SPIPort(SPISettings settings) {
 	this->settings = settings;
