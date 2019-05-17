@@ -8,6 +8,7 @@
 #include "PWM.hpp"
 #include "PPM.hpp"
 #include "Watchdog.hpp"
+#include "Profiler.h"
 
 char buffer[200]; //buffer for printing
 
@@ -34,6 +35,12 @@ int main() {
 	IndependentWatchdog iwdg;
 	status = iwdg.setup(10000);
 	info("Independent Watchdog Status:", status);
+
+
+	Profiler init;
+	init_profiler(&init);
+	start_profile(&init);
+
 
 //	WindowedWatchdog wwdg;
 //	status = wwdg.setup(3, 10);
@@ -95,8 +102,17 @@ int main() {
 	uint8_t ubuffer[24];
 
 	size_t bytes_read = 100;
+
+	stop_profile(&init);
+	print_profile_stats("init", buffer, &init);
+	info(buffer);
+
+	init_profiler(&init);
+
 	bool toggle = false;
 	while (true) {
+
+		start_profile(&init);
 
 		status = port.read_bytes(ubuffer, 24, bytes_read);
 
@@ -120,12 +136,17 @@ int main() {
 			toggle = true;
 		}
 
-		sprintf(buffer, "System Time (us): %lu", get_system_time());
+		sprintf(buffer, "System Time (us): %u", get_system_time());
 		info(buffer);
 
 		delay(1000);
 
 		iwdg.reset_timer();
+
+		stop_profile(&init);
+
+		int len = print_profile_stats("init", buffer, &init);
+		info(buffer);
 	}
 }
 

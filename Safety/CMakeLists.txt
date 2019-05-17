@@ -25,9 +25,8 @@ add_subdirectory(Libraries/STM32F0xx_HAL_Driver)
 
 # Tests
 #add_subdirectory(Tests)
-
-file(GLOB_RECURSE C_SOURCES "Src/*.c" , "Libraries/Drivers/Src/stm32f0/*.c")
-file(GLOB_RECURSE CXX_SOURCES "Src/*.cpp" , "Libraries/Drivers/Src/stm32f0/*.cpp")
+file(GLOB_RECURSE C_SOURCES  "../Common/Src/*.c" "Src/*.c" , "Libraries/Drivers/Src/stm32f0/*.c")
+file(GLOB_RECURSE CXX_SOURCES  "../Common/Src/*.cpp" "Src/*.cpp" , "Libraries/Drivers/Src/stm32f0/*.cpp")
 
 set(STARTUP_ASM startup_stm32f030xc.s)
 set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F030RCTx_FLASH.ld)
