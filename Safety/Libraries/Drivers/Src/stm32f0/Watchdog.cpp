@@ -54,6 +54,9 @@ StatusCode IndependentWatchdog::setup(uint32_t max_ms) {
 		default: break;
 	}
 
+	__HAL_RCC_DBGMCU_CLK_ENABLE(); //enable debug clock
+	__HAL_DBGMCU_FREEZE_IWDG(); //freeze watchdog timer during debugging sessions
+
 	StatusCode status = get_status_code(HAL_IWDG_Init(&hiwdg));
 
 	if (status == STATUS_CODE_OK) is_setup = true;
@@ -109,6 +112,9 @@ StatusCode WindowedWatchdog::setup(uint32_t min_ms, uint32_t max_ms) {
 			break;
 		default: break;
 	}
+
+	__HAL_RCC_DBGMCU_CLK_ENABLE(); //enable debug clock
+	__HAL_DBGMCU_FREEZE_WWDG(); //stop from being triggered in debugging session
 
 	StatusCode status = get_status_code(HAL_WWDG_Init(&hwwdg));
 
