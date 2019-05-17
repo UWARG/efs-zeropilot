@@ -70,6 +70,9 @@ extern DMAConfig uart2_dma_config;
 extern volatile uint32_t ppm_last_received_time;
 extern volatile uint8_t ppm_packet_timeout_reached;
 extern uint32_t PPM_PACKET_TIMEOUT;
+
+//watchdog
+extern WWDG_HandleTypeDef hwwdg;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -245,6 +248,9 @@ void I2C1_IRQHandler(void) {
 	HAL_I2C_ER_IRQHandler(&hi2c1);
 }
 
+void WWDG_IRQHandler(void){
+	HAL_WWDG_IRQHandler(&hwwdg);
+}
 
 /* USER CODE BEGIN 1 */
 

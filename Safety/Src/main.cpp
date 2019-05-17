@@ -7,6 +7,7 @@
 #include "stm32f0xx_hal.h"
 #include "PWM.hpp"
 #include "PPM.hpp"
+#include "Watchdog.hpp"
 
 char buffer[200]; //buffer for printing
 
@@ -26,6 +27,17 @@ int main() {
 	info("\r\n\r\nStarting up...");
 	sprintf(buffer, "Compiled on %s at %s", __DATE__, __TIME__);
 	info(buffer);
+
+	print_reset_state(buffer, get_reset_cause());
+	info(buffer);
+
+	IndependentWatchdog iwdg;
+	status = iwdg.setup(10000);
+	info("Independent Watchdog Status:", status);
+
+//	WindowedWatchdog wwdg;
+//	status = wwdg.setup(3, 10);
+//	info("Window Watchdog Status:", status);
 
 	PWMManager &manager = PWMManager::getInstance();
 	status = manager.setup();
@@ -82,7 +94,6 @@ int main() {
 
 	uint8_t ubuffer[24];
 
-
 	size_t bytes_read = 100;
 	bool toggle = false;
 	while (true) {
@@ -109,10 +120,12 @@ int main() {
 			toggle = true;
 		}
 
-		sprintf(buffer, "System Time (ms): %lu", get_system_time());
+		sprintf(buffer, "System Time (us): %lu", get_system_time());
 		info(buffer);
 
 		delay(1000);
+
+		iwdg.reset_timer();
 	}
 }
 

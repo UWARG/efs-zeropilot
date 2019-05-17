@@ -63,7 +63,7 @@ class I2CPort {
 	bool is_setup = false;
 };
 
-class I2CSlavePort : private I2CPort {
+class I2CSlavePort : public I2CPort {
  public:
 	/**
 	 * Creates the object, but does not initialize the connection

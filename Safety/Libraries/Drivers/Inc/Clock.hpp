@@ -32,10 +32,23 @@ uint32_t get_peripheral_clock_apb1();
 uint32_t get_peripheral_clock_apb2();
 
 /**
+ * Get frequency of the low-speed internal clock in the chip. Used in some peripherals like the
+ * independent watch dog timer
+ * @return
+ */
+uint32_t get_lsi_clock();
+
+/**
  * Returns the system time since boot in ms
  * @return
  */
 uint32_t get_system_time();
+
+/**
+ * Get system time since boot in us
+ * @return
+ */
+uint64_t get_system_time_us();
 
 /**
  * Block for a certain amount of ms
