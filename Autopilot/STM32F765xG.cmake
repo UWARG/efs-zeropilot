@@ -1,3 +1,8 @@
+# This file MUST be included as a toolchain file in cmake for the build to work
+# Use the -DCMAKE_TOOLCHAIN_FILE flag in cmake
+# Sometimes we need to compile for x86 for things like unit tests, in which case this file
+# shouldn't be included in the toolchain
+
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 set(CMAKE_SYSTEM_VERSION 1)
@@ -21,12 +26,16 @@ if (MCU_FLOAT_ABI STREQUAL hard)
     set(MCU_FLAGS "${MCU_FLAGS} -mfpu=${MCU_FPU}")
 endif ()
 
-set(COMMON_FLAGS "${MCU_FLAGS} -Wall -ffunction-sections -fdata-sections")
+set(COMMON_FLAGS "${MCU_FLAGS} -Wall -Wextra -Wno-unused-parameter -ffunction-sections -fdata-sections")
 
 set(CMAKE_C_FLAGS "${COMMON_FLAGS} -std=gnu11" CACHE INTERNAL "")
-set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -std=gnu++11 -fno-rtti -fno-exceptions -fno-unwind-tables" CACHE INTERNAL "")
+set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -std=c++17 -Wno-register -fno-rtti -fno-exceptions -fno-unwind-tables" CACHE INTERNAL "")
 set(CMAKE_ASM_FLAGS "${COMMON_FLAGS} -x assembler-with-cpp" CACHE INTERNAL "")
 set(CMAKE_EXE_LINKER_FLAGS "${MCU_FLAGS} -specs=nosys.specs -specs=nano.specs -Wl,-gc-sections" CACHE INTERNAL "")
+
+# insert DEBUG flag if we're compiling under debug
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -DDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -DDEBUG")
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)

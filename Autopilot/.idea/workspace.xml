@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated>
+      <config projectName="Autopilot" targetName="UPLOAD" />
+      <config projectName="Autopilot" targetName="Autopilot.elf" />
+      <config projectName="Autopilot" targetName="FreeRTOS" />
+      <config projectName="Autopilot" targetName="Autopilot.bin" />
+      <config projectName="Autopilot" targetName="STM32_HAL" />
+    </generated>
+  </component>
+  <component name="CMakeSettings" AUTO_RELOAD="true">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" GENERATION_OPTIONS="-DCMAKE_TOOLCHAIN_FILE=&quot;STM32F765xG.cmake&quot; -DCMAKE_BUILD_TYPE=&quot;Debug&quot; -G &quot;Unix Makefiles&quot;" />
+      <configuration PROFILE_NAME="Release" CONFIG_NAME="Release" GENERATION_OPTIONS="-DCMAKE_TOOLCHAIN_FILE=&quot;STM32F765xG.cmake&quot; -DCMAKE_BUILD_TYPE=&quot;Release&quot; -G &quot;Unix Makefiles&quot;" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="9984d8f7-7223-452e-ba43-118cfa81d3bf" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/Autopilot_elf___ZeropilotV1___STLINKV2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/runConfigurations/Autopilot_elf___ZeropilotV1___STLINKV2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Safety/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Safety/.idea/workspace.xml" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
+    <ignored path="$PROJECT_DIR$/Autopilot/cmake-build-debug/" />
+    <ignored path="$PROJECT_DIR$/Autopilot/cmake-build-release/" />
+    <ignored path="$PROJECT_DIR$/cmake-build-release/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Src/main.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="486">
+              <caret line="27" column="35" selection-start-line="27" selection-start-column="35" selection-end-line="27" selection-end-column="35" />
+              <folding>
+                <element signature="e#2870#2887#0" expanded="true" />
+                <element signature="e#3163#3181#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>project.mk</find>
+      <find>print</find>
+      <find>sys_calls.</find>
+      <find>sys</find>
+      <find>_wri</find>
+      <find>_write</find>
+      <find>math</find>
+      <find>error</find>
+      <find>error_handler</find>
+      <find>target</find>
+      <find>HAL_SPI_Init</find>
+      <find>PeriphClkInitStruct</find>
+    </findStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$/Autopilot/Src</dir>
+    </dirStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/Autopilot/Src/usart.c" />
+        <option value="$PROJECT_DIR$/Autopilot/Src/debug.c" />
+        <option value="$PROJECT_DIR$/Autopilot/Inc/debug.h" />
+        <option value="$PROJECT_DIR$/Autopilot/Src/i2c.c" />
+        <option value="/Volumes/USB/ZeropilotV1/Inc/i2c.h" />
+        <option value="/Volumes/USB/ZeropilotV1/Inc/main.h" />
+        <option value="$PROJECT_DIR$/Autopilot/Inc/main.h" />
+        <option value="/Volumes/USB/ZeropilotV1/Src/i2c.c" />
+        <option value="$PROJECT_DIR$/Autopilot/Src/main.cpp" />
+        <option value="$PROJECT_DIR$/Autopilot/Src/freertos.c" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/Autopilot/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/Autopilot/STM32F765xG.cmake" />
+        <option value="$PROJECT_DIR$/STM32F765xG.cmake" />
+        <option value="$PROJECT_DIR$/Inc/debug.h" />
+        <option value="$PROJECT_DIR$/Src/main.c" />
+        <option value="$PROJECT_DIR$/Inc/Interchip_A.h" />
+        <option value="$PROJECT_DIR$/Src/main.cpp" />
+        <option value="$PROJECT_DIR$/../Common/Inc/Interchip.h" />
+        <option value="$PROJECT_DIR$/Src/Interchip_A.c" />
+        <option value="$PROJECT_DIR$/../Common/Inc/Status.hpp" />
+        <option value="$PROJECT_DIR$/../Common/Src/stm32/Status.cpp" />
+        <option value="$PROJECT_DIR$/../Common/Src/stm32/Watchdog.cpp" />
+        <option value="$PROJECT_DIR$/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/../Common/Inc/GPIO.hpp" />
+      </list>
+    </option>
+  </component>
+  <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="112" />
+    <option name="y" value="117" />
+    <option name="width" value="2560" />
+    <option name="height" value="1326" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="Scope" currentSubView="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope" proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope">
+        <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
+          <expand>
+            <path>
+              <item name="Autopilot" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="" type="442cc68d:ScopeViewTreeModel$RootNode" />
+            </path>
+            <path>
+              <item name="Autopilot" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="Src" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="ProjectPane" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="CMakeSettings" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f7" />
+      <recent name="$PROJECT_DIR$/Libraries/Drivers/Inc" />
+      <recent name="$PROJECT_DIR$/Libraries/Drivers/Src" />
+      <recent name="$PROJECT_DIR$/Autopilot" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="OpenOCD Download &amp; Run.Autopilot.elf | ZeropilotV1 | STLINKV2">
+    <configuration name="Autopilot" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Autopilot" TARGET_NAME="Autopilot.elf" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Autopilot" RUN_TARGET_NAME="Autopilot.elf">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FreeRTOS" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Autopilot" TARGET_NAME="FreeRTOS" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="STM32_HAL" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Autopilot" TARGET_NAME="STM32_HAL" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UPLOAD" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Autopilot" TARGET_NAME="UPLOAD" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Autopilot.elf | NUCLEO DISCOVERY" type="elmot.embedded.openocd.conf.type" factoryName="elmot.embedded.openocd.conf.factory" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Autopilot" TARGET_NAME="Autopilot.elf" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Autopilot" RUN_TARGET_NAME="Autopilot.elf">
+      <openocd gdb-port="3333" telnet-port="4444" board-config="board/stm32f7discovery.cfg" reset-type="INIT" download-type="ALWAYS" />
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Autopilot.elf | ZeropilotV1 | STLINKV2.1" type="elmot.embedded.openocd.conf.type" factoryName="elmot.embedded.openocd.conf.factory" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Autopilot" TARGET_NAME="Autopilot.elf" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Autopilot" RUN_TARGET_NAME="Autopilot.elf">
+      <openocd gdb-port="3333" telnet-port="4444" board-config="$PROJECT_DIR$/boardfiles/stlinkv2-1-openocd.cfg" reset-type="INIT" download-type="ALWAYS" />
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="OCD ZeropilotV1" type="elmot.embedded.openocd.conf.type" factoryName="elmot.embedded.openocd.conf.factory" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Autopilot" TARGET_NAME="Autopilot.elf" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Autopilot" RUN_TARGET_NAME="Autopilot.elf">
+      <openocd gdb-port="3333" telnet-port="4444" board-config="board/stm32f7discovery.cfg" reset-type="INIT" download-type="ALWAYS" />
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.Autopilot" />
+      <item itemvalue="Application.UPLOAD" />
+      <item itemvalue="Application.STM32_HAL" />
+      <item itemvalue="Application.FreeRTOS" />
+      <item itemvalue="OpenOCD Download &amp; Run.OCD ZeropilotV1" />
+      <item itemvalue="OpenOCD Download &amp; Run.Autopilot.elf | NUCLEO DISCOVERY" />
+      <item itemvalue="OpenOCD Download &amp; Run.Autopilot.elf | ZeropilotV1 | STLINKV2" />
+      <item itemvalue="OpenOCD Download &amp; Run.Autopilot.elf | ZeropilotV1 | STLINKV2.1" />
+    </list>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9984d8f7-7223-452e-ba43-118cfa81d3bf" name="Default Changelist" comment="" />
+      <created>1553008874974</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1553008874974</updated>
+      <workItem from="1553008877296" duration="2581000" />
+      <workItem from="1554747291216" duration="191000" />
+      <workItem from="1554842431523" duration="8904000" />
+      <workItem from="1554934569196" duration="6981000" />
+      <workItem from="1554947502809" duration="2016000" />
+      <workItem from="1554949940421" duration="3263000" />
+      <workItem from="1554995697745" duration="1229000" />
+      <workItem from="1554996952863" duration="99000" />
+      <workItem from="1554997070246" duration="662000" />
+      <workItem from="1554997819913" duration="650000" />
+      <workItem from="1554998644833" duration="288000" />
+      <workItem from="1554998974895" duration="351000" />
+      <workItem from="1554999430598" duration="145000" />
+      <workItem from="1554999716525" duration="63000" />
+      <workItem from="1555000541635" duration="2807000" />
+      <workItem from="1555880270682" duration="1154000" />
+      <workItem from="1558070118071" duration="1631000" />
+      <workItem from="1558104748983" duration="362000" />
+      <workItem from="1558235231755" duration="295000" />
+      <workItem from="1558289701664" duration="16000" />
+      <workItem from="1558293914601" duration="3278000" />
+      <workItem from="1558305288213" duration="31000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="36997000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="112" y="117" width="2560" height="1326" extended-state="0" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1624305" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32820097" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3273906" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39906102" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Database Changes" order="7" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.32820097" />
+      <window_info anchor="bottom" id="Terminal" order="9" weight="0.3289941" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info anchor="bottom" id="Version Control" order="11" weight="0.3289941" />
+      <window_info anchor="bottom" id="CMake" order="12" weight="0.11183144" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Database" order="3" />
+    </layout>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$" />
+    </ignored-roots>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/Autopilot/Middlewares/Third_Party/FreeRTOS/CMakeLists.txt" />
+    <entry file="file://$PROJECT_DIR$/Autopilot/stm32f7x.cfg" />
+    <entry file="file://$PROJECT_DIR$/Autopilot/.project" />
+    <entry file="file://$PROJECT_DIR$/Autopilot/.cproject" />
+    <entry file="file://$PROJECT_DIR$/Autopilot/build/CMakeCache.txt" />
+    <entry file="file://$PROJECT_DIR$/Autopilot/autopilot.envrc" />
+    <entry file="file://$PROJECT_DIR$/Autopilot/Middlewares/Third_Party/FreeRTOS/Source/tasks.c" />
+    <entry file="file://$PROJECT_DIR$/Autopilot/stlinkv2-1-openocd.cfg" />
+    <entry file="file://$PROJECT_DIR$/Autopilot/Tools/autopilot_flash.gdbinit" />
+    <entry file="file://$PROJECT_DIR$/Autopilot/stlinkv2-openocd.cfg" />
+    <entry file="file://$PROJECT_DIR$/Autopilot/Src/main.cpp" />
+    <entry file="file://$PROJECT_DIR$/Autopilot/startup_stm32f765xx.s" />
+    <entry file="file://$PROJECT_DIR$/Safety/CMakeLists.txt" />
+    <entry file="file://$PROJECT_DIR$/Autopilot/STM32F765xG.cmake" />
+    <entry file="file://$PROJECT_DIR$/Autopilot/CMakeLists.txt" />
+    <entry file="file://$PROJECT_DIR$/README.md" />
+    <entry file="file://$PROJECT_DIR$/.gitignore" />
+    <entry file="file://$PROJECT_DIR$/Src/i2c.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-5320" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/NMEAParser.c">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/PID.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-730" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/spi.c">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/reset_cause.c">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/stm32f7xx_hal_msp.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1432" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/usart.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-6022" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_rcc_ex.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="689">
+          <caret line="111" column="1" selection-start-line="111" selection-start-column="1" selection-end-line="111" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Inc/debug.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="23" column="5" lean-forward="true" selection-start-line="23" selection-start-column="5" selection-end-line="23" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/debug.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" column="1" lean-forward="true" selection-start-line="12" selection-start-column="1" selection-end-line="12" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/main.c" />
+    <entry file="file://$PROJECT_DIR$/CMakeLists_template.txt" />
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_wwdg.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="397">
+          <caret line="122" column="8" selection-start-line="122" selection-start-column="8" selection-end-line="122" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="674">
+          <caret line="180" column="5" selection-start-line="180" selection-start-column="5" selection-end-line="180" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Inc/Interchip_A.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18">
+          <caret line="1" column="16" selection-start-line="1" selection-start-column="16" selection-end-line="1" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/gpio.c">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/wwdg.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1152">
+          <caret line="64" column="25" selection-start-line="64" selection-start-column="25" selection-end-line="64" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/stm32f7xx_it.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2942">
+          <caret line="207" column="14" selection-start-line="207" selection-start-column="14" selection-end-line="207" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../Common/Inc/Interchip.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="3" column="2" selection-start-line="3" selection-start-column="2" selection-end-line="3" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/Interchip_A.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="257">
+          <caret line="26" column="22" selection-start-line="26" selection-start-column="22" selection-end-line="26" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#24#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_rcc.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="421">
+          <caret line="370" column="23" selection-start-line="370" selection-start-column="8" selection-end-line="370" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.project">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.cproject">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../Common/Inc/GPIO.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="213">
+          <caret line="57" column="3" lean-forward="true" selection-start-line="57" selection-start-column="3" selection-end-line="57" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../Common/Src/stm32/GPIO.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="621">
+          <caret line="146" column="20" selection-start-line="146" selection-start-column="20" selection-end-line="146" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="504">
+          <caret line="30" column="26" selection-start-line="30" selection-start-column="26" selection-end-line="30" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../Common/Src/Debug.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="9" column="24" selection-start-line="9" selection-start-column="24" selection-end-line="9" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../Common/Src/stm32/Status.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+            <element signature="e#58#84#0" expanded="true" />
+            <element signature="e#682#774#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../Common/Src/stm32/Watchdog.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="292">
+          <caret line="120" selection-start-line="120" selection-end-line="120" />
+          <folding>
+            <element signature="e#1524#1575#0" expanded="true" />
+            <element signature="e#3236#3287#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F7xx_HAL_Driver/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/STM32F765xG.cmake">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="15" selection-start-line="15" selection-end-line="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="560">
+          <caret line="91" column="32" selection-start-line="91" selection-start-column="8" selection-end-line="91" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../Common/Inc/Status.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="468">
+          <caret line="26" column="23" selection-start-line="26" selection-start-column="4" selection-end-line="26" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="486">
+          <caret line="27" column="35" selection-start-line="27" selection-start-column="35" selection-end-line="27" selection-end-column="35" />
+          <folding>
+            <element signature="e#2870#2887#0" expanded="true" />
+            <element signature="e#3163#3181#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

@@ -1,5 +1,4 @@
 #include "Interchip_A.h"
-#include "Common.h"
 #include "cmsis_os.h"
 #include "debug.h"
 #include "spi.h"
@@ -36,7 +35,7 @@ void Interchip_Run(void const *argument) {
 int16_t *Interchip_GetPWM(void) { return dataRX->PWM; }
 void Interchip_SetPWM(int16_t *data) {
   osMutexWait(Interchip_MutexHandle, 0);
-  for (uint8_t i = 0; i < PWM_NUM_CHANNELS; i++) {
+  for (uint8_t i = 0; i < 12; i++) {
     dataTX->PWM[i] = data[i];
   }
   osMutexRelease(Interchip_MutexHandle);

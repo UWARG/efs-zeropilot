@@ -14,7 +14,7 @@ addons:
 
 env:
   - TARGET=Autopilot
-  # - TARGET=Safety # no CMake support on safety yet
+  - TARGET=Safety
 
 install:
   - export GCC_DIR=$HOME/gcc-arm-none-eabi-7-2017-q4-major
@@ -25,4 +25,4 @@ install:
 
 script:
   - cd $TARGET
-  - ./Tools/build.bash
+  - ./Tools/build.bash -c

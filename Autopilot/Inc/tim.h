@@ -10,7 +10,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * Copyright (c) 2017 STMicroelectronics International N.V. 
+  * Copyright (c) 2019 STMicroelectronics International N.V. 
   * All rights reserved.
   *
   * Redistribution and use in source and binary forms, with or without 
@@ -54,7 +54,6 @@
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f7xx_hal.h"
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
@@ -68,14 +67,11 @@ extern TIM_HandleTypeDef htim11;
 
 /* USER CODE END Private defines */
 
-extern void _Error_Handler(const char *, int);
-
 void MX_TIM10_Init(void);
 void MX_TIM11_Init(void);
-                    
+                        
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
-                
-
+                    
 /* USER CODE BEGIN Prototypes */
 
 /* USER CODE END Prototypes */
