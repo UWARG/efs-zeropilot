@@ -23,7 +23,7 @@ int main() {
 	//set clock sources
 	initialize_system_clock();
 	gpio_init();
-	init_debug();
+	init_debug(UART_PORT1);
 
 	info("\r\n\r\nStarting up...");
 	sprintf(buffer, "Compiled on %s at %s", __DATE__, __TIME__);

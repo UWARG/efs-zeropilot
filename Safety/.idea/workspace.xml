@@ -22,15 +22,9 @@
       <change beforePath="$PROJECT_DIR$/../Common/Inc/Interchip.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Common/Inc/Interchip.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Common/Inc/Profiler.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Common/Inc/Profiler.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Common/Src/Profiler.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../Common/Src/Profiler.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_hal_conf.h" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/stm32f0xx_hal_conf.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Clock.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Clock.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/I2C.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/I2C.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PPM.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PPM.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PWM.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/PWM.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/UART.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/UART.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Libraries/Drivers/Src/x86/GPIO.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Libraries/Drivers/Src/x86/GPIO.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Src/Debug.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Src/Debug.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Src/SBUS.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Src/SBUS.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Inc/Debug.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Inc/Debug.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Src/Debug.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Src/main.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -46,96 +40,34 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/UART.cpp">
+        <entry file="file://$PROJECT_DIR$/Common/Src/Debug.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="442">
-              <caret line="227" column="36" selection-end-line="250" />
-              <folding>
-                <element signature="e#208#227#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="18">
+              <caret line="1" column="19" lean-forward="true" selection-start-line="1" selection-start-column="19" selection-end-line="1" selection-end-column="19" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/x86/GPIO.cpp">
+        <entry file="file://$PROJECT_DIR$/Inc/Debug.hpp">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="432">
-              <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
+              <caret line="24" column="16" selection-start-line="24" selection-start-column="5" selection-end-line="24" selection-end-column="16" />
               <folding>
-                <element signature="e#0#42#0" expanded="true" />
+                <element signature="e#14#32#0" expanded="true" />
               </folding>
             </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/x86/I2C.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <folding>
-                <element signature="e#0#41#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/x86/SPI.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-258" />
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Src/Debug.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="504">
-              <caret line="28" column="5" lean-forward="true" selection-start-line="28" selection-start-column="5" selection-end-line="28" selection-end-column="5" />
-              <folding>
-                <element signature="e#1#21#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Src/SBUS.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret selection-end-line="48" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Src/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="18">
-              <caret line="2" column="27" selection-end-line="165" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Src/interchip_S.c">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/stm32f0xx_hal_msp.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="504">
-              <caret line="28" column="3" lean-forward="true" selection-end-line="84" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Watchdog.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="36">
-              <caret line="2" column="29" selection-end-line="4" selection-end-column="31" />
+            <state relative-caret-position="432">
+              <caret line="25" column="25" selection-start-line="25" selection-start-column="25" selection-end-line="25" selection-end-column="25" />
+              <folding>
+                <element signature="e#0#19#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -184,7 +116,6 @@
       <list>
         <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/PWM.hpp" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/stm32f0xx_hal_msp.c" />
-        <option value="$PROJECT_DIR$/Inc/Debug.hpp" />
         <option value="$PROJECT_DIR$/startup_stm32f030xc.s" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/DMA.h" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Inc/stm32f0/DMA.hpp" />
@@ -231,8 +162,9 @@
         <option value="$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/UART.cpp" />
         <option value="$PROJECT_DIR$/Libraries/Drivers/Src/x86/GPIO.cpp" />
         <option value="$PROJECT_DIR$/Src/SBUS.cpp" />
-        <option value="$PROJECT_DIR$/Src/main.cpp" />
+        <option value="$PROJECT_DIR$/Inc/Debug.hpp" />
         <option value="$PROJECT_DIR$/Src/Debug.cpp" />
+        <option value="$PROJECT_DIR$/Src/main.cpp" />
       </list>
     </option>
   </component>
@@ -316,32 +248,6 @@
               <item name="Safety" type="b2602c69:ProjectViewProjectNode" />
               <item name="Safety" type="47feb1d3:ProjectViewModuleNode" />
               <item name="Safety" type="462c0819:PsiDirectoryNode" />
-              <item name="Libraries" type="462c0819:PsiDirectoryNode" />
-              <item name="Drivers" type="462c0819:PsiDirectoryNode" />
-              <item name="Src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Safety" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Safety" type="47feb1d3:ProjectViewModuleNode" />
-              <item name="Safety" type="462c0819:PsiDirectoryNode" />
-              <item name="Libraries" type="462c0819:PsiDirectoryNode" />
-              <item name="Drivers" type="462c0819:PsiDirectoryNode" />
-              <item name="Src" type="462c0819:PsiDirectoryNode" />
-              <item name="stm32f0" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Safety" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Safety" type="47feb1d3:ProjectViewModuleNode" />
-              <item name="Safety" type="462c0819:PsiDirectoryNode" />
-              <item name="Libraries" type="462c0819:PsiDirectoryNode" />
-              <item name="Drivers" type="462c0819:PsiDirectoryNode" />
-              <item name="Src" type="462c0819:PsiDirectoryNode" />
-              <item name="x86" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Safety" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Safety" type="47feb1d3:ProjectViewModuleNode" />
-              <item name="Safety" type="462c0819:PsiDirectoryNode" />
               <item name="Src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -362,9 +268,9 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Common/Src" />
       <recent name="$PROJECT_DIR$/Libraries/Drivers/Inc" />
       <recent name="$PROJECT_DIR$/Common/Src/stm32" />
-      <recent name="$PROJECT_DIR$/Common/Src" />
       <recent name="$PROJECT_DIR$/Common/Inc" />
       <recent name="$PROJECT_DIR$/Common" />
     </key>
@@ -447,12 +353,12 @@
       <workItem from="1557950170286" duration="2447000" />
       <workItem from="1558104748845" duration="363000" />
       <workItem from="1558235231383" duration="1062000" />
-      <workItem from="1558289701450" duration="3061000" />
+      <workItem from="1558289701450" duration="3221000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="219946000" />
+    <option name="totallyTimeSpent" value="220106000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -589,13 +495,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Inc/Debug.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="7" selection-start-column="7" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/startup_stm32f030xc.s">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="238">
@@ -940,20 +839,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/stm32f0xx_hal_msp.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="504">
-          <caret line="28" column="3" lean-forward="true" selection-end-line="84" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Watchdog.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36">
-          <caret line="2" column="29" selection-end-line="4" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/UART.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="442">
@@ -967,7 +852,7 @@
     <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/x86/GPIO.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="432">
-          <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
+          <caret line="24" selection-start-line="24" selection-end-line="24" />
           <folding>
             <element signature="e#0#42#0" expanded="true" />
           </folding>
@@ -995,22 +880,46 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Src/main.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="2" column="27" selection-end-line="165" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Src/interchip_S.c">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/Src/Debug.cpp">
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/stm32f0xx_hal_msp.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="504">
-          <caret line="28" column="5" lean-forward="true" selection-start-line="28" selection-start-column="5" selection-end-line="28" selection-end-column="5" />
+          <caret line="28" column="3" selection-end-line="84" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Libraries/Drivers/Src/stm32f0/Watchdog.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" column="29" selection-end-line="4" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Common/Src/Debug.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18">
+          <caret line="1" column="19" lean-forward="true" selection-start-line="1" selection-start-column="19" selection-end-line="1" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Inc/Debug.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="24" column="16" selection-start-line="24" selection-start-column="5" selection-end-line="24" selection-end-column="16" />
           <folding>
-            <element signature="e#1#21#0" expanded="true" />
+            <element signature="e#14#32#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="25" column="25" selection-start-line="25" selection-start-column="25" selection-end-line="25" selection-end-column="25" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>

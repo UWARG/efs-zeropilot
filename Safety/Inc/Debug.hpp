@@ -1,9 +1,10 @@
 #pragma once
 
 #include <stdio.h>
-#include "../Common/Inc/Status.hpp"
+#include "Status.hpp"
+#include "UART.hpp"
 
-StatusCode init_debug();
+StatusCode init_debug(UARTPortNum port);
 
 void debug(const char* string);
 
