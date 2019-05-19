@@ -36,15 +36,15 @@ int print_profile_stats(const char *label, char *buffer, Profiler *p) {
 	}
 
 	return sprintf(buffer, "Profile for: %s \r\n"
-					"Latest: %lu \r\n"
-					"Average: %lu \r\n"
-					"Max: %lu \r\n"
-					"Min: %lu \r\n"
-					"Num Profiles: %d \r\n",
-			label,
-			(uint32_t) p->latest_diff,
-			(uint32_t) p->average_diff,
-			(uint32_t) p->max_diff,
-			(uint32_t) p->min_diff,
-			p->num_profiles);
+						   "Latest: %lu \r\n"
+						   "Average: %lu \r\n"
+						   "Max: %lu \r\n"
+						   "Min: %lu \r\n"
+						   "Num Profiles: %d \r\n",
+				   label,
+				   (uint32_t) p->latest_diff,
+				   (uint32_t) p->average_diff,
+				   (uint32_t) p->max_diff,
+				   (uint32_t) p->min_diff,
+				   p->num_profiles);
 }

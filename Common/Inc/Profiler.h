@@ -42,7 +42,7 @@ void stop_profile(Profiler *p);
  * @param buffer
  * @param p
  */
-int print_profile_stats(const char* label, char* buffer, Profiler* p);
+int print_profile_stats(const char *label, char *buffer, Profiler *p);
 
 #ifdef __cplusplus
 }
