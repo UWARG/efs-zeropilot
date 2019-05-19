@@ -12,7 +12,7 @@
 
 char buffer[200]; //buffer for printing
 
-void print_ppm_state(char* buffer, PPMChannel &ppm);
+void print_ppm_state(char *buffer, PPMChannel &ppm);
 
 int main() {
 	StatusCode status;
@@ -35,7 +35,6 @@ int main() {
 	IndependentWatchdog iwdg;
 	status = iwdg.setup(10000);
 	info("Independent Watchdog Status:", status);
-
 
 	Profiler init;
 	init_profiler(&init);
@@ -65,7 +64,7 @@ int main() {
 
 	PPMChannel ppm;
 	ppm.setNumChannels(8);
-	ppm.setLimits(1, 1000,2000, 50);
+	ppm.setLimits(1, 1000, 2000, 50);
 	status = ppm.setup();
 	ppm.setTimeout(200);
 	info("PPM Setup", status);
@@ -116,12 +115,10 @@ int main() {
 
 		status = port.read_bytes(ubuffer, 24, bytes_read);
 
-		if (bytes_read > 0){
-			debug_array("array" , ubuffer, bytes_read, false);
-			debug_array("array" , ubuffer, bytes_read, true);
+		if (bytes_read > 0) {
+			debug_array("array", ubuffer, bytes_read, false);
+			debug_array("array", ubuffer, bytes_read, true);
 		}
-
-
 
 		print_ppm_state(buffer, ppm);
 		info(buffer);
@@ -150,20 +147,20 @@ int main() {
 	}
 }
 
-void print_ppm_state(char* buffer, PPMChannel &ppm){
+void print_ppm_state(char *buffer, PPMChannel &ppm) {
 	int len = sprintf(buffer,
-			"CH1 (p, us): %d %lu\r\nCH2 (p, us): %d %lu\r\n"
-			"CH3 (p, us): %d %lu\r\nCH4 (p, us): %d %lu\r\n"
-			"CH5 (p, us): %d %lu\r\nCH6 (p, us): %d %lu\r\n"
-			"CH7 (p, us): %d %lu\r\nCH8 (p, us): %d %lu\r\n",
-			ppm.get(1), ppm.get_us(1),
-			ppm.get(2), ppm.get_us(2),
-			ppm.get(3), ppm.get_us(3),
-			ppm.get(4), ppm.get_us(4),
-			ppm.get(5), ppm.get_us(5),
-			ppm.get(6), ppm.get_us(6),
-			ppm.get(7), ppm.get_us(7),
-			ppm.get(8), ppm.get_us(8));
+					  "CH1 (p, us): %d %lu\r\nCH2 (p, us): %d %lu\r\n"
+					  "CH3 (p, us): %d %lu\r\nCH4 (p, us): %d %lu\r\n"
+					  "CH5 (p, us): %d %lu\r\nCH6 (p, us): %d %lu\r\n"
+					  "CH7 (p, us): %d %lu\r\nCH8 (p, us): %d %lu\r\n",
+					  ppm.get(1), ppm.get_us(1),
+					  ppm.get(2), ppm.get_us(2),
+					  ppm.get(3), ppm.get_us(3),
+					  ppm.get(4), ppm.get_us(4),
+					  ppm.get(5), ppm.get_us(5),
+					  ppm.get(6), ppm.get_us(6),
+					  ppm.get(7), ppm.get_us(7),
+					  ppm.get(8), ppm.get_us(8));
 
 	sprintf(&buffer[len], "PPM Disconnected? : %d\r\n", ppm.is_disconnected(get_system_time()));
 }

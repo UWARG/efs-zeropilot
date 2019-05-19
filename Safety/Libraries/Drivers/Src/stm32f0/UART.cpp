@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <queue>
 
-
 static const GPIOPort UART1_RX_PORT = GPIO_PORT_B;
 static const GPIOPort UART1_TX_PORT = GPIO_PORT_B;
 static const GPIOPinNum UART1_RX_PIN = 7;
@@ -34,7 +33,7 @@ DMAConfig uart2_dma_config;
 extern StatusCode get_status_code(HAL_StatusTypeDef status);
 void USART2_DMA_ErrorCallback(DMA_HandleTypeDef *dma);
 
-bool UARTPort::is_valid_port(){
+bool UARTPort::is_valid_port() {
 	return port == UART_PORT2 || port == UART_PORT1;
 }
 
@@ -90,7 +89,7 @@ UARTPort::UARTPort(UARTPortNum port, UARTSettings settings) {
 StatusCode UARTPort::reset() {
 	if (!is_setup) return STATUS_CODE_INVALID_ARGS;
 
-	auto uart = (UART_HandleTypeDef *)this->interface_handle;
+	auto uart = (UART_HandleTypeDef *) this->interface_handle;
 
 	if (dma_setup_rx || dma_setup_tx) {
 		resetDMA();
@@ -130,8 +129,8 @@ StatusCode UARTPort::setupDMA(size_t tx_buffer_size, size_t rx_buffer_size) {
 		dma_config->timeout = 50;
 		this->rx_queue = &uart2_rx_queue;
 
-		auto dma_handle = (DMA_HandleTypeDef*)dma_config->dma_handle;
-		auto uart_handle = (UART_HandleTypeDef*)this->interface_handle;
+		auto dma_handle = (DMA_HandleTypeDef *) dma_config->dma_handle;
+		auto uart_handle = (UART_HandleTypeDef *) this->interface_handle;
 
 		__HAL_RCC_DMA1_CLK_ENABLE();
 		dma_handle->Instance = DMA1_Channel5;
@@ -189,8 +188,8 @@ StatusCode UARTPort::resetDMA() {
 	if (port != UART_PORT2) return STATUS_CODE_UNIMPLEMENTED;
 	if (!dma_setup_rx) return STATUS_CODE_INVALID_ARGS;
 
-	auto dma_handle = (DMA_HandleTypeDef*)dma_config->dma_handle;
-	auto uart_handle = (UART_HandleTypeDef*)this->interface_handle;
+	auto dma_handle = (DMA_HandleTypeDef *) dma_config->dma_handle;
+	auto uart_handle = (UART_HandleTypeDef *) this->interface_handle;
 
 	//disable dma interrupts
 	CLEAR_BIT(uart_handle->Instance->CR1, USART_CR1_IDLEIE);

@@ -14,7 +14,7 @@ SBUSPort::SBUSPort(UARTPortNum num, SBUSSettings settings) {
 	this->settings = settings;
 }
 
-StatusCode SBUSPort::setup(){
+StatusCode SBUSPort::setup() {
 	if (is_setup) return STATUS_CODE_INVALID_ARGS;
 
 	StatusCode status = port.setup();
@@ -27,7 +27,7 @@ StatusCode SBUSPort::setup(){
 	return STATUS_CODE_UNIMPLEMENTED;
 }
 
-StatusCode SBUSPort::reset(){
+StatusCode SBUSPort::reset() {
 	if (!is_setup) return STATUS_CODE_INVALID_ARGS;
 
 	port.reset();
@@ -36,11 +36,11 @@ StatusCode SBUSPort::reset(){
 	return STATUS_CODE_UNIMPLEMENTED;
 }
 
-uint8_t SBUSPort::get(PWMChannelNum num){
+uint8_t SBUSPort::get(PWMChannelNum num) {
 	return 0;
 }
 
-uint32_t SBUSPort::get_us(PWMChannelNum num){
+uint32_t SBUSPort::get_us(PWMChannelNum num) {
 	return 0;
 }
 

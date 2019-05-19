@@ -27,7 +27,7 @@ static std::deque<uint8_t> i2c1_rx_queue;
 extern StatusCode get_status_code(HAL_StatusTypeDef status);
 void I2C1_DMA_ErrorCallback(DMA_HandleTypeDef *dma);
 
-bool I2CPort::is_valid_port(){
+bool I2CPort::is_valid_port() {
 	return port == I2C_PORT1;
 }
 
@@ -53,7 +53,7 @@ I2CPort::I2CPort(I2CPortNum port_num, I2CSettings settings) {
 				  GPIO_SPEED_HIGH,
 				  GPIO_AF1_I2C1);
 
-	interface_handle = (void*)&hi2c1;
+	interface_handle = (void *) &hi2c1;
 	hi2c1.Instance = I2C1;
 
 	//start hardware clock
@@ -79,14 +79,14 @@ StatusCode I2CSlavePort::setupDMA(size_t tx_buffer_size, size_t rx_buffer_size) 
 
 	__HAL_RCC_DMA1_CLK_ENABLE();
 
-	dma_config =  &i2c1_dma_config;
+	dma_config = &i2c1_dma_config;
 	resetDMAConfig(dma_config, rx_buffer_size);
 	dma_config->dma_handle = (void *) &hdma_i2c1_rx;
 	dma_config->queue = (void *) &i2c1_rx_queue;
 	rx_queue = &i2c1_rx_queue;
 
-	auto handle = (I2C_HandleTypeDef*)interface_handle;
-	auto dma_handle = (DMA_HandleTypeDef*)dma_config->dma_handle;
+	auto handle = (I2C_HandleTypeDef *) interface_handle;
+	auto dma_handle = (DMA_HandleTypeDef *) dma_config->dma_handle;
 
 	dma_handle->Instance = DMA1_Channel3;
 	dma_handle->Init.Direction = DMA_PERIPH_TO_MEMORY;
@@ -141,8 +141,8 @@ StatusCode I2CSlavePort::resetDMA() {
 	if (port != I2C_PORT1) return STATUS_CODE_UNIMPLEMENTED;
 	if (!dma_setup_rx) return STATUS_CODE_INVALID_ARGS;
 
-	auto handle = (I2C_HandleTypeDef*)interface_handle;
-	auto handle_dma = (DMA_HandleTypeDef*)dma_config->dma_handle;
+	auto handle = (I2C_HandleTypeDef *) interface_handle;
+	auto handle_dma = (DMA_HandleTypeDef *) dma_config->dma_handle;
 
 	//clear interrupts
 	CLEAR_BIT(handle->Instance->CR1, I2C_CR1_ERRIE);

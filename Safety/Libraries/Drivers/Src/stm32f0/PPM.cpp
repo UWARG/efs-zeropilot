@@ -1,6 +1,6 @@
 #include "PPM.hpp"
-#include "../../../../Common/Inc/GPIO.hpp"
-#include "../../../../Common/Inc/Clock.hpp"
+#include "GPIO.hpp"
+#include "Clock.hpp"
 #include <stdint.h>
 #include "stm32f0xx_hal.h"
 
@@ -28,7 +28,7 @@ volatile uint8_t ppm_packet_timeout_reached = 1;
 
 // 1 tick is prescaler / 48000000Hz (internal clock)
 //therefore capture in us = capture * prescaler * 1E6 / 8E6
-inline static uint32_t convert_ticks_to_us(int32_t ticks){
+inline static uint32_t convert_ticks_to_us(int32_t ticks) {
 	return (ticks * (TIMER_PRESCALER + 1)) / (get_system_clock() / (1000000UL));
 }
 
@@ -63,8 +63,8 @@ StatusCode PPMChannel::setLimits(uint8_t channel, uint32_t min, uint32_t max, ui
 	return STATUS_CODE_OK;
 }
 
-StatusCode PPMChannel::setTimeout(uint32_t timeout){
-	if (timeout > 0){
+StatusCode PPMChannel::setTimeout(uint32_t timeout) {
+	if (timeout > 0) {
 		this->disconnect_timeout = timeout;
 		return STATUS_CODE_OK;
 	}
@@ -93,19 +93,20 @@ uint8_t PPMChannel::get(PWMChannelNum num) {
 	int32_t min_diff = num_us - this->min_values[num - 1];
 
 	//if the input signal is lower than the minimum signal, or if we're not outside the deadzone, return 0%
-	if (min_diff < 0 || min_diff < deadzones[num - 1]){
+	if (min_diff < 0 || min_diff < deadzones[num - 1]) {
 		return 0;
 	}
 
-	uint32_t percent =  (num_us - this->min_values[num - 1])*100/ (this->max_values[num - 1] - this->min_values[num - 1]);
+	uint32_t
+		percent = (num_us - this->min_values[num - 1]) * 100 / (this->max_values[num - 1] - this->min_values[num - 1]);
 
-	if (percent > 100){
+	if (percent > 100) {
 		return 100;
 	}
-	return (uint8_t)percent;
+	return (uint8_t) percent;
 }
 
-uint32_t PPMChannel::get_us(PWMChannelNum num){
+uint32_t PPMChannel::get_us(PWMChannelNum num) {
 	if (num <= 0 || num > num_channels) {
 		return 0;
 	}
@@ -176,11 +177,11 @@ StatusCode PPMChannel::reset() {
 	return status;
 }
 
-bool PPMChannel::is_disconnected(uint32_t sys_time){
+bool PPMChannel::is_disconnected(uint32_t sys_time) {
 	bool disconnected = (sys_time - ppm_last_received_time) >= this->disconnect_timeout;
 
-	if (disconnected){ //reset capture states if we get a disconnect timeout
-		for (int i = 0; i < num_channels; i++){
+	if (disconnected) { //reset capture states if we get a disconnect timeout
+		for (int i = 0; i < num_channels; i++) {
 			capture_value[i] = 0;
 		}
 		ppm_index = 0;
@@ -195,7 +196,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 		ppm_last_received_time = get_system_time();
 		auto time_diff = (uint16_t) HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 
-		if (ppm_packet_timeout_reached){
+		if (ppm_packet_timeout_reached) {
 			ppm_packet_timeout_reached = 0;
 			ppm_index = 0;
 		}

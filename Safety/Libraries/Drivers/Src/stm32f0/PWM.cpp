@@ -77,11 +77,11 @@ void PWMChannel::set(uint8_t percent) {
 	}
 
 	//in us
-	uint32_t prescaler = (static_cast<TIM_HandleTypeDef*>(this->timer))->Init.Prescaler;
+	uint32_t prescaler = (static_cast<TIM_HandleTypeDef *>(this->timer))->Init.Prescaler;
 	uint32_t us = ((percent * (max_signal - min_signal)) / 100 + min_signal);
-	uint32_t ticks = (us*(get_system_clock() / 1000000UL))/(prescaler + 1);
+	uint32_t ticks = (us * (get_system_clock() / 1000000UL)) / (prescaler + 1);
 
-	__HAL_TIM_SET_COMPARE((TIM_HandleTypeDef *) this->timer, this->timer_channel, (uint32_t)ticks);
+	__HAL_TIM_SET_COMPARE((TIM_HandleTypeDef *) this->timer, this->timer_channel, (uint32_t) ticks);
 }
 
 StatusCode PWMChannel::setup() {
@@ -148,44 +148,40 @@ StatusCode PWMManager::setup() {
 
 StatusCode PWMManager::configure(PWMGroup group, PWMGroupSetting setting) {
 	switch (group) {
-		case PWM_GROUP_1:
-			__HAL_RCC_TIM16_CLK_ENABLE();
+		case PWM_GROUP_1: __HAL_RCC_TIM16_CLK_ENABLE();
 			init_timer(&htim16, TIM16, setting.period, 1, true, false, setting.inverted);
 			channels[0].setLimits(setting.min_length, setting.max_length);
 
-			if (is_setup){ //if we're reconfiguring the channel, rather than completly setting it up again
+			if (is_setup) { //if we're reconfiguring the channel, rather than completly setting it up again
 				return get_status_code(HAL_TIM_PWM_Start(PWM_CONFIG[0].timer, PWM_CONFIG[0].timer_channel));
 			}
 			break;
-		case PWM_GROUP_2:
-			__HAL_RCC_TIM17_CLK_ENABLE();
+		case PWM_GROUP_2: __HAL_RCC_TIM17_CLK_ENABLE();
 			init_timer(&htim17, TIM17, setting.period, 1, true, false, setting.inverted);
 			channels[1].setLimits(setting.min_length, setting.max_length);
 
-			if (is_setup){
+			if (is_setup) {
 				return get_status_code(HAL_TIM_PWM_Start(PWM_CONFIG[1].timer, PWM_CONFIG[1].timer_channel));
 			}
 			break;
-		case PWM_GROUP_3_4:
-			__HAL_RCC_TIM15_CLK_ENABLE();
+		case PWM_GROUP_3_4: __HAL_RCC_TIM15_CLK_ENABLE();
 			init_timer(&htim15, TIM15, setting.period, 2, true, true, setting.inverted);
 			channels[2].setLimits(setting.min_length, setting.max_length);
 			channels[3].setLimits(setting.min_length, setting.max_length);
 
-			if (is_setup){
+			if (is_setup) {
 				HAL_TIM_PWM_Start(PWM_CONFIG[2].timer, PWM_CONFIG[2].timer_channel);
 				return get_status_code(HAL_TIM_PWM_Start(PWM_CONFIG[3].timer, PWM_CONFIG[3].timer_channel));
 			}
 			break;
-		case PWM_GROUP_5_8:
-			__HAL_RCC_TIM3_CLK_ENABLE();
+		case PWM_GROUP_5_8: __HAL_RCC_TIM3_CLK_ENABLE();
 			init_timer(&htim3, TIM3, setting.period, 4, false, true, setting.inverted);
 			channels[4].setLimits(setting.min_length, setting.max_length);
 			channels[5].setLimits(setting.min_length, setting.max_length);
 			channels[6].setLimits(setting.min_length, setting.max_length);
 			channels[7].setLimits(setting.min_length, setting.max_length);
 
-			if (is_setup){
+			if (is_setup) {
 				HAL_TIM_PWM_Start(PWM_CONFIG[4].timer, PWM_CONFIG[4].timer_channel);
 				HAL_TIM_PWM_Start(PWM_CONFIG[5].timer, PWM_CONFIG[5].timer_channel);
 				HAL_TIM_PWM_Start(PWM_CONFIG[6].timer, PWM_CONFIG[6].timer_channel);
@@ -199,7 +195,7 @@ StatusCode PWMManager::configure(PWMGroup group, PWMGroupSetting setting) {
 			channels[10].setLimits(setting.min_length, setting.max_length);
 			channels[11].setLimits(setting.min_length, setting.max_length);
 
-			if (is_setup){
+			if (is_setup) {
 				HAL_TIM_PWM_Start(PWM_CONFIG[8].timer, PWM_CONFIG[8].timer_channel);
 				HAL_TIM_PWM_Start(PWM_CONFIG[9].timer, PWM_CONFIG[9].timer_channel);
 				HAL_TIM_PWM_Start(PWM_CONFIG[10].timer, PWM_CONFIG[10].timer_channel);
@@ -262,7 +258,7 @@ static struct PWMCounterSettings getCounterSettings(uint32_t period) {
 			return {0, 0};
 		}
 		double tmp = (get_system_clock() / 1000000.0) * period / (settings.prescaler + 1);
-		ticks = (uint32_t)round(tmp);
+		ticks = (uint32_t) round(tmp);
 	} while (ticks > 0xFFFF);
 	settings.period = (uint16_t) ticks;
 
@@ -272,7 +268,7 @@ static struct PWMCounterSettings getCounterSettings(uint32_t period) {
 static TIM_OC_InitTypeDef getChannelConfig(bool inverted) {
 	TIM_OC_InitTypeDef sConfigOC = {0, 0, 0, 0, 0, 0, 0};
 
-	if (inverted){
+	if (inverted) {
 		sConfigOC.OCMode = TIM_OCMODE_PWM2;
 	} else {
 		sConfigOC.OCMode = TIM_OCMODE_PWM1;

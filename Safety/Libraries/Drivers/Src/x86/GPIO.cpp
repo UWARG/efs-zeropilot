@@ -1,5 +1,5 @@
-#include "../../../../Common/Inc/GPIO.hpp"
-#include "../../../../Common/Inc/Status.hpp"
+#include "GPIO.hpp"
+#include "Status.hpp"
 #include <stdint.h>
 
 StatusCode gpio_init() {
@@ -13,39 +13,25 @@ GPIOPin::GPIOPin(GPIOPort port,
 				 GPIOResistorState resistor_state,
 				 GPIOSpeed speed,
 				 uint8_t alternate_function) {
-	this->mode = mode;
-	this->num = num;
-	this->port = port;
-	this->set_state(initial_state);
 }
 
-StatusCode GPIOPin::setup(){
-	return STATUS_CODE_OK;
+StatusCode GPIOPin::setup() {
+	return STATUS_CODE_UNIMPLEMENTED;
 }
 
 StatusCode GPIOPin::get_state(GPIOState &state) {
-	if (this->mode == GPIO_OUTPUT_OD || this->mode == GPIO_OUTPUT) {
-		state = this->current_state;
-		return STATUS_CODE_OK;
-	} else if (this->mode == GPIO_INPUT) {
-		return STATUS_CODE_OK;
-	}
-	return STATUS_CODE_INVALID_ARGS; //reading state in alternate function mode doesn't make sense
+	return STATUS_CODE_UNIMPLEMENTED;
 }
 
 StatusCode GPIOPin::set_state(GpioState new_state) {
-	if (this->mode == GPIO_OUTPUT_OD || this->mode == GPIO_OUTPUT) {
-		current_state = new_state;
-		return STATUS_CODE_OK;
-	}
-	return STATUS_CODE_INVALID_ARGS; //only makes sense if the pin is an output
+	return STATUS_CODE_UNIMPLEMENTED;
 }
 
 StatusCode GPIOPin::toggle_state() {
-	return this->set_state(!current_state);
+	return STATUS_CODE_UNIMPLEMENTED;
 }
 
 StatusCode GPIOPin::reset_pin() {
-	return STATUS_CODE_OK;
+	return STATUS_CODE_UNIMPLEMENTED;
 }
 
