@@ -1,3 +1,5 @@
+#Clion workspace file
+.idea/**/workspace.xml
 # Prerequisites
 *.d
 

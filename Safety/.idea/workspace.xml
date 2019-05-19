@@ -2,9 +2,9 @@
 <project version="4">
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
+      <config projectName="Safety" targetName="Safety.elf" />
       <config projectName="Safety" targetName="UPLOAD" />
       <config projectName="Safety" targetName="STM32_HAL" />
-      <config projectName="Safety" targetName="Safety.elf" />
       <config projectName="Safety" targetName="Safety.bin" />
     </generated>
   </component>
@@ -17,92 +17,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5be5f50-f4c4-463e-8fde-f7ee0b375f2a" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../Autopilot/.idea/runConfigurations/Autopilot_elf___ZeropilotV1___STLINKV2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/.idea/runConfigurations/Autopilot_elf___ZeropilotV1___STLINKV2.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Autopilot/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Inc/stm32f7xx_hal_conf.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Inc/stm32f7xx_hal_conf.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_adc.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_adc.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_adc_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_adc_ex.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_cortex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_cortex.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_crc.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_crc.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_crc_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_crc_ex.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_def.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_def.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_dma.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_dma.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_dma_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_dma_ex.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_flash.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_flash.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_flash_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_flash_ex.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_gpio.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_gpio.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_gpio_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_gpio_ex.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_i2c.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_i2c.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_i2c_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_i2c_ex.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pwr.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pwr.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pwr_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pwr_ex.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_rcc.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_rcc.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_rcc_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_rcc_ex.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_spi.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_spi.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_tim.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_tim.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_tim_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_tim_ex.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart_ex.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart_ex.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_wwdg.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_wwdg.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc_ex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc_ex.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_crc.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_crc.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_crc_ex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_crc_ex.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_spi.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_spi.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim_ex.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim_ex.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_wwdg.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_wwdg.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/croutine.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOSConfig_template.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/include/StackMacros.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/include/croutine.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/include/list.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/include/mpu_prototypes.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/include/portable.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/include/queue.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/include/task.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/include/timers.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/list.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/port.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/queue.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/tasks.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Middlewares/Third_Party/FreeRTOS/Source/timers.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Autopilot/Src/Interchip_A.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Autopilot/Src/Interchip_A.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Common/Inc/GPIO.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/../Common/Inc/GPIO.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Common/Inc/Interchip.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Common/Inc/Interchip.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Common/Inc/Status.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/../Common/Inc/Status.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Common/Src/stm32/Status.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../Common/Src/stm32/Status.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Common/Src/stm32/Watchdog.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../Common/Src/stm32/Watchdog.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Inc/Debug.hpp" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/cmake-build-release/" />
@@ -235,6 +152,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -255,13 +173,12 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="Errors" />
+    <property name="settings.editor.selected.configurable" value="configurable.group.editor" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -351,11 +268,12 @@
       <workItem from="1558104748845" duration="363000" />
       <workItem from="1558235231383" duration="1062000" />
       <workItem from="1558289701450" duration="5234000" />
+      <workItem from="1558304991239" duration="204000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="222119000" />
+    <option name="totallyTimeSpent" value="222323000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -367,10 +285,9 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="2560" height="1326" extended-state="6" />
-    <editor active="true" />
+    <frame x="0" y="23" width="2560" height="1326" extended-state="0" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15369341" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15488483" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
