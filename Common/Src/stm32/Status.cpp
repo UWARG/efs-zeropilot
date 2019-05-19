@@ -8,7 +8,7 @@
 #endif
 
 ResetState get_reset_cause() {
-	ResetState state;
+	ResetState state = RESET_STATE_INVALID;
 
 	if (__HAL_RCC_GET_FLAG(RCC_FLAG_WWDGRST)) {
 		state = RESET_STATE_WWDG;
@@ -22,9 +22,16 @@ ResetState get_reset_cause() {
 		state = RESET_STATE_PIN;
 	} else if (__HAL_RCC_GET_FLAG(RCC_FLAG_LPWRRST)) {
 		state = RESET_STATE_LOW_PWR;
-	} else if (__HAL_RCC_GET_FLAG(RCC_FLAG_OBLRST)) {
+	}
+#if STM32F030xC
+	else if (__HAL_RCC_GET_FLAG(RCC_FLAG_OBLRST)) {
 		state = RESET_STATE_OPTION_BYTE_LOADER;
 	}
+#elif STM32F7xx
+	else if (__HAL_RCC_GET_FLAG(RCC_FLAG_BORRST)) {
+		state = RESET_STATE_BROWN_OUT;
+	}
+#endif
 
 	//clear the reset flags
 	__HAL_RCC_CLEAR_RESET_FLAGS();
@@ -49,6 +56,8 @@ void print_reset_state(char *buffer, ResetState state) {
 			break;
 		case RESET_STATE_OPTION_BYTE_LOADER: sprintf(&buffer[len], "RESET_STATE_OPTION_BYTE_LOADER");
 			break;
+		case RESET_STATE_BROWN_OUT: sprintf(&buffer[len], "RESET_STATE_BROWN_OUT");
+		break;
 		default: sprintf(&buffer[len], "INVALID_RESET_STATE");
 			break;
 	}

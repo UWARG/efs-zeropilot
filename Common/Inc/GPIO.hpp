@@ -57,7 +57,7 @@ typedef enum GPIOResistorState {
  * Low speeds for regular GPIO functions. High speeds when they're used for interfaces like SPI, I2C, etc..
  */
 typedef enum GPIOSpeed {
-	GPIO_SPEED_LOW,
+	GPIO_SPEED_LOW = 1,
 	GPIO_SPEED_MED,
 	GPIO_SPEED_HIGH
 } GPIOSpeed;

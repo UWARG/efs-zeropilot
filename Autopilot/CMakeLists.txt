@@ -16,22 +16,22 @@ add_definitions(
 include_directories(
   Inc
   ../Common/Inc
-  Drivers/CMSIS/Include
-  Drivers/CMSIS/Device/ST/STM32F7xx/Include
+  Libraries/CMSIS/Include
+  Libraries/CMSIS/Device/ST/STM32F7xx/Include
   Lib
 )
 
 # Add ARM math directory for linker to find
 link_directories(
-  Drivers/CMSIS/Lib/GCC
+  Libraries/CMSIS/Lib/GCC
 )
 
 # Libraries
-add_subdirectory(Drivers/STM32F7xx_HAL_Driver)
-add_subdirectory(Middlewares/Third_Party/FreeRTOS)
+add_subdirectory(Libraries/STM32F7xx_HAL_Driver)
+add_subdirectory(Libraries/FreeRTOS)
 
-file(GLOB_RECURSE C_SOURCES "Src/*.c")
-file(GLOB_RECURSE CXX_SOURCES "Src/*.cpp")
+file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c")
+file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp")
 file(GLOB_RECURSE C_INC "Inc/*.h")
 file(GLOB_RECURSE CXX_INC "Inc/*.hpp")
 
