@@ -11,9 +11,9 @@
 #pragma once
 
 #include <stdint.h>
-#include "../Common/Inc/GPIO.hpp"
-#include "../Common/Inc/UART.hpp"
-#include "../Common/Inc/PWM.hpp"
+#include "GPIO.hpp"
+#include "UART.hpp"
+#include "PWM.hpp"
 
 typedef struct SBUSSettings {
 	uint32_t dummy;

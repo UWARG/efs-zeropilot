@@ -1,6 +1,6 @@
-#include "../../../../Common/Inc/PWM.hpp"
-#include "../../../../Common/Inc/GPIO.hpp"
-#include "../../../../Common/Inc/Clock.hpp"
+#include "PWM.hpp"
+#include "GPIO.hpp"
+#include "Clock.hpp"
 #include "stm32f0xx_hal.h"
 #include <math.h>
 

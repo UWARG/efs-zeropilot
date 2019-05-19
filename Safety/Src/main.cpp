@@ -1,14 +1,14 @@
 #include "main.hpp"
 #include "Debug.hpp"
 #include "safety_control.h"
-#include "../Common/Inc/GPIO.hpp"
-#include "../Common/Inc/Clock.hpp"
-#include "../Common/Inc/UART.hpp"
-#include "stm32f0xx_hal.h"
-#include "../Common/Inc/PWM.hpp"
+#include "GPIO.hpp"
+#include "Clock.hpp"
+#include "UART.hpp"
+#include "PWM.hpp"
 #include "PPM.hpp"
-#include "../Common/Inc/Watchdog.hpp"
+#include "Watchdog.hpp"
 #include "Profiler.h"
+#include "stm32f0xx_hal.h"
 
 char buffer[200]; //buffer for printing
 
