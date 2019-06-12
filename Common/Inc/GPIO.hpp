@@ -57,9 +57,9 @@ typedef enum GPIOResistorState {
  * Low speeds for regular GPIO functions. High speeds when they're used for interfaces like SPI, I2C, etc..
  */
 typedef enum GPIOSpeed {
-	GPIO_SPEED_SLOW = 1,
-	GPIO_SPEED_MEDIUM,
-	GPIO_SPEED_FAST
+	GPIO_FREQ_LOW = 1,
+	GPIO_FREQ_MED,
+	GPIO_FREQ_HIGH
 } GPIOSpeed;
 
 /**
@@ -85,7 +85,7 @@ class GPIOPin {
 			GPIOMode mode,
 			GPIOState initial_state,
 			GPIOResistorState resistor_state = GPIO_RES_NONE,
-			GPIOSpeed speed = GPIO_SPEED_SLOW,
+			GPIOSpeed speed = GPIO_FREQ_LOW,
 			uint8_t alternate_function = 0);
 	/**
 	 * Initializes the GPIO with the HAL appropriately
