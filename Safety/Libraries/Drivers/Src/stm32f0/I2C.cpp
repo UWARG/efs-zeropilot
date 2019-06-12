@@ -43,14 +43,14 @@ I2CPort::I2CPort(I2CPortNum port_num, I2CSettings settings) {
 				  GPIO_ALT_OD,
 				  GPIO_STATE_LOW,
 				  GPIO_RES_PULLUP,
-				  GPIO_SPEED_HIGH,
+				  GPIO_SPEED_FAST,
 				  GPIO_AF1_I2C1);
 	scl = GPIOPin(I2C1_SCL_PORT,
 				  I2C1_SCL_PIN_NUM,
 				  GPIO_ALT_OD,
 				  GPIO_STATE_LOW,
 				  GPIO_RES_PULLUP,
-				  GPIO_SPEED_HIGH,
+				  GPIO_SPEED_FAST,
 				  GPIO_AF1_I2C1);
 
 	interface_handle = (void *) &hi2c1;

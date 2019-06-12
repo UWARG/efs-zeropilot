@@ -143,9 +143,9 @@ static uint32_t get_mcu_resistor_mode(GPIOResistorState res) {
 
 static uint32_t get_mcu_speed(GPIOSpeed speed) {
 	switch (speed) {
-		case GPIO_SPEED_LOW: return GPIO_SPEED_FREQ_LOW;
-		case GPIO_SPEED_MED: return GPIO_SPEED_FREQ_MEDIUM;
-		case GPIO_SPEED_HIGH: return GPIO_SPEED_FREQ_HIGH;
+		case GPIO_SPEED_SLOW: return GPIO_SPEED_FREQ_LOW;
+		case GPIO_SPEED_MEDIUM: return GPIO_SPEED_FREQ_MEDIUM;
+		case GPIO_SPEED_FAST: return GPIO_SPEED_FREQ_HIGH;
 		default: return GPIO_SPEED_FREQ_LOW;
 	}
 }

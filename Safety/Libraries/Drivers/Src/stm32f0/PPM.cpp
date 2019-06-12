@@ -48,7 +48,7 @@ PPMChannel::PPMChannel(uint8_t channels, uint32_t timeout) {
 	}
 
 	ppm_pin =
-		GPIOPin(PPM_PORT, PPM_PIN_NUM, GPIO_ALT_PP, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_SPEED_LOW, GPIO_AF0_TIM14);
+		GPIOPin(PPM_PORT, PPM_PIN_NUM, GPIO_ALT_PP, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_SPEED_SLOW, GPIO_AF0_TIM14);
 }
 
 StatusCode PPMChannel::setLimits(uint8_t channel, uint32_t min, uint32_t max, uint32_t deadzone) {
