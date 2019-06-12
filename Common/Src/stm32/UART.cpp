@@ -52,6 +52,12 @@ StatusCode UARTPort::setup() {
 
 	if (settings.cts_rts) {
 		uart->Init.HwFlowCtl = UART_HWCONTROL_RTS_CTS;
+
+		status = rts_pin.setup();
+		if (status != STATUS_CODE_OK) return status;
+
+		status = cts_pin.setup();
+		if (status != STATUS_CODE_OK) return status;
 	} else {
 		uart->Init.HwFlowCtl = UART_HWCONTROL_NONE;
 	}
