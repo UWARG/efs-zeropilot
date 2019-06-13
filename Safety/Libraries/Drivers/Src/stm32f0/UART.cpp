@@ -48,14 +48,14 @@ UARTPort::UARTPort(UARTPortNum port, UARTSettings settings) {
 							 GPIO_ALT_PP,
 							 GPIO_STATE_LOW,
 							 GPIO_RES_PULLUP,
-							 GPIO_SPEED_HIGH,
+							 GPIO_FREQ_HIGH,
 							 GPIO_AF0_USART1);
 			tx_pin = GPIOPin(UART1_TX_PORT,
 							 UART1_TX_PIN,
 							 GPIO_ALT_PP,
 							 GPIO_STATE_LOW,
 							 GPIO_RES_PULLUP,
-							 GPIO_SPEED_HIGH,
+							 GPIO_FREQ_HIGH,
 							 GPIO_AF0_USART1);
 			huart1.Instance = USART1;
 			this->interface_handle = &huart1;
@@ -67,14 +67,14 @@ UARTPort::UARTPort(UARTPortNum port, UARTSettings settings) {
 							 GPIO_ALT_PP,
 							 GPIO_STATE_LOW,
 							 GPIO_RES_PULLUP,
-							 GPIO_SPEED_HIGH,
+							 GPIO_FREQ_HIGH,
 							 GPIO_AF1_USART2);
 			tx_pin = GPIOPin(UART2_TX_PORT,
 							 UART2_TX_PIN,
 							 GPIO_ALT_PP,
 							 GPIO_STATE_LOW,
 							 GPIO_RES_PULLUP,
-							 GPIO_SPEED_HIGH,
+							 GPIO_FREQ_HIGH,
 							 GPIO_AF1_USART2);
 			huart2.Instance = USART2;
 			this->interface_handle = &huart2;

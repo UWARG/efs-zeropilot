@@ -61,7 +61,7 @@ static StatusCode init_timer(TIM_HandleTypeDef *timer,
 							 bool inverted);
 
 PWMChannel::PWMChannel(GPIOPort port, GPIOPinNum pin_num, uint8_t alternate_function, void *timer, uint16_t channel) {
-	pin = GPIOPin(port, pin_num, GPIO_ALT_PP, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_SPEED_LOW, alternate_function);
+	pin = GPIOPin(port, pin_num, GPIO_ALT_PP, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_FREQ_LOW, alternate_function);
 	this->timer = timer;
 	this->timer_channel = channel;
 }
