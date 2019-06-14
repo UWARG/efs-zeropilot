@@ -142,5 +142,29 @@ StatusCode UARTPort::transmit(uint8_t *data, size_t len) {
 	return status;
 }
 
-
+const char* get_uart_error_code(uint32_t code){
+	switch (code){
+		case HAL_UART_ERROR_NONE:
+			return "NO Error";
+			break;
+		case HAL_UART_ERROR_PE:
+			return "Parity Error";
+			break;
+		case HAL_UART_ERROR_NE:
+			return "Noise Error";
+			break;
+		case HAL_UART_ERROR_FE:
+			return "Frame Error";
+			break;
+		case HAL_UART_ERROR_ORE:
+			return "Overrun Error";
+			break;
+		case HAL_UART_ERROR_DMA:
+			return "DMA Transfer Error";
+			break;
+		default:
+			return "Unknown or multiple errors";
+			break;
+	}
+}
 
