@@ -1,8 +1,14 @@
 #include "Clock.hpp"
 #include "Status.hpp"
 #include "stm32f7xx_hal.h"
+#include "DMA.hpp"
 
 extern StatusCode get_status_code(HAL_StatusTypeDef status);
+
+//for dma idle line detection with uart
+extern DMAConfig uart2_dma_config;
+extern DMAConfig uart3_dma_config;
+extern DMAConfig uart4_dma_config;
 
 StatusCode initialize_system_clock() {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0, 0, 0, 0, 0, 0, {0, 0, 0, 0, 0, 0, 0}};
@@ -88,5 +94,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == TIM4) {
     HAL_IncTick();
+
+    if (uart2_dma_config.timer == 1) {
+      //call uart2 transfer complete with idle flag on
+      uart2_dma_config.idle_line = 1;
+
+      DMA_HandleTypeDef *dma_handle = (DMA_HandleTypeDef *) uart2_dma_config.dma_handle;
+      dma_handle->XferCpltCallback(dma_handle);
+    }
+
+    if (uart2_dma_config.timer) uart2_dma_config.timer--;
   }
 }

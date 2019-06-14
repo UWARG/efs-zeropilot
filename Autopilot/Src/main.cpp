@@ -79,6 +79,24 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  UARTSettings port_settings;
+  port_settings.rx_inverted = false;
+  port_settings.timeout = 50;
+  port_settings.stop_bits = 1;
+  port_settings.cts_rts = false;
+  port_settings.parity = UART_NO_PARITY; //double check this?
+  port_settings.baudrate = 115200;
+
+  UARTPort port = UARTPort(UART_PORT2, port_settings);
+
+  status = port.setup();
+  info("UART2 Setup", status);
+  status = port.setupDMA(0, 24);
+  info("UART2 DMA", status);
+
+  uint8_t ubuffer[100];
+
+  size_t bytes_read = 100;
 
   uint64_t time;
   while (1)
@@ -86,6 +104,14 @@ int main(void)
     time = get_system_time_us();
     sprintf(buffer, "Sys Time: %lu", (uint32_t)time);
     debug(buffer);
+
+    status = port.read_bytes(ubuffer, 24, bytes_read);
+
+    if (bytes_read > 0) {
+      debug_array("array", ubuffer, bytes_read, false);
+      debug_array("array", ubuffer, bytes_read, true);
+    }
+
     delay(1000);
 
     /* USER CODE END WHILE */
