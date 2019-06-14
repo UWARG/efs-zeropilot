@@ -1,6 +1,5 @@
 #include "Interchip_A.h"
 #include "cmsis_os.h"
-#include "debug.h"
 #include "spi.h"
 
 static Interchip_AtoS_Packet *dataTX;

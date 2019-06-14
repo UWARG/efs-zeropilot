@@ -1,5 +1,5 @@
 #include "mpu9255.h"
-#include "debug.h"
+//#include "Debug.hpp"
 
 #define MPU9255_ADDR 0xD0
 #define AK8963_ADDR (0x0C << 1)
@@ -153,13 +153,13 @@ HAL_StatusTypeDef MPU9255_Init(MPU9255_t *mpu) {
 
     // is connected
     if (HAL_I2C_IsDeviceReady(hi2c, MPU9255_ADDR, 2, 5) != HAL_OK) {
-        debug("no mpu");
+//        debug("no mpu");
         // error
     }
 
     // who am i
     if (I2C_ReadByte(hi2c, MPU9255_ADDR, WHO_AM_I_MPU9255) != 0x73) {
-        debug("mpu who am i failed");
+//        debug("mpu who am i failed");
         // error
     }
 
@@ -190,13 +190,13 @@ HAL_StatusTypeDef MPU9255_Init(MPU9255_t *mpu) {
 
     // is mag connected
     if (HAL_I2C_IsDeviceReady(hi2c, AK8963_ADDR, 2, 5) != HAL_OK) {
-        debug("no mag");
+//        debug("no mag");
         // error
     }
 
     // who am i mag
     if (I2C_ReadByte(hi2c, AK8963_ADDR, WHO_AM_I_AK8963) != 0x48) {
-        debug("mag who am i failed");
+//        debug("mag who am i failed");
         // error
     }
 
