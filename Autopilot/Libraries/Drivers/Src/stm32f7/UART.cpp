@@ -3,7 +3,7 @@
  * on: https://github.com/akospasztor/stm32-dma-uart
  * Which is what this code is based off
  *
- * For the Autopilot chip, only UARTs 2, 3, 4 are DMA capable! Only DMA receive is implemented. Note that UART 3 and 4
+ *  Only DMA receive is implemented. Note that UART 3 and 4
  * are not capable of CTS and RTS!
  */
 #include "UART.hpp"
@@ -33,16 +33,19 @@ static UARTPinSettings PIN_SETTINGS[4] = {
     { GPIO_PORT_D, GPIO_PORT_D, GPIO_PORT_D, GPIO_PORT_D,  0, 1, 0, 0}
 };
 
-//no dma on uart1 (checked on STM32CUbeMX)
-static UART_HandleTypeDef huart1;
+//uart 1 defines for enabling DMA
+UART_HandleTypeDef huart1;
+DMA_HandleTypeDef hdma_usart1_rx;
+static std::deque<uint8_t> uart1_rx_queue;
+DMAConfig uart1_dma_config;
 
-//uart 4 defines for enabling DMA
+//uart 2 defines for enabling DMA
 UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_rx;
 static std::deque<uint8_t> uart2_rx_queue;
 DMAConfig uart2_dma_config;
 
-//uart 4 defines for enabling DMA
+//uart 3 defines for enabling DMA
 UART_HandleTypeDef huart3;
 DMA_HandleTypeDef hdma_usart3_rx;
 static std::deque<uint8_t> uart3_rx_queue;
@@ -56,7 +59,10 @@ DMAConfig uart4_dma_config;
 
 extern StatusCode get_status_code(HAL_StatusTypeDef status);
 extern const char* get_uart_error_code(uint32_t code);
+void USART1_DMA_ErrorCallback(DMA_HandleTypeDef *dma);
 void USART2_DMA_ErrorCallback(DMA_HandleTypeDef *dma);
+void USART3_DMA_ErrorCallback(DMA_HandleTypeDef *dma);
+void USART4_DMA_ErrorCallback(DMA_HandleTypeDef *dma);
 
 bool UARTPort::is_valid_port() {
   return port == UART_PORT1 || port == UART_PORT2 || port == UART_PORT3 || port == UART_PORT4;
@@ -226,75 +232,145 @@ StatusCode UARTPort::reset() {
 StatusCode UARTPort::setupDMA(size_t tx_buffer_size, size_t rx_buffer_size) {
   if (!is_setup) return STATUS_CODE_UNINITIALIZED;
   if (dma_setup_rx || rx_buffer_size == 0) return STATUS_CODE_INVALID_ARGS;
+  if (!is_valid_port()) return STATUS_CODE_UNIMPLEMENTED;
 
-  if (port == UART_PORT2) {
+  DMA_HandleTypeDef * dma_handle;
+  auto uart_handle = (UART_HandleTypeDef *) this->interface_handle;
 
+  if (port == UART_PORT1) {
+    dma_config = &uart1_dma_config;
+    resetDMAConfig(dma_config, rx_buffer_size);
+    dma_config->dma_handle = (void *) &hdma_usart1_rx;
+    dma_config->queue = (void *) &uart1_rx_queue;
+    this->rx_queue = &uart1_rx_queue;
+
+    dma_handle = (DMA_HandleTypeDef *) dma_config->dma_handle;
+
+    dma_handle->Instance = DMA2_Stream5;
+    dma_handle->Init.Channel = DMA_CHANNEL_4;
+
+    HAL_DMA_RegisterCallback(dma_handle, HAL_DMA_XFER_ERROR_CB_ID, USART1_DMA_ErrorCallback);
+
+    HAL_NVIC_SetPriority(USART1_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(DMA2_Stream5_IRQn, 5, 0);
+  }
+  else if (port == UART_PORT2) {
     dma_config = &uart2_dma_config;
     resetDMAConfig(dma_config, rx_buffer_size);
     dma_config->dma_handle = (void *) &hdma_usart2_rx;
     dma_config->queue = (void *) &uart2_rx_queue;
-    dma_config->timeout = 50;
     this->rx_queue = &uart2_rx_queue;
 
-    auto dma_handle = (DMA_HandleTypeDef *) dma_config->dma_handle;
-    auto uart_handle = (UART_HandleTypeDef *) this->interface_handle;
-
-    __HAL_RCC_DMA1_CLK_ENABLE();
+    dma_handle = (DMA_HandleTypeDef *) dma_config->dma_handle;
 
     dma_handle->Instance = DMA1_Stream5;
     dma_handle->Init.Channel = DMA_CHANNEL_4;
-    dma_handle->Init.Direction = DMA_PERIPH_TO_MEMORY;
-    dma_handle->Init.PeriphInc = DMA_PINC_DISABLE;
-    dma_handle->Init.MemInc = DMA_MINC_ENABLE;
-    dma_handle->Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-    dma_handle->Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-    dma_handle->Init.Mode = DMA_CIRCULAR;
-    dma_handle->Init.Priority = DMA_PRIORITY_HIGH;
-    dma_handle->Init.FIFOMode = DMA_FIFOMODE_DISABLE;
 
-    StatusCode status = get_status_code(HAL_DMA_Init(dma_handle));
-    if (status != STATUS_CODE_OK) return status;
-
-    __HAL_LINKDMA(uart_handle, hdmarx, (*dma_handle));
-
-    //don't allocate memory if we hadn't free'd it
-    if (dma_config->dma_buffer == nullptr) {
-      dma_config->dma_buffer = (uint8_t *) malloc(dma_config->dma_buffer_len * sizeof(uint8_t));
-    }
-
-    if (dma_config->dma_buffer == nullptr) {
-      return STATUS_CODE_RESOURCE_EXHAUSTED;
-    }
-
-    //init circular dma transfer
-    status =
-        get_status_code(HAL_UART_Receive_DMA(uart_handle,
-                                             dma_config->dma_buffer,
-                                             (uint16_t) dma_config->dma_buffer_len));
-    if (status != STATUS_CODE_OK) return status;
-
-    //disable the DMA half interrupt since we're using idle line detection instead
-    __HAL_DMA_DISABLE_IT(dma_handle, DMA_IT_HT);
     HAL_DMA_RegisterCallback(dma_handle, HAL_DMA_XFER_ERROR_CB_ID, USART2_DMA_ErrorCallback);
-
-    //enable uart idle line interrupt
-    SET_BIT(uart_handle->Instance->CR1, USART_CR1_IDLEIE);
 
     HAL_NVIC_SetPriority(USART2_IRQn, 5, 0);
     HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(USART2_IRQn);
-    HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+  } else if (port == UART_PORT3){
+    dma_config = &uart3_dma_config;
+    resetDMAConfig(dma_config, rx_buffer_size);
+    dma_config->dma_handle = (void *) &hdma_usart3_rx;
+    dma_config->queue = (void *) &uart3_rx_queue;
+    this->rx_queue = &uart3_rx_queue;
 
-    dma_setup_rx = true;
+    dma_handle = (DMA_HandleTypeDef *) dma_config->dma_handle;
 
-    return STATUS_CODE_OK;
+    dma_handle->Instance = DMA1_Stream1;
+    dma_handle->Init.Channel = DMA_CHANNEL_4;
+
+    HAL_DMA_RegisterCallback(dma_handle, HAL_DMA_XFER_ERROR_CB_ID, USART3_DMA_ErrorCallback);
+
+    HAL_NVIC_SetPriority(USART3_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 5, 0);
+  } else if (port == UART_PORT4){
+    dma_config = &uart4_dma_config;
+    resetDMAConfig(dma_config, rx_buffer_size);
+    dma_config->dma_handle = (void *) &hdma_usart4_rx;
+    dma_config->queue = (void *) &uart4_rx_queue;
+    this->rx_queue = &uart4_rx_queue;
+
+    dma_handle = (DMA_HandleTypeDef *) dma_config->dma_handle;
+
+    dma_handle->Instance = DMA1_Stream2;
+    dma_handle->Init.Channel = DMA_CHANNEL_4;
+
+    HAL_DMA_RegisterCallback(dma_handle, HAL_DMA_XFER_ERROR_CB_ID, USART4_DMA_ErrorCallback);
+
+    HAL_NVIC_SetPriority(UART4_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, 5, 0);
   }
 
-  return STATUS_CODE_UNIMPLEMENTED; //only port 2 supported for stm32f0
+  dma_config->timeout = 50; //set 50ms idle timeout for all uart transactions
+  dma_handle->Init.Direction = DMA_PERIPH_TO_MEMORY;
+  dma_handle->Init.PeriphInc = DMA_PINC_DISABLE;
+  dma_handle->Init.MemInc = DMA_MINC_ENABLE;
+  dma_handle->Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+  dma_handle->Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+  dma_handle->Init.Mode = DMA_CIRCULAR;
+  dma_handle->Init.Priority = DMA_PRIORITY_HIGH;
+  dma_handle->Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+
+  __HAL_RCC_DMA1_CLK_ENABLE();
+  __HAL_RCC_DMA2_CLK_ENABLE();
+
+  StatusCode status = get_status_code(HAL_DMA_Init(dma_handle));
+  if (status != STATUS_CODE_OK) return status;
+
+  __HAL_LINKDMA(uart_handle, hdmarx, (*dma_handle));
+
+  //don't allocate memory if we hadn't free'd it
+  if (dma_config->dma_buffer == nullptr) {
+    dma_config->dma_buffer = (uint8_t *) malloc(dma_config->dma_buffer_len * sizeof(uint8_t));
+  }
+
+  if (dma_config->dma_buffer == nullptr) {
+    return STATUS_CODE_RESOURCE_EXHAUSTED;
+  }
+
+  //disable the DMA half interrupt since we're using idle line detection instead
+  __HAL_DMA_DISABLE_IT(dma_handle, DMA_IT_HT);
+
+  //enable uart idle line interrupt
+  SET_BIT(uart_handle->Instance->CR1, USART_CR1_IDLEIE);
+
+  //enable the appropriate interrupts
+  switch(port){
+    case UART_PORT1:
+      HAL_NVIC_EnableIRQ(USART1_IRQn);
+      HAL_NVIC_EnableIRQ(DMA2_Stream5_IRQn);
+      break;
+    case UART_PORT2:
+      HAL_NVIC_EnableIRQ(USART2_IRQn);
+      HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+      break;
+    case UART_PORT3:
+      HAL_NVIC_EnableIRQ(USART3_IRQn);
+      HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
+      break;
+    case UART_PORT4:
+      HAL_NVIC_EnableIRQ(UART4_IRQn);
+      HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn);
+      break;
+    default:
+      break;
+  }
+
+  dma_setup_rx = true;
+
+  //init circular dma transfer
+  status =
+      get_status_code(HAL_UART_Receive_DMA(uart_handle,
+                                           dma_config->dma_buffer,
+                                           (uint16_t) dma_config->dma_buffer_len));
+  return status;
 }
 
 StatusCode UARTPort::resetDMA() {
-  if (port != UART_PORT2) return STATUS_CODE_UNIMPLEMENTED;
+  if (!is_valid_port()) return STATUS_CODE_UNIMPLEMENTED;
   if (!dma_setup_rx) return STATUS_CODE_INVALID_ARGS;
 
   auto dma_handle = (DMA_HandleTypeDef *) dma_config->dma_handle;
@@ -302,8 +378,27 @@ StatusCode UARTPort::resetDMA() {
 
   //disable dma interrupts
   CLEAR_BIT(uart_handle->Instance->CR1, USART_CR1_IDLEIE);
-  HAL_NVIC_DisableIRQ(USART2_IRQn);
-  HAL_NVIC_DisableIRQ(DMA1_Stream5_IRQn);
+
+  switch(port){
+    case UART_PORT1:
+      HAL_NVIC_DisableIRQ(USART1_IRQn);
+      HAL_NVIC_DisableIRQ(DMA2_Stream5_IRQn);
+      break;
+    case UART_PORT2:
+      HAL_NVIC_DisableIRQ(USART2_IRQn);
+      HAL_NVIC_DisableIRQ(DMA1_Stream5_IRQn);
+      break;
+    case UART_PORT3:
+      HAL_NVIC_DisableIRQ(USART3_IRQn);
+      HAL_NVIC_DisableIRQ(DMA1_Stream1_IRQn);
+      break;
+    case UART_PORT4:
+      HAL_NVIC_DisableIRQ(UART4_IRQn);
+      HAL_NVIC_DisableIRQ(DMA1_Stream2_IRQn);
+      break;
+    default:
+      break;
+  }
 
   StatusCode status;
   status = get_status_code(HAL_DMA_DeInit(dma_handle));
@@ -324,8 +419,14 @@ StatusCode UARTPort::resetDMA() {
 
 //Below code based off: https://github.com/akospasztor/stm32-dma-uart/blob/master/Src/main.c
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-  if (huart->Instance == USART2) {
+  if (huart->Instance == USART1) {
+    processDMARXCompleteEvent(&uart1_dma_config);
+  } else if (huart->Instance == USART2) {
     processDMARXCompleteEvent(&uart2_dma_config);
+  } else if (huart->Instance == USART3) {
+    processDMARXCompleteEvent(&uart3_dma_config);
+  } else if (huart->Instance == UART4) {
+    processDMARXCompleteEvent(&uart4_dma_config);
   }
 }
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
@@ -334,28 +435,53 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
 }
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
+  char buffer[50];
   if (huart->Instance == USART1) {
-    error("USART1 Error received", huart->ErrorCode);
+    sprintf(buffer, "USART1 Error received. Code: %lu Type: %s", huart->ErrorCode, get_uart_error_code(huart->ErrorCode));
+    error(buffer);
+    uart1_dma_config.reset = true;
   } else if (huart->Instance == USART2) {
-    char buffer[50];
     sprintf(buffer, "USART2 Error received. Code: %lu Type: %s", huart->ErrorCode, get_uart_error_code(huart->ErrorCode));
     error(buffer);
     uart2_dma_config.reset = true;
+  } else if (huart->Instance == USART3) {
+    sprintf(buffer, "USART3 Error received. Code: %lu Type: %s", huart->ErrorCode, get_uart_error_code(huart->ErrorCode));
+    error(buffer);
+    uart3_dma_config.reset = true;
+  } else if (huart->Instance == UART4) {
+    sprintf(buffer, "USART4 Error received. Code: %lu Type: %s", huart->ErrorCode, get_uart_error_code(huart->ErrorCode));
+    error(buffer);
+    uart4_dma_config.reset = true;
   } else {
     error("Unknown USART port got an error callback");
   }
+}
+
+void USART1_DMA_ErrorCallback(DMA_HandleTypeDef *dma) {
+  error("USART 1 DMA Error received!", dma->ErrorCode);
 }
 
 void USART2_DMA_ErrorCallback(DMA_HandleTypeDef *dma) {
   error("USART 2 DMA Error received!", dma->ErrorCode);
 }
 
+void USART3_DMA_ErrorCallback(DMA_HandleTypeDef *dma) {
+  error("USART 3 DMA Error received!", dma->ErrorCode);
+}
+
+void USART4_DMA_ErrorCallback(DMA_HandleTypeDef *dma) {
+  error("USART 4 DMA Error received!", dma->ErrorCode);
+}
+
 void HAL_UART_AbortCpltCallback(UART_HandleTypeDef *huart) {
   if (huart->Instance == USART1) {
     error("USART1 Abort received");
-  }
-  if (huart->Instance == USART2) {
+  } else if (huart->Instance == USART2) {
     error("USART2 Abort received");
+  } else if (huart->Instance == USART3) {
+    error("USART3 Abort received");
+  } else if (huart->Instance == UART4) {
+    error("USART4 Abort received");
   }
 }
 

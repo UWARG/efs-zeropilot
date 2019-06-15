@@ -6,6 +6,7 @@
 extern StatusCode get_status_code(HAL_StatusTypeDef status);
 
 //for dma idle line detection with uart
+extern DMAConfig uart1_dma_config;
 extern DMAConfig uart2_dma_config;
 extern DMAConfig uart3_dma_config;
 extern DMAConfig uart4_dma_config;
@@ -95,6 +96,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim->Instance == TIM4) {
     HAL_IncTick();
 
+    if (uart1_dma_config.timer == 1) {
+      uart1_dma_config.idle_line = 1;
+
+      DMA_HandleTypeDef *dma_handle = (DMA_HandleTypeDef *) uart1_dma_config.dma_handle;
+      dma_handle->XferCpltCallback(dma_handle);
+    }
+
     if (uart2_dma_config.timer == 1) {
       //call uart2 transfer complete with idle flag on
       uart2_dma_config.idle_line = 1;
@@ -103,6 +111,22 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       dma_handle->XferCpltCallback(dma_handle);
     }
 
+    if (uart3_dma_config.timer == 1) {
+      uart3_dma_config.idle_line = 1;
+
+      DMA_HandleTypeDef *dma_handle = (DMA_HandleTypeDef *) uart3_dma_config.dma_handle;
+      dma_handle->XferCpltCallback(dma_handle);
+    }
+
+    if (uart4_dma_config.timer == 1) {
+      uart4_dma_config.idle_line = 1;
+
+      DMA_HandleTypeDef *dma_handle = (DMA_HandleTypeDef *) uart4_dma_config.dma_handle;
+      dma_handle->XferCpltCallback(dma_handle);
+    }
+    if (uart1_dma_config.timer) uart1_dma_config.timer--;
     if (uart2_dma_config.timer) uart2_dma_config.timer--;
+    if (uart3_dma_config.timer) uart3_dma_config.timer--;
+    if (uart4_dma_config.timer) uart4_dma_config.timer--;
   }
 }

@@ -87,7 +87,7 @@ int main(void)
   port_settings.parity = UART_NO_PARITY; //double check this?
   port_settings.baudrate = 115200;
 
-  UARTPort port = UARTPort(UART_PORT2, port_settings);
+  UARTPort port = UARTPort(UART_PORT4, port_settings);
 
   status = port.setup();
   info("UART2 Setup", status);
@@ -103,7 +103,7 @@ int main(void)
   {
     time = get_system_time_us();
     sprintf(buffer, "Sys Time: %lu", (uint32_t)time);
-    debug(buffer);
+//    debug(buffer);
 
     status = port.read_bytes(ubuffer, 24, bytes_read);
 
@@ -112,7 +112,7 @@ int main(void)
       debug_array("array", ubuffer, bytes_read, true);
     }
 
-    delay(1000);
+//    delay(1000);
 
     /* USER CODE END WHILE */
 

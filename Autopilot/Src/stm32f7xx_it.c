@@ -84,7 +84,7 @@ extern UART_HandleTypeDef huart3;
 extern WWDG_HandleTypeDef hwwdg;
 extern TIM_HandleTypeDef htim4;
 
-
+extern DMAConfig uart1_dma_config;
 extern DMAConfig uart2_dma_config;
 extern DMAConfig uart3_dma_config;
 extern DMAConfig uart4_dma_config;
@@ -265,6 +265,11 @@ void SPI1_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
+  if ((USART1->ISR & USART_ISR_IDLE) != RESET) {
+    USART1->ICR = UART_CLEAR_IDLEF;
+    /* Start DMA timer */
+    uart1_dma_config.timer = uart1_dma_config.timeout;
+  }
 
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
@@ -279,6 +284,7 @@ void USART1_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
+  //for DMA idle line detection
   if ((USART2->ISR & USART_ISR_IDLE) != RESET) {
     USART2->ICR = UART_CLEAR_IDLEF;
     /* Start DMA timer */
@@ -297,7 +303,12 @@ void USART2_IRQHandler(void)
   */
 void USART3_IRQHandler(void)
 {
-  /* USER CODE BEGIN USART3_IRQn 0 */
+  //for DMA idle line detection
+  if ((USART3->ISR & USART_ISR_IDLE) != RESET) {
+    USART3->ICR = UART_CLEAR_IDLEF;
+    /* Start DMA timer */
+    uart3_dma_config.timer = uart3_dma_config.timeout;
+  }
 
   /* USER CODE END USART3_IRQn 0 */
   HAL_UART_IRQHandler(&huart3);
@@ -312,7 +323,12 @@ void USART3_IRQHandler(void)
 void UART4_IRQHandler(void)
 {
   /* USER CODE BEGIN UART4_IRQn 0 */
-
+  //for DMA idle line detection
+  if ((UART4->ISR & USART_ISR_IDLE) != RESET) {
+    UART4->ICR = UART_CLEAR_IDLEF;
+    /* Start DMA timer */
+    uart4_dma_config.timer = uart4_dma_config.timeout;
+  }
   /* USER CODE END UART4_IRQn 0 */
   HAL_UART_IRQHandler(&huart4);
   /* USER CODE BEGIN UART4_IRQn 1 */
@@ -342,6 +358,9 @@ void DMA1_Stream1_IRQHandler(void)
   /* USER CODE BEGIN DMA1_Stream1_IRQn 0 */
 
   /* USER CODE END DMA1_Stream1_IRQn 0 */
+  if (uart3_dma_config.dma_handle != NULL){
+    HAL_DMA_IRQHandler(uart3_dma_config.dma_handle);
+  }
 //  HAL_DMA_IRQHandler(&hdma_usart3_rx);
   /* USER CODE BEGIN DMA1_Stream1_IRQn 1 */
 
@@ -356,6 +375,9 @@ void DMA1_Stream2_IRQHandler(void)
   /* USER CODE BEGIN DMA1_Stream2_IRQn 0 */
 
   /* USER CODE END DMA1_Stream2_IRQn 0 */
+  if (uart4_dma_config.dma_handle != NULL){
+    HAL_DMA_IRQHandler(uart4_dma_config.dma_handle);
+  }
 //  HAL_DMA_IRQHandler(&hdma_uart4_rx);
   /* USER CODE BEGIN DMA1_Stream2_IRQn 1 */
 
@@ -390,6 +412,23 @@ void DMA1_Stream5_IRQHandler(void)
   /* USER CODE BEGIN DMA1_Stream5_IRQn 1 */
 
   /* USER CODE END DMA1_Stream5_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA2 stream1 global interrupt.
+  */
+void DMA2_Stream5_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Stream1_IRQn 0 */
+
+  /* USER CODE END DMA1_Stream1_IRQn 0 */
+  if (uart1_dma_config.dma_handle != NULL){
+    HAL_DMA_IRQHandler(uart1_dma_config.dma_handle);
+  }
+//  HAL_DMA_IRQHandler(&hdma_usart3_rx);
+  /* USER CODE BEGIN DMA1_Stream1_IRQn 1 */
+
+  /* USER CODE END DMA1_Stream1_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
