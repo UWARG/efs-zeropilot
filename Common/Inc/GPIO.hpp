@@ -14,12 +14,12 @@
  * Available GPIO ports. Not all may be valid for the system! Read the datasheet
  */
 typedef enum GPIOPort {
-	GPIO_PORT_A = 0,
-	GPIO_PORT_B,
-	GPIO_PORT_C,
-	GPIO_PORT_D,
-	GPIO_PORT_E, //does not exist on stm32f0!
-	GPIO_PORT_F
+  GPIO_PORT_A = 0,
+  GPIO_PORT_B,
+  GPIO_PORT_C,
+  GPIO_PORT_D,
+  GPIO_PORT_E, //does not exist on stm32f0!
+  GPIO_PORT_F
 } GPIOPort;
 
 typedef uint8_t GPIOPinNum;
@@ -29,28 +29,28 @@ typedef uint8_t GPIOPinNum;
  * Use the ALT modes if the GPIO pin is being used for another purpose, such as SPI, I2C, etc..
  */
 typedef enum GPIOMode {
-	GPIO_INPUT = 0,
-	GPIO_OUTPUT, //output push-pull
-	GPIO_OUTPUT_OD, //output open-drain
-	GPIO_ALT_PP, //alternate push-pull
-	GPIO_ALT_OD //alternate open-drain
+  GPIO_INPUT = 0,
+  GPIO_OUTPUT, //output push-pull
+  GPIO_OUTPUT_OD, //output open-drain
+  GPIO_ALT_PP, //alternate push-pull
+  GPIO_ALT_OD //alternate open-drain
 } GPIOMode;
 
 /**
  * State of the pin. Only valid if its an output. High or Low
  */
 typedef enum GPIOState {
-	GPIO_STATE_LOW = 0,
-	GPIO_STATE_HIGH
+  GPIO_STATE_LOW = 0,
+  GPIO_STATE_HIGH
 } GPIOState;
 
 /**
  * Internal pull-up/pull-down resistor state of the pin
  */
 typedef enum GPIOResistorState {
-	GPIO_RES_NONE = 0,
-	GPIO_RES_PULLUP,
-	GPIO_RES_PULLDOWN
+  GPIO_RES_NONE = 0,
+  GPIO_RES_PULLUP,
+  GPIO_RES_PULLDOWN
 } GPIOResistorState;
 
 /**
@@ -120,11 +120,11 @@ class GPIOPin {
 	StatusCode reset();
 
  private:
-	GPIOState current_state;
-	GPIOMode mode;
-	GPIOPort port;
-	GPIOPinNum num;
-	GPIOResistorState resistor_state;
-	GPIOSpeed speed;
-	uint8_t alternate_function;
+  GPIOState current_state;
+  GPIOMode mode;
+  GPIOPort port;
+  GPIOPinNum num;
+  GPIOResistorState resistor_state;
+  GPIOSpeed speed;
+  uint8_t alternate_function;
 };

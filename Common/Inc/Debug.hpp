@@ -4,7 +4,12 @@
 #include "Status.hpp"
 #include "UART.hpp"
 
-StatusCode init_debug(UARTPortNum port);
+/**
+ * @param num
+ * @param flip_tx_rx because on the safety the debug uart port has flipped pins
+ * @return
+ */
+StatusCode init_debug(UARTPortNum num, bool flip_tx_rx = false);
 
 void debug(const char* string);
 

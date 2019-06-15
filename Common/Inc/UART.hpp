@@ -125,6 +125,8 @@ class UARTPort {
  private:
 	GPIOPin rx_pin;
 	GPIOPin tx_pin;
+	GPIOPin cts_pin;
+	GPIOPin rts_pin;
 	UARTPortNum port;
 	UARTSettings settings;
 	bool is_setup = false;

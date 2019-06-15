@@ -1,5 +1,4 @@
 #include "altimeter.h"
-#include "debug.h"
 
 #define MPL3115A2_ADDR 0x60 << 1
 #define MPL3115A2_I2C I2C2
@@ -20,13 +19,13 @@ static I2C_HandleTypeDef* hi2c;
      hi2c = I2C_GetHandle(MPL3115A2_I2C);
 
      if (HAL_I2C_IsDeviceReady(hi2c, MPL3115A2_ADDR, 2, 5) != HAL_OK) {
-         debug("no altimeter");
+//         debug("no altimeter");
          // error
      }
 
      // who am i
      if (I2C_ReadByte(hi2c, MPL3115A2_ADDR, WHO_AM_I_MPL3115A2) != 0xC4) {
-         debug("altimeter who am i failed");
+//         debug("altimeter who am i failed");
          // error
      }
 

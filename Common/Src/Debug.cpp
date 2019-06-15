@@ -28,13 +28,13 @@ static const char *get_status_string(StatusCode status) {
 	}
 }
 
-StatusCode init_debug(UARTPortNum num) {
+StatusCode init_debug(UARTPortNum num, bool flip_tx_rx) {
 	UARTSettings settings;
 	settings.baudrate = DEBUG_BAUDRATE;
 	settings.cts_rts = false;
 	settings.parity = UART_NO_PARITY;
 	settings.stop_bits = 1;
-	settings.flip_tx_rx = true; //NOTE: We should revert this in an upcoming hardware revision
+	settings.flip_tx_rx = flip_tx_rx;
 
 	port = UARTPort(num, settings);
 
