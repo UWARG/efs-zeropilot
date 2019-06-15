@@ -18,31 +18,30 @@ char buffer[200]; //buffer for printing
 
 extern "C" void MX_FREERTOS_Init(void);
 
-int main(void)
-{
+int main(void) {
 
-  StatusCode status;
+	StatusCode status;
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	HAL_Init();
 
-  //set clock sources
-  initialize_system_clock();
-  gpio_init();
-  init_debug(UART_PORT3);
+	//set clock sources
+	initialize_system_clock();
+	gpio_init();
+	init_debug(UART_PORT3);
 
-  info("\r\n\r\nStarting up...");
-  sprintf(buffer, "Compiled on %s at %s", __DATE__, __TIME__);
-  info(buffer);
+	info("\r\n\r\nStarting up...");
+	sprintf(buffer, "Compiled on %s at %s", __DATE__, __TIME__);
+	info(buffer);
 
-  print_reset_state(buffer, get_reset_cause());
-  info(buffer);
+	print_reset_state(buffer, get_reset_cause());
+	info(buffer);
 
-  /* USER CODE BEGIN SysInit */
+	/* USER CODE BEGIN SysInit */
 
-  /* USER CODE END SysInit */
+	/* USER CODE END SysInit */
 
-  /* Initialize all configured peripherals */
+	/* Initialize all configured peripherals */
 //  MX_GPIO_Init();
 //  MX_SPI5_Init();
 //  MX_SPI4_Init();
@@ -61,7 +60,7 @@ int main(void)
 ////  MX_WWDG_Init();
 //  MX_CRC_Init();
 //  MX_I2C2_Init();
-  /* USER CODE BEGIN 2 */
+	/* USER CODE BEGIN 2 */
 
 
 //  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
@@ -72,51 +71,50 @@ int main(void)
 //  /* Call init function for freertos objects (in freertos.c) */
 //  MX_FREERTOS_Init();
 
-  /* Start scheduler */
+	/* Start scheduler */
 //  osKernelStart();
 
-  /* We should never get here as control is now taken by the scheduler */
+	/* We should never get here as control is now taken by the scheduler */
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  UARTSettings port_settings;
-  port_settings.rx_inverted = false;
-  port_settings.timeout = 50;
-  port_settings.stop_bits = 1;
-  port_settings.cts_rts = false;
-  port_settings.parity = UART_NO_PARITY; //double check this?
-  port_settings.baudrate = 115200;
+	/* Infinite loop */
+	/* USER CODE BEGIN WHILE */
+	UARTSettings port_settings;
+	port_settings.rx_inverted = false;
+	port_settings.timeout = 50;
+	port_settings.stop_bits = 1;
+	port_settings.cts_rts = false;
+	port_settings.parity = UART_NO_PARITY; //double check this?
+	port_settings.baudrate = 115200;
 
-  UARTPort port = UARTPort(UART_PORT4, port_settings);
+	UARTPort port = UARTPort(UART_PORT4, port_settings);
 
-  status = port.setup();
-  info("UART2 Setup", status);
-  status = port.setupDMA(0, 24);
-  info("UART2 DMA", status);
+	status = port.setup();
+	info("UART2 Setup", status);
+	status = port.setupDMA(0, 24);
+	info("UART2 DMA", status);
 
-  uint8_t ubuffer[100];
+	uint8_t ubuffer[100];
 
-  size_t bytes_read = 100;
+	size_t bytes_read = 100;
 
-  uint64_t time;
-  while (1)
-  {
-    time = get_system_time_us();
-    sprintf(buffer, "Sys Time: %lu", (uint32_t)time);
+	uint64_t time;
+	while (1) {
+		time = get_system_time_us();
+		sprintf(buffer, "Sys Time: %lu", (uint32_t) time);
 //    debug(buffer);
 
-    status = port.read_bytes(ubuffer, 24, bytes_read);
+		status = port.read_bytes(ubuffer, 24, bytes_read);
 
-    if (bytes_read > 0) {
-      debug_array("array", ubuffer, bytes_read, false);
-      debug_array("array", ubuffer, bytes_read, true);
-    }
+		if (bytes_read > 0) {
+			debug_array("array", ubuffer, bytes_read, false);
+			debug_array("array", ubuffer, bytes_read, true);
+		}
 
 //    delay(1000);
 
-    /* USER CODE END WHILE */
+		/* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+		/* USER CODE BEGIN 3 */
+	}
+	/* USER CODE END 3 */
 }
