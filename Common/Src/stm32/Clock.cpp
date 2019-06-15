@@ -25,10 +25,6 @@ uint32_t get_system_time() {
 	return HAL_GetTick();
 }
 
-uint64_t get_system_time_us() {
-	return (uint64_t) (HAL_GetTick() * 1000ULL + SysTick->VAL / (get_system_clock() / 1000000UL));
-}
-
 void delay(uint32_t ms) {
 	HAL_Delay(ms);
 }

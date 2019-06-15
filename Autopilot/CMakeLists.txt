@@ -16,6 +16,7 @@ add_definitions(
 include_directories(
   Inc
   ../Common/Inc
+  Libraries/Drivers/Inc
   Libraries/CMSIS/Include
   Libraries/CMSIS/Device/ST/STM32F7xx/Include
   Lib
@@ -30,8 +31,8 @@ link_directories(
 add_subdirectory(Libraries/STM32F7xx_HAL_Driver)
 add_subdirectory(Libraries/FreeRTOS)
 
-file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c")
-file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp")
+file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" Libraries/Drivers/Src/*.c)
+file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" Libraries/Drivers/Src/*.cpp)
 file(GLOB_RECURSE C_INC "Inc/*.h")
 file(GLOB_RECURSE CXX_INC "Inc/*.hpp")
 

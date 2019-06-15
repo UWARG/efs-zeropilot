@@ -1,5 +1,6 @@
 #include "stm32f0xx_hal.h"
 #include "Status.hpp"
+#include "Clock.hpp"
 
 extern StatusCode get_status_code(HAL_StatusTypeDef status);
 
@@ -56,4 +57,8 @@ StatusCode initialize_system_clock() {
 	HAL_RCC_MCOConfig(RCC_MCO, RCC_MCO1SOURCE_SYSCLK, RCC_MCODIV_1);
 
 	return STATUS_CODE_OK;
+}
+
+uint64_t get_system_time_us() {
+	return (uint64_t) (HAL_GetTick() * 1000ULL + SysTick->VAL / (get_system_clock() / 1000000UL));
 }

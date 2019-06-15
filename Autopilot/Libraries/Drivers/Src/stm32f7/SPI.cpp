@@ -1,8 +1,8 @@
-#include "../../../../Common/Inc/Status.hpp"
-#include "stm32f0xx_hal.h"
-#include "../../../../Common/Inc/SPI.hpp"
-#include "../../../../Common/Inc/GPIO.hpp"
-#include "../../../../Common/Inc/Clock.hpp"
+#include "Status.hpp"
+#include "stm32f7xx_hal.h"
+#include "SPI.hpp"
+#include "GPIO.hpp"
+#include "Clock.hpp"
 
 const uint32_t SPI_SYNCHRONOUS_TIMEOUT = 50; //50ms timeout for synchronous implementation
 
@@ -26,81 +26,81 @@ SPIPort::SPIPort(SPISettings settings) {
 }
 
 StatusCode SPIPort::setup() {
-	if (has_setup) { //if the interface was already setup
-		return STATUS_CODE_INVALID_ARGS;
-	}
-	if (settings.word_size != 1 || settings.word_size != 2) { //we only support 8-bit or 16-bit spi
-		return STATUS_CODE_INVALID_ARGS;
-	}
-
-	if (settings.port == SPI_PORT1) { //only port 1 valid for stm32f0
-		hspi1.Instance = SPI1;
-
-		StatusCode status;
-
-		__HAL_RCC_SPI1_CLK_ENABLE();
-
-		//spi1 is on apb1 bus for spi1
-		uint32_t clock = get_peripheral_clock_apb1();
-
-		//only configure nss in case we're in slave mode
-		if (!settings.master) {
-			nss = GPIOPin(NSS_PORT_SPI1,
-						  NSS_PIN_SPI1,
-						  GPIO_ALT_PP,
-						  GPIO_STATE_LOW,
-						  GPIO_RES_NONE,
-						  GPIO_SPEED_HIGH,
-						  GPIO_AF0_SPI1);
-			status = nss.setup();
-			if (status != STATUS_CODE_OK) {
-				return status;
-			}
-		}
-
-		miso = GPIOPin(MISO_PORT_SPI1,
-					   MISO_PIN_SPI1,
-					   GPIO_ALT_PP,
-					   GPIO_STATE_LOW,
-					   GPIO_RES_NONE,
-					   GPIO_SPEED_HIGH,
-					   GPIO_AF0_SPI1);
-		mosi = GPIOPin(MOSI_PORT_SPI1,
-					   MOSI_PIN_SPI1,
-					   GPIO_ALT_PP,
-					   GPIO_STATE_LOW,
-					   GPIO_RES_NONE,
-					   GPIO_SPEED_HIGH,
-					   GPIO_AF0_SPI1);
-		sck = GPIOPin(SCK_PORT_SPI1,
-					  SCK_PIN_SPI1,
-					  GPIO_ALT_PP,
-					  GPIO_STATE_LOW,
-					  GPIO_RES_NONE,
-					  GPIO_SPEED_HIGH,
-					  GPIO_AF0_SPI1);
-
-		status = miso.setup();
-		if (status != STATUS_CODE_OK) {
-			return status;
-		}
-		status = mosi.setup();
-		if (status != STATUS_CODE_OK) {
-			return status;
-		}
-		status = sck.setup();
-		if (status != STATUS_CODE_OK) {
-			return status;
-		}
-
-		status = configure_spi_port(&hspi1, this->settings, clock);
-
-		//configure SPI1 interrupts
-		HAL_NVIC_SetPriority(SPI1_IRQn, 0, 0);
-		HAL_NVIC_EnableIRQ(SPI1_IRQn);
-
-		return status;
-	}
+//	if (has_setup) { //if the interface was already setup
+//		return STATUS_CODE_INVALID_ARGS;
+//	}
+//	if (settings.word_size != 1 || settings.word_size != 2) { //we only support 8-bit or 16-bit spi
+//		return STATUS_CODE_INVALID_ARGS;
+//	}
+//
+//	if (settings.port == SPI_PORT1) { //only port 1 valid for stm32f0
+//		hspi1.Instance = SPI1;
+//
+//		StatusCode status;
+//
+//		__HAL_RCC_SPI1_CLK_ENABLE();
+//
+//		//spi1 is on apb1 bus for spi1
+//		uint32_t clock = get_peripheral_clock_apb1();
+//
+//		//only configure nss in case we're in slave mode
+//		if (!settings.master) {
+//			nss = GPIOPin(NSS_PORT_SPI1,
+//						  NSS_PIN_SPI1,
+//						  GPIO_ALT_PP,
+//						  GPIO_STATE_LOW,
+//						  GPIO_RES_NONE,
+//						  GPIO_SPEED_HIGH,
+//						  GPIO_AF0_SPI1);
+//			status = nss.setup();
+//			if (status != STATUS_CODE_OK) {
+//				return status;
+//			}
+//		}
+//
+//		miso = GPIOPin(MISO_PORT_SPI1,
+//					   MISO_PIN_SPI1,
+//					   GPIO_ALT_PP,
+//					   GPIO_STATE_LOW,
+//					   GPIO_RES_NONE,
+//					   GPIO_SPEED_HIGH,
+//					   GPIO_AF0_SPI1);
+//		mosi = GPIOPin(MOSI_PORT_SPI1,
+//					   MOSI_PIN_SPI1,
+//					   GPIO_ALT_PP,
+//					   GPIO_STATE_LOW,
+//					   GPIO_RES_NONE,
+//					   GPIO_SPEED_HIGH,
+//					   GPIO_AF0_SPI1);
+//		sck = GPIOPin(SCK_PORT_SPI1,
+//					  SCK_PIN_SPI1,
+//					  GPIO_ALT_PP,
+//					  GPIO_STATE_LOW,
+//					  GPIO_RES_NONE,
+//					  GPIO_SPEED_HIGH,
+//					  GPIO_AF0_SPI1);
+//
+//		status = miso.setup();
+//		if (status != STATUS_CODE_OK) {
+//			return status;
+//		}
+//		status = mosi.setup();
+//		if (status != STATUS_CODE_OK) {
+//			return status;
+//		}
+//		status = sck.setup();
+//		if (status != STATUS_CODE_OK) {
+//			return status;
+//		}
+//
+//		status = configure_spi_port(&hspi1, this->settings, clock);
+//
+//		//configure SPI1 interrupts
+//		HAL_NVIC_SetPriority(SPI1_IRQn, 0, 0);
+//		HAL_NVIC_EnableIRQ(SPI1_IRQn);
+//
+//		return status;
+//	}
 	return STATUS_CODE_INVALID_ARGS;
 }
 
