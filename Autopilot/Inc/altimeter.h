@@ -1,3 +1,6 @@
+#include "i2c.h"
+
+
 #ifndef ALTIMETER_H
 #define ALTIMETER_H
 
@@ -5,13 +8,11 @@
 extern "C" {
 #endif
 
-#include "i2c.h"
+HAL_StatusTypeDef MPL3115A2_Init(void);
 
-HAL_StatusTypeDef MPL3115A2_Init();
+float getAltitude(void);
 
-float getAltitude();
-
-float getTemperature();
+float getTemperature(void);
 
 #ifdef __cplusplus
 }

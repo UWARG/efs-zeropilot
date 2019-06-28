@@ -15,9 +15,6 @@
  * Mocks
  **********************************************************************************************************************/
 
-DEFINE_FFF_GLOBALS;
-
-
 FAKE_VOID_FUNC(MX_ADC3_Init);
 FAKE_VOID_FUNC(HAL_ADC_MspInit, ADC_HandleTypeDef * );
 FAKE_VALUE_FUNC(HAL_StatusTypeDef, HAL_ADC_Start, ADC_HandleTypeDef * );
@@ -34,7 +31,6 @@ ADC_HandleTypeDef hadc3; // this var is global in adc.c and extern in adc.h. Sin
 /***********************************************************************************************************************
  * Test Fixtures
  **********************************************************************************************************************/
-
 
 class ADC_Init : public ::testing::Test
 {
