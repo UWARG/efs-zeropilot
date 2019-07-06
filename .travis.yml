@@ -23,7 +23,7 @@ before_install:
   - cd /usr/src/gtest
   - sudo cmake CMakeLists.txt
   - sudo make
-  - cp *.a /usr/lib
+  - sudo cp *.a /usr/lib
 
 
 install:
