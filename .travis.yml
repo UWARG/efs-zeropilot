@@ -1,7 +1,7 @@
 # travis build configuration for ZeroPilot-SW
 
 language: cpp
-sudo: false
+sudo: true
 
 cache:
   directories:
@@ -17,11 +17,11 @@ env:
   - TARGET=Safety
 
 before_install:
-  - apt-get update
-  - apt-get install libgtest-dev
+  - sudo apt-get update
+  - sudo apt-get install libgtest-dev
   - cd /usr/src/gtest
-  - cmake CMakeLists.txt
-  - make
+  - sudo cmake CMakeLists.txt
+  - sudo make
   - cp *.a /usr/lib
 
 
