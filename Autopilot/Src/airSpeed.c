@@ -9,7 +9,7 @@
 void airSpeed_Init(void)
 {
 	MX_ADC3_Init();
-	HAL_ADC_MspInit(&hadc3);
+	//HAL_ADC_MspInit(&hadc3);
 }
 
 airSpeedState_t airSpeed_GetAirSpeed(float *airSpeed)
