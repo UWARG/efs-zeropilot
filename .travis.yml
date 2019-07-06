@@ -16,6 +16,7 @@ env:
   - TARGET=Autopilot
   - TARGET=Safety
 
+# install cmake and google test
 before_install:
   - sudo apt-get update
   - sudo apt-get install cmake
