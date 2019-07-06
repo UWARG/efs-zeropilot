@@ -37,4 +37,4 @@ install:
 script:
   - cd $TRAVIS_BUILD_DIR/$TARGET
   - ./Tools/build.bash -c
-  - if [ $TARGET = Autopilot ]; then ./Tools/build.bash -c -T
+  - if [ $TARGET = Autopilot ]; then ./Tools/build.bash -c -T; fi
