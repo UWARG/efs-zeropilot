@@ -34,9 +34,9 @@ install:
   - export PATH=$GCC_DIR/bin:$PATH
 
 script:
-  - cd $TARGET
+  - cd $TRAVIS_BUILD_DIR/$TARGET
   - ./Tools/build.bash -c
 
 script:
-  - cd Autopilot
+  - cd $TRAVIS_BUILD_DIR/Autopilot
   - ./Tools/build.bash -c -T
