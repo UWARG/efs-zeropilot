@@ -3,6 +3,10 @@
 language: cpp
 sudo: true
 
+os:
+  - linux
+  - osx
+
 cache:
   directories:
     - $HOME/gcc-arm-none-eabi-7-2017-q4-major
