@@ -9,7 +9,7 @@ C_DEFINES = -DARM_MATH_CM7 -DSTM32F765xG -DSTM32F765xx -DSTM32F7xx -DUSE_HAL_LIB
 
 C_INCLUDES = -isystem /mnt/c/Users/Antho/repos/ZeroPilot-SW/Autopilot/Inc -isystem /mnt/c/Users/Antho/repos/ZeroPilot-SW/Autopilot/Libraries/STM32F7xx_HAL_Driver/Inc -isystem /mnt/c/Users/Antho/repos/ZeroPilot-SW/Autopilot/../Common/Inc -isystem /mnt/c/Users/Antho/repos/ZeroPilot-SW/Autopilot/Libraries/CMSIS/Include -isystem /mnt/c/Users/Antho/repos/ZeroPilot-SW/Autopilot/Libraries/CMSIS/Device/ST/STM32F7xx/Include -isystem /mnt/c/Users/Antho/repos/ZeroPilot-SW/Autopilot/UnitTestSrc/UnitTestLibraries 
 
-CXX_FLAGS =  -fpermissive  
+CXX_FLAGS =  -fpermissive -fms-extensions   -std=gnu++11
 
 CXX_DEFINES = -DARM_MATH_CM7 -DSTM32F765xG -DSTM32F765xx -DSTM32F7xx -DUSE_HAL_LIB
 

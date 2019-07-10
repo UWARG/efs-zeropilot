@@ -48,6 +48,6 @@ install:
   - export PATH=$GCC_DIR/bin:$PATH
 
 script:
-  - cd $TRAVIS_BUILD_DIR/$TARGET
+  - cd $TRAVIS_BUILD_DIR/Autopilot
   #- ./Tools/build.bash -c
-  - if [ $TARGET = Autopilot ]; then ./Tools/build.bash -c -T; fi
+  - ./Tools/build.bash -c -T
