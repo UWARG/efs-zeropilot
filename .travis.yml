@@ -21,7 +21,6 @@ env:
 
 # install cmake and google test
 before_install:
-  - brew install cmake
   - git clone https://github.com/google/googletest
   - cd googletest
   - mkdir build
