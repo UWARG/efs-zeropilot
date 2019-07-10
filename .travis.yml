@@ -4,7 +4,6 @@ language: cpp
 sudo: true
 
 os:
-  - linux
   - osx
 
 cache:
@@ -22,14 +21,24 @@ env:
 
 # install cmake and google test
 before_install:
-  - sudo apt-get update
-  - sudo apt-get install cmake
-  - sudo apt-get install libgtest-dev
-  - cd /usr/src/gtest
-  - sudo cmake CMakeLists.txt
-  - sudo make
-  - sudo cp *.a /usr/lib
-  - cd $TRAVIS_BUILD_DIR
+  - brew install cmake
+  - git clone https://github.com/google/googletest
+  - cd googletest
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - make install
+  - cd ../..
+  - sudo rm -r googletest
+  #- sudo apt-get update
+  #- sudo apt-get install cmake
+  #- sudo apt-get install libgtest-dev
+  #- cd /usr/src/gtest
+  #- sudo cmake CMakeLists.txt
+  #- sudo make
+  #- sudo cp *.a /usr/lib
+  #- cd $TRAVIS_BUILD_DIR
 
 
 install:
