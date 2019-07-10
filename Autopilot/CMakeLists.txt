@@ -96,7 +96,7 @@ else()
   )
 
   #required to get some of the CMSIS libraries to compile
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -fms-extensions")
 
   include_directories(
     SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
