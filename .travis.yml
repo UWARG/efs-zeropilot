@@ -5,6 +5,7 @@ sudo: true
 
 os:
   - osx
+  - linux
 
 cache:
   directories:
@@ -21,6 +22,8 @@ env:
 
 # install cmake and google test
 before_install:
+  - if [ $TRAVIS_OS_NAME = osx ]; then
+  
   - git clone https://github.com/google/googletest
   - cd googletest
   - mkdir build
@@ -30,15 +33,19 @@ before_install:
   - make install
   - cd ../..
   - sudo rm -r googletest
-  #- sudo apt-get update
-  #- sudo apt-get install cmake
-  #- sudo apt-get install libgtest-dev
-  #- cd /usr/src/gtest
-  #- sudo cmake CMakeLists.txt
-  #- sudo make
-  #- sudo cp *.a /usr/lib
-  #- cd $TRAVIS_BUILD_DIR
 
+  - elif [ $TRAVIS_OS_NAME = linux ]; then
+  
+  - sudo apt-get update
+  - sudo apt-get install cmake
+  - sudo apt-get install libgtest-dev
+  - cd /usr/src/gtest
+  - sudo cmake CMakeLists.txt
+  - sudo make
+  - sudo cp *.a /usr/lib
+  - cd $TRAVIS_BUILD_DIR
+  
+  - fi
 
 install:
   - export GCC_DIR=$HOME/gcc-arm-none-eabi-7-2017-q4-major
@@ -48,6 +55,6 @@ install:
   - export PATH=$GCC_DIR/bin:$PATH
 
 script:
-  - cd $TRAVIS_BUILD_DIR/Autopilot
-  #- ./Tools/build.bash -c
-  - ./Tools/build.bash -c -T
+  - cd $TRAVIS_BUILD_DIR/$TARGET
+  - if [ $TRAVIS_OS_NAME = linux ]; then ./Tools/build.bash -c
+  - if [ $TARGET = Autopilot ]; then ./Tools/build.bash -c -T; fi
