@@ -20,7 +20,7 @@ env:
   - TARGET=Autopilot
   - TARGET=Safety
 
-# install cmake and google test
+# install cmake and google test for both linux and osx. TODO: these things should be chached
 before_install: >
   if [ $TRAVIS_OS_NAME = osx ]; then
     git clone https://github.com/google/googletest
