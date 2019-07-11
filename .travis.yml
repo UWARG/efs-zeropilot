@@ -54,5 +54,5 @@ install:
 
 script:
   - cd $TRAVIS_BUILD_DIR/$TARGET
-  - if [ $TRAVIS_OS_NAME = linux ]; then ./Tools/build.bash -c fi
+  - if [ $TRAVIS_OS_NAME = linux ]; then ./Tools/build.bash -c; fi
   - if [ $TARGET = Autopilot ]; then ./Tools/build.bash -c -T; fi
