@@ -33,6 +33,10 @@ project.mk
 *build*/
 .dep/
 
+# Unit test builds
+**/testBuild/
+
+
 # IDE stuff
 .settings/
 .project

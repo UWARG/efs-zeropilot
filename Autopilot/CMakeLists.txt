@@ -1,83 +1,158 @@
 cmake_minimum_required(VERSION 3.2.0)
 project(Autopilot C CXX ASM)
 
-set(ELF_NAME ${PROJECT_NAME}.elf)
+#checks wether we are building for the microcontroller or to run the PC based unit tests
+if (CMAKE_CROSSCOMPILING)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+  set(ELF_NAME ${PROJECT_NAME}.elf)
 
-add_definitions(
-  -DUSE_HAL_LIB
-  -DSTM32F7xx
-  -DSTM32F765xx
-  -DSTM32F765xG
-  -DARM_MATH_CM7
-)
+  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-include_directories(
-  Inc
-  ../Common/Inc
-  Libraries/Drivers/Inc
-  Libraries/CMSIS/Include
-  Libraries/CMSIS/Device/ST/STM32F7xx/Include
-  Lib
-)
+  add_definitions(
+    -DUSE_HAL_LIB
+    -DSTM32F7xx
+    -DSTM32F765xx
+    -DSTM32F765xG
+    -DARM_MATH_CM7
+  )
 
-# Add ARM math directory for linker to find
-link_directories(
-  Libraries/CMSIS/Lib/GCC
-)
+  include_directories(
+    Inc
+    ../Common/Inc
+    Libraries/Drivers/Inc
+    Libraries/CMSIS/Include
+    Libraries/CMSIS/Device/ST/STM32F7xx/Include
+    Lib
+  )
 
-# Libraries
-add_subdirectory(Libraries/STM32F7xx_HAL_Driver)
-add_subdirectory(Libraries/FreeRTOS)
+  # Add ARM math directory for linker to find
+  link_directories(
+    Libraries/CMSIS/Lib/GCC
+  )
 
-file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" Libraries/Drivers/Src/*.c)
-file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" Libraries/Drivers/Src/*.cpp)
-file(GLOB_RECURSE C_INC "Inc/*.h")
-file(GLOB_RECURSE CXX_INC "Inc/*.hpp")
+  # Libraries
+  add_subdirectory(Libraries/STM32F7xx_HAL_Driver)
+  add_subdirectory(Libraries/FreeRTOS)
 
-if(NOT NUCLEO)
-  set(STARTUP_ASM startup_stm32f765xx.s)
-  set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F765ZGTx_FLASH.ld)
-else(NOT NUCLEO)
-  set(STARTUP_ASM startup_stm32f767xx.s)
-  set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F767ZITx_FLASH.ld)
-endif(NOT NUCLEO)
+  file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" Libraries/Drivers/Src/*.c)
+  file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" Libraries/Drivers/Src/*.cpp)
+  file(GLOB_RECURSE C_INC "Inc/*.h")
+  file(GLOB_RECURSE CXX_INC "Inc/*.hpp")
+
+  if(NOT NUCLEO)
+    set(STARTUP_ASM startup_stm32f765xx.s)
+    set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F765ZGTx_FLASH.ld)
+  else(NOT NUCLEO)
+    set(STARTUP_ASM startup_stm32f767xx.s)
+    set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F767ZITx_FLASH.ld)
+  endif(NOT NUCLEO)
 
 
-add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${C_INC} ${CXX_INC} ${STARTUP_ASM})
+  add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${C_INC} ${CXX_INC} ${STARTUP_ASM})
 
-target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS arm_cortexM7lfdp_math)
+  target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS arm_cortexM7lfdp_math)
 
-# Add project-specific linker flags (.ld script, .map file)
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${LINKER_SCRIPT} -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map,--cref")
+  # Add project-specific linker flags (.ld script, .map file)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${LINKER_SCRIPT} -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map,--cref")
 
-set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.bin)
+  set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.bin)
 
-# objcopy the .elf file to .bin file for programming
-add_custom_target("${PROJECT_NAME}.bin" ALL
-  COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${ELF_NAME}> ${BIN_FILE}
-  DEPENDS ${ELF_NAME}
-)
+  # objcopy the .elf file to .bin file for programming
+  add_custom_target("${PROJECT_NAME}.bin" ALL
+    COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${ELF_NAME}> ${BIN_FILE}
+    DEPENDS ${ELF_NAME}
+  )
 
-# Print size information after compiling
-add_custom_command(TARGET ${ELF_NAME}
-  POST_BUILD
-  COMMENT "Binary size information:"
-  COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${ELF_NAME}>
-)
+  # Print size information after compiling
+  add_custom_command(TARGET ${ELF_NAME}
+    POST_BUILD
+    COMMENT "Binary size information:"
+    COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${ELF_NAME}>
+  )
 
-set(INSTALL_CMD "ST-LINK_CLI")
-set(INSTALL_OPTS "-c SWD -P \"${BIN_FILE}\" 0x08000000 -NoPrompt -Rst -Run")
+  set(INSTALL_CMD "ST-LINK_CLI")
+  set(INSTALL_OPTS "-c SWD -P \"${BIN_FILE}\" 0x08000000 -NoPrompt -Rst -Run")
 
-install(CODE
-  "execute_process(
-    COMMAND ${INSTALL_CMD} ${INSTALL_OPTS}
-  )"
-)
+  install(CODE
+    "execute_process(
+      COMMAND ${INSTALL_CMD} ${INSTALL_OPTS}
+    )"
+  )
 
-add_custom_target(UPLOAD
-        arm-none-eabi-gdb -iex "target remote tcp:127.0.0.1:3333"
-        -iex "monitor program $<TARGET_FILE:${PROJECT_NAME}.elf>"
-        -iex "monitor reset init"
-        -iex "disconnect" -iex "quit")
+  add_custom_target(UPLOAD
+          arm-none-eabi-gdb -iex "target remote tcp:127.0.0.1:3333"
+          -iex "monitor program $<TARGET_FILE:${PROJECT_NAME}.elf>"
+          -iex "monitor reset init"
+          -iex "disconnect" -iex "quit")
+
+else()
+
+  add_definitions(
+    -DUSE_HAL_LIB
+    -DSTM32F7xx
+    -DSTM32F765xx
+    -DSTM32F765xG
+    -DARM_MATH_CM7
+  )
+
+  # Required to get some of the CMSIS libraries to compile
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -fms-extensions")
+
+  # Google test was built for c++11
+  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+  # Required to allow us to point to the gtest directory using an environement variable. (This has only been an issue on the windows CI)
+  if(POLICY CMP0074)
+    cmake_policy(SET CMP0074 NEW)
+  endif()
+
+  include_directories(
+    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
+    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/STM32F7xx_HAL_Driver/Inc
+    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/../Common/Inc
+    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/CMSIS/Include
+    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/CMSIS/Device/ST/STM32F7xx/Include
+    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Test/Inc
+    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Test/vendor/lib
+  )
+
+  # Collect all our source files
+  file(GLOB_RECURSE C_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Src/*.c)
+  file(GLOB_RECURSE CXX_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Src/*.cpp)
+
+  # get rid of all the autogenerated source files from stm, these will never need to be unit tested
+  # Also get rid of main.cpp, it will get replaced with the testRunner main in the build ( our main.cpp is impossible to unit test)
+  list(REMOVE_ITEM C_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Src/eeprom.c ${CMAKE_CURRENT_SOURCE_DIR}/Src/freertos.c ${CMAKE_CURRENT_SOURCE_DIR}/Src/Interchip_A.c ${CMAKE_CURRENT_SOURCE_DIR}/Src/stm32f7xx_it.c ${CMAKE_CURRENT_SOURCE_DIR}/Src/adc.c ${CMAKE_CURRENT_SOURCE_DIR}/Src/wwdg.c ${CMAKE_CURRENT_SOURCE_DIR}/Src/tim.c ${CMAKE_CURRENT_SOURCE_DIR}/Src/system_stm32f7xx.c ${CMAKE_CURRENT_SOURCE_DIR}/Src/stm32f7xx_hal_msp.c ${CMAKE_CURRENT_SOURCE_DIR}/Src/stm32f7xx_hal_timebase_TIM.c ${CMAKE_CURRENT_SOURCE_DIR}/Src/i2c.c ${CMAKE_CURRENT_SOURCE_DIR}/Src/crc.c ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c ${CMAKE_CURRENT_SOURCE_DIR}/Src/spi.c)
+  list(REMOVE_ITEM CXX_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.cpp)
+
+
+  # Collect the main function that runs our unit tests
+  set(UNIT_TEST_MAIN ${CMAKE_CURRENT_SOURCE_DIR}/Test/testMain.cpp)
+
+  # Collect all our unit tests
+  file(GLOB_RECURSE UNIT_TEST_SOURCES Test/Src/*.cpp)
+
+
+  # Our own source files and tests will be held to the highest standards
+  set_property(SOURCE ${C_SOURCES} PROPERTY COMPILE_FLAGS "-Wall -Wextra -g")
+  set_property(SOURCE ${CXX_SOURCES} PROPERTY COMPILE_FLAGS "-Wall -Wextra -g")
+  set_property(SOURCE ${UNIT_TEST_SOURCES} PROPERTY COMPILE_FLAGS "-Wall -Wextra -g")
+
+
+  # Let cmake know where to find all the find<Package>.cmake files
+  set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Test/vendor/FindCmakeModules")
+
+  # Locate GTest
+  find_package(GTest REQUIRED)
+  include_directories(${GTEST_INCLUDE_DIRS})
+
+  # Locate GMock
+  find_package(GMock REQUIRED)
+  include_directories(${GMOCK_INCLUDE_DIRS})
+
+  # Link runTests with what we want to test and the GTest and pthread library
+  add_executable(runTests ${C_SOURCES} ${CXX_SOURCES} ${UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
+  target_link_libraries(runTests ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
+
+endif()

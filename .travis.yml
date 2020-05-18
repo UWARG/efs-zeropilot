@@ -1,28 +1,134 @@
 # travis build configuration for ZeroPilot-SW
 
+# This file instructs travis-Ci to run all unit tests on Linux, Macos, and Windows.
+# It also instructs Travis to use the embedded compiler (arm-none-eabi) to compile the autopilot and safety code on all 3 OSs.
+# travis-Ci only allows a merge if everything builds everywhere and if all unit tests pass everywhere.
+
 language: cpp
 sudo: false
 
-cache:
-  directories:
-    - $HOME/gcc-arm-none-eabi-7-2017-q4-major
 
-addons:
-  apt:
-    packages:
-    - ninja-build
+matrix:
 
-env:
-  - TARGET=Autopilot
-  - TARGET=Safety
+  include:
 
-install:
-  - export GCC_DIR=$HOME/gcc-arm-none-eabi-7-2017-q4-major
-  - export GCC_ARCHIVE=$HOME/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2
-  - export GCC_URL=https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2
-  - if [ ! -e $GCC_DIR/bin/arm-none-eabi-g++ ]; then wget $GCC_URL -O $GCC_ARCHIVE; tar xfj $GCC_ARCHIVE -C $HOME; fi
-  - export PATH=$GCC_DIR/bin:$PATH
 
-script:
-  - cd $TARGET
-  - ./Tools/build.bash -c
+    - os: linux # run unit tests on linux
+      compiler: gcc
+      env: TYPE_OF_BUILD="unit tests" CXX_FLAGS="-std=c++11"
+      addons:
+        apt:
+          packages:
+          - ninja-build
+          - cmake
+      before install:
+        - sudo apt-get install libgtest-dev
+        - sudo apt-get install google-mock
+      install:
+        - cd /usr/src/gtest
+        - sudo cmake CMakeLists.txt
+        - sudo make
+        - sudo cp *.a /usr/lib
+        - cd /usr/src/gmock
+        - sudo cmake CMakeLists.txt
+        - sudo make
+        - sudo cp *.a /usr/lib
+      script:
+        - cd $TRAVIS_BUILD_DIR/Autopilot
+        - ./Tools/build.bash -c -t
+
+
+    - os: linux # check if we can build for the target, from linux
+      compiler: gcc
+      env: TYPE_OF_BUILD="for target" CXX_FLAGS="-std=c++11"
+      addons:
+        apt:
+          packages:
+          - ninja-build
+          - cmake
+      cache:
+        directories:
+          - $HOME/gcc-arm-none-eabi-7-2017-q4-major
+      install:
+        - export GCC_DIR=$HOME/gcc-arm-none-eabi-7-2017-q4-major
+        - export GCC_ARCHIVE=$HOME/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2
+        - export GCC_URL=https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2
+        - if [ ! -e $GCC_DIR/bin/arm-none-eabi-g++ ]; then wget $GCC_URL -O $GCC_ARCHIVE; tar xfj $GCC_ARCHIVE -C $HOME; fi
+        - export PATH=$GCC_DIR/bin:$PATH
+      script:
+        - cd $TRAVIS_BUILD_DIR/Safety
+        - ./Tools/build.bash -c
+        - cd $TRAVIS_BUILD_DIR/Autopilot
+        - ./Tools/build.bash -c
+
+
+    - os: osx # run unit tests on mac
+      compiler: clang
+      env: TYPE_OF_BUILD="unit tests" CXX_FLAGS="-std=c++11"
+      install: # install google test
+        - curl -LO https://github.com/google/googletest/archive/release-1.10.0.tar.gz
+        - tar xf release-1.10.0.tar.gz
+        - cd googletest-release-1.10.0
+        - mkdir build
+        - cd build
+        - cmake ..
+        - make
+        - make install
+      script:
+        - cd $TRAVIS_BUILD_DIR/Autopilot
+        - ./Tools/build.bash -c -t
+
+
+    - os: osx # check if we can build for the target, from mac
+      compiler: clang
+      env: TYPE_OF_BUILD="for target" CXX_FLAGS="-std=c++11"
+      cache:
+        directories:
+          - $HOME/gcc-arm-none-eabi-7-2017-q4-major
+      install:
+        - export GCC_DIR=$HOME/gcc-arm-none-eabi-7-2017-q4-major
+        - export GCC_ARCHIVE=$HOME/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2
+        - export GCC_URL=https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2
+        - if [ ! -f $GCC_DIR/bin/arm-none-eabi-g++ ]; then wget $GCC_URL -O $GCC_ARCHIVE; tar xfj $GCC_ARCHIVE -C $HOME; fi
+        - export PATH=$GCC_DIR/bin:$PATH
+      script:
+        - cd $TRAVIS_BUILD_DIR/Safety
+        - ./Tools/build.bash -c
+        - cd $TRAVIS_BUILD_DIR/Autopilot
+        - ./Tools/build.bash -c
+
+
+    - os: windows # run unit tests on Windows
+      env: TYPE_OF_BUILD="unit tests" CXX_FLAGS="-std=c++11" GTEST_ROOT="C:/Program Files (x86)/googletest-distribution/" GMOCK_ROOT="C:/Program Files (x86)/googletest-distribution/"
+      before install:
+        - choco upgrade make
+        - choco upgrade cmake
+        - choco upgrade mingw
+        - choco install ninja
+      install:
+        - mkdir $HOME/gtest
+        - cd $HOME/gtest
+        - wget https://github.com/google/googletest/archive/release-1.10.0.zip
+        - 7z x release-1.10.0.zip -r
+        - cd googletest-release-1.10.0
+        - mkdir build
+        - cd build
+        - cmake -G "MSYS Makefiles" ..
+        - make
+        - make install
+      script:
+        - cd $TRAVIS_BUILD_DIR/Autopilot
+        - ./Tools/build.bash -c -t
+
+
+    - os: windows # check if we can build for the target, from Windows
+      env: TYPE_OF_BUILD="for target" CXX_FLAGS="-std=c++11"
+      before install:
+        - choco upgrade cmake
+      install:
+        - choco install gcc-arm-embedded
+      script:
+        - cd $TRAVIS_BUILD_DIR/Autopilot
+        - ./Tools/build.bash -c
+        - cd $TRAVIS_BUILD_DIR/Safety
+        - ./Tools/build.bash -c
