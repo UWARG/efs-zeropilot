@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Common/Inc/GPIO.hpp"
+#include "../../Common/Inc/GPIO.hpp"
 
 const GPIOPort LED1_GPIO_PORT = GPIO_PORT_C;
 const GPIOPinNum LED1_GPIO_PIN = 10;
