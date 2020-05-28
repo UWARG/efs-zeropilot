@@ -8,9 +8,9 @@
 
 class MockIMU : public IMU {
     public: 
-        MOCK_METHOD0(Init, void());
-        MOCK_METHOD0(Begin_Measuring, void());
-        MOCK_METHOD1(GetResult, void(IMUData_t *Data));
+        MOCK_METHOD(void, Init, ());
+        MOCK_METHOD(void, Begin_Measuring, ());
+        MOCK_METHOD(void, GetResult, (IMUData_t *Data));
 
 };
 
