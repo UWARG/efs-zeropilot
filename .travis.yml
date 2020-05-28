@@ -20,19 +20,27 @@ matrix:
         apt:
           packages:
           - ninja-build
-          - cmake
-      before install:
-        - sudo apt-get install libgtest-dev
-        - sudo apt-get install google-mock
+          - cmake  
+      # before install:
+        # - sudo apt-get install libgtest-dev
+        # - sudo apt-get install google-mock
       install:
-        - cd /usr/src/gtest
-        - sudo cmake CMakeLists.txt
+        # - cd /usr/src/gtest
+        # - sudo cmake CMakeLists.txt
+        # - sudo make
+        # - sudo cp *.a /usr/lib
+        # - cd /usr/src/gmock
+        # - sudo cmake CMakeLists.txt
+        # - sudo make
+        # - sudo cp *.a /usr/lib
+        - curl -LO https://github.com/google/googletest/archive/release-1.10.0.tar.gz
+        - tar xf release-1.10.0.tar.gz
+        - cd googletest-release-1.10.0        
+        - sudo mkdir build
+        - cd build
+        - sudo cmake ..
         - sudo make
-        - sudo cp *.a /usr/lib
-        - cd /usr/src/gmock
-        - sudo cmake CMakeLists.txt
-        - sudo make
-        - sudo cp *.a /usr/lib
+        - sudo make install
       script:
         - cd $TRAVIS_BUILD_DIR/Autopilot
         - ./Tools/build.bash -c -t
