@@ -1,7 +1,7 @@
 #ifndef IMU_MOCK_HPP
 #define IMU_MOCK_HPP
 
-#include "gmock/gmock.h" // Brings in gMock
+#include <gmock/gmock.h> // Brings in gMock
 
 #include "IMU.hpp"
 

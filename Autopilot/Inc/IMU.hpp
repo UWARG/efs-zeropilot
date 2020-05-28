@@ -1,9 +1,7 @@
 /**
  * IMU Sensor Functions and Part Number Selection
- * 
+ * Author: Lucy Gong
  */
-
-//#pragma once
 
 #ifndef IMU_HPP
 #define IMU_HPP
