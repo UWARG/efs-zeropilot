@@ -16,7 +16,6 @@
 #ifndef AIRSPEED_HPP
 #define AIRSPEED_HPP
 
-#include <stdint.h>
 /*
     Currently there is only one airspeed sensor used, if this is 
     changed to a different sensor, part numbers and a selection
@@ -25,9 +24,11 @@
 
 struct airspeedData_t 
 {
-    double airspeed;    // in m/s
+    double airspeed;        // in m/s
 
-    float utcTime;      // 4 Bytes. Time in seconds since 00:00 
+    int sensorStatus;       // report any errors, possible malfunctions 
+    bool isDataNew;         // is the data fresh?
+    float utcTime;          // 4 Bytes. Time in seconds since 00:00 
 };
 
 class airspeed 
@@ -37,23 +38,24 @@ class airspeed
          *  Initializes ADC in order to recieve sensor readings 
          *  (pitot tube reading)
          * */
-        virtual void Init(); 
+        virtual void Init() = 0; 
 
         /**
          *  Triggers interrupt for new airspeed measurement - stores 
          *  raw data in variables and returns right away
          * */
-        virtual void Begin_Measuring(); 
+        virtual void Begin_Measuring() = 0; 
 
         /**GetResult should:
          *  1. Transfer raw data from variables to struct
          *  2. Update utcTime and status values in struct as well
-         * 
+         *  
+         *
          *  Potentially:
          *  ensure that data acquired makes sense, has been
          *  gathered recently within reason (past 10s?)
          * */
-        virtual void GetResult(airspeedData_t *Data); //
+        virtual void GetResult(airspeedData_t *Data) = 0; 
 };
 
 #endif
