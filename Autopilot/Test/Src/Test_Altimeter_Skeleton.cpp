@@ -1,8 +1,10 @@
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 #include "fff.h"
 #include "i2c.h"
 #include "altimeter.h"
+
+#include "altimeter.hpp"
+#include "altimeter_mock.hpp"
 
 /* Info on google test and google mock */
 /* https://github.com/google/googletest/blob/master/googletest/docs/primer.md */
