@@ -8,6 +8,16 @@
 
 #include <stdint.h>
 
+/**
+ * Below is the list of available gps sensors, by part number.
+ * Uncomment the one that is hooked up to hardware.
+ */
+
+// #define NEO_6M // (driver currently unavailable)
+// #define NEO_7P // (driver currently unavailable)
+// #define EMLID_REACH_RTK // (driver currently unavailable)
+
+
 typedef struct
 {
     long double latitude;  // 8 Bytes
