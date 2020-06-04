@@ -1,36 +1,29 @@
 /**
- * IMU Sensor Functions and Part Number Selection
+ * Altimeter Sensor Functions
  * Author: Lucy Gong
  */
 
-#ifndef IMU_HPP
-#define IMU_HPP
+#ifndef ALTIMETER_HPP
+#define ALTIMETER_HPP
 
-#define ICM-20602 0
-#define MPU9255 1
+struct AltimeterData_t {
 
-#define USE_IMU ICM-20602
-
-struct IMUData_t {
-
-    float magx, magy, magz;
-    float accx, accy, accz;
-    float gyrx, gyry, gyrz; 
+    float pressure, altitude, temp;
 
     bool isDataNew; 
     int status; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
     float utcTime; //Last time GetResult was called
 };
 
-class IMU{
+class Altimeter{
     public:
         /**
-         * Initializes IMU
+         * Initializes Altimeter
          * */
         virtual void Init() = 0; 
 
         /**
-         * Triggers interrupt for new IMU measurement - stores raw data in variables and returns right away
+         * Triggers interrupt for new altimeter measurement - stores raw data in variables and returns right away
          * */
         virtual void Begin_Measuring() = 0; 
 
@@ -39,7 +32,7 @@ class IMU{
          * 2. Transfers raw data from variables to struct
          * 3. Updates utcTime and status values in struct as well
          * */
-        virtual void GetResult(IMUData_t *Data) = 0; //
+        virtual void GetResult(AltimeterData_t *Data) = 0; //
 };
 
 #endif
