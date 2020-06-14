@@ -4,8 +4,8 @@
 *
 */
 
-#ifndef AIRSPEED_MOCK_HPP
-#define AIRSPEED_MOCK_HPP
+#ifndef AIRSPEED_MOCK_H
+#define AIRSPEED_MOCK_H
 
 #include "airspeed.hpp"
 
