@@ -12,6 +12,11 @@ struct SFOutput_t{
     float Airspeed; //in m/s (for now)
 };
 
+// -1 = FAILED
+// 0 = SUCCESS
+// 1 = old data
+// 2 = Bad imu
+// 3 = Bad airspeed
 struct SFError_t{
     int errorCode;
 };
