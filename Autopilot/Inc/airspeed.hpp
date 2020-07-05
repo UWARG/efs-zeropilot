@@ -58,4 +58,31 @@ class airspeed
         virtual void GetResult(airspeedData_t *Data) = 0; 
 };
 
+class dummyairspeed: public airspeed{
+    public:
+        /**
+         *  Initializes ADC in order to recieve sensor readings 
+         *  (pitot tube reading)
+         * */
+        virtual void Init(); 
+
+        /**
+         *  Triggers interrupt for new airspeed measurement - stores 
+         *  raw data in variables and returns right away
+         * */
+        virtual void Begin_Measuring(); 
+
+        /**GetResult should:
+         *  1. Transfer raw data from variables to struct
+         *  2. Update utcTime and status values in struct as well
+         *  
+         *
+         *  Potentially:
+         *  ensure that data acquired makes sense, has been
+         *  gathered recently within reason (past 10s?)
+         * */
+        virtual void GetResult(airspeedData_t *Data);
+
+};
+
 #endif

@@ -20,9 +20,9 @@ extern "C" {
 
 //----------------------------------------------------------------------------------------------------
 // Variable declaration
-extern volatile float betag;				// algorithm gain
-extern volatile float q0, q1, q2, q3;	// quaternion of sensor frame relative to auxiliary frame
-extern volatile float qDot1, qDot2, qDot3, qDot4; //rate of change of quaternion
+extern float betag;				// algorithm gain
+extern float q0, q1, q2, q3;	// quaternion of sensor frame relative to auxiliary frame
+extern float qDot1, qDot2, qDot3, qDot4; //rate of change of quaternion
 
 //---------------------------------------------------------------------------------------------------
 // Function declarations

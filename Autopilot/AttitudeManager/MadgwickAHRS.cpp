@@ -26,11 +26,12 @@
 
 //---------------------------------------------------------------------------------------------------
 // Variable definitions
-betag = betaDef;								// 2 * proportional gain (Kp)
-q0 = 1.0f; 
-q1 = 0.0f; 
-q2 = 0.0f; 
-q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
+float betag = betaDef;								// 2 * proportional gain (Kp)
+float q0 = 1.0f; 
+float q1 = 0.0f; 
+float q2 = 0.0f; 
+float q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
+float qDot1, qDot2, qDot3, qDot4;
 
 //---------------------------------------------------------------------------------------------------
 // Function declarations
@@ -144,7 +145,6 @@ void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float 
 void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az) {
 	float recipNorm;
 	float s0, s1, s2, s3;
-	float qDot1, qDot2, qDot3, qDot4;
 	float _2q0, _2q1, _2q2, _2q3, _4q0, _4q1, _4q2 ,_8q1, _8q2, q0q0, q1q1, q2q2, q3q3;
 
 	// Rate of change of quaternion from gyroscope

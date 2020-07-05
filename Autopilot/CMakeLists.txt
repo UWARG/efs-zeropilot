@@ -116,7 +116,7 @@ else()
     SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/CMSIS/Device/ST/STM32F7xx/Include
     SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Test/Inc
     SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Test/vendor/lib
-    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/
+    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager
   )
 
   # Collect all our source files
