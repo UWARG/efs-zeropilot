@@ -13,13 +13,13 @@
 /**
  * Starts the ADC for the battery sensor 
  */
-void initBatterySensor();
+virtual void initBatterySensor();
 
 /**
  *  Returns the battery voltage as a float
  * 
  * @param battery The selected battery to return the voltage from
  */
-float getBatteryVoltage(int battery);
+virtual float getBatteryVoltage(int battery);
 
 #endif
