@@ -31,8 +31,7 @@ struct airspeedData_t
     float utcTime;          // 4 Bytes. Time in seconds since 00:00 
 };
 
-class airspeed 
-{
+class airspeed {
     public:
         /**
          *  Initializes ADC in order to recieve sensor readings 

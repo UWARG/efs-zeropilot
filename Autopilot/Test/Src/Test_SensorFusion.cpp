@@ -45,13 +45,11 @@ TEST(SensorFusion, FailedBusyIMUDataReturnsNegative1) {
 
 	/********************DEPENDENCIES*******************/
 	/********************STEPTHROUGH********************/
-	EXPECT_CALL(imumock, GetResult(_))
-		.WillOnce(SetArgReferee<0>(&IMUTestData));
+	EXPECT_CALL(imumock, GetResult(&IMUTestData));
 
-	EXPECT_CALL(airspeedmock, GetResult(_))
-		.WillOnce(SetArgReferee<0>(&airspeedTestData));
+	EXPECT_CALL(airspeedmock, GetResult(&airspeedTestData));
 	
-	SF_GetResult(&output, &imumock, &airspeedmock);	
+	SF_GetResult(&output, IMUTestData, airspeedTestData);	
 
 	/**********************ASSERTS**********************/
 
