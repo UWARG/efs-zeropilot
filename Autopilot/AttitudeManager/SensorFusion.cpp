@@ -12,10 +12,10 @@
 IMUData_t imudata;
 airspeedData_t airspeeddata;
 
-ICM20602 imusns;
-dummyairspeed airspeedsns;
+// ICM20602 imusns;
+// dummyairspeed airspeedsns;
 
-SFError_t SF_GetResult(SFOutput_t *Output){
+SFError_t SF_GetResult(SFOutput_t *Output, IMU *imusns, airspeed *airspeedsns){
     
     //Error output
     SFError_t SFError;
@@ -32,8 +32,8 @@ SFError_t SF_GetResult(SFOutput_t *Output){
     float imu_YawRate = 0;
 
     //Retrieve raw IMU and Airspeed data
-    imusns.GetResult(&imudata);
-    airspeedsns.GetResult(&airspeeddata);
+    imusns->GetResult(&imudata);
+    airspeedsns->GetResult(&airspeeddata);
 
     //Abort if both sensors are busy or failed data collection
     if(imudata.sensorStatus != 0 && airspeeddata.sensorStatus != 0)

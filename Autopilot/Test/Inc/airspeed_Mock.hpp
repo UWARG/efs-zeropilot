@@ -15,9 +15,9 @@
 class MockAirspeed : public airspeed {
 	public:
 
-		MOCK_METHOD(void, Init, ());
-		MOCK_METHOD(void, BeginMeasuring, ());
-		MOCK_METHOD(void, GetResult, (airspeedData_t *Data));
+		MOCK_METHOD(void, Init, (), (override));
+		MOCK_METHOD(void, BeginMeasuring, (), (override));
+		MOCK_METHOD(void, GetResult, (airspeedData_t *Data),  (override));
 };
 
 #endif

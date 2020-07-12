@@ -14,99 +14,101 @@
 
 using namespace std;
 using ::testing::Test;
+using ::testing::_;
+using ::testing::SetArgReferee;
 
 /***********************************************************************************************************************
  * Mocks
  **********************************************************************************************************************/
+MockIMU imumock;
+MockAirspeed airspeedmock;
 
 /***********************************************************************************************************************
  * Variables
  **********************************************************************************************************************/
+IMUData_t IMUTestData;
+airspeedData_t airspeedTestData;
 
 /***********************************************************************************************************************
  * Tests
  **********************************************************************************************************************/
 
-TEST(SensorFusion, FailedBusyIMUDataReturnsNegative1 ) {
+TEST(SensorFusion, FailedBusyIMUDataReturnsNegative1) {
 
    	/***********************SETUP***********************/
 
-	IMUData_t IMUBad;
-	IMUBad.sensorStatus = -1;
-
-	airspeedData_t AirspeedGood;
-	AirspeedGood.sensorStatus = 0;
+	IMUTestData.sensorStatus = -1;
+	airspeedTestData.sensorStatus = 0;
 
 	SFError_t error;
 	SFOutput_t output;
 
 	/********************DEPENDENCIES*******************/
 	/********************STEPTHROUGH********************/
+	EXPECT_CALL(imumock, GetResult(_))
+		.WillOnce(SetArgReferee<0>(&IMUTestData));
 
-	SF_GetResult(&output);	
+	EXPECT_CALL(airspeedmock, GetResult(_))
+		.WillOnce(SetArgReferee<0>(&airspeedTestData));
+	
+	SF_GetResult(&output, &imumock, &airspeedmock);	
 
 	/**********************ASSERTS**********************/
 
 	ASSERT_EQ(error.errorCode, -1);
 }
 
-TEST(SensorFusion, FailedBusyAirspeedDataReturnsNegative1 ) {
+// TEST(SensorFusion, FailedBusyAirspeedDataReturnsNegative1 ) {
 
-   	/***********************SETUP***********************/
+//    	/***********************SETUP***********************/
 
-	IMUData_t IMUGood;
-	IMUGood.sensorStatus = 0;
+// 	IMUTestData.sensorStatus = 0;
+// 	airspeedTestData.sensorStatus = -1;
 
-	airspeedData_t AirspeedBad;
-	AirspeedBad.sensorStatus = -1;
+// 	SFError_t error;
+// 	SFOutput_t output;
 
-	SFError_t error;
-	SFOutput_t output;
+// 	/********************DEPENDENCIES*******************/
+// 	/********************STEPTHROUGH********************/
 
-	/********************DEPENDENCIES*******************/
-	/********************STEPTHROUGH********************/
+// 	SF_GetResult(&output, &IMUTestData, &airspeedTestData);	
 
-	SF_GetResult(&output);	
+// 	/**********************ASSERTS**********************/
 
-	/**********************ASSERTS**********************/
+// 	ASSERT_EQ(error.errorCode, -1);
+// }
 
-	ASSERT_EQ(error.errorCode, -1);
-}
+// TEST(SensorFusion, OldDataReturns1) {
 
-TEST(SensorFusion, OldDataReturns1) {
+//    	/***********************SETUP***********************/
+// 	IMUTestData.isDataNew = 0;
+// 	airspeedTestData.sensorStatus = -1;
 
-   	/***********************SETUP***********************/
-	IMUData_t IMUOld;
-	IMUOld.isDataNew = 0;
-
-	//Dummy values 
-	IMUOld.magx = 0;
-	IMUOld.magy = 0;
-	IMUOld.magz = 0;
-	IMUOld.accx = 0;
-	IMUOld.accy = 0;
-	IMUOld.accz = 0;
-	IMUOld.gyrx = 0;
-	IMUOld.gyry = 0;
-	IMUOld.gyrz = 0;	
+// 	//Dummy values 
+// 	IMUTestData.magx = 0;
+// 	IMUTestData.magy = 0;
+// 	IMUTestData.magz = 0;
+// 	IMUTestData.accx = 0;
+// 	IMUTestData.accy = 0;
+// 	IMUTestData.accz = 0;
+// 	IMUTestData.gyrx = 0;
+// 	IMUTestData.gyry = 0;
+// 	IMUTestData.gyrz = 0;	
 
 
-	airspeedData_t AirspeedOld;
-	AirspeedOld.sensorStatus = -1;
+// 	//Dummy values
+// 	airspeedTestData.airspeed = 0;
 
-	//Dummy values
-	AirspeedOld.airspeed = 0;
+// 	SFError_t error;
+// 	SFOutput_t output;
 
-	SFError_t error;
-	SFOutput_t output;
+// 	/********************DEPENDENCIES*******************/
+// 	/********************STEPTHROUGH********************/
 
-	/********************DEPENDENCIES*******************/
-	/********************STEPTHROUGH********************/
+// 	SF_GetResult(&output, &IMUTestData, &airspeedTestData);	
 
-	SF_GetResult(&output);	
+// 	/**********************ASSERTS**********************/
 
-	/**********************ASSERTS**********************/
-
-	ASSERT_EQ(error.errorCode, 1);
-}
+// 	ASSERT_EQ(error.errorCode, 1);
+// }
 

@@ -48,19 +48,19 @@ class ICM20602: public IMU{
         /**
          * Initializes IMU
          * */
-        virtual void Init(); 
+        void Init(){}; 
 
         /**
          * Triggers interrupt for new IMU measurement - stores raw data in variables and returns right away
          * */
-        virtual void Begin_Measuring(); 
+        void Begin_Measuring(){}; 
 
         /**GetResult should:
          * 1. Reset dataIsNew flag
          * 2. Transfers raw data from variables to struct
          * 3. Updates utcTime and status values in struct as well
          * */
-        virtual void GetResult(IMUData_t *Data); //
+        void GetResult(IMUData_t *Data){}; //
 
 };
 
