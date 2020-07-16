@@ -39,6 +39,8 @@ TEST(SensorFusion, FailedBusyIMUDataReturnsNegative1) {
 
 	IMUTestData.sensorStatus = -1;
 	airspeedTestData.sensorStatus = 0;
+	IMUTestData.isDataNew = 1;
+	airspeedTestData.isDataNew = 1;
 
 	SFError_t error;
 	SFOutput_t output;
@@ -49,64 +51,74 @@ TEST(SensorFusion, FailedBusyIMUDataReturnsNegative1) {
 
 	EXPECT_CALL(airspeedmock, GetResult(&airspeedTestData));
 	
-	SF_GetResult(&output, IMUTestData, airspeedTestData);	
+	error = SF_GetResult(&output, IMUTestData, airspeedTestData);	
 
 	/**********************ASSERTS**********************/
 
 	ASSERT_EQ(error.errorCode, -1);
 }
 
-// TEST(SensorFusion, FailedBusyAirspeedDataReturnsNegative1 ) {
+TEST(SensorFusion, FailedBusyAirspeedDataReturnsNegative1 ) {
 
-//    	/***********************SETUP***********************/
+   	/***********************SETUP***********************/
 
-// 	IMUTestData.sensorStatus = 0;
-// 	airspeedTestData.sensorStatus = -1;
+	IMUTestData.sensorStatus = 0;
+	airspeedTestData.sensorStatus = -1;
+	IMUTestData.isDataNew = 1;
+	airspeedTestData.isDataNew = 1;
 
-// 	SFError_t error;
-// 	SFOutput_t output;
+	SFError_t error;
+	SFOutput_t output;
 
-// 	/********************DEPENDENCIES*******************/
-// 	/********************STEPTHROUGH********************/
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+	EXPECT_CALL(imumock, GetResult(&IMUTestData));
 
-// 	SF_GetResult(&output, &IMUTestData, &airspeedTestData);	
+	EXPECT_CALL(airspeedmock, GetResult(&airspeedTestData));
 
-// 	/**********************ASSERTS**********************/
+	error = SF_GetResult(&output, IMUTestData, airspeedTestData);	
 
-// 	ASSERT_EQ(error.errorCode, -1);
-// }
+	/**********************ASSERTS**********************/
 
-// TEST(SensorFusion, OldDataReturns1) {
+	ASSERT_EQ(error.errorCode, -1);
+}
 
-//    	/***********************SETUP***********************/
-// 	IMUTestData.isDataNew = 0;
-// 	airspeedTestData.sensorStatus = -1;
+TEST(SensorFusion, OldDataReturns1) {
 
-// 	//Dummy values 
-// 	IMUTestData.magx = 0;
-// 	IMUTestData.magy = 0;
-// 	IMUTestData.magz = 0;
-// 	IMUTestData.accx = 0;
-// 	IMUTestData.accy = 0;
-// 	IMUTestData.accz = 0;
-// 	IMUTestData.gyrx = 0;
-// 	IMUTestData.gyry = 0;
-// 	IMUTestData.gyrz = 0;	
+   	/***********************SETUP***********************/
+	IMUTestData.sensorStatus = 0;
+	airspeedTestData.sensorStatus = 0;	
+	IMUTestData.isDataNew = 0;
+	airspeedTestData.isDataNew = 1;
+
+	//Dummy values 
+	IMUTestData.magx = 0;
+	IMUTestData.magy = 0;
+	IMUTestData.magz = 0;
+	IMUTestData.accx = 0;
+	IMUTestData.accy = 0;
+	IMUTestData.accz = 0;
+	IMUTestData.gyrx = 0;
+	IMUTestData.gyry = 0;
+	IMUTestData.gyrz = 0;	
 
 
-// 	//Dummy values
-// 	airspeedTestData.airspeed = 0;
+	//Dummy values
+	airspeedTestData.airspeed = 0;
 
-// 	SFError_t error;
-// 	SFOutput_t output;
+	SFError_t error;
+	SFOutput_t output;
 
-// 	/********************DEPENDENCIES*******************/
-// 	/********************STEPTHROUGH********************/
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+	EXPECT_CALL(imumock, GetResult(&IMUTestData));
 
-// 	SF_GetResult(&output, &IMUTestData, &airspeedTestData);	
+	EXPECT_CALL(airspeedmock, GetResult(&airspeedTestData));
 
-// 	/**********************ASSERTS**********************/
+	error = SF_GetResult(&output, IMUTestData, airspeedTestData);	
 
-// 	ASSERT_EQ(error.errorCode, 1);
-// }
+	/**********************ASSERTS**********************/
+
+	ASSERT_EQ(error.errorCode, 1);
+}
 

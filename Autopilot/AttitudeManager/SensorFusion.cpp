@@ -35,8 +35,8 @@ SFError_t SF_GetResult(SFOutput_t *Output, IMUData_t imudata, airspeedData_t air
     airspeedsns.GetResult(&airspeeddata);
 
     //Abort if both sensors are busy or failed data collection
-    if(imudata.sensorStatus != 0 && airspeeddata.sensorStatus != 0)
-    {
+    if(imudata.sensorStatus != 0 || airspeeddata.sensorStatus != 0)
+    {  
         SFError.errorCode = -1;
         return SFError;
     }
