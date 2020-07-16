@@ -1,6 +1,5 @@
 /*
-* Sensor Fusion Algorithms - uses Madgwick Algorithm to fuse IMU data
-* then converts the quaternion representation into Yaw/Pitch/Roll angles
+* Sensor Fusion Algorithms - uses Madgwick/Kalmann/etc. tbd PLEASE EDIT THIS AND ADD MORE INFO :))))))))) 
 * Author: Lucy Gong
 */
 #include "SensorFusion.hpp"

@@ -18,7 +18,7 @@ struct IMUData_t {
     float gyrx, gyry, gyrz; 
 
     bool isDataNew; 
-    int sensorStatus; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
+    int status; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
     float utcTime; //Last time GetResult was called
 };
 
