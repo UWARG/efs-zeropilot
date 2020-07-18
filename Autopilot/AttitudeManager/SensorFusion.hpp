@@ -22,7 +22,7 @@ struct SFError_t{
     int errorCode;
 };
 
-SFError_t SF_GetResult(SFOutput_t *Output, IMUData_t imudata, airspeedData_t airspeeddata);
+SFError_t SF_GetResult(SFOutput_t *Output, IMU *imusns, airspeed *airspeedsns);
 
 
 #endif

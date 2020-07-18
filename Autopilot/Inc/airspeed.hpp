@@ -54,7 +54,7 @@ class airspeed {
          *  ensure that data acquired makes sense, has been
          *  gathered recently within reason (past 10s?)
          * */
-        virtual void GetResult(airspeedData_t *Data) = 0; 
+        virtual void GetResult(airspeedData_t &Data) = 0; 
 };
 
 class dummyairspeed: public airspeed{
@@ -80,7 +80,7 @@ class dummyairspeed: public airspeed{
          *  ensure that data acquired makes sense, has been
          *  gathered recently within reason (past 10s?)
          * */
-        void GetResult(airspeedData_t *Data) {};
+        void GetResult(airspeedData_t &Data) {};
 
 };
 
