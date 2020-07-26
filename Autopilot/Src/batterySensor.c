@@ -1,0 +1,9 @@
+void initADC()
+{
+
+}
+
+float getBatteryVoltage()
+{
+    
+}
