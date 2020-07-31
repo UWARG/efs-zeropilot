@@ -10,16 +10,23 @@
 #ifndef BATTERYSENSOR_HPP
 #define BATTERYSENSOR_HPP
 
+
+class batterySensor
+{
+    public:
 /**
  * Starts the ADC for the battery sensor 
  */
-virtual void initBatterySensor();
+    virtual void initBatterySensor();
 
 /**
  *  Returns the battery voltage as a float
  * 
  * @param battery The selected battery to return the voltage from
  */
-virtual float getBatteryVoltage(int battery);
+    virtual float getBatteryVoltage(int battery);
+
+};
+
 
 #endif
