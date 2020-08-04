@@ -7,5 +7,6 @@ enum attitudeManagerState {
     sensorInput,
     pathManagerInput,
     PIDloop,
-    sendToSafetyMode
+    sendToSafetyMode,
+    failed
 };
