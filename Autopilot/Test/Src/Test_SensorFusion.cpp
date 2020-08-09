@@ -48,12 +48,14 @@ TEST(SensorFusion, FailedBusyIMUDataReturnsNegative1) {
 	SFOutput_t output;
 
 	/********************DEPENDENCIES*******************/
-	/********************STEPTHROUGH********************/
+
 	EXPECT_CALL(imumock, GetResult(_))
 		.WillOnce(DoAll(SetArgReferee<0>(IMUTestData)));
 
 	EXPECT_CALL(airspeedmock, GetResult(_))
 		.WillOnce(DoAll(SetArgReferee<0>(airspeedTestData)));
+	
+	/********************STEPTHROUGH********************/
 	
 	error = SF_GetResult(&output, &imumock, &airspeedmock);	
 
@@ -78,12 +80,14 @@ TEST(SensorFusion, FailedBusyAirspeedDataReturnsNegative1 ) {
 	SFOutput_t output;
 
 	/********************DEPENDENCIES*******************/
-	/********************STEPTHROUGH********************/
+	
 	EXPECT_CALL(imumock, GetResult(_))
 		.WillOnce(DoAll(SetArgReferee<0>(IMUTestData)));
 
 	EXPECT_CALL(airspeedmock, GetResult(_))
 		.WillOnce(DoAll(SetArgReferee<0>(airspeedTestData)));
+	
+	/********************STEPTHROUGH********************/
 	
 	error = SF_GetResult(&output, &imumock, &airspeedmock);	
 
@@ -122,12 +126,14 @@ TEST(SensorFusion, OldDataReturns1) {
 	SFOutput_t output;
 
 	/********************DEPENDENCIES*******************/
-	/********************STEPTHROUGH********************/
+	
 	EXPECT_CALL(imumock, GetResult(_))
 		.WillOnce(DoAll(SetArgReferee<0>(IMUTestData)));
 
 	EXPECT_CALL(airspeedmock, GetResult(_))
 		.WillOnce(DoAll(SetArgReferee<0>(airspeedTestData)));
+	
+	/********************STEPTHROUGH********************/
 	
 	error = SF_GetResult(&output, &imumock, &airspeedmock);		
 
