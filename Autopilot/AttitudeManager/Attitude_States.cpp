@@ -17,14 +17,22 @@ enum attitudeManagerState {
     sendToSafetyMode,
     failedMode
 };
+
 attitudeManagerState currentState;
 /***********************************************************************************************************************
  * Prototypes
  **********************************************************************************************************************/
 static attitudeManagerState pathManagerInput(void);
+
+
 static attitudeManagerState PIDloop(void);
+
+
 static attitudeManagerState sendToSafety(void);
+
+
 static attitudeManagerState failed(void);
+
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
@@ -35,4 +43,19 @@ void initAttitudeState()
     PIDController PID; 
     //Initialize SendtoSafety Module
     SendToSafety_Init();
+}
+
+static void pathManagerInput()
+{
+    currentState = PIDloopMode;
+}
+
+static void PIDLoop()
+{
+    currentState = sendToSafetyMode;
+}
+
+static void sendToSafety()
+{
+    currentState = pathManagerInputMode;
 }
