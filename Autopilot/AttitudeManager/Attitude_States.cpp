@@ -47,15 +47,22 @@ void initAttitudeState()
 
 static void pathManagerInput()
 {
+    PMCommands Commands;
+    int pmErrorState = PM_Commands(Commands); //dummy commands call for now?
     currentState = PIDloopMode;
 }
 
-static void PIDLoop()
+static void PIDloop()
 {
+    int error = 0;
+    PID->PIDControl(error);
     currentState = sendToSafetyMode;
 }
 
 static void sendToSafety()
 {
+    float channelOut = 0; //default value
+    int errorState = OutputMixing_Execute(); //requires arguements!!
+    SendToSafety_Execute(channelOut); //sends the instructions to safety. Dumb q: why is it not liking me passing in the float?
     currentState = pathManagerInputMode;
 }

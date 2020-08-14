@@ -8,7 +8,7 @@
 static void initAttitudeState();
 static void runAttitude();
 
-
+PIDController PID;
 
 
 #endif
