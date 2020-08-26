@@ -3,7 +3,7 @@
 
 attitudeManager::attitudeManager()
 {
-    currentState = &sensorInputMode::getInstance();
+    currentState = &sensorFusionMode::getInstance();
 }
 
 void attitudeManager::setState(attitudeState& newState)
@@ -13,7 +13,7 @@ void attitudeManager::setState(attitudeState& newState)
     currentState->enter(this);
 }
 
-void attitudeManager::toggle()
+void attitudeManager::execute()
 {
-    currentState->toggle(this);
+    currentState->execute(this);
 }
