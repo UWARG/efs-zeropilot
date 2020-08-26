@@ -2,24 +2,37 @@
 #include "attitudeStateManager.hpp"
 #include "attitudeManager.hpp"
 
-class sensorInputMode : public attitudeState
+class fetchInstructionsMode : public attitudeState
 {
-    public: 
+    public:
         void enter(attitudeManager* attitudeMgr) {}
-        void toggle(attitudeManager* attitudeMgr);
+        void execute(attitudeManager* attitudeMgr);
         void exit(attitudeManager* attitudeMgr) {}
         static attitudeState& getInstance();
     private:
-        sensorInputMode() {}
-        sensorInputMode(const sensorInputMode& other);
-        sensorInputMode& operator =(const sensorInputMode& other);
+        fetchInstructionsMode() {}
+        fetchInstructionsMode(const fetchInstructionsMode& other);
+        fetchInstructionsMode& operator =(const fetchInstructionsMode& other);
+};
+
+class sensorFusionMode : public attitudeState
+{
+    public:
+        void enter(attitudeManager* attitudeMgr) {}
+        void execute(attitudeManager* attitudeMgr);
+        void exit(attitudeManager* attitudeMgr) {}
+        static attitudeState& getInstance();
+    private:
+        sensorFusionMode() {}
+        sensorFusionMode(const sensorFusionMode& other);
+        sensorFusionMode& operator =(const sensorFusionMode& other);
 };
 
 class PIDloopMode : public attitudeState
 {
-    public: 
+    public:
         void enter(attitudeManager* attitudeMgr) {}
-        void toggle(attitudeManager* attitudeMgr);
+        void execute(attitudeManager* attitudeMgr);
         void exit(attitudeManager* attitudeMgr) {}
         static attitudeState& getInstance();
     private:
@@ -30,9 +43,9 @@ class PIDloopMode : public attitudeState
 
 class sendToSafetyMode : public attitudeState
 {
-    public: 
+    public:
         void enter(attitudeManager* attitudeMgr) {}
-        void toggle(attitudeManager* attitudeMgr);
+        void execute(attitudeManager* attitudeMgr);
         void exit(attitudeManager* attitudeMgr) {}
         static attitudeState& getInstance();
     private:

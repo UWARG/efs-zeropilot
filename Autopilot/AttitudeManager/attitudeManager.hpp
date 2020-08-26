@@ -8,7 +8,7 @@ class attitudeManager
     public:
         attitudeManager();
         inline attitudeState* getCurrentState() const {return currentState;}
-        void toggle();
+        void execute();
         void setState(attitudeState& newState);
 
     private:
