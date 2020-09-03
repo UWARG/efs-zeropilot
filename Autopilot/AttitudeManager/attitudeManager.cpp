@@ -3,7 +3,7 @@
 
 attitudeManager::attitudeManager()
 {
-    currentState = &sensorFusionMode::getInstance();
+    currentState = &fetchInstructionsMode::getInstance();
 }
 
 void attitudeManager::setState(attitudeState& newState)
