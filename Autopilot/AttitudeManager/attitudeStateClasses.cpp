@@ -1,17 +1,28 @@
 #include "attitudeStateClasses.hpp"
 
-void sensorInputMode::toggle(attitudeManager* attitudeMgr)
+void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
+{
+    attitudeMgr->setState(sensorFusionMode::getInstance());
+}
+
+attitudeState& fetchInstructionsMode::getInstance()
+{
+    static fetchInstructionsMode singleton;
+    return singleton;
+}
+
+void sensorFusionMode::execute(attitudeManager* attitudeMgr)
 {
     attitudeMgr->setState(PIDloopMode::getInstance());
 }
 
-attitudeState& sensorInputMode::getInstance()
+attitudeState& sensorFusionMode::getInstance()
 {
-    static sensorInputMode singleton;
+    static sensorFusionMode singleton;
     return singleton;
 }
 
-void PIDloopMode::toggle(attitudeManager* attitudeMgr)
+void PIDloopMode::execute(attitudeManager* attitudeMgr)
 {
     attitudeMgr->setState(sendToSafetyMode::getInstance());
 }
@@ -22,9 +33,9 @@ attitudeState& PIDloopMode::getInstance()
     return singleton;
 }
 
-void sendToSafetyMode::toggle(attitudeManager* attitudeMgr)
+void sendToSafetyMode::execute(attitudeManager* attitudeMgr)
 {
-    attitudeMgr->setState(sensorInputMode::getInstance());
+    attitudeMgr->setState(fetchInstructionsMode::getInstance());
 }
 
 attitudeState& sendToSafetyMode::getInstance()
