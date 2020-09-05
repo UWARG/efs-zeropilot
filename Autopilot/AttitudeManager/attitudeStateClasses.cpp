@@ -2,7 +2,7 @@
 
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {
-    attitudeMgr->setState(PIDloopMode::getInstance());
+    attitudeMgr->setState(sensorFusionMode::getInstance());
 }
 
 attitudeState& fetchInstructionsMode::getInstance()
@@ -35,7 +35,7 @@ attitudeState& PIDloopMode::getInstance()
 
 void sendToSafetyMode::execute(attitudeManager* attitudeMgr)
 {
-    attitudeMgr->setState(sensorFusionMode::getInstance());
+    attitudeMgr->setState(fetchInstructionsMode::getInstance());
 }
 
 attitudeState& sendToSafetyMode::getInstance()
