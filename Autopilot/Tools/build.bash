@@ -124,5 +124,5 @@ else
         ../
     cmake --build $BUILD_DIR
 
-    ./$BUILD_DIR/runTests
+    run-parts $BUILD_DIR/bin
 fi

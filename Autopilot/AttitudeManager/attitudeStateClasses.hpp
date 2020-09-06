@@ -67,4 +67,18 @@ class sendToSafetyMode : public attitudeState
         sendToSafetyMode& operator =(const sendToSafetyMode& other);
 };
 
+class FatalFailureMode : public attitudeState
+{
+    public:
+        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
+        void execute(attitudeManager* attitudeMgr);
+        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
+        static attitudeState& getInstance();
+    private:
+        FatalFailureMode() {}
+        FatalFailureMode(const FatalFailureMode& other);
+        FatalFailureMode& operator =(const FatalFailureMode& other);
+};
+
+
 //Reminder: add failed state mode?

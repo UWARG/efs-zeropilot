@@ -1,8 +1,26 @@
 #include "attitudeStateClasses.hpp"
 
+#include "GetFromPathManager.hpp"
+#include "SensorFusion.hpp"
+
+/***********************************************************************************************************************
+ * Code
+ **********************************************************************************************************************/
+
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {
-    attitudeMgr->setState(sensorFusionMode::getInstance());
+    PMCommands Instructions;
+
+    PMError_t ErrorStruct = PM_GetCommands(&Instructions);
+
+    if (ErrorStruct.errorCode == 0)
+    {
+        attitudeMgr->setState(sensorFusionMode::getInstance());
+    }
+    else
+    {
+        attitudeMgr->setState(FatalFailureMode::getInstance());
+    }
 }
 
 attitudeState& fetchInstructionsMode::getInstance()
@@ -13,7 +31,18 @@ attitudeState& fetchInstructionsMode::getInstance()
 
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
 {
-    attitudeMgr->setState(PIDloopMode::getInstance());
+    SFOutput_t SFOutput;
+
+    SFError_t ErrorStruct = SF_GetResult(&SFOutput);
+
+    if (ErrorStruct.errorCode == 0)
+    {
+        attitudeMgr->setState(PIDloopMode::getInstance());
+    }
+    else
+    {
+        attitudeMgr->setState(FatalFailureMode::getInstance());
+    }
 }
 
 attitudeState& sensorFusionMode::getInstance()
@@ -52,5 +81,16 @@ void sendToSafetyMode::execute(attitudeManager* attitudeMgr)
 attitudeState& sendToSafetyMode::getInstance()
 {
     static sendToSafetyMode singleton;
+    return singleton;
+}
+
+void FatalFailureMode::execute(attitudeManager* attitudeMgr)
+{
+    attitudeMgr->setState(FatalFailureMode::getInstance());
+}
+
+attitudeState& FatalFailureMode::getInstance()
+{
+    static FatalFailureMode singleton;
     return singleton;
 }
