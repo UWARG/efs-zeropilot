@@ -24,12 +24,23 @@ attitudeState& sensorFusionMode::getInstance()
 
 void PIDloopMode::execute(attitudeManager* attitudeMgr)
 {
-    attitudeMgr->setState(sendToSafetyMode::getInstance());
+    attitudeMgr->setState(OutputMixingMode::getInstance());
 }
 
 attitudeState& PIDloopMode::getInstance()
 {
     static PIDloopMode singleton;
+    return singleton;
+}
+
+void OutputMixingMode::execute(attitudeManager* attitudeMgr)
+{
+    attitudeMgr->setState(sendToSafetyMode::getInstance());
+}
+
+attitudeState& OutputMixingMode::getInstance()
+{
+    static OutputMixingMode singleton;
     return singleton;
 }
 

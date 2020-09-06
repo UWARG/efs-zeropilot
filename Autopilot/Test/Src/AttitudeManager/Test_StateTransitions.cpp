@@ -1,7 +1,6 @@
 /*
-*
-* A skeleton for testing the sensor fusion algorithm
-*
+* This file contains all the tests that relate to ensuring the transitions between states of the attitude manager FSM are correct.
+* Author: Anthony Berbari
 */
 
 #include <gtest/gtest.h>
@@ -40,6 +39,7 @@ TEST(AttitudeManagerFSM, TransitionFromFetchInstructionsToSensorFusion) {
 	/********************DEPENDENCIES*******************/
 	/********************STEPTHROUGH********************/
 
+	attMng.setState(fetchInstructionsMode::getInstance());
 	attMng.execute();
 
 	/**********************ASSERTS**********************/
@@ -57,10 +57,61 @@ TEST(AttitudeManagerFSM, TransitionFromSensorFusionToPID) {
 	/********************DEPENDENCIES*******************/
 	/********************STEPTHROUGH********************/
 
-	attMng.execute();
+	attMng.setState(sensorFusionMode::getInstance());
 	attMng.execute();
 
 	/**********************ASSERTS**********************/
 
 	ASSERT_EQ(*(attMng.getCurrentState()), PIDloopMode::getInstance());
+}
+
+TEST(AttitudeManagerFSM, TransitionFromPIDToOutputMixing) {
+
+   	/***********************SETUP***********************/
+
+	attitudeManager attMng;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	attMng.setState(PIDloopMode::getInstance());
+	attMng.execute();
+
+	/**********************ASSERTS**********************/
+
+	ASSERT_EQ(*(attMng.getCurrentState()), OutputMixingMode::getInstance());
+}
+
+TEST(AttitudeManagerFSM, TransitionFromOutputMixingToSendToSafety) {
+
+   	/***********************SETUP***********************/
+
+	attitudeManager attMng;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	attMng.setState(OutputMixingMode::getInstance());
+	attMng.execute();
+
+	/**********************ASSERTS**********************/
+
+	ASSERT_EQ(*(attMng.getCurrentState()), sendToSafetyMode::getInstance());
+}
+
+TEST(AttitudeManagerFSM, TransitionFromSendToSafetyToFetchInstructions) {
+
+   	/***********************SETUP***********************/
+
+	attitudeManager attMng;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	attMng.setState(sendToSafetyMode::getInstance());
+	attMng.execute();
+
+	/**********************ASSERTS**********************/
+
+	ASSERT_EQ(*(attMng.getCurrentState()), fetchInstructionsMode::getInstance());
 }

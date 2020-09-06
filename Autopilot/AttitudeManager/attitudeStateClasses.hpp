@@ -5,9 +5,9 @@
 class fetchInstructionsMode : public attitudeState
 {
     public:
-        void enter(attitudeManager* attitudeMgr) {}
+        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         void execute(attitudeManager* attitudeMgr);
-        void exit(attitudeManager* attitudeMgr) {}
+        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
     private:
         fetchInstructionsMode() {}
@@ -18,9 +18,9 @@ class fetchInstructionsMode : public attitudeState
 class sensorFusionMode : public attitudeState
 {
     public:
-        void enter(attitudeManager* attitudeMgr) {}
+        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         void execute(attitudeManager* attitudeMgr);
-        void exit(attitudeManager* attitudeMgr) {}
+        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
     private:
         sensorFusionMode() {}
@@ -31,9 +31,9 @@ class sensorFusionMode : public attitudeState
 class PIDloopMode : public attitudeState
 {
     public:
-        void enter(attitudeManager* attitudeMgr) {}
+        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         void execute(attitudeManager* attitudeMgr);
-        void exit(attitudeManager* attitudeMgr) {}
+        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
     private:
         PIDloopMode() {}
@@ -41,12 +41,25 @@ class PIDloopMode : public attitudeState
         PIDloopMode& operator =(const PIDloopMode& other);
 };
 
+class OutputMixingMode : public attitudeState
+{
+    public:
+        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
+        void execute(attitudeManager* attitudeMgr);
+        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
+        static attitudeState& getInstance();
+    private:
+        OutputMixingMode() {}
+        OutputMixingMode(const OutputMixingMode& other);
+        OutputMixingMode& operator =(const OutputMixingMode& other);
+};
+
 class sendToSafetyMode : public attitudeState
 {
     public:
-        void enter(attitudeManager* attitudeMgr) {}
+        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         void execute(attitudeManager* attitudeMgr);
-        void exit(attitudeManager* attitudeMgr) {}
+        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
     private:
         sendToSafetyMode() {}
