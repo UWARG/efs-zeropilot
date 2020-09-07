@@ -143,10 +143,11 @@ else()
   set(ATTITUDE_MANAGER_FSM_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/attitudeManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/attitudeStateClasses.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/PID.cpp # TODO Pid.h was not built to be unit testable. Once it is, we can remove this file from the compilation and mock against the interface.
   )
 
   set(ATTITUDE_MANAGER_FSM_UNIT_TEST_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/AttitudeManager/fsm/Test_StateTransitions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/AttitudeManager/Test_Fsm.cpp
   )
 
   add_executable(attitudeManagerFSM ${ATTITUDE_MANAGER_FSM_SOURCES} ${ATTITUDE_MANAGER_FSM_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
@@ -161,7 +162,7 @@ else()
   )
 
   set(ATTITUDE_MANAGER_MODULES_UNIT_TEST_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/AttitudeManager/modules/Test_OutputMixing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/AttitudeManager/Test_Modules.cpp
   )
 
   add_executable(attitudeManagerModules ${ATTITUDE_MANAGER_MODULES_SOURCES} ${ATTITUDE_MANAGER_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})

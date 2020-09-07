@@ -1,7 +1,13 @@
 #include "attitudeStateClasses.hpp"
 
-#include "GetFromPathManager.hpp"
-#include "SensorFusion.hpp"
+/***********************************************************************************************************************
+ * Definitions
+ **********************************************************************************************************************/
+
+float OutputMixingMode::_channelOut[4];
+PMCommands fetchInstructionsMode::_PMInstructions;
+SFOutput_t sensorFusionMode::_SFOutput;
+PID_Output_t PIDloopMode::_PidOutput;
 
 /***********************************************************************************************************************
  * Code
@@ -9,9 +15,8 @@
 
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {
-    PMCommands Instructions;
 
-    PMError_t ErrorStruct = PM_GetCommands(&Instructions);
+    PMError_t ErrorStruct = PM_GetCommands(&_PMInstructions);
 
     if (ErrorStruct.errorCode == 0)
     {
@@ -31,9 +36,7 @@ attitudeState& fetchInstructionsMode::getInstance()
 
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
 {
-    SFOutput_t SFOutput;
-
-    SFError_t ErrorStruct = SF_GetResult(&SFOutput);
+    SFError_t ErrorStruct = SF_GetResult(&_SFOutput);
 
     if (ErrorStruct.errorCode == 0)
     {
@@ -53,6 +56,16 @@ attitudeState& sensorFusionMode::getInstance()
 
 void PIDloopMode::execute(attitudeManager* attitudeMgr)
 {
+
+    PMCommands *PMInstructions = fetchInstructionsMode::GetPMInstructions();
+    SFOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
+
+    // TODO the IMU also gives us the measured derivative of roll, pitch, and yaw. That should be used in the PID algorithm
+    _PidOutput.rollPercent = _rollPid.PIDControl(PMInstructions->roll - SFOutput->IMUroll);
+    _PidOutput.pitchPercent = _pitchPid.PIDControl(PMInstructions->pitch - SFOutput->IMUpitch);
+    _PidOutput.yawPercent = _yawPid.PIDControl(PMInstructions->yaw - SFOutput->IMUyaw);
+    _PidOutput.throttlePercent = _airspeedPid.PIDControl(PMInstructions->airspeed - SFOutput->Airspeed);
+
     attitudeMgr->setState(OutputMixingMode::getInstance());
 }
 
@@ -64,7 +77,19 @@ attitudeState& PIDloopMode::getInstance()
 
 void OutputMixingMode::execute(attitudeManager* attitudeMgr)
 {
-    attitudeMgr->setState(sendToSafetyMode::getInstance());
+    PID_Output_t *PidOutput = PIDloopMode::GetPidOutput();
+
+    OutputMixing_error_t ErrorStruct = OutputMixing_Execute(PidOutput, _channelOut);
+
+    if (ErrorStruct.errorCode == 0)
+    {
+        attitudeMgr->setState(sendToSafetyMode::getInstance());
+    }
+    else
+    {
+        attitudeMgr->setState(FatalFailureMode::getInstance());
+    }
+
 }
 
 attitudeState& OutputMixingMode::getInstance()
@@ -75,7 +100,19 @@ attitudeState& OutputMixingMode::getInstance()
 
 void sendToSafetyMode::execute(attitudeManager* attitudeMgr)
 {
-    attitudeMgr->setState(fetchInstructionsMode::getInstance());
+    float *channelOut = OutputMixingMode::GetChannelOut();
+
+    SendToSafety_error_t ErrorStruct = SendToSafety_Execute(channelOut);
+
+    if (ErrorStruct.errorCode == 0)
+    {
+        attitudeMgr->setState(fetchInstructionsMode::getInstance());
+    }
+    else
+    {
+        attitudeMgr->setState(FatalFailureMode::getInstance());
+    }
+
 }
 
 attitudeState& sendToSafetyMode::getInstance()
