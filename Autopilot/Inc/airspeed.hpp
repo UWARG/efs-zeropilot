@@ -31,8 +31,7 @@ struct airspeedData_t
     float utcTime;          // 4 Bytes. Time in seconds since 00:00 
 };
 
-class airspeed 
-{
+class airspeed {
     public:
         /**
          *  Initializes ADC in order to recieve sensor readings 
@@ -55,7 +54,34 @@ class airspeed
          *  ensure that data acquired makes sense, has been
          *  gathered recently within reason (past 10s?)
          * */
-        virtual void GetResult(airspeedData_t *Data) = 0; 
+        virtual void GetResult(airspeedData_t &Data) = 0; 
+};
+
+class dummyairspeed: public airspeed{
+    public:
+        /**
+         *  Initializes ADC in order to recieve sensor readings 
+         *  (pitot tube reading)
+         * */
+        void Init() {}; 
+
+        /**
+         *  Triggers interrupt for new airspeed measurement - stores 
+         *  raw data in variables and returns right away
+         * */
+        void Begin_Measuring() {}; 
+
+        /**GetResult should:
+         *  1. Transfer raw data from variables to struct
+         *  2. Update utcTime and status values in struct as well
+         *  
+         *
+         *  Potentially:
+         *  ensure that data acquired makes sense, has been
+         *  gathered recently within reason (past 10s?)
+         * */
+        void GetResult(airspeedData_t &Data) {};
+
 };
 
 #endif
