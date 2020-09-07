@@ -7,7 +7,24 @@
 #include "OutputMixing.hpp"
 #include "PID.h"
 #include "SendInstructionsToSafety.hpp"
+#include "IMU.hpp"
+#include "airspeed.hpp"
 
+/***********************************************************************************************************************
+ * Code
+ **********************************************************************************************************************/
+
+#ifdef SIMULATION
+
+#define IMU_CLASS SimulatedIMU
+#define AIRSPEED_CLASS SimulatedAirspeed
+
+#else
+
+#define IMU_CLASS ICM20602  // TODO to be replaced with the real classes once the sensor drivers are built
+#define AIRSPEED_CLASS dummyairspeed
+
+#endif
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
@@ -40,6 +57,8 @@ class sensorFusionMode : public attitudeState
         sensorFusionMode() {}
         sensorFusionMode(const sensorFusionMode& other);
         sensorFusionMode& operator =(const sensorFusionMode& other);
+        IMU_CLASS ImuSens;
+        AIRSPEED_CLASS AirspeedSens;
         static SFOutput_t _SFOutput;
 
 };

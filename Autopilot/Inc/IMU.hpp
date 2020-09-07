@@ -15,10 +15,10 @@ struct IMUData_t {
 
     float magx, magy, magz;
     float accx, accy, accz;
-    float gyrx, gyry, gyrz; 
+    float gyrx, gyry, gyrz;
 
-    bool isDataNew; 
-    int sensorStatus; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
+    bool isDataNew;
+    int sensorStatus; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY
     float utcTime; //Last time GetResult was called
 };
 
@@ -27,12 +27,12 @@ class IMU{
         /**
          * Initializes IMU
          * */
-        virtual void Init() = 0; 
+        IMU(){};
 
         /**
          * Triggers interrupt for new IMU measurement - stores raw data in variables and returns right away
          * */
-        virtual void Begin_Measuring() = 0; 
+        virtual void Begin_Measuring() = 0;
 
         /**GetResult should:
          * 1. Reset dataIsNew flag
@@ -42,18 +42,22 @@ class IMU{
         virtual void GetResult(IMUData_t &Data) = 0; //
 };
 
+/***********************************************************************************************************************
+ * Derived classes
+ **********************************************************************************************************************/
+
 //To be replaced with implementation of actual sensor
 class ICM20602: public IMU{
     public:
         /**
          * Initializes IMU
          * */
-        void Init(){}; 
+        ICM20602(){};
 
         /**
          * Triggers interrupt for new IMU measurement - stores raw data in variables and returns right away
          * */
-        void Begin_Measuring(){}; 
+        void Begin_Measuring(){};
 
         /**GetResult should:
          * 1. Reset dataIsNew flag
@@ -62,6 +66,17 @@ class ICM20602: public IMU{
          * */
         void GetResult(IMUData_t &Data){}; //
 
+};
+
+// This derived class hooks into the Simulink simulation rather than hardware
+class SimulatedIMU : public IMU
+{
+    public :
+        SimulatedIMU(){};
+        void Begin_Measuring(){};
+        void GetResult(IMUData_t &Data);
+    private:
+        float getNewestDataPoint(const char * fileName);
 };
 
 #endif

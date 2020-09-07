@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.2.0)
 project(Autopilot C CXX ASM)
 
 #checks wether we are building for the microcontroller or to run the PC based unit tests
-if (CMAKE_CROSSCOMPILING)
+if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
 
   set(ELF_NAME ${PROJECT_NAME}.elf)
 
@@ -86,7 +86,7 @@ if (CMAKE_CROSSCOMPILING)
           -iex "monitor reset init"
           -iex "disconnect" -iex "quit")
 
-else()
+elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
   add_definitions(
     -DUSE_HAL_LIB
@@ -109,14 +109,14 @@ else()
   endif()
 
   include_directories(
-    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
     SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/STM32F7xx_HAL_Driver/Inc
-    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/../Common/Inc
     SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/CMSIS/Include
     SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/CMSIS/Device/ST/STM32F7xx/Include
-    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Test/Inc
     SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Test/vendor/lib
-    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Common/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Inc
   )
 
   # Let cmake know where to find all the find<Package>.cmake files
@@ -159,14 +159,93 @@ else()
 
   set(ATTITUDE_MANAGER_MODULES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/OutputMixing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/SensorFusion.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/MadgwickAHRS.cpp
+
   )
 
   set(ATTITUDE_MANAGER_MODULES_UNIT_TEST_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/AttitudeManager/Test_Modules.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/AttitudeManager/Test_SensorFusion.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/AttitudeManager/Test_OutputMixing.cpp
   )
 
   add_executable(attitudeManagerModules ${ATTITUDE_MANAGER_MODULES_SOURCES} ${ATTITUDE_MANAGER_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
   target_link_libraries(attitudeManagerModules ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
+
+#########
+
+elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
+
+  add_definitions(-DSIMULATION)
+
+  set(SIM_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../Simulink-Sim/Spike)
+
+  add_definitions(
+    -DUSE_HAL_LIB
+    -DSTM32F7xx
+    -DSTM32F765xx
+    -DSTM32F765xG
+    -DARM_MATH_CM7
+  )
+
+  # Required to get some of the CMSIS libraries to compile
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -fms-extensions -Wall -Wextra -g")
+
+  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+  # Required to allow us to point to the gtest directory using an environment variable. (This has only been an issue on the windows CI)
+  if(POLICY CMP0074)
+    cmake_policy(SET CMP0074 NEW)
+  endif()
+
+  include_directories(
+    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/STM32F7xx_HAL_Driver/Inc
+    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/CMSIS/Include
+    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/CMSIS/Device/ST/STM32F7xx/Include
+    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Test/vendor/lib
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Common/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager
+
+    ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw
+    ${SIM_ROOT_DIR}/GeneratedCCode/R2018b/extern/include
+    ${SIM_ROOT_DIR}/GeneratedCCode/R2018b/rtw/c/src
+    ${SIM_ROOT_DIR}/GeneratedCCode/R2018b/rtw/c/src/ext_mode/common
+    ${SIM_ROOT_DIR}/GeneratedCCode/R2018b/simulink/include
+  )
+
+  add_custom_target(make-ActuatorCommand-dir ALL
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/ActuatorCommands")
+  add_custom_target(make-SensorOutput-dir ALL
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/SensorOutputs")
+
+
+  set(ATTITUDE_MANAGER_SIM_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/attitudeManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/attitudeStateClasses.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/OutputMixing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/SensorFusion.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/MadgwickAHRS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/GetFromPathManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/PID.cpp
+  )
+
+  set(ZERO_PILOT_HOOK_SOURCES
+  ${SIM_ROOT_DIR}/ZeroPilotSwHooks/SendToSafetyIntercept.cpp
+  ${SIM_ROOT_DIR}/ZeroPilotSwHooks/AirspeedSensorIntercept.cpp
+  ${SIM_ROOT_DIR}/ZeroPilotSwHooks/IMUSensorIntercept.cpp
+)
+  set(SIMULINK_GENERATED_SOURCES
+  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw/Spike.cpp
+  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw/rt_nonfinite.cpp
+  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw/rtGetNaN.cpp
+  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw/rtGetInf.cpp
+)
+
+  add_executable(sim ${ATTITUDE_MANAGER_SIM_SOURCES} ${ZERO_PILOT_HOOK_SOURCES} ${SIMULINK_GENERATED_SOURCES})
+  target_link_libraries(sim m)
 
 #########
 

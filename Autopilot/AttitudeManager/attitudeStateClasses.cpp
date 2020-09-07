@@ -36,7 +36,7 @@ attitudeState& fetchInstructionsMode::getInstance()
 
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
 {
-    SFError_t ErrorStruct = SF_GetResult(&_SFOutput);
+    SFError_t ErrorStruct = SF_GetResult(&_SFOutput, &ImuSens, &AirspeedSens);
 
     if (ErrorStruct.errorCode == 0)
     {
@@ -65,6 +65,11 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     _PidOutput.pitchPercent = _pitchPid.PIDControl(PMInstructions->pitch - SFOutput->IMUpitch);
     _PidOutput.yawPercent = _yawPid.PIDControl(PMInstructions->yaw - SFOutput->IMUyaw);
     _PidOutput.throttlePercent = _airspeedPid.PIDControl(PMInstructions->airspeed - SFOutput->Airspeed);
+
+    _PidOutput.rollPercent = 0;  // TODO Pid needs fixing
+    _PidOutput.pitchPercent = 0;
+    _PidOutput.yawPercent = 0;
+    _PidOutput.throttlePercent = 50;
 
     attitudeMgr->setState(OutputMixingMode::getInstance());
 }

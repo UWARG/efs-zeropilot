@@ -19,11 +19,12 @@ set -o nounset
 
 CLEAN=false
 RUN_UNIT_TESTS=false
+RUN_SIMULATION=false
 FLASH=false
 BUILD_TYPE="Debug"
 GENERATOR="Unix Makefiles"
 
-while getopts "c,t,h,f,r" opt; do
+while getopts "c,t,s,h,f,r" opt; do
     case $opt in
         c)
             CLEAN=true
@@ -33,6 +34,9 @@ while getopts "c,t,h,f,r" opt; do
         ;;
         f)
             FLASH=true
+        ;;
+        s)
+            RUN_SIMULATION=true
         ;;
         r)
             BUILD_TYPE="Release"
@@ -59,7 +63,62 @@ elif command -v mingw32-make >/dev/null 2>&1; then
     GENERATOR="MinGW Makefiles"
 fi
 
-if [[ $RUN_UNIT_TESTS == false ]]; then
+
+if [[ $RUN_UNIT_TESTS == true ]]; then
+
+    echo "Building Unit tests !"
+    echo ""
+    echo ""
+
+    BUILD_DIR="testBuild"
+
+    if [[ $CLEAN == true ]]; then
+    echo "Cleaning old build environment"
+    cmake -E remove_directory $BUILD_DIR
+    fi
+
+    cmake -E make_directory $BUILD_DIR
+    cmake -E chdir $BUILD_DIR \
+      cmake \
+        -G "${GENERATOR}" \
+        -D KIND_OF_BUILD="UNIT_TESTS"\
+        -Wdev\
+        -Wdeprecated\
+        ../
+    cmake --build $BUILD_DIR
+
+    run-parts $BUILD_DIR/bin
+
+elif [[ $RUN_SIMULATION == true ]]; then
+    echo "Building Simulation !"
+    echo ""
+    echo ""
+
+    BUILD_DIR="simulationBuild"
+
+    if [[ $CLEAN == true ]]; then
+    echo "Cleaning old build environment"
+    cmake -E remove_directory $BUILD_DIR
+    fi
+
+    cmake -E make_directory $BUILD_DIR
+    cmake -E chdir $BUILD_DIR \
+      cmake \
+        -G "${GENERATOR}" \
+        -D KIND_OF_BUILD="SIMULATION"\
+        -Wdev\
+        -Wdeprecated\
+        ../
+    cmake --build $BUILD_DIR
+
+    # Note that the program needs to be run from the build directory since it opens and closes files via relative paths.
+    cd $BUILD_DIR
+    ./sim
+
+else
+    echo "Building For The Microcontroller !"
+    echo ""
+    echo ""
 
     die() {
         echo ""
@@ -91,6 +150,7 @@ if [[ $RUN_UNIT_TESTS == false ]]; then
         -G "${GENERATOR}" \
         -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
         -DCMAKE_TOOLCHAIN_FILE="STM32F765xG.cmake" \
+        -D KIND_OF_BUILD="FOR_TARGET"\
         -Wdev\
         -Wdeprecated\
         ../
@@ -106,23 +166,4 @@ if [[ $RUN_UNIT_TESTS == false ]]; then
     echo "Autopilot build SUCCESS!"
     exit 0
 
-else
-
-    BUILD_DIR="testBuild"
-
-    if [[ $CLEAN == true ]]; then
-    echo "Cleaning old build environment"
-    cmake -E remove_directory $BUILD_DIR
-    fi
-
-    cmake -E make_directory $BUILD_DIR
-    cmake -E chdir $BUILD_DIR \
-      cmake \
-        -G "${GENERATOR}" \
-        -Wdev\
-        -Wdeprecated\
-        ../
-    cmake --build $BUILD_DIR
-
-    run-parts $BUILD_DIR/bin
 fi
