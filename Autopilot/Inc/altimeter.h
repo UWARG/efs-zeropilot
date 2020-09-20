@@ -9,9 +9,10 @@ extern "C" {
 
 HAL_StatusTypeDef M5637_Init();
 
-float getAltitude();
 
-float getTemperature();
+float getRawPressure();
+float getAltitude();
+float getRawTemperature();
 
 #ifdef __cplusplus
 }

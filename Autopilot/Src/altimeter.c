@@ -21,21 +21,28 @@ static I2C_HandleTypeDef* hi2c;
          // error
      }
 
-     //init the altimeter
-     I2C_WriteByte(hi2c, MS5637_ADDR, MS5637_INTERN_MEM_ADDRESS, MS5637_START_PRESSURE_CONVERSION);
+     
      //I2C_WriteByte(hi2c, MS5637_ADDR, MS5637_INTERN_MEM_ADDRESS, MS5637_START_TEMP_CONVERSION);
      return HAL_OK;
 }
 
 
- float getAltitude(){
+ float getRawPressure() {
    //24 bit number for altitude 18 + 2 decimal places
-   uint8_t data[3];
+   I2C_WriteByte(hi2c, MS5637_ADDR, MS5637_INTERN_MEM_ADDRESS, MS5637_START_PRESSURE_CONVERSION);
+   uint32_t data;
    I2C_ReadBytes(hi2c, MS5637_ADDR, MS5637_READ_ADC, data, 3);
-   int16_t msb = data[0] << 8;
-   msb |= data[1];
-   //msb *= 4;
-   float lsb = data[2] >> 4;
-   lsb /= 4;
-   return ((float)msb + lsb);
+   return (data);
+ }
+
+ float getRawTemperature() {
+   I2C_WriteByte(hi2c, MS5637_ADDR, MS5637_INTERN_MEM_ADDRESS, MS5637_START_TEMP_CONVERSION);
+   uint32_t data;
+   I2C_ReadBytes(hi2c, MS5637_ADDR, MS5637_READ_ADC, data, 3);
+   return (data);
+
+ }
+
+ float getAdjustedPressure() {
+   
  }
