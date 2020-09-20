@@ -7,7 +7,7 @@ extern "C" {
 
 #include "i2c.h"
 
-HAL_StatusTypeDef MPL3115A2_Init();
+HAL_StatusTypeDef M5637_Init();
 
 float getAltitude();
 
