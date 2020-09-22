@@ -117,3 +117,9 @@ void getRawPressureAndTemperature(int64_t *rawPressure, int64_t *rawTemperature)
    return displayTemp;
 
  }
+
+ float getAltitude()
+ {
+   const float conversionFactor = 121.92/(998.689-1013.25);
+   return getPressure()*conversionFactor + 8484;
+ }

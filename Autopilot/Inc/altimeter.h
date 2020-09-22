@@ -9,9 +9,19 @@ extern "C" {
 
 HAL_StatusTypeDef MS5637_Init();
 
-
+/*
+* Returns pressure in mbar
+*/
 float getPressure();
+
+/*
+* Returns temp in degrees C
+*/
 float getTemperature();
+
+/*
+* Returns altitude in meters
+*/
 float getAltitude();
 
 #ifdef __cplusplus
