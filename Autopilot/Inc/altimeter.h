@@ -7,7 +7,7 @@ extern "C" {
 
 #include "i2c.h"
 
-HAL_StatusTypeDef M5637_Init();
+HAL_StatusTypeDef MS5637_Init();
 
 
 float getPressure();
