@@ -57,10 +57,10 @@ void getRawPressureAndTemperature(float *rawPressure, float *rawTemperature) {
    int32_t D1 = readFromMS5637(MS5637_START_PRESSURE_CONVERSION);
    int32_t D2 = readFromMS5637(MS5637_START_TEMP_CONVERSION);
 
-   float dT = D2 - C5 * 256; //difference between measured and reference temperature
-   float TEMP = (2000 + (dT*C6/8388608)); //actual temperature in degrees c * 100,
-   float OFF = C2*131072 + C4*dT/64; //offset at actual temperature
-   float SENS = C1*65536 + C3*dT/128;
+   int32_t dT = D2 - C5 * 256; //difference between measured and reference temperature
+   int32_t TEMP = (2000 + (dT*C6/8388608)); //actual temperature in degrees c * 100,
+   int64_t OFF = C2*131072 + C4*dT/64; //offset at actual temperature
+   int64_t SENS = C1*65536 + C3*dT/128;
 
 
    /*****2ND ORDER CONVERSIONS for that epic low temp accuracy****/
