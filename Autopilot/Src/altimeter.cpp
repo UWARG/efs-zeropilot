@@ -1,4 +1,4 @@
-#include "altimeter.h"
+#include "altimeter.hpp"
 
 //Address for the MS5637. Needs to be shifted for write/read (ref:datasheet)
 #define MS5637_ADDR 0x76
@@ -21,24 +21,24 @@
 #define MS5637_PROM_C5 0xAA
 #define MS5637_PROM_C6 0xAC
 
-
+static bool isI2CBusDefined = false;
 
 static I2C_HandleTypeDef* hi2c;
 
- HAL_StatusTypeDef M5637_Init() {
+ void MS5637::Init()
+ {
+   if(!isI2CBusDefined)
+   {
      hi2c = I2C_GetHandle(MS5637_I2C);
 
      if (HAL_I2C_IsDeviceReady(hi2c, MS5637_WRITE_ADDR, 2, 5) != HAL_OK) {
-//         debug("no altimeter");
-         // error
+       //Debug code here?
      }
+   }
 
-     
-     //I2C_WriteByte(hi2c, MS5637_ADDR, MS5637_INTERN_MEM_ADDRESS, MS5637_START_TEMP_CONVERSION);
-     return HAL_OK;
-}
+ }
 
-uint32_t readFromMS5637(uint32_t commandToWrite) {
+uint32_t MS5637::readFromMS5637(uint32_t commandToWrite) {
   I2C_WriteByte(hi2c, MS5637_WRITE_ADDR, MS5637_INTERN_MEM_ADDRESS, commandToWrite);
    uint8_t data[3]; //3 integers to store 24 bits worth of data.
    I2C_ReadBytes(hi2c, MS5637_READ_ADDR, MS5637_READ_ADC, data, 3);
@@ -46,7 +46,7 @@ uint32_t readFromMS5637(uint32_t commandToWrite) {
    return (returnData);
 }
 
-void getRawPressureAndTemperature(int64_t *rawPressure, int64_t *rawTemperature) {
+void MS5637::getRawPressureAndTemperature(int64_t *rawPressure, int64_t *rawTemperature) {
   //Calcs & variable names inside datasheet
    uint32_t C1 = readFromMS5637(MS5637_PROM_C1);
    uint32_t C2 = readFromMS5637(MS5637_PROM_C2);
@@ -99,7 +99,7 @@ void getRawPressureAndTemperature(int64_t *rawPressure, int64_t *rawTemperature)
 
 }
 
- float getPressure() {
+ float MS5637::getPressure() {
    
    int64_t rawPressure = 0, rawTemperature = 0;
    getRawPressureAndTemperature(&rawPressure, &rawTemperature);
@@ -108,7 +108,7 @@ void getRawPressureAndTemperature(int64_t *rawPressure, int64_t *rawTemperature)
    return displayPressure;
  }
 
- float getTemperature()
+ float MS5637::getTemperature()
  {
    int64_t rawPressure = 0, rawTemperature = 0;
    getRawPressureAndTemperature(&rawPressure, &rawTemperature);
@@ -118,8 +118,16 @@ void getRawPressureAndTemperature(int64_t *rawPressure, int64_t *rawTemperature)
 
  }
 
- float getAltitude()
+ float MS5637::getAltitude()
  {
    const float conversionFactor = 121.92/(998.689-1013.25);
    return getPressure()*conversionFactor + 8484;
  }
+
+ void MS5637::GetResult(AltimeterData_t *Data)
+ {
+   Data->altitude = getAltitude();
+   Data->pressure = getPressure();
+   Data->temp = getTemperature();
+ }
+
