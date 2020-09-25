@@ -1,4 +1,6 @@
 #include "altimeter.hpp"
+#include "i2c.h"
+
 
 //Address for the MS5637. Needs to be shifted for write/read (ref:datasheet)
 #define MS5637_ADDR 0x76
@@ -99,7 +101,8 @@ void MS5637::getRawPressureAndTemperature(int64_t *rawPressure, int64_t *rawTemp
 
 }
 
- float MS5637::getPressure() {
+ float MS5637::getPressure() 
+ {
    
    int64_t rawPressure = 0, rawTemperature = 0;
    getRawPressureAndTemperature(&rawPressure, &rawTemperature);
@@ -145,9 +148,9 @@ void MS5637::getRawPressureAndTemperature(int64_t *rawPressure, int64_t *rawTemp
  {
    Data->isDataNew = dataIsNew;
    dataIsNew = false;
-   Data->altitude = getAltitude();
-   Data->pressure = getPressure();
-   Data->temp = getTemperature();
+   Data->altitude = altitudeMeasured;
+   Data->pressure = pressureMeasured;
+   Data->temp = temperatureMeasured;
    Data->utcTime = timeOfResult;
  }
 

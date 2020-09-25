@@ -6,7 +6,6 @@
 #ifndef ALTIMETER_HPP
 #define ALTIMETER_HPP
 
-#include "i2c.h"
 #include <ctime>
 
 struct AltimeterData_t {
@@ -51,7 +50,7 @@ class MS5637 : public Altimeter {
         float getPressure();
         float getAltitude();
         
-        float altitudeMeasured, pressureMeasured, temperatureMeasured;
+        static float altitudeMeasured, pressureMeasured, temperatureMeasured;
         uint32_t timeOfResult;
         static bool isI2CBusDefined;
         bool dataIsNew;
