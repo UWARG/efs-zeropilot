@@ -21,7 +21,7 @@
 #define MS5637_PROM_C5 0xAA
 #define MS5637_PROM_C6 0xAC
 
-static bool isI2CBusDefined = false;
+bool MS5637::isI2CBusDefined = false;
 
 static I2C_HandleTypeDef* hi2c;
 
@@ -124,10 +124,30 @@ void MS5637::getRawPressureAndTemperature(int64_t *rawPressure, int64_t *rawTemp
    return getPressure()*conversionFactor + 8484;
  }
 
+ uint32_t MS5637::getCurrentTime()
+ {
+   std::time_t result = std::time(0);
+   return static_cast<int>(result);
+ }
+
+ void MS5637::Begin_Measuring()
+ {
+   altitudeMeasured = getAltitude();
+   pressureMeasured = getPressure();
+   temperatureMeasured = getTemperature();
+   dataIsNew = true;
+   timeOfResult = getCurrentTime();
+
+ }
+
+
  void MS5637::GetResult(AltimeterData_t *Data)
  {
+   Data->isDataNew = dataIsNew;
+   dataIsNew = false;
    Data->altitude = getAltitude();
    Data->pressure = getPressure();
    Data->temp = getTemperature();
+   Data->utcTime = timeOfResult;
  }
 

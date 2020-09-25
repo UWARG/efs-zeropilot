@@ -7,6 +7,7 @@
 #define ALTIMETER_HPP
 
 #include "i2c.h"
+#include <ctime>
 
 struct AltimeterData_t {
 
@@ -14,7 +15,7 @@ struct AltimeterData_t {
 
     bool isDataNew; 
     int status; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
-    float utcTime; //Last time GetResult was called
+    uint32_t utcTime; //Last time GetResult was called
 };
 
 class Altimeter{
@@ -23,6 +24,11 @@ class Altimeter{
          * Initializes Altimeter
          * */
         virtual void Init() = 0; 
+
+        /**
+         * Triggers interrupt for new altimeter measurement - stores raw data in variables and returns right away
+         * */
+        virtual void Begin_Measuring() = 0; 
 
         /**GetResult should:
          * 1. Reset dataIsNew flag
@@ -35,13 +41,20 @@ class Altimeter{
 class MS5637 : public Altimeter {
     public:
         void Init();
+        void Begin_Measuring();
         void GetResult(AltimeterData_t *Data);
     private:
         uint32_t readFromMS5637(uint32_t commandToWrite);
         void getRawPressureAndTemperature(int64_t *rawPressure, int64_t *rawTemperature);
+        uint32_t getCurrentTime();
         float getTemperature();
         float getPressure();
         float getAltitude();
+        
+        float altitudeMeasured, pressureMeasured, temperatureMeasured;
+        uint32_t timeOfResult;
+        static bool isI2CBusDefined;
+        bool dataIsNew;
 
 
 };
