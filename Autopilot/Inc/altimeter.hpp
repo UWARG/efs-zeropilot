@@ -7,6 +7,7 @@
 #define ALTIMETER_HPP
 
 #include <ctime>
+#include <cstdint>
 
 struct AltimeterData_t {
 
@@ -50,7 +51,7 @@ class MS5637 : public Altimeter {
         float getPressure();
         float getAltitude();
         
-        static float altitudeMeasured, pressureMeasured, temperatureMeasured;
+        static inline float altitudeMeasured, pressureMeasured, temperatureMeasured;
         uint32_t timeOfResult;
         static bool isI2CBusDefined;
         bool dataIsNew;
