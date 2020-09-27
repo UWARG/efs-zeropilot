@@ -14,6 +14,7 @@
 *.h text
 *.h++ text
 *.hh text
+*.bash text
 
 # Compiled Object files
 *.slo binary
