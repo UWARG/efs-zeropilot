@@ -52,7 +52,7 @@ class MS5637 : public Altimeter {
         float getAltitude();
         uint32_t timeOfResult;
         static bool isI2CBusDefined;
-        bool dataIsNew;
+        static bool dataIsNew;
 
 
 };

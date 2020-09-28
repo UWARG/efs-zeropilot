@@ -25,7 +25,8 @@
 
 bool MS5637::isI2CBusDefined = false;
 
-static float altitudeMeasured, pressureMeasured, temperatureMeasured;
+static float altitudeMeasured = 0, pressureMeasured = 0, temperatureMeasured = 0;
+bool MS5637::dataIsNew = false;
 
 static I2C_HandleTypeDef* hi2c;
 
@@ -109,7 +110,7 @@ void MS5637::getRawPressureAndTemperature(int64_t *rawPressure, int64_t *rawTemp
    int64_t rawPressure = 0, rawTemperature = 0;
    getRawPressureAndTemperature(&rawPressure, &rawTemperature);
 
-   float displayPressure = rawPressure/100.0; //10 to 1200 mbar with 0.01mbar resolution
+   float displayPressure = rawPressure/100.0; //-40 to 80 degrees C with 0.01degrees resolution
    return displayPressure;
  }
 
