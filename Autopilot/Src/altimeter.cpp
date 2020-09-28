@@ -25,6 +25,8 @@
 
 bool MS5637::isI2CBusDefined = false;
 
+static float altitudeMeasured, pressureMeasured, temperatureMeasured;
+
 static I2C_HandleTypeDef* hi2c;
 
  void MS5637::Init()

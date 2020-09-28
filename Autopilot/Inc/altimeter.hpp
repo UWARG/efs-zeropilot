@@ -50,8 +50,6 @@ class MS5637 : public Altimeter {
         float getTemperature();
         float getPressure();
         float getAltitude();
-        
-        static inline float altitudeMeasured, pressureMeasured, temperatureMeasured;
         uint32_t timeOfResult;
         static bool isI2CBusDefined;
         bool dataIsNew;
