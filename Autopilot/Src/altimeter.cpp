@@ -51,7 +51,7 @@ uint32_t MS5637::readFromMS5637(uint32_t commandToWrite) {
    return (returnData);
 }
 
-void MS5637::getRawPressureAndTemperature(int64_t *rawPressure, int64_t *rawTemperature) {
+void MS5637::getRawPressureAndTemperature(float *displayPressure, float *displayTemperature, float *displayAltitude) {
   //Calcs & variable names inside datasheet
    uint32_t C1 = readFromMS5637(MS5637_PROM_C1);
    uint32_t C2 = readFromMS5637(MS5637_PROM_C2);
@@ -98,37 +98,18 @@ void MS5637::getRawPressureAndTemperature(int64_t *rawPressure, int64_t *rawTemp
    
    int64_t P = ((D1*SENS/2097152-OFF)/32768); //Pressure, 1000 -> 120000
 
-   *rawPressure = P;
-   *rawTemperature = TEMP;
-   
 
+   float convertedPressure = P/100.0;
+   float convertedTemperature = TEMP/100.0;
+   *displayPressure = convertedPressure;
+   *displayTemperature = convertedTemperature;
+
+   const float altitudeConversionFactor = 121.92/(998.689-1013.25);
+   float convertedAltitude = convertedPressure*altitudeConversionFactor;
+   *displayAltitude = convertedAltitude;
+   
 }
 
- float MS5637::getPressure() 
- {
-   
-   int64_t rawPressure = 0, rawTemperature = 0;
-   getRawPressureAndTemperature(&rawPressure, &rawTemperature);
-
-   float displayPressure = rawPressure/100.0; //-40 to 80 degrees C with 0.01degrees resolution
-   return displayPressure;
- }
-
- float MS5637::getTemperature()
- {
-   int64_t rawPressure = 0, rawTemperature = 0;
-   getRawPressureAndTemperature(&rawPressure, &rawTemperature);
-
-   float displayTemp = rawTemperature/100.0; //10 to 1200 mbar with 0.01mbar resolution
-   return displayTemp;
-
- }
-
- float MS5637::getAltitude()
- {
-   const float conversionFactor = 121.92/(998.689-1013.25);
-   return getPressure()*conversionFactor + 8484;
- }
 
  uint32_t MS5637::getCurrentTime()
  {
@@ -138,9 +119,7 @@ void MS5637::getRawPressureAndTemperature(int64_t *rawPressure, int64_t *rawTemp
 
  void MS5637::Begin_Measuring()
  {
-   altitudeMeasured = getAltitude();
-   pressureMeasured = getPressure();
-   temperatureMeasured = getTemperature();
+   getRawPressureAndTemperature(&pressureMeasured, &temperatureMeasured, &altitudeMeasured);
    dataIsNew = true;
    timeOfResult = getCurrentTime();
 

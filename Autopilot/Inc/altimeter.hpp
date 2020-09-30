@@ -45,11 +45,8 @@ class MS5637 : public Altimeter {
         void GetResult(AltimeterData_t *Data);
     private:
         uint32_t readFromMS5637(uint32_t commandToWrite);
-        void getRawPressureAndTemperature(int64_t *rawPressure, int64_t *rawTemperature);
+        void getRawPressureAndTemperature(float *displayPressure, float *displayTemperature, float *displayAltitude);
         uint32_t getCurrentTime();
-        float getTemperature();
-        float getPressure();
-        float getAltitude();
         uint32_t timeOfResult;
         static bool isI2CBusDefined;
         static bool dataIsNew;
