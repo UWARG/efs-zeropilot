@@ -6,6 +6,10 @@
 #ifndef IMU_HPP
 #define IMU_HPP
 
+#include <stdlib.h>
+#include <ctime>
+#include <cstdint>
+
 #define ICM_20602 0
 #define MPU9255 1
 
@@ -48,7 +52,7 @@ class ICM20602: public IMU{
         /**
          * Initializes IMU
          * */
-        void Init(){}; 
+        ICM20602(); 
 
         /**
          * Triggers interrupt for new IMU measurement - stores raw data in variables and returns right away
@@ -61,6 +65,14 @@ class ICM20602: public IMU{
          * 3. Updates utcTime and status values in struct as well
          * */
         void GetResult(IMUData_t &Data){}; //
+    private:
+        //Variables
+        uint32_t timeOfResult;
+        static bool isSPIBusDefined;
+        static bool isDataNew;
+        //Methods
+        uint32_t getCurrentTime();
+        
 
 };
 
