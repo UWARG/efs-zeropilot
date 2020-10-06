@@ -19,7 +19,7 @@ ZeroPilot uses two STM32 microcontrollers to control a vehicle. The code for the
 * [Reference Manual](http://www.st.com/resource/en/reference_manual/dm00224583.pdf)
 * [Chip Datasheet](http://www.st.com/resource/en/datasheet/stm32f765zg.pdf)
 
-### Safety controller (STM32F030RC)
+### Safety controller (STM32F091RC)
 
 * [HAL Documentation](http://www.st.com/resource/en/user_manual/dm00122015.pdf)
 * [Reference Manual](http://www.st.com/resource/en/reference_manual/dm00091010.pdf)
