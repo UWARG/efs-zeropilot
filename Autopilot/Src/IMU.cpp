@@ -1,3 +1,8 @@
+/**
+ * IMU Sensor
+ * Author: Dhruv Rawat
+ */
+
 #include "IMU.hpp"
 #include "spi.h"
  
@@ -7,7 +12,7 @@
 #define ICM20602_READ_ADDR 0
 #define ICM20602_SPI hspi1 //SPI Port 1
  
-/* REGISTER DEFINITION BEGINS */
+/*** REGISTER DEFINITION BEGINS ***/
  
 // Gyroscope low noise to low power offset shift and gyroscope offset temperature compensation (TC) register
 #define REG_XG_OFFS_TC_H 0x04
@@ -94,36 +99,122 @@
 #define REG_ZA_OFFSET_H 0x7D
 #define REG_ZA_OFFSET_L 0x7E
  
-/* REGISTER DEFINITION ENDS */
+/*** REGISTER DEFINITION ENDS ***/
  
 bool ICM20602::isSPIBusDefined = false;
-bool ICM20602::isDataNew = false;
+bool ICM20602::dataIsNew = false;
  
 static SPI_HandleTypeDef* hspi1;
+
+float measuredAccX, measuredAccY, measuredAccZ; //Acceleration readings
+float measuredGyroX, measuredGyroY, measuredGyroZ; //Gyroscope readings 
+float measuredTemp;
  
- 
-/* MAIN BLOCK OF CODE BEGINS */
+/*** MAIN BLOCK OF CODE BEGINS ***/
  
 ICM20602::ICM20602() {
    if(!isSPIBusDefined) {
  
    }
+
+   //Default sensitivities. SHOULD BE ABLE TO CHANGE, BUT IDK IF THAT IS A HARDWARE OR A SOFTWARE THING
+   accelSensitivity = 2;
+   gyroSensitivity = 2;
 }
- 
- 
- 
+
+//Gives conversion factor to convert raw values to g-force (denoted by: G)
+float ICM20602::getAccelerationSensitivity() { 
+   
+   //Will need to change values later
+   
+   if(accelSensitivity == ACCEL_SENSITIVITY_2G) {
+      return 10.0;
+   } else if(accelSensitivity == ACCEL_SENSITIVITY_4G) {
+      return 10.0;
+   } else if(accelSensitivity == ACCEL_SENSITIVITY_8G) {
+      return 10.0;
+   } else if(accelSensitivity == ACCEL_SENSITIVITY_16G) { 
+      return 10.0;
+   }
+
+   return -1.0; //If parameter value is incorrect
+}
+
+//Gives conversion factor to convert raw values to degrees per second (denoted by: dps)
+float ICM20602::getGyroscopeSensitivity() {
+   
+   //Will need to change values later
+   
+   if(gyroSensitivity == GRYO_SENSITIVITY_250) {
+      return 10.0;
+   } else if(gyroSensitivity == GRYO_SENSITIVITY_500) {
+      return 10.0;
+   } else if(gyroSensitivity == GRYO_SENSITIVITY_1000) {
+      return 10.0;
+   } else if(gyroSensitivity == GRYO_SENSITIVITY_2000) {
+      return 10.0;
+   }
+
+   return -1.0; //If parameter value is incorrect
+}
+
+void ICM20602::getAccelerationReading() {
+   
+}
+
+void ICM20602::getGyroscopeReading() {
+
+}
+
+void ICM20602::getTempReading() {
+
+}
+
+uint8_t ICM20602::readRawAcceleration() {
+
+}
+
+uint8_t ICM20602::readRawGyroscope() {
+
+}
+
+uint8_t ICM20602::readTempRaw() {
+
+}
+
+//Sets sensitivity of accelerometer
+void ICM20602::setAccelSensitivity(uint8_t desiredSensitivity) {
+   accelSensitivity = desiredSensitivity; 
+}
+//Sets sensitivity of gyroscope
+void ICM20602::setGyroSensitivity(uint8_t desiredSensitivity) {
+   gyroSensitivity = desiredSensitivity; 
+}
+
 uint32_t ICM20602::getCurrentTime() {
    std::time_t currentTime = std::time(0);
    return static_cast<int>(currentTime);
 }
  
 void ICM20602::Begin_Measuring() {
-   isDataNew = true;
+   dataIsNew = true;
    timeOfResult = getCurrentTime();
 }
  
-void ICM20602::GetResult(IMUData_t &Data) {
- 
+void ICM20602::GetResult(IMUData_t *Data) {
+   Data->isDataNew = true;
+   dataIsNew = false;
+   Data->accx = measuredAccX;
+   Data->accy = measuredAccY;
+   Data->accz = measuredAccZ;
+   Data->gyrx = measuredGyroX;
+   Data->gyry = measuredGyroY;
+   Data->gyrz = measuredGyroZ;
+   Data->magx = NAN;
+   Data->magy = NAN;
+   Data->magz = NAN;
+   Data->utcTime = timeOfResult;
+   Data->temp = measuredTemp;
 }
  
 /* MAIN BLOCK OF CODE ENDS */

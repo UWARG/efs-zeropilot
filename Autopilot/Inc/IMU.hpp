@@ -1,6 +1,6 @@
 /**
  * IMU Sensor Functions and Part Number Selection
- * Author: Lucy Gong
+ * Author: Lucy Gong, Dhruv Rawat
  */
 
 #ifndef IMU_HPP
@@ -13,13 +13,27 @@
 #define ICM_20602 0
 #define MPU9255 1
 
+//Different acceleration sensitivities
+#define ACCEL_SENSITIVITY_2G 1
+#define ACCEL_SENSITIVITY_4G 2
+#define ACCEL_SENSITIVITY_8G 3
+#define ACCEL_SENSITIVITY_16G 4
+
+//Different gyroscope sensitivities
+#define GRYO_SENSITIVITY_250 1
+#define GRYO_SENSITIVITY_500 2
+#define GRYO_SENSITIVITY_1000 3
+#define GRYO_SENSITIVITY_2000 4
+
+
 #define USE_IMU ICM_20602
 
 struct IMUData_t {
 
-    float magx, magy, magz;
+    float magx, magy, magz; //Sensor does not provide magnetic readings. Thus, they will be left as NaN
     float accx, accy, accz;
     float gyrx, gyry, gyrz; 
+    float temp; 
 
     bool isDataNew; 
     int sensorStatus; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
@@ -64,15 +78,28 @@ class ICM20602: public IMU{
          * 2. Transfers raw data from variables to struct
          * 3. Updates utcTime and status values in struct as well
          * */
-        void GetResult(IMUData_t &Data){}; //
+        void GetResult(IMUData_t *Data){}; //
+
+        
+        void setAccelSensitivity(uint8_t); //1 = 2G; 2 = 4G; 3 = 8G; 4 = 16G
+        void setGyroSensitivity(uint8_t); //1 = 250 dps; 2 = 500 dps; 3 = 1000 dps; 4 = 2000 dps
     private:
         //Variables
         uint32_t timeOfResult;
         static bool isSPIBusDefined;
-        static bool isDataNew;
+        static bool dataIsNew;
+        static uint8_t accelSensitivity;
+        static uint8_t gyroSensitivity; 
         //Methods
         uint32_t getCurrentTime();
-        
+        float getAccelerationSensitivity();
+        float getGyroscopeSensitivity(); 
+        void getAccelerationReading();
+        void getGyroscopeReading();
+        void getTempReading(); 
+        uint8_t readRawAcceleration();
+        uint8_t readRawGyroscope();
+        uint8_t readTempRaw();
 
 };
 
