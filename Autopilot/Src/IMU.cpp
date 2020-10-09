@@ -125,16 +125,14 @@ ICM20602::ICM20602() {
 //Gives conversion factor to convert raw values to g-force (denoted by: G)
 float ICM20602::getAccelerationSensitivity() { 
    
-   //Will need to change values later
-   
    if(accelSensitivity == ACCEL_SENSITIVITY_2G) {
-      return 10.0;
+      return 16384.0f;
    } else if(accelSensitivity == ACCEL_SENSITIVITY_4G) {
-      return 10.0;
+      return 8192.0f;
    } else if(accelSensitivity == ACCEL_SENSITIVITY_8G) {
-      return 10.0;
+      return 4096.0f;
    } else if(accelSensitivity == ACCEL_SENSITIVITY_16G) { 
-      return 10.0;
+      return 2048.0f;
    }
 
    return -1.0; //If parameter value is incorrect
@@ -143,42 +141,28 @@ float ICM20602::getAccelerationSensitivity() {
 //Gives conversion factor to convert raw values to degrees per second (denoted by: dps)
 float ICM20602::getGyroscopeSensitivity() {
    
-   //Will need to change values later
-   
    if(gyroSensitivity == GRYO_SENSITIVITY_250) {
-      return 10.0;
+      return 131.0f;
    } else if(gyroSensitivity == GRYO_SENSITIVITY_500) {
-      return 10.0;
+      return 65.5;
    } else if(gyroSensitivity == GRYO_SENSITIVITY_1000) {
-      return 10.0;
+      return 32.8;
    } else if(gyroSensitivity == GRYO_SENSITIVITY_2000) {
-      return 10.0;
+      return 16.4;
    }
 
    return -1.0; //If parameter value is incorrect
 }
 
-void ICM20602::getAccelerationReading() {
+void ICM20602::getAccelerationReading(float * accx, float * accy, float * accz) {
    
 }
 
-void ICM20602::getGyroscopeReading() {
+void ICM20602::getGyroscopeReading(float * gyrx, float * gyry, float * gyrz) {
 
 }
 
-void ICM20602::getTempReading() {
-
-}
-
-uint8_t ICM20602::readRawAcceleration() {
-
-}
-
-uint8_t ICM20602::readRawGyroscope() {
-
-}
-
-uint8_t ICM20602::readTempRaw() {
+void ICM20602::getTempReading(float * temp) {
 
 }
 
@@ -197,6 +181,9 @@ uint32_t ICM20602::getCurrentTime() {
 }
  
 void ICM20602::Begin_Measuring() {
+   getAccelerationReading(&measuredAccX, &measuredAccY, &measuredAccZ);
+   getGyroscopeReading(&measuredGyroX, &measuredGyroY, &measuredGyroZ);
+   getTempReading(&measuredTemp);
    dataIsNew = true;
    timeOfResult = getCurrentTime();
 }

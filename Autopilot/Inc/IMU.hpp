@@ -30,7 +30,7 @@
 
 struct IMUData_t {
 
-    float magx, magy, magz; //Sensor does not provide magnetic readings. Thus, they will be left as NaN
+    float magx, magy, magz; //Sensor does not have a magnetometer. Thus, these readings will be left as NaN
     float accx, accy, accz;
     float gyrx, gyry, gyrz; 
     float temp; 
@@ -90,17 +90,28 @@ class ICM20602: public IMU{
         static bool dataIsNew;
         static uint8_t accelSensitivity;
         static uint8_t gyroSensitivity; 
+
+        /*
+            Method structure:
+                - Generic idea:
+                    - Read all of the data at the same time:
+                        - Accel
+                        - Gyro
+                        - Temp
+                - Process:
+                    - Begin_Measuiring will call each of the get___Reading() methods in order. Pass the global variable in as a pointer
+                    - get___Reading() methods will collect data for its designated sensor and assign them to the global variable pointer in IMU.cpp
+                        - Each method will call a method called IMU20602Read() which will use the register to get a raw reading.
+                    - Begin_Measuring will terminate
+        */
+
         //Methods
         uint32_t getCurrentTime();
         float getAccelerationSensitivity();
         float getGyroscopeSensitivity(); 
-        void getAccelerationReading();
-        void getGyroscopeReading();
-        void getTempReading(); 
-        uint8_t readRawAcceleration();
-        uint8_t readRawGyroscope();
-        uint8_t readTempRaw();
-
+        void getAccelerationReading(float *, float *, float *);
+        void getGyroscopeReading(float *, float *, float *);
+        void getTempReading(float *); 
 };
 
 #endif
