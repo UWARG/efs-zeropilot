@@ -1,6 +1,6 @@
 /**
  * @file PID.hpp
- * @author Ian Frosst
+ * @authors Ian Frosst, Anthony Berbari
  * @date  March 26, 2017
  * @copyright Waterloo Aerial Robotics Group 2017 \n
  *  https://raw.githubusercontent.com/UWARG/ZeroPilot-SW/devel/LICENSE.md
