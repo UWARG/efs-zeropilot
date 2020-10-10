@@ -60,16 +60,10 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     PMCommands *PMInstructions = fetchInstructionsMode::GetPMInstructions();
     SFOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
 
-    // TODO the IMU also gives us the measured derivative of roll, pitch, and yaw. That should be used in the PID algorithm
-    _PidOutput.rollPercent = _rollPid.PIDControl(PMInstructions->roll - SFOutput->IMUroll);
-    _PidOutput.pitchPercent = _pitchPid.PIDControl(PMInstructions->pitch - SFOutput->IMUpitch);
-    _PidOutput.yawPercent = _yawPid.PIDControl(PMInstructions->yaw - SFOutput->IMUyaw);
-    _PidOutput.throttlePercent = _airspeedPid.PIDControl(PMInstructions->airspeed - SFOutput->Airspeed);
-
-    _PidOutput.rollPercent = 0;  // TODO Pid needs fixing
-    _PidOutput.pitchPercent = 0;
-    _PidOutput.yawPercent = 0;
-    _PidOutput.throttlePercent = 50;
+    _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->IMUroll, SFOutput->IMUrollrate);
+    _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->IMUpitch, SFOutput->IMUpitchrate);
+    _PidOutput.yawPercent = _yawPid.execute(PMInstructions->yaw, SFOutput->IMUyaw, SFOutput->IMUyawrate);
+    _PidOutput.throttlePercent = _airspeedPid.execute(PMInstructions->airspeed, SFOutput->Airspeed);
 
     attitudeMgr->setState(OutputMixingMode::getInstance());
 }

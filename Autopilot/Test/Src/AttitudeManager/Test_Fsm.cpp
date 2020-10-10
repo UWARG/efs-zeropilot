@@ -315,13 +315,6 @@ TEST(AttitudeManagerFSM, IfSendToSafetyFailsTransitionToFailed) {
  * Data Handoff Tests (make sure the correct data structures are passed around between states)
  **********************************************************************************************************************/
 
-#if 0	// TODO: the pid module is not unit testable. It needs to either be built with abstract classes or with C style functions.
-		// What's more, it's not any good currently. The derivative computation sucks and it for soime reason wants to know about the time.
-TEST(AttitudeManagerFSM, CorrectDataIsFedToPid) {
-
-}
-#endif
-
 TEST(AttitudeManagerDataHandoff, CorrectDataIsFedFromOutputMixingToSendToSafety) {
 
    	/***********************SETUP***********************/

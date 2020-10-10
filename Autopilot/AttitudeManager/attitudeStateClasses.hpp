@@ -5,13 +5,13 @@
 #include "GetFromPathManager.hpp"
 #include "SensorFusion.hpp"
 #include "OutputMixing.hpp"
-#include "PID.h"
+#include "PID.hpp"
 #include "SendInstructionsToSafety.hpp"
 #include "IMU.hpp"
 #include "airspeed.hpp"
 
 /***********************************************************************************************************************
- * Code
+ * Definitions
  **********************************************************************************************************************/
 
 #ifdef SIMULATION
@@ -75,10 +75,10 @@ class PIDloopMode : public attitudeState
         PIDloopMode() {}
         PIDloopMode(const PIDloopMode& other);
         PIDloopMode& operator =(const PIDloopMode& other);
-        PIDController _rollPid{1, 0, 0, 100, 0};
-        PIDController _pitchPid{1, 0, 0, 100, 0};
-        PIDController _yawPid{1, 0, 0, 100, 0};
-        PIDController _airspeedPid{1, 0, 0, 100, 0};
+        PIDController _rollPid{1, 0, 0, 0, -100, 100};
+        PIDController _pitchPid{1, 0, 0, 0, -100, 100};
+        PIDController _yawPid{1, 0, 0, 0, -100, 100};
+        PIDController _airspeedPid{1, 0, 0, 0, 0, 100};
         static PID_Output_t _PidOutput;
 };
 
@@ -122,6 +122,3 @@ class FatalFailureMode : public attitudeState
         FatalFailureMode(const FatalFailureMode& other);
         FatalFailureMode& operator =(const FatalFailureMode& other);
 };
-
-
-//Reminder: add failed state mode?

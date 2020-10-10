@@ -143,7 +143,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
   set(ATTITUDE_MANAGER_FSM_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/attitudeManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/attitudeStateClasses.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/PID.cpp # TODO Pid.h was not built to be unit testable. Once it is, we can remove this file from the compilation and mock against the interface.
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/PID.cpp
   )
 
   set(ATTITUDE_MANAGER_FSM_UNIT_TEST_SOURCES
@@ -161,7 +161,6 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/OutputMixing.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/SensorFusion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/MadgwickAHRS.cpp
-
   )
 
   set(ATTITUDE_MANAGER_MODULES_UNIT_TEST_SOURCES
@@ -171,6 +170,21 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
   add_executable(attitudeManagerModules ${ATTITUDE_MANAGER_MODULES_SOURCES} ${ATTITUDE_MANAGER_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
   target_link_libraries(attitudeManagerModules ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
+
+#########
+
+######### Free standing modules that are not application specific
+
+  set(FREE_STANDING_MODULES_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/PID.cpp
+  )
+
+  set(FREE_STANDING_MODULES_UNIT_TEST_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/Test_PID.cpp
+  )
+
+  add_executable(freeStandingModules ${FREE_STANDING_MODULES_SOURCES} ${FREE_STANDING_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
+  target_link_libraries(freeStandingModules ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
 
 #########
 
