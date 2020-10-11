@@ -14,16 +14,16 @@
 #define MPU9255 1
 
 //Different acceleration sensitivities
-#define ACCEL_SENSITIVITY_2G 1
-#define ACCEL_SENSITIVITY_4G 2
-#define ACCEL_SENSITIVITY_8G 3
-#define ACCEL_SENSITIVITY_16G 4
+#define ACCEL_SENSITIVITY_2G 16384.0f
+#define ACCEL_SENSITIVITY_4G 8192.0f
+#define ACCEL_SENSITIVITY_8G 4096.0f
+#define ACCEL_SENSITIVITY_16G 2048.0f
 
 //Different gyroscope sensitivities
-#define GRYO_SENSITIVITY_250 1
-#define GRYO_SENSITIVITY_500 2
-#define GRYO_SENSITIVITY_1000 3
-#define GRYO_SENSITIVITY_2000 4
+#define GRYO_SENSITIVITY_250 131.0f
+#define GRYO_SENSITIVITY_500 65.5
+#define GRYO_SENSITIVITY_1000 32.8
+#define GRYO_SENSITIVITY_2000 16.4
 
 
 #define USE_IMU ICM_20602
@@ -80,7 +80,6 @@ class ICM20602: public IMU{
          * */
         void GetResult(IMUData_t *Data){}; //
 
-        
         void setAccelSensitivity(uint8_t); //1 = 2G; 2 = 4G; 3 = 8G; 4 = 16G
         void setGyroSensitivity(uint8_t); //1 = 250 dps; 2 = 500 dps; 3 = 1000 dps; 4 = 2000 dps
     private:
@@ -88,8 +87,8 @@ class ICM20602: public IMU{
         uint32_t timeOfResult;
         static bool isSPIBusDefined;
         static bool dataIsNew;
-        static uint8_t accelSensitivity;
-        static uint8_t gyroSensitivity; 
+        float accelConversionFactor;
+        float gyroConversionFactor; 
 
         /*
             Method structure:
@@ -99,19 +98,18 @@ class ICM20602: public IMU{
                         - Gyro
                         - Temp
                 - Process:
-                    - Begin_Measuiring will call each of the get___Reading() methods in order. Pass the global variable in as a pointer
+                    - Begin_Measuiring() will call each of the get___Reading() methods in order. Pass the global variable in as a pointer
                     - get___Reading() methods will collect data for its designated sensor and assign them to the global variable pointer in IMU.cpp
-                        - Each method will call a method called IMU20602Read() which will use the register to get a raw reading.
+                        - Each method will call a method named IMU20602Read() which will use the register to get a raw reading.
                     - Begin_Measuring will terminate
         */
 
         //Methods
-        uint32_t getCurrentTime();
-        float getAccelerationSensitivity();
-        float getGyroscopeSensitivity(); 
         void getAccelerationReading(float *, float *, float *);
         void getGyroscopeReading(float *, float *, float *);
         void getTempReading(float *); 
+        uint16_t convertInt8ToInt16(uint8_t *);
+        uint32_t getCurrentTime();
 };
 
 #endif

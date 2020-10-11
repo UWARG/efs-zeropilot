@@ -118,61 +118,50 @@ ICM20602::ICM20602() {
    }
 
    //Default sensitivities. SHOULD BE ABLE TO CHANGE, BUT IDK IF THAT IS A HARDWARE OR A SOFTWARE THING
-   accelSensitivity = 2;
-   gyroSensitivity = 2;
-}
-
-//Gives conversion factor to convert raw values to g-force (denoted by: G)
-float ICM20602::getAccelerationSensitivity() { 
-   
-   if(accelSensitivity == ACCEL_SENSITIVITY_2G) {
-      return 16384.0f;
-   } else if(accelSensitivity == ACCEL_SENSITIVITY_4G) {
-      return 8192.0f;
-   } else if(accelSensitivity == ACCEL_SENSITIVITY_8G) {
-      return 4096.0f;
-   } else if(accelSensitivity == ACCEL_SENSITIVITY_16G) { 
-      return 2048.0f;
-   }
-
-   return -1.0; //If parameter value is incorrect
-}
-
-//Gives conversion factor to convert raw values to degrees per second (denoted by: dps)
-float ICM20602::getGyroscopeSensitivity() {
-   
-   if(gyroSensitivity == GRYO_SENSITIVITY_250) {
-      return 131.0f;
-   } else if(gyroSensitivity == GRYO_SENSITIVITY_500) {
-      return 65.5;
-   } else if(gyroSensitivity == GRYO_SENSITIVITY_1000) {
-      return 32.8;
-   } else if(gyroSensitivity == GRYO_SENSITIVITY_2000) {
-      return 16.4;
-   }
-
-   return -1.0; //If parameter value is incorrect
-}
-
-void ICM20602::getAccelerationReading(float * accx, float * accy, float * accz) {
-   
-}
-
-void ICM20602::getGyroscopeReading(float * gyrx, float * gyry, float * gyrz) {
-
-}
-
-void ICM20602::getTempReading(float * temp) {
-
+   accelConversionFactor = ACCEL_SENSITIVITY_4G;
+   gyroConversionFactor = GRYO_SENSITIVITY_500;
 }
 
 //Sets sensitivity of accelerometer
 void ICM20602::setAccelSensitivity(uint8_t desiredSensitivity) {
-   accelSensitivity = desiredSensitivity; 
+   if (desiredSensitivity == 1) {
+      accelConversionFactor = ACCEL_SENSITIVITY_2G;
+   } else if (desiredSensitivity == 2) {
+      accelConversionFactor = ACCEL_SENSITIVITY_4G;
+   } else if (desiredSensitivity == 3) {
+      accelConversionFactor = ACCEL_SENSITIVITY_8G;
+   } else {
+      accelConversionFactor = ACCEL_SENSITIVITY_16G;
+   }
 }
+
 //Sets sensitivity of gyroscope
 void ICM20602::setGyroSensitivity(uint8_t desiredSensitivity) {
-   gyroSensitivity = desiredSensitivity; 
+   if (desiredSensitivity == 1) {
+      gyroConversionFactor = GRYO_SENSITIVITY_250;
+   } else if (desiredSensitivity == 2) {
+      gyroConversionFactor = GRYO_SENSITIVITY_500;
+   } else if (desiredSensitivity == 3) {
+      gyroConversionFactor = GRYO_SENSITIVITY_1000;
+   } else {
+      gyroConversionFactor = GRYO_SENSITIVITY_2000;
+   }
+}
+
+void ICM20602::getAccelerationReading(float *accx, float *accy, float *accz) {
+   
+}
+
+void ICM20602::getGyroscopeReading(float *gyrx, float *gyry, float *gyrz) {
+
+}
+
+void ICM20602::getTempReading(float *temp) {
+
+}
+
+uint16_t ICM20602::convertInt8ToInt16(uint8_t * rawDataToConvert) {
+   return rawDataToConvert[0] << 8 | rawDataToConvert[1];
 }
 
 uint32_t ICM20602::getCurrentTime() {
