@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <ctime>
 #include <cstdint>
+#include <stdint.h>
 
 #define ICM_20602 0
 #define MPU9255 1
@@ -80,8 +81,6 @@ class ICM20602: public IMU{
          * */
         void GetResult(IMUData_t *Data){}; //
 
-        void setAccelSensitivity(uint8_t); //1 = 2G; 2 = 4G; 3 = 8G; 4 = 16G
-        void setGyroSensitivity(uint8_t); //1 = 250 dps; 2 = 500 dps; 3 = 1000 dps; 4 = 2000 dps
     private:
         //Variables
         uint32_t timeOfResult;
@@ -89,6 +88,7 @@ class ICM20602: public IMU{
         static bool dataIsNew;
         float accelConversionFactor;
         float gyroConversionFactor; 
+        float tempConversionFactor;
 
         /*
             Method structure:
@@ -105,11 +105,11 @@ class ICM20602: public IMU{
         */
 
         //Methods
-        void getAccelerationReading(float *, float *, float *);
-        void getGyroscopeReading(float *, float *, float *);
-        void getTempReading(float *); 
-        uint16_t convertInt8ToInt16(uint8_t *);
-        uint32_t getCurrentTime();
+        void send_dummy_byte(uint8_t *);
+        void get_acceleration_reading(float *, float *, float *);
+        void get_gyroscope_reading(float *, float *, float *);
+        void get_temp_reading(float *); 
+        uint32_t get_current_time();
 };
 
 #endif
