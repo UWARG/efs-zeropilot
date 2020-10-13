@@ -8,7 +8,7 @@
 #include "SPI.hpp"
 #include "Status.hpp"
  
-//Address for ICM20602 (PLACEHOLDERS FOR NOW)
+//Address for ICM20602
 #define ICM20602_SPI hspi1 //SPI Port 1
  
 /*** REGISTER DEFINITION BEGINS ***/
@@ -31,26 +31,15 @@
 #define REG_YG_OFFS_USRL 0x16
 #define REG_ZG_OFFS_USRH 0x17
 #define REG_ZG_OFFS_USRL 0x18
-//Sample rate divider
-#define REG_SMPLRT_DIV 0x19
 //Configuration
 #define REG_CONFIG 0x1A
 #define REG_GYRO_CONFIG 0x1B
 #define REG_ACCEL_CONFIG 0x1C
 #define REG_ACCEL_CONFIG_2 0x1D
-#define REG_LP_MODE_CFG 0x1E //Low power mode
 //Wake-on motion threshold for accelerometer (by axis)
 #define REG_ACCEL_WOM_X_THR 0x20
 #define REG_ACCEL_WOM_Y_THR 0x21
 #define REG_ACCEL_WOM_Z_THR 0x22
-//FIFO (First in, first out) reisters
-#define REG_FIFO_EN 0x23  //Enable
-//Inturrupt statusses
-#define REG_FSYNC_INT 0x36
-#define REG_INT_PIN_CFG 0x37 //INT/DRDY Pin/ Bypass enable config
-#define REG_INT_ENABLE 0x38
-#define REG_FIFO_WM_INT_STATUS 0x39
-#define REG_INT_STATUS 0x3A
 //Accelerometer measurements (Last character: H = high; L = low)
 #define REG_ACCEL_XOUT_H 0x3B
 #define REG_ACCEL_XOUT_L 0x3C
@@ -72,26 +61,14 @@
 #define REG_SELF_TEST_X_GYRO 0x50
 #define REG_SELF_TEST_Y_GYRO 0x51
 #define REG_SELF_TEST_Z_GYRO 0x52
-//FIFO watermark threshold
-#define REG_FIFO_WM_TH1 0x60
-#define REG_FIFO_WM_TH2 0x61
- 
-#define REG_SIGNAL_PATH_RESET 0x68
-#define REG_ACCEL_INTEL_CTRL 0x69 //accelerometer intelligence control
 #define REG_USER_CTRL 0x6A
 //Power management
 #define REG_PWR_MGMT_1 0x6B
 #define REG_PWR_MGMT_2 0x6C
 //For I2C management
 #define REG_I2C_IF 0x70
-//FIFO count registers (Last character: H = high; L = low)
-#define REG_FIFO_COUNTH 0x72
-#define REG_FIFO_COUNTL 0x73
-//FIFO read write
-#define REG_FIFO_R_W 0x74
 //Device idenitifier
 #define REG_WHO_AM_I 0x75
-#define REG_WHO_AM_I_CONST 0X12
 //Accelerometer offset registers
 #define REG_XA_OFFSET_H 0x77
 #define REG_XA_OFFSET_L 0x78
@@ -109,7 +86,7 @@ static SPI_HandleTypeDef* hspi1;
 
 float measuredAccX, measuredAccY, measuredAccZ; //Acceleration readings
 float measuredGyroX, measuredGyroY, measuredGyroZ; //Gyroscope readings 
-float measuredTemp;
+float measuredTemp; //Temperature reading
 
 static SPIPort *spi_port;
 static SPISettings hspi_1;
@@ -121,9 +98,9 @@ ICM20602::ICM20602() {
    if(!isSPIBusDefined) {
       // Configures the SPI Settings
       hspi_1.port = SPI_PORT1;
-      hspi_1.mode = SPI_MODE_0;                        // SET LATER
+      hspi_1.mode = SPI_MODE_0;                                                  // SET LATER
       hspi_1.master = false;
-      hspi_1.frequency = 10;                           // SET LATER
+      hspi_1.frequency = 10;                                                     // SET LATER
       hspi_1.word_size = 2 ; 
 
       // Creates SPI Object
@@ -161,17 +138,17 @@ ICM20602::ICM20602() {
       spi_port->exchange_data(buffer, setup, 1);
 
       //Set up gyroscope
-      *setup = 0x10; // setting to 500 dps max (For accelerometer it is setting it to 4G max)
+      *setup = 0x10; //Setting to 500 dps max for gyroscope; setting to 4G max for accelerometer
       *buffer = REG_GYRO_CONFIG | 0x00;
       send_dummy_byte(buffer);
       spi_port->exchange_data(buffer, setup, 1);
 
-      //set up  accelerometer
+      //set up accelerometer
       *buffer = REG_ACCEL_CONFIG | 0x00; 
       send_dummy_byte(buffer);
       spi_port->exchange_data(buffer, setup, 1);
 
-      *setup = (1 << 3);
+      *setup = 0x08;
       *buffer = REG_ACCEL_CONFIG_2 | 0x00;
       send_dummy_byte(buffer);
       spi_port->exchange_data(buffer, setup, 1);
@@ -187,15 +164,15 @@ ICM20602::ICM20602() {
 
    accelConversionFactor = ACCEL_SENSITIVITY_4G;
    gyroConversionFactor = GRYO_SENSITIVITY_500;
-   tempConversionFactor = 326.8;                            //VERIFY
+   tempConversionFactor = 326.8;
 }
 
 //Sends dummy byte to SPI register
 void ICM20602::send_dummy_byte(uint8_t *reg) { 
    uint8_t * dummyByte = 0x00;
    spi_port->exchange_data(reg, dummyByte, 1);
-
-   // ADD CODE THAT ENSURES THE MESSAGE WAS RECEIVED. IF NOT, RESEND THE DUMMYBYTE 
+                                                                     
+                                                                                 // ADD CODE THAT ENSURES THE MESSAGE WAS RECEIVED. IF NOT, RESEND THE DUMMYBYTE 
 
 }
 
@@ -290,7 +267,7 @@ void ICM20602::get_gyroscope_reading(float *gyrx, float *gyry, float *gyrz) {
    delete sensorGyroX, sensorGyroY, sensorGyroZ;
 }
 
-void ICM20602::get_temp_reading(float *temp) {                       // NEED TO READ MORE ABOUT THIS ONE
+void ICM20602::get_temp_reading(float *temp) {
    uint8_t *sensorTemp;
    int16_t shiftedSensorTemp;
 
@@ -298,13 +275,13 @@ void ICM20602::get_temp_reading(float *temp) {                       // NEED TO 
    send_dummy_byte(buffer);
    spi_port->exchange_data(buffer, sensorTemp, 1);
    shiftedSensorTemp = *sensorTemp << 8;
-   
+
    *buffer = REG_TEMP_OUT_L | 0x80;
    send_dummy_byte(buffer);
    spi_port->exchange_data(buffer, sensorTemp, 1);
    shiftedSensorTemp = shiftedSensorTemp | *sensorTemp;
 
-   *temp = ((float) shiftedSensorTemp)/tempConversionFactor;
+   *temp = ((float) shiftedSensorTemp)/tempConversionFactor;                     //MAY NEED TO ADD AN OFFSET
    
    delete sensorTemp;
 }

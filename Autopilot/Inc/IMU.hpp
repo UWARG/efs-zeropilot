@@ -89,21 +89,7 @@ class ICM20602: public IMU{
         float accelConversionFactor;
         float gyroConversionFactor; 
         float tempConversionFactor;
-
-        /*
-            Method structure:
-                - Generic idea:
-                    - Read all of the data at the same time:
-                        - Accel
-                        - Gyro
-                        - Temp
-                - Process:
-                    - Begin_Measuiring() will call each of the get___Reading() methods in order. Pass the global variable in as a pointer
-                    - get___Reading() methods will collect data for its designated sensor and assign them to the global variable pointer in IMU.cpp
-                        - Each method will call a method named IMU20602Read() which will use the register to get a raw reading.
-                    - Begin_Measuring will terminate
-        */
-
+        
         //Methods
         void send_dummy_byte(uint8_t *);
         void get_acceleration_reading(float *, float *, float *);
