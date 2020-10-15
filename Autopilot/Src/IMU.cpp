@@ -178,26 +178,26 @@ void ICM20602::Begin_Measuring() {
    timeOfResult = get_current_time();
 }
  
-void ICM20602::GetResult(IMUData_t *Data) {
+void ICM20602::GetResult(IMUData_t &Data) {
    dataIsNew = false;
    if (sensorSuccess == STATUS_CODE_OK) {
-      Data->isDataNew = true;
+      Data.isDataNew = true;
       dataIsNew = false;
-      Data->accx = measuredAccX;
-      Data->accy = measuredAccY;
-      Data->accz = measuredAccZ;
-      Data->gyrx = measuredGyroX;
-      Data->gyry = measuredGyroY;
-      Data->gyrz = measuredGyroZ;
-      Data->magx = NAN;
-      Data->magy = NAN;
-      Data->magz = NAN;
-      Data->utcTime = timeOfResult;
-      Data->temp = measuredTemp;
-      Data->sensorStatus = 0;
+      Data.accx = measuredAccX;
+      Data.accy = measuredAccY;
+      Data.accz = measuredAccZ;
+      Data.gyrx = measuredGyroX;
+      Data.gyry = measuredGyroY;
+      Data.gyrz = measuredGyroZ;
+      Data.magx = NAN;
+      Data.magy = NAN;
+      Data.magz = NAN;
+      Data.utcTime = timeOfResult;
+      Data.temp = measuredTemp;
+      Data.sensorStatus = 0;
    } else { //In case data was not received. Stick with old data
-      Data->isDataNew = false;
-      Data->sensorStatus = -1; 
+      Data.isDataNew = false;
+      Data.sensorStatus = -1; 
    }
   
 }

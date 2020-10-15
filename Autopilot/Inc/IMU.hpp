@@ -89,7 +89,7 @@ class IMU{
          * 2. Transfers raw data from variables to struct
          * 3. Updates utcTime and status values in struct as well
          * */
-        virtual void GetResult(IMUData_t *Data) = 0; //
+        virtual void GetResult(IMUData_t &Data) = 0; //
 };
 
 //To be replaced with implementation of actual sensor
@@ -110,7 +110,7 @@ class ICM20602: public IMU{
          * 2. Transfers raw data from variables to struct
          * 3. Updates utcTime and status values in struct as well
          * */
-        void GetResult(IMUData_t *Data); //
+        void GetResult(IMUData_t &Data); //
 
     private:
         //Variables
