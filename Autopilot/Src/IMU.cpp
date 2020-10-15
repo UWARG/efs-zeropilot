@@ -26,7 +26,7 @@ GPIOPin pin(GPIO_PORT_A, 1, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_FRE
 
 /*** MAIN BLOCK OF CODE BEGINS ***/
  
-ICM20602::ICM20602() {
+void ICM20602::Init() {
    if(!isSPIBusDefined) {
       // Configures the SPI Settings
       hspi_1.port = SPI_PORT1;
