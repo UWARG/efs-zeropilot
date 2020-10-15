@@ -1,6 +1,6 @@
 /**
  * IMU Sensor Functions and Part Number Selection
- * Author: Lucy Gong, Dhruv Rawat
+ * Author(s): Lucy Gong, Dhruv Rawat
  */
 
 #ifndef IMU_HPP
@@ -14,19 +14,49 @@
 #define ICM_20602 0
 #define MPU9255 1
 
-//Different acceleration sensitivities
-// #define ACCEL_SENSITIVITY_2G 16384.0f
+//Address for ICM20602
+#define ICM20602_SPI hspi1 //SPI Port 1
+
+//Sensor Sensitivities
 #define ACCEL_SENSITIVITY_4G 8192.0f
-// #define ACCEL_SENSITIVITY_8G 4096.0f
-// #define ACCEL_SENSITIVITY_16G 2048.0f
-
-//Different gyroscope sensitivities
-// #define GRYO_SENSITIVITY_250 131.0f
 #define GRYO_SENSITIVITY_500 65.5
-// #define GRYO_SENSITIVITY_1000 32.8
-// #define GRYO_SENSITIVITY_2000 16.4
-
 #define TEMPERATURE_SENSITIVITY 328.6
+
+/*** REGISTER DEFINITION BEGINS ***/
+
+//Configuration
+#define REG_CONFIG 0x1A
+#define REG_GYRO_CONFIG 0x1B
+#define REG_ACCEL_CONFIG 0x1C
+#define REG_ACCEL_CONFIG_2 0x1D
+//Accelerometer measurements (Last character: H = high; L = low)
+#define REG_ACCEL_XOUT_H 0x3B
+#define REG_ACCEL_XOUT_L 0x3C
+#define REG_ACCEL_YOUT_H 0x3D
+#define REG_ACCEL_YOUT_L 0x3E
+#define REG_ACCEL_ZOUT_H 0x3F
+#define REG_ACCEL_ZOUT_L 0x40
+//Temperature measurements (Last character: H = high; L = low)
+#define REG_TEMP_OUT_H 0x41
+#define REG_TEMP_OUT_L 0x42
+//Gryroscope measurements (Last character: H = high; L = low)
+#define REG_GYRO_XOUT_H 0x43
+#define REG_GYRO_XOUT_L 0x44
+#define REG_GYRO_YOUT_H 0x45
+#define REG_GYRO_YOUT_L 0x46
+#define REG_GYRO_ZOUT_H 0x47
+#define REG_GYRO_ZOUT_L 0x48
+
+#define REG_USER_CTRL 0x6A
+//Power management
+#define REG_PWR_MGMT_1 0x6B
+#define REG_PWR_MGMT_2 0x6C
+//For I2C management
+#define REG_I2C_IF 0x70
+//Device idenitifier
+#define REG_WHO_AM_I 0x75
+
+/*** REGISTER DEFINITION ENDS ***/
 
 #define USE_IMU ICM_20602
 
@@ -90,7 +120,6 @@ class ICM20602: public IMU{
         float accelConversionFactor;
         float gyroConversionFactor; 
         float tempConversionFactor;
-        
         //Methods
         void get_accel_temp_gyro_reading(float *, float *, float *, float *, float *, float *, float *);
         void write_data(uint8_t *);
