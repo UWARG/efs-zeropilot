@@ -93,6 +93,7 @@ class ICM20602: public IMU{
         
         //Methods
         void get_accel_temp_gyro_reading(float *, float *, float *, float *, float *, float *, float *);
+        void write_data(uint8_t *);
         uint32_t get_current_time();
 };
 

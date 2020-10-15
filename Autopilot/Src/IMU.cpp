@@ -7,6 +7,7 @@
 #include "spi.h"
 #include "SPI.hpp"
 #include "Status.hpp"
+#include "GPIO.hpp"
  
 //Address for ICM20602
 #define ICM20602_SPI hspi1 //SPI Port 1
@@ -60,6 +61,8 @@ static SPIPort *spi_port;
 static SPISettings hspi_1;
 uint8_t *buffer;
 StatusCode sensorSuccess;
+GPIOPin pin(GPIO_PORT_A, 1, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_FREQ_HIGH, 0);       //GET VALUES LATER 
+
  
 /*** MAIN BLOCK OF CODE BEGINS ***/
  
@@ -73,27 +76,31 @@ ICM20602::ICM20602() {
          Data should be transitioned on the falling edge of SPC
 
          From the above, we know that CPHA must be 0. 
-         CPOL is 0.
+         Looking at the SPIPort::set_slave() method, CPOL is 1 
       */
 
-      hspi_1.mode = SPI_MODE_0;
+      hspi_1.mode = SPI_MODE_2;
       hspi_1.master = false;
-      hspi_1.frequency = 10;                                           
-      hspi_1.word_size = 2 ; 
-
+      hspi_1.frequency = 10;                                            
+      
       // Creates SPI Object
       spi_port = new SPIPort(hspi_1);
+      spi_port->add_slave(pin); //Adds slave pin to the spi_port class object
 
       uint8_t *setup = 0;
 
       //Full reset of chip 
       *setup = 0x80;
       *buffer = REG_PWR_MGMT_1 | 0x00; //0x80 means we are reading; 0x00 means we are writing
-      spi_port->exchange_data(buffer, setup, 1);
+      uint8_t writeData[2] = {*buffer, *setup}; // writeData[0] -> register address; writeData[1] -> write instructions
+      write_data(writeData);
 
       //Verify chip is working properly
       *buffer = REG_WHO_AM_I | 0x80;
-      sensorSuccess = spi_port->exchange_data(buffer, setup, 1);
+      uint8_t dataFromSensor[2] = {0x00, 0x00}; // dataFromSensor[0] -> dummy byte (contains SPI address); dataFromSensor[1] -> data byte
+      spi_port->set_slave(0);
+      sensorSuccess = spi_port->exchange_data(buffer, dataFromSensor, 2);
+      spi_port->set_slave(0);
 
       if(sensorSuccess != STATUS_CODE_OK) {
          //Debug code here
@@ -102,37 +109,48 @@ ICM20602::ICM20602() {
       //Place accelerometer and gyroscopoe on standby
       *setup = 0x3F;
       *buffer = REG_PWR_MGMT_2 | 0x00;
-      spi_port->exchange_data(buffer, setup, 1);
+      writeData[0] = *buffer; 
+      writeData[1] = *setup; 
+      write_data(writeData); 
 
       //Disable FIFO
       *setup = 0x00;
       *buffer = REG_USER_CTRL | 0x00;
-      spi_port->exchange_data(buffer, setup, 1);
+      writeData[0] = *buffer;
+      writeData[1] = *setup;
+      write_data(writeData); 
 
       //Disable I2C
       *setup = 0x40;
       *buffer = REG_I2C_IF | 0x00;
-      spi_port->exchange_data(buffer, setup, 1);
+      writeData[0] = *buffer;
+      writeData[1] = *setup;
+      write_data(writeData); 
 
       //Set up gyroscope
       *setup = 0x10; //Setting to 500 dps max for gyroscope; setting to 4G max for accelerometer
       *buffer = REG_GYRO_CONFIG | 0x00;
-      spi_port->exchange_data(buffer, setup, 1);
+      writeData[0] = *buffer;
+      writeData[1] = *setup;
+      write_data(writeData); 
 
       //set up accelerometer
       *buffer = REG_ACCEL_CONFIG | 0x00; 
-      spi_port->exchange_data(buffer, setup, 1);
+      writeData[0] = *buffer;
+      write_data(writeData); 
 
       *setup = 0x08;
       *buffer = REG_ACCEL_CONFIG_2 | 0x00;
-      spi_port->exchange_data(buffer, setup, 1);
-
+      writeData[0] = *buffer;
+      writeData[1] = *setup;
+      write_data(writeData); 
+  
       //Turn on gyroscope and accelerometer
       *setup = 0x00;
       *buffer = REG_PWR_MGMT_2 | 0x00;
-      spi_port->exchange_data(buffer, setup, 1);  
-
-      delete setup;
+      writeData[0] = *buffer;
+      writeData[1] = *setup;
+      write_data(writeData); 
    }
 
    accelConversionFactor = ACCEL_SENSITIVITY_4G;
@@ -140,14 +158,29 @@ ICM20602::ICM20602() {
    tempConversionFactor = TEMPERATURE_SENSITIVITY;
 }
 
+void ICM20602::write_data(uint8_t *writeData) { 
+   spi_port->set_slave(0); //Sets CS to HIGH
+   spi_port->exchange_data(writeData, 0x00, 1);
+   spi_port->set_slave(0); //Sets CS to LOW
+}
+
 void ICM20602::get_accel_temp_gyro_reading(float *accx, float *accy, float *accz, float *gyrx, float *gyry, float *gyrz, float *temp) {
    uint8_t raw_data[14];
    //Store both High and Low Byte values
    int16_t shiftedSensorAccX, shiftedSensorAccY, shiftedSensorAccZ, shiftedSensorTemp, shiftedSensorGyroX, shiftedSensorGyroY, shiftedSensorGyroZ; 
+   uint8_t dataFromSensor[2] = {0x00, 0x00};
 
    //Uses the sensor registers to get raw data for all sensors
    *buffer = REG_ACCEL_XOUT_H | 0x80; 
-   sensorSuccess = spi_port->exchange_data(buffer, raw_data, 14); 
+   
+   for(int i = 0; i < 14; i++) {
+      dataFromSensor[1] = 0x00; 
+      spi_port->set_slave(0); 
+      sensorSuccess = spi_port->exchange_data(buffer, dataFromSensor, 2); 
+      spi_port->set_slave(0); 
+      *buffer = REG_ACCEL_XOUT_H + 1; //Moves onto next register
+      raw_data[i] = dataFromSensor[1]; //Assigns data byte to the raw_data array for use later
+   }
    
    shiftedSensorAccX = (raw_data[0] << 8) + raw_data[1];
    shiftedSensorAccY = (raw_data[2] << 8) + raw_data[3];
