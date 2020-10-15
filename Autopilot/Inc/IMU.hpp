@@ -15,17 +15,18 @@
 #define MPU9255 1
 
 //Different acceleration sensitivities
-#define ACCEL_SENSITIVITY_2G 16384.0f
+// #define ACCEL_SENSITIVITY_2G 16384.0f
 #define ACCEL_SENSITIVITY_4G 8192.0f
-#define ACCEL_SENSITIVITY_8G 4096.0f
-#define ACCEL_SENSITIVITY_16G 2048.0f
+// #define ACCEL_SENSITIVITY_8G 4096.0f
+// #define ACCEL_SENSITIVITY_16G 2048.0f
 
 //Different gyroscope sensitivities
-#define GRYO_SENSITIVITY_250 131.0f
+// #define GRYO_SENSITIVITY_250 131.0f
 #define GRYO_SENSITIVITY_500 65.5
-#define GRYO_SENSITIVITY_1000 32.8
-#define GRYO_SENSITIVITY_2000 16.4
+// #define GRYO_SENSITIVITY_1000 32.8
+// #define GRYO_SENSITIVITY_2000 16.4
 
+#define TEMPERATURE_SENSITIVITY 328.6
 
 #define USE_IMU ICM_20602
 
@@ -38,7 +39,7 @@ struct IMUData_t {
 
     bool isDataNew; 
     int sensorStatus; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
-    float utcTime; //Last time GetResult was called
+    uint32_t utcTime; //Last time GetResult was called
 };
 
 class IMU{
@@ -91,10 +92,7 @@ class ICM20602: public IMU{
         float tempConversionFactor;
         
         //Methods
-        void send_dummy_byte(uint8_t *);
-        void get_acceleration_reading(float *, float *, float *);
-        void get_gyroscope_reading(float *, float *, float *);
-        void get_temp_reading(float *); 
+        void get_accel_temp_gyro_reading(float *, float *, float *, float *, float *, float *, float *);
         uint32_t get_current_time();
 };
 
