@@ -4,25 +4,64 @@
  */
 
 #include "IMU.hpp"
-#include "spi.h"
-#include "SPI.hpp"
-#include "Status.hpp"
 #include "GPIO.hpp"
+#include "Status.hpp"
+#include "SPI.hpp"
+
+//Address for ICM20602
+#define ICM20602_SPI hspi1 //SPI Port 1
+
+//Sensor Sensitivities
+#define ACCEL_SENSITIVITY_4G 8192.0f
+#define GRYO_SENSITIVITY_500 65.5
+#define TEMPERATURE_SENSITIVITY 328.6
+
+/*** REGISTER DEFINITION BEGINS ***/
+
+//Configuration
+#define REG_CONFIG 0x1A
+#define REG_GYRO_CONFIG 0x1B
+#define REG_ACCEL_CONFIG 0x1C
+#define REG_ACCEL_CONFIG_2 0x1D
+//Accelerometer measurements (Last character: H = high; L = low)
+#define REG_ACCEL_XOUT_H 0x3B
+#define REG_ACCEL_XOUT_L 0x3C
+#define REG_ACCEL_YOUT_H 0x3D
+#define REG_ACCEL_YOUT_L 0x3E
+#define REG_ACCEL_ZOUT_H 0x3F
+#define REG_ACCEL_ZOUT_L 0x40
+//Temperature measurements (Last character: H = high; L = low)
+#define REG_TEMP_OUT_H 0x41
+#define REG_TEMP_OUT_L 0x42
+//Gryroscope measurements (Last character: H = high; L = low)
+#define REG_GYRO_XOUT_H 0x43
+#define REG_GYRO_XOUT_L 0x44
+#define REG_GYRO_YOUT_H 0x45
+#define REG_GYRO_YOUT_L 0x46
+#define REG_GYRO_ZOUT_H 0x47
+#define REG_GYRO_ZOUT_L 0x48
+
+#define REG_USER_CTRL 0x6A
+//Power management
+#define REG_PWR_MGMT_1 0x6B
+#define REG_PWR_MGMT_2 0x6C
+//For I2C management
+#define REG_I2C_IF 0x70
+//Device idenitifier
+#define REG_WHO_AM_I 0x75
+
+/*** REGISTER DEFINITION ENDS ***/
  
 bool ICM20602::isSPIBusDefined = false;
 bool ICM20602::dataIsNew = false;
- 
-static SPI_HandleTypeDef* hspi1;
 
 float measuredAccX, measuredAccY, measuredAccZ; //Acceleration readings
 float measuredGyroX, measuredGyroY, measuredGyroZ; //Gyroscope readings 
 float measuredTemp; //Temperature reading
-
 static SPIPort *spi_port;
 static SPISettings hspi_1;
 uint8_t *buffer;
 StatusCode sensorSuccess;
-GPIOPin pin(GPIO_PORT_A, 1, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_FREQ_HIGH, 0);       //GET VALUES LATER 
 
 /*** MAIN BLOCK OF CODE BEGINS ***/
  
@@ -30,24 +69,14 @@ void ICM20602::Init() {
    if(!isSPIBusDefined) {
       // Configures the SPI Settings
       hspi_1.port = SPI_PORT1;
-
-      /*
-         Data is latched on the rising edge of SPC
-         Data should be transitioned on the falling edge of SPC
-
-         From the above, we know that CPHA must be 0. 
-         Looking at the SPIPort::set_slave() method, CPOL is 1.
-
-         Thus, we should use SPI_MODE_2
-      */
-
-      hspi_1.mode = SPI_MODE_2;
-      hspi_1.master = false;
+      hspi_1.mode = SPI_MODE_0;
+      hspi_1.master = true;
       hspi_1.frequency = 10;                                            
       
       // Creates SPI Object
       spi_port = new SPIPort(hspi_1);
-      spi_port->add_slave(pin); //Adds slave pin to the spi_port class object
+      GPIOPin pin(GPIO_PORT_A, 1, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_FREQ_HIGH, 0);                             //GET VALUES LATER 
+      slaveIdentifier = spi_port->add_slave(pin); //Adds slave pin to the spi_port class object
 
       uint8_t *setup = 0;
 
@@ -60,9 +89,8 @@ void ICM20602::Init() {
       //Verify chip is working properly
       *buffer = REG_WHO_AM_I | 0x80;
       uint8_t dataFromSensor[2] = {0x00, 0x00}; // dataFromSensor[0] -> dummy byte (contains SPI address); dataFromSensor[1] -> data byte
-      spi_port->set_slave(0);
-      sensorSuccess = spi_port->exchange_data(buffer, dataFromSensor, 2);
-      spi_port->set_slave(0);
+      spi_port->set_slave(slaveIdentifier);
+      sensorSuccess = spi_port->exchange_data(buffer, dataFromSensor, 1);
 
       if(sensorSuccess != STATUS_CODE_OK) {
          //Debug code here
@@ -121,39 +149,31 @@ void ICM20602::Init() {
 }
 
 void ICM20602::write_data(uint8_t *writeData) { 
-   spi_port->set_slave(0); //Sets CS to HIGH
-   spi_port->exchange_data(writeData, 0x00, 1);
-   spi_port->set_slave(0); //Sets CS to LOW
+   uint8_t *placeholderByte;
+   spi_port->set_slave(slaveIdentifier);
+   spi_port->exchange_data(writeData, placeholderByte, 2);                                                                    //WRITEDATA ARRAY HAS TWO ELEMENTS, THUS THE BUFFER SIZE IS TWO HERE!!!!
 }
 
 void ICM20602::get_accel_temp_gyro_reading(float *accx, float *accy, float *accz, float *gyrx, float *gyry, float *gyrz, float *temp) {
-   uint8_t raw_data[14];
-   uint8_t dataFromSensor[2] = {0x00, 0x00};
-
+   uint8_t raw_data[15];
+   raw_data[0] = 0x00;
    //Store both High and Low Byte values
    int16_t shiftedSensorAccX, shiftedSensorAccY, shiftedSensorAccZ, shiftedSensorTemp, shiftedSensorGyroX, shiftedSensorGyroY, shiftedSensorGyroZ; 
-
    //Uses the sensor registers to get raw data for all sensors
    *buffer = REG_ACCEL_XOUT_H | 0x80; 
    
-   for(int i = 0; i < 14; i++) {
-      dataFromSensor[1] = 0x00; 
-      spi_port->set_slave(0); 
-      sensorSuccess = spi_port->exchange_data(buffer, dataFromSensor, 2); 
-      spi_port->set_slave(0); 
-      *buffer = REG_ACCEL_XOUT_H + 1; //Moves onto next register
-      raw_data[i] = dataFromSensor[1]; //Assigns data byte to the raw_data array for use later
-   }
+   spi_port->set_slave(slaveIdentifier);
+   sensorSuccess = spi_port->exchange_data(buffer, raw_data, 1); //Using burst read, 14 data points for both sensors will be collected. 
    
-   shiftedSensorAccX = (raw_data[0] << 8) + raw_data[1];
-   shiftedSensorAccY = (raw_data[2] << 8) + raw_data[3];
-   shiftedSensorAccZ = (raw_data[4] << 8) + raw_data[5];
+   shiftedSensorAccX = (raw_data[1] << 8) + raw_data[2];
+   shiftedSensorAccY = (raw_data[3] << 8) + raw_data[4];
+   shiftedSensorAccZ = (raw_data[5] << 8) + raw_data[6];
 
-   shiftedSensorTemp = (raw_data[6] << 8) + raw_data[7];
+   shiftedSensorTemp = (raw_data[7] << 8) + raw_data[8];
 
-   shiftedSensorGyroX = (raw_data[8] << 8) + raw_data[9];
-   shiftedSensorGyroY = (raw_data[10] << 8) + raw_data[11];
-   shiftedSensorGyroZ = (raw_data[12] << 8) + raw_data[13];
+   shiftedSensorGyroX = (raw_data[9] << 8) + raw_data[10];
+   shiftedSensorGyroY = (raw_data[11] << 8) + raw_data[12];
+   shiftedSensorGyroZ = (raw_data[13] << 8) + raw_data[14];
 
    //Converts 16-bit integers to a float. These are the actual measurements
    *accx = ((float) shiftedSensorAccX)/accelConversionFactor; 
@@ -166,16 +186,10 @@ void ICM20602::get_accel_temp_gyro_reading(float *accx, float *accy, float *accz
    *gyry = ((float) shiftedSensorGyroY)/gyroConversionFactor;
    *gyrz = ((float) shiftedSensorGyroZ)/gyroConversionFactor;
 }
-
-uint32_t ICM20602::get_current_time() {
-   std::time_t currentTime = std::time(0);
-   return static_cast<int>(currentTime);
-}
  
 void ICM20602::Begin_Measuring() {
    get_accel_temp_gyro_reading(&measuredAccX, &measuredAccY, &measuredAccZ, &measuredGyroX, &measuredGyroY, &measuredGyroZ, &measuredTemp);
    dataIsNew = true;
-   timeOfResult = get_current_time();
 }
  
 void ICM20602::GetResult(IMUData_t &Data) {
@@ -192,14 +206,12 @@ void ICM20602::GetResult(IMUData_t &Data) {
       Data.magx = NAN;
       Data.magy = NAN;
       Data.magz = NAN;
-      Data.utcTime = timeOfResult;
       Data.temp = measuredTemp;
       Data.sensorStatus = 0;
    } else { //In case data was not received. Stick with old data
       Data.isDataNew = false;
       Data.sensorStatus = -1; 
    }
-  
 }
  
 /* MAIN BLOCK OF CODE ENDS */
