@@ -60,7 +60,7 @@ float measuredGyroX, measuredGyroY, measuredGyroZ; //Gyroscope readings
 float measuredTemp; //Temperature reading
 static SPIPort *spi_port;
 static SPISettings hspi_1;
-uint8_t *buffer;
+uint8_t *imuBuffer;
 StatusCode sensorSuccess;
 
 /*** MAIN BLOCK OF CODE BEGINS ***/
@@ -76,21 +76,21 @@ void ICM20602::Init() {
       // Creates SPI Object
       spi_port = new SPIPort(hspi_1);
       GPIOPin pin(GPIO_PORT_A, 1, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_FREQ_HIGH, 0);                             //GET VALUES LATER 
-      slaveIdentifier = spi_port->add_slave(pin); //Adds slave pin to the spi_port class object
+      imuSlaveIdentifier = spi_port->add_slave(pin); //Adds slave pin to the spi_port class object
 
       uint8_t *setup = 0;
 
       //Full reset of chip 
       *setup = 0x80;
-      *buffer = REG_PWR_MGMT_1 | 0x00; //0x80 means we are reading; 0x00 means we are writing
-      uint8_t writeData[2] = {*buffer, *setup}; // writeData[0] -> register address; writeData[1] -> write instructions
+      *imuBuffer = REG_PWR_MGMT_1 | 0x00; //0x80 means we are reading; 0x00 means we are writing
+      uint8_t writeData[2] = {*imuBuffer, *setup}; // writeData[0] -> register address; writeData[1] -> write instructions
       write_data(writeData);
 
       //Verify chip is working properly
-      *buffer = REG_WHO_AM_I | 0x80;
-      uint8_t dataFromSensor[2] = {0x00, 0x00}; // dataFromSensor[0] -> dummy byte (contains SPI address); dataFromSensor[1] -> data byte
-      spi_port->set_slave(slaveIdentifier);
-      sensorSuccess = spi_port->exchange_data(buffer, dataFromSensor, 1);
+      *imuBuffer = REG_WHO_AM_I | 0x80;
+      uint8_t dataFromIMUSensor[2] = {0x00, 0x00}; // dataFromSensor[0] -> dummy byte (contains SPI address); dataFromSensor[1] -> data byte
+      spi_port->set_slave(imuSlaveIdentifier);
+      sensorSuccess = spi_port->exchange_data(imuBuffer, dataFromIMUSensor, 1);
 
       if(sensorSuccess != STATUS_CODE_OK) {
          //Debug code here
@@ -98,47 +98,47 @@ void ICM20602::Init() {
 
       //Place accelerometer and gyroscopoe on standby
       *setup = 0x3F;
-      *buffer = REG_PWR_MGMT_2 | 0x00;
-      writeData[0] = *buffer; 
+      *imuBuffer = REG_PWR_MGMT_2 | 0x00;
+      writeData[0] = *imuBuffer; 
       writeData[1] = *setup; 
       write_data(writeData); 
 
       //Disable FIFO
       *setup = 0x00;
-      *buffer = REG_USER_CTRL | 0x00;
-      writeData[0] = *buffer;
+      *imuBuffer = REG_USER_CTRL | 0x00;
+      writeData[0] = *imuBuffer;
       writeData[1] = *setup;
       write_data(writeData); 
 
       //Disable I2C
       *setup = 0x40;
-      *buffer = REG_I2C_IF | 0x00;
-      writeData[0] = *buffer;
+      *imuBuffer = REG_I2C_IF | 0x00;
+      writeData[0] = *imuBuffer;
       writeData[1] = *setup;
       write_data(writeData); 
 
       //Set up gyroscope
       *setup = 0x10; //Setting to 500 dps max for gyroscope; setting to 4G max for accelerometer
-      *buffer = REG_GYRO_CONFIG | 0x00;
-      writeData[0] = *buffer;
+      *imuBuffer = REG_GYRO_CONFIG | 0x00;
+      writeData[0] = *imuBuffer;
       writeData[1] = *setup;
       write_data(writeData); 
 
       //set up accelerometer
-      *buffer = REG_ACCEL_CONFIG | 0x00; 
-      writeData[0] = *buffer;
+      *imuBuffer = REG_ACCEL_CONFIG | 0x00; 
+      writeData[0] = *imuBuffer;
       write_data(writeData); 
 
       *setup = 0x08;
-      *buffer = REG_ACCEL_CONFIG_2 | 0x00;
-      writeData[0] = *buffer;
+      *imuBuffer = REG_ACCEL_CONFIG_2 | 0x00;
+      writeData[0] = *imuBuffer;
       writeData[1] = *setup;
       write_data(writeData); 
   
       //Turn on gyroscope and accelerometer
       *setup = 0x00;
-      *buffer = REG_PWR_MGMT_2 | 0x00;
-      writeData[0] = *buffer;
+      *imuBuffer = REG_PWR_MGMT_2 | 0x00;
+      writeData[0] = *imuBuffer;
       writeData[1] = *setup;
       write_data(writeData); 
    }
@@ -149,31 +149,31 @@ void ICM20602::Init() {
 }
 
 void ICM20602::write_data(uint8_t *writeData) { 
-   uint8_t *placeholderByte;
-   spi_port->set_slave(slaveIdentifier);
-   spi_port->exchange_data(writeData, placeholderByte, 2);                                                                    //WRITEDATA ARRAY HAS TWO ELEMENTS, THUS THE BUFFER SIZE IS TWO HERE!!!!
+   uint8_t *imuPlaceholderByte = 0x00;
+   spi_port->set_slave(imuSlaveIdentifier);
+   spi_port->exchange_data(writeData, imuPlaceholderByte, 2);                                                                    //WRITEDATA ARRAY HAS TWO ELEMENTS, THUS THE imuBuffer SIZE IS TWO HERE!!!!
 }
 
 void ICM20602::get_accel_temp_gyro_reading(float *accx, float *accy, float *accz, float *gyrx, float *gyry, float *gyrz, float *temp) {
-   uint8_t raw_data[15];
-   raw_data[0] = 0x00;
+   uint8_t imu_raw_data[15];
+   imu_raw_data[0] = 0x00;
    //Store both High and Low Byte values
    int16_t shiftedSensorAccX, shiftedSensorAccY, shiftedSensorAccZ, shiftedSensorTemp, shiftedSensorGyroX, shiftedSensorGyroY, shiftedSensorGyroZ; 
    //Uses the sensor registers to get raw data for all sensors
-   *buffer = REG_ACCEL_XOUT_H | 0x80; 
+   *imuBuffer = REG_ACCEL_XOUT_H | 0x80; 
    
-   spi_port->set_slave(slaveIdentifier);
-   sensorSuccess = spi_port->exchange_data(buffer, raw_data, 1); //Using burst read, 14 data points for both sensors will be collected. 
+   spi_port->set_slave(imuSlaveIdentifier);
+   sensorSuccess = spi_port->exchange_data(imuBuffer, imu_raw_data, 1); //Using burst read, 14 data points for both sensors will be collected. 
    
-   shiftedSensorAccX = (raw_data[1] << 8) + raw_data[2];
-   shiftedSensorAccY = (raw_data[3] << 8) + raw_data[4];
-   shiftedSensorAccZ = (raw_data[5] << 8) + raw_data[6];
+   shiftedSensorAccX = (imu_raw_data[1] << 8) + imu_raw_data[2];
+   shiftedSensorAccY = (imu_raw_data[3] << 8) + imu_raw_data[4];
+   shiftedSensorAccZ = (imu_raw_data[5] << 8) + imu_raw_data[6];
 
-   shiftedSensorTemp = (raw_data[7] << 8) + raw_data[8];
+   shiftedSensorTemp = (imu_raw_data[7] << 8) + imu_raw_data[8];
 
-   shiftedSensorGyroX = (raw_data[9] << 8) + raw_data[10];
-   shiftedSensorGyroY = (raw_data[11] << 8) + raw_data[12];
-   shiftedSensorGyroZ = (raw_data[13] << 8) + raw_data[14];
+   shiftedSensorGyroX = (imu_raw_data[9] << 8) + imu_raw_data[10];
+   shiftedSensorGyroY = (imu_raw_data[11] << 8) + imu_raw_data[12];
+   shiftedSensorGyroZ = (imu_raw_data[13] << 8) + imu_raw_data[14];
 
    //Converts 16-bit integers to a float. These are the actual measurements
    *accx = ((float) shiftedSensorAccX)/accelConversionFactor; 

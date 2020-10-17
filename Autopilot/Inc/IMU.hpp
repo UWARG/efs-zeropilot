@@ -74,7 +74,7 @@ class ICM20602: public IMU{
         static bool isSPIBusDefined;
         static bool dataIsNew;
         float accelConversionFactor, gyroConversionFactor, tempConversionFactor; //Conversion Factors
-        uint32_t slaveIdentifier;
+        uint32_t imuSlaveIdentifier;
 
         //Methods
         void get_accel_temp_gyro_reading(float *, float *, float *, float *, float *, float *, float *);
