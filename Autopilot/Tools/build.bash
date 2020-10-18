@@ -19,17 +19,21 @@ set -o nounset
 
 CLEAN=false
 RUN_UNIT_TESTS=false
+RUN_SIMULATION=false
 FLASH=false
 BUILD_TYPE="Debug"
 GENERATOR="Unix Makefiles"
 
-while getopts "c,t,h,f,r" opt; do
+while getopts "c,s,t,h,f,r" opt; do
     case $opt in
         c)
             CLEAN=true
         ;;
         t)
             RUN_UNIT_TESTS=true
+        ;;
+        s)
+            RUN_SIMULATION=true
         ;;
         f)
             FLASH=true
@@ -44,7 +48,8 @@ while getopts "c,t,h,f,r" opt; do
                 "    -c                 - removes previous build files (available for unit test and target build) before building"\
                 "    -h                 - outputs this message"\
                 "    -r                 - Sets the build type to release"\
-                "    -t                 - Runs all unit tests"
+                "    -t                 - Runs all unit tests"\
+                "    -s                 - Runs the simulation"
             exit 1
         ;;
     esac
@@ -88,6 +93,32 @@ if [[ $RUN_UNIT_TESTS == true ]]; then
     do
         ./$SCRIPT;
     done
+
+elif [[ $RUN_SIMULATION == true ]]; then
+    echo "Building Simulation !"
+    echo ""
+    echo ""
+
+    BUILD_DIR="SimulationBuild"
+
+    if [[ $CLEAN == true ]]; then
+    echo "Cleaning old build environment"
+    cmake -E remove_directory $BUILD_DIR
+    fi
+
+    cmake -E make_directory $BUILD_DIR
+    cmake -E chdir $BUILD_DIR \
+      cmake \
+        -G "${GENERATOR}" \
+        -D KIND_OF_BUILD="SIMULATION"\
+        -Wdev\
+        -Wdeprecated\
+        ../
+    cmake --build $BUILD_DIR
+
+    # Note that the program needs to be run from the build directory since it opens and closes files via relative paths.
+    cd $BUILD_DIR
+    ./sim
 
 else
     echo "Building For The Microcontroller !"
