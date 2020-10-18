@@ -96,6 +96,8 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     -DARM_MATH_CM7
   )
 
+  add_definitions(-DUNIT_TESTING)
+
   # Required to get some of the CMSIS libraries to compile
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -fms-extensions -Wall -Wextra -g")
 
