@@ -19,6 +19,11 @@
 #define IMU_CLASS SimulatedIMU
 #define AIRSPEED_CLASS SimulatedAirspeed
 
+#elif defined(UNIT_TESTING)
+
+#define IMU_CLASS MockIMU
+#define AIRSPEED_CLASS MockAirspeed
+
 #else
 
 #define IMU_CLASS ICM20602  // TODO to be replaced with the real classes once the sensor drivers are built

@@ -81,4 +81,8 @@ class ICM20602: public IMU{
         void write_data(uint8_t *);
 };
 
+#ifdef UNIT_TESTING
+#include "IMU_Mock.hpp"
+#endif
+
 #endif
