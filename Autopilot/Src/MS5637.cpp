@@ -1,5 +1,6 @@
 #include "altimeter.hpp"
 #include "i2c.h"
+#include <stddef.h>
 
 
 //Address for the MS5637. Needs to be shifted for write/read (ref:datasheet)
@@ -23,24 +24,28 @@
 #define MS5637_PROM_C5 0xAA
 #define MS5637_PROM_C6 0xAC
 
-bool MS5637::isI2CBusDefined = false;
-
-static float altitudeMeasured = 0, pressureMeasured = 0, temperatureMeasured = 0;
-bool MS5637::dataIsNew = false;
+MS5637* MS5637::s_Instance = NULL; 
 
 static I2C_HandleTypeDef* hi2c;
 
+MS5637* MS5637::GetInstance()
+{
+  if(!s_Instance) //Generates new instance if one doesn't exist :O
+  {
+    s_Instance = new MS5637;
+  }
+
+  return s_Instance;
+}
+
+
  void MS5637::Init()
  {
-   if(!isI2CBusDefined)
-   {
      hi2c = I2C_GetHandle(MS5637_I2C);
 
      if (HAL_I2C_IsDeviceReady(hi2c, MS5637_WRITE_ADDR, 2, 5) != HAL_OK) {
        //Debug code here?
      }
-   }
-
  }
 
 uint32_t MS5637::readFromMS5637(uint32_t commandToWrite) {
