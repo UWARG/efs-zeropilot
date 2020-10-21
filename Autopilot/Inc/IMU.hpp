@@ -64,4 +64,8 @@ class ICM20602: public IMU{
 
 };
 
+#ifdef UNIT_TESTING
+#include "IMU_Mock.hpp"
+#endif
+
 #endif

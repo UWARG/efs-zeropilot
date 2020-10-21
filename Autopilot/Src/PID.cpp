@@ -1,78 +1,71 @@
 /**
  * @file PID.cpp
- * @author Ian Frosst
- * @date  March 26, 2017
- * @copyright Waterloo Aerial Robotics Group 2017 \n
- *   https://raw.githubusercontent.com/UWARG/ZeroPilot-SW/devel/LICENSE.md
+ * @authors Ian Frosst, Anthony Berbari
  */
 
-#include "PID.h"
+#include "PID.hpp"
 
-/**
- * Filtering constant for derivative. Between 0 and 1.
- * The larger this is, the more twitchy D control is.
- */
-#define FILTER (0.4f)
+/***********************************************************************************************************************
+ * Code
+ **********************************************************************************************************************/
 
-/* Generic PID functions. Can be used to PID other things (flaps, etc) */
+PIDController::PIDController(float _kp, float _ki, float _kd, float _i_max, float _min_output, float _max_output){
+	kp = _kp;
+	kd = _kd;
+	ki = _ki;
 
+	i_max = _i_max;
+	min_output = _min_output;
+	max_output = _max_output;
 
-PIDController::PIDController(float _kp, float _ki, float _kd, float _scale, int16_t _i_max){
-  kp = _kp;
-  kd = _kd;
-  ki = _ki;
-  i_max = _i_max;
-  scale = _scale;
-
-  integral = 0;
-  last_time = 0;
-  last_err = 0;
-  last_der = 0;
+	integral = 0.0f;
+	historicalValue[0] = 0.0f;
+	historicalValue[1] = 0.0f;
+	historicalValue[2] = 0.0f;
 }
 
-// PID loop function. error is (setpointValue - currentValue)
-float PIDController::PIDControl(float error) {
-  float output = 0;
+float PIDController::execute(float desired, float actual, float actualRate) {
 
-  uint64_t now = 0;  // getTimeUs(); TODO
-  uint32_t delta_usec = (now - last_time);
+	float error = desired - actual;
+	float derivative;
 
-  // check if we've gone too long without updating (keeps the I and D from
-  // freaking out)
-  if (delta_usec > PID_RESET_TIME || last_time == 0) {
-    delta_usec = 0;
-    integral = 0;
-    last_err = error;
-  }
+	integral +=  error;
 
-  last_time = now;
+	// avoid integral windup
+	if (integral < -i_max)
+	{
+		integral = -i_max;
+	}
+	else if (integral > i_max)
+	{
+		integral = i_max;
+	}
 
-  output += kp * error;  // Proportional control
+	// if we are provided with a measured derivative (say from a gyroscope), it is always less noisy to use that than to compute it ourselves.
+	if ( ! std::isnan(actualRate))
+	{
+		derivative = actualRate;
+	}
+	else
+	{
+		historicalValue[2] = historicalValue[1];
+		historicalValue[1] = historicalValue[0];
+		historicalValue[0] = actual;
 
-  if (delta_usec > 500) {  // only compute time-sensitive control if time has
-                           // elapsed (more then 500 us)
-    float dTime = delta_usec / 1e6f;  // elapsed time in seconds
+		// Finite difference approximation gets rid of noise much better than first order derivative computation
+		derivative = ((3 * historicalValue[0]) - (4 * historicalValue[1]) + (historicalValue[2]));
+	}
 
-    if (fabsf(ki) > 0) {  // Integral control
-      integral += (ki * error) * dTime;
+	float ret = ((kp * error) + (ki * integral) - (kd * derivative));
 
-      if (integral < -i_max) {  // ensure integral stays manageable
-        integral = -i_max;
-      } else if (integral > i_max) {
-        integral = i_max;
-      }
-      output += integral;
-    }
+	if (ret < min_output)
+	{
+		ret = min_output;
+	}
+	else if (ret > max_output)
+	{
+		ret = max_output;
+	}
 
-    if (fabsf(kd) > 0) {  // Derivative control
-      float derivative = (error - last_err) / dTime;
-      derivative =
-          derivative * FILTER +
-          last_der * (1 - FILTER);  // reduce jitter in derivative by averaging
-      last_err = error;
-      last_der = derivative;
-      output += kd * derivative;
-    }
-  }
-  return output * scale;
+	return ret;
 }

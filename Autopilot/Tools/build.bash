@@ -59,7 +59,40 @@ elif command -v mingw32-make >/dev/null 2>&1; then
     GENERATOR="MinGW Makefiles"
 fi
 
-if [[ $RUN_UNIT_TESTS == false ]]; then
+
+if [[ $RUN_UNIT_TESTS == true ]]; then
+
+    echo "Building Unit tests !"
+    echo ""
+    echo ""
+
+    BUILD_DIR="testBuild"
+
+    if [[ $CLEAN == true ]]; then
+    echo "Cleaning old build environment"
+    cmake -E remove_directory $BUILD_DIR
+    fi
+
+    cmake -E make_directory $BUILD_DIR
+    cmake -E chdir $BUILD_DIR \
+      cmake \
+        -G "${GENERATOR}" \
+        -D KIND_OF_BUILD="UNIT_TESTS"\
+        -Wdev\
+        -Wdeprecated\
+        ../
+    cmake --build $BUILD_DIR
+
+    # run all executables in the build directory
+    for SCRIPT in $BUILD_DIR/bin/*
+    do
+        ./$SCRIPT;
+    done
+
+else
+    echo "Building For The Microcontroller !"
+    echo ""
+    echo ""
 
     die() {
         echo ""
@@ -91,6 +124,7 @@ if [[ $RUN_UNIT_TESTS == false ]]; then
         -G "${GENERATOR}" \
         -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
         -DCMAKE_TOOLCHAIN_FILE="STM32F765xG.cmake" \
+        -D KIND_OF_BUILD="FOR_TARGET"\
         -Wdev\
         -Wdeprecated\
         ../
@@ -106,23 +140,4 @@ if [[ $RUN_UNIT_TESTS == false ]]; then
     echo "Autopilot build SUCCESS!"
     exit 0
 
-else
-
-    BUILD_DIR="testBuild"
-
-    if [[ $CLEAN == true ]]; then
-    echo "Cleaning old build environment"
-    cmake -E remove_directory $BUILD_DIR
-    fi
-
-    cmake -E make_directory $BUILD_DIR
-    cmake -E chdir $BUILD_DIR \
-      cmake \
-        -G "${GENERATOR}" \
-        -Wdev\
-        -Wdeprecated\
-        ../
-    cmake --build $BUILD_DIR
-
-    ./$BUILD_DIR/runTests
 fi
