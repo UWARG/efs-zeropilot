@@ -60,7 +60,7 @@ float measuredGyroX, measuredGyroY, measuredGyroZ; //Gyroscope readings
 float measuredTemp; //Temperature reading
 static SPIPort *spi_port;
 static SPISettings hspi_1;
-uint8_t *imuBuffer;
+ //For writing one Byte
 StatusCode sensorSuccess;
 
 /*** MAIN BLOCK OF CODE BEGINS ***/
@@ -75,70 +75,69 @@ void ICM20602::Init() {
       
       // Creates SPI Object
       spi_port = new SPIPort(hspi_1);
-      GPIOPin pin(GPIO_PORT_A, 1, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_FREQ_HIGH, 0);                             //GET VALUES LATER 
+      GPIOPin pin(GPIO_PORT_A, 1, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_FREQ_HIGH, 0);                                //GET VALUES LATER 
       imuSlaveIdentifier = spi_port->add_slave(pin); //Adds slave pin to the spi_port class object
 
       uint8_t *setup = 0;
+      uint8_t *imuBuffer_write; //tx buffer when writing one byte
+      uint8_t imuBufferRead_OneByte[2]; 
 
       //Full reset of chip 
       *setup = 0x80;
-      *imuBuffer = REG_PWR_MGMT_1 | 0x00; //0x80 means we are reading; 0x00 means we are writing
-      uint8_t writeData[2] = {*imuBuffer, *setup}; // writeData[0] -> register address; writeData[1] -> write instructions
+      *imuBuffer_write = REG_PWR_MGMT_1 | 0x00; //0x80 means we are reading; 0x00 means we are writing
+      uint8_t writeData[2] = {*imuBuffer_write, *setup}; // writeData[0] -> register address; writeData[1] -> write instructions
       write_data(writeData);
 
       //Verify chip is working properly
-      *imuBuffer = REG_WHO_AM_I | 0x80;
-      uint8_t dataFromIMUSensor[2] = {0x00, 0x00}; // dataFromSensor[0] -> dummy byte (contains SPI address); dataFromSensor[1] -> data byte
+      imuBufferRead_OneByte[0] = REG_WHO_AM_I | 0x80;
+      imuBufferRead_OneByte[1] = 0x00;
+      uint8_t dataFromIMUSensor[2] = {0x00, 0x00}; // dataFromIMUSensor[0] -> dummy byte; dataFromIMUSensor[1] -> data byte
       spi_port->set_slave(imuSlaveIdentifier);
-      sensorSuccess = spi_port->exchange_data(imuBuffer, dataFromIMUSensor, 1);
-
-      if(sensorSuccess != STATUS_CODE_OK) {
-         //Debug code here
-      }
+      sensorSuccess = spi_port->exchange_data(imuBufferRead_OneByte, dataFromIMUSensor, 2); //Sending in two bytes to tx_data (One register byte and one dummy byte)
 
       //Place accelerometer and gyroscopoe on standby
       *setup = 0x3F;
-      *imuBuffer = REG_PWR_MGMT_2 | 0x00;
-      writeData[0] = *imuBuffer; 
+      *imuBuffer_write = REG_PWR_MGMT_2 | 0x00;
+      writeData[0] = *imuBuffer_write; 
       writeData[1] = *setup; 
       write_data(writeData); 
 
       //Disable FIFO
       *setup = 0x00;
-      *imuBuffer = REG_USER_CTRL | 0x00;
-      writeData[0] = *imuBuffer;
+      *imuBuffer_write = REG_USER_CTRL | 0x00;
+      writeData[0] = *imuBuffer_write;
       writeData[1] = *setup;
       write_data(writeData); 
 
       //Disable I2C
       *setup = 0x40;
-      *imuBuffer = REG_I2C_IF | 0x00;
-      writeData[0] = *imuBuffer;
+      *imuBuffer_write = REG_I2C_IF | 0x00;
+      writeData[0] = *imuBuffer_write;
       writeData[1] = *setup;
       write_data(writeData); 
 
       //Set up gyroscope
       *setup = 0x10; //Setting to 500 dps max for gyroscope; setting to 4G max for accelerometer
-      *imuBuffer = REG_GYRO_CONFIG | 0x00;
-      writeData[0] = *imuBuffer;
+      *imuBuffer_write = REG_GYRO_CONFIG | 0x00;
+      writeData[0] = *imuBuffer_write;
       writeData[1] = *setup;
       write_data(writeData); 
 
       //set up accelerometer
-      *imuBuffer = REG_ACCEL_CONFIG | 0x00; 
-      writeData[0] = *imuBuffer;
+      *imuBuffer_write = REG_ACCEL_CONFIG | 0x00; 
+      writeData[0] = *imuBuffer_write;
       write_data(writeData); 
 
       *setup = 0x08;
-      *imuBuffer = REG_ACCEL_CONFIG_2 | 0x00;
-      writeData[0] = *imuBuffer;
+      *imuBuffer_write = REG_ACCEL_CONFIG_2 | 0x00;
+      writeData[0] = *imuBuffer_write;
       writeData[1] = *setup;
       write_data(writeData); 
   
       //Turn on gyroscope and accelerometer
       *setup = 0x00;
-      *imuBuffer = REG_PWR_MGMT_2 | 0x00;
-      writeData[0] = *imuBuffer;
+      *imuBuffer_write = REG_PWR_MGMT_2 | 0x00;
+      writeData[0] = *imuBuffer_write;
       writeData[1] = *setup;
       write_data(writeData); 
    }
@@ -149,21 +148,30 @@ void ICM20602::Init() {
 }
 
 void ICM20602::write_data(uint8_t *writeData) { 
-   uint8_t *imuPlaceholderByte = 0x00;
+   uint8_t imuPlaceholderByte[2] = {0x00, 0x00};                                                                            
    spi_port->set_slave(imuSlaveIdentifier);
-   spi_port->exchange_data(writeData, imuPlaceholderByte, 2);                                                                    //WRITEDATA ARRAY HAS TWO ELEMENTS, THUS THE imuBuffer SIZE IS TWO HERE!!!!
+   spi_port->exchange_data(writeData, imuPlaceholderByte, 2);                                                                  
 }
 
 void ICM20602::get_accel_temp_gyro_reading(float *accx, float *accy, float *accz, float *gyrx, float *gyry, float *gyrz, float *temp) {
+   uint8_t imuBufferRead_FourteenBytes[15];
+   imuBufferRead_FourteenBytes[0] = REG_ACCEL_XOUT_H | 0x80;
+
    uint8_t imu_raw_data[15];
-   imu_raw_data[0] = 0x00;
+   imu_raw_data[0] = 0x00; //Dummy byte for MOSI
+   
    //Store both High and Low Byte values
    int16_t shiftedSensorAccX, shiftedSensorAccY, shiftedSensorAccZ, shiftedSensorTemp, shiftedSensorGyroX, shiftedSensorGyroY, shiftedSensorGyroZ; 
-   //Uses the sensor registers to get raw data for all sensors
-   *imuBuffer = REG_ACCEL_XOUT_H | 0x80; 
    
+   for(int i = 1; i < 15; i++) {  
+      //0x00 is the reset value for all registers (Page 31). Thus, 0xFF will be used for the sensor_read (read only) registers
+      imuBufferRead_FourteenBytes[i] = 0xFF; //Initializes all dummy bytes in the MISO  
+      imu_raw_data[i] = 0x00; 
+   }
+   
+   //Uses the sensor registers to get raw data for all sensors
    spi_port->set_slave(imuSlaveIdentifier);
-   sensorSuccess = spi_port->exchange_data(imuBuffer, imu_raw_data, 1); //Using burst read, 14 data points for both sensors will be collected. 
+   sensorSuccess = spi_port->exchange_data(imuBufferRead_FourteenBytes, imu_raw_data, 15); //Sending in 15 bytes to tx_data (One register byte and fourteen dummy bytes)
    
    shiftedSensorAccX = (imu_raw_data[1] << 8) + imu_raw_data[2];
    shiftedSensorAccY = (imu_raw_data[3] << 8) + imu_raw_data[4];
