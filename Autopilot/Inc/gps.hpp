@@ -1,6 +1,6 @@
 /**
  * Gps sensor interface and part number selector.
- * Author: Anthony Berbari
+ * Author(s): Anthony Berbari, Dhruv Rawat
  */
 
 #ifndef GPS_HPP
@@ -8,15 +8,7 @@
 
 #include <stdint.h>
 
-/**
- * Below is the list of available gps sensors, by part number.
- * Uncomment the one that is hooked up to hardware.
- */
-
-// #define NEO_6M // (driver currently unavailable)
-// #define NEO_7P // (driver currently unavailable)
-// #define EMLID_REACH_RTK // (driver currently unavailable)
-
+#define NEO_M8 0
 
 typedef struct
 {
@@ -56,6 +48,27 @@ class Gps
 		* @param[out]		Data 		pointer to the result struct.
 		*/
         virtual void GetResult(GpsData_t *Data) = 0;
+};
+
+class NEOM8 : public Gps 
+{
+	public:
+		/**
+         * Initializes GPS
+         * */
+		void Init(){};
+
+		/**
+         * Triggers interrupt for new GPS measurement - stores raw data in variables and returns right away
+         * */
+		void BeginMeasuring(){};
+
+		 /**GetResult should:
+         * 1. Reset dataIsNew flag
+         * 2. Transfers raw data from variables to struct
+         * 3. Updates utcTime and status values in struct as well
+         * */
+		void GetResult(GpsData_t *Data){};
 };
 
 #endif
