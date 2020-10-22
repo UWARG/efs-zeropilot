@@ -54,16 +54,20 @@
  
 bool ICM20602::isSPIBusDefined = false;
 bool ICM20602::dataIsNew = false;
+ICM20602* ICM20602::imu_Instance = NULL;
 
-float measuredAccX, measuredAccY, measuredAccZ; //Acceleration readings
-float measuredGyroX, measuredGyroY, measuredGyroZ; //Gyroscope readings 
-float measuredTemp; //Temperature reading
 static SPIPort *spi_port;
 static SPISettings hspi_1;
- //For writing one Byte
 StatusCode sensorSuccess;
 
 /*** MAIN BLOCK OF CODE BEGINS ***/
+
+ICM20602* ICM20602::GetInstance() {
+   if(!imu_Instance) {
+      imu_Instance = new ICM20602;
+   }
+   return imu_Instance;
+}
  
 void ICM20602::Init() {
    if(!isSPIBusDefined) {
@@ -201,9 +205,8 @@ void ICM20602::Begin_Measuring() {
 }
  
 void ICM20602::GetResult(IMUData_t &Data) {
-   dataIsNew = false;
    if (sensorSuccess == STATUS_CODE_OK) {
-      Data.isDataNew = true;
+      Data.isDataNew = dataIsNew;
       dataIsNew = false;
       Data.accx = measuredAccX;
       Data.accy = measuredAccY;

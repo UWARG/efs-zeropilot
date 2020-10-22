@@ -51,6 +51,8 @@ class IMU{
 //To be replaced with implementation of actual sensor
 class ICM20602: public IMU{
     public:
+        ICM20602(const ICM20602*) = delete;
+        static ICM20602* GetInstance();
         /**
          * Initializes IMU
          * */
@@ -69,12 +71,21 @@ class ICM20602: public IMU{
         void GetResult(IMUData_t &Data); //
 
     private:
+        //Constructor 
+        ICM20602() {}
+
+        //Object Instance
+        static ICM20602* imu_Instance;
+
         //Variables
         uint32_t timeOfResult;
         static bool isSPIBusDefined;
         static bool dataIsNew;
         float accelConversionFactor, gyroConversionFactor, tempConversionFactor; //Conversion Factors
         uint32_t imuSlaveIdentifier;
+        float measuredAccX, measuredAccY, measuredAccZ; //Acceleration readings
+        float measuredGyroX, measuredGyroY, measuredGyroZ; //Gyroscope readings 
+        float measuredTemp; //Temperature reading
 
         //Methods
         void get_accel_temp_gyro_reading(float *, float *, float *, float *, float *, float *, float *);
