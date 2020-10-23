@@ -14,19 +14,17 @@
  * Definitions
  **********************************************************************************************************************/
 
+// TODO once someone starts working on airspeed, it should accommodate singletons the same way imu does
 #ifdef SIMULATION
 
-#define IMU_CLASS SimulatedIMU
 #define AIRSPEED_CLASS SimulatedAirspeed
 
 #elif defined(UNIT_TESTING)
 
-#define IMU_CLASS MockIMU
 #define AIRSPEED_CLASS MockAirspeed
 
 #else
 
-#define IMU_CLASS ICM20602  // TODO to be replaced with the real classes once the sensor drivers are built
 #define AIRSPEED_CLASS dummyairspeed
 
 #endif
@@ -59,10 +57,10 @@ class sensorFusionMode : public attitudeState
         static attitudeState& getInstance();
         static SFOutput_t *GetSFOutput(void) {return &_SFOutput;}
     private:
-        sensorFusionMode() {}
+        sensorFusionMode();
         sensorFusionMode(const sensorFusionMode& other);
         sensorFusionMode& operator =(const sensorFusionMode& other);
-        IMU_CLASS ImuSens;
+        IMU *imusns;
         AIRSPEED_CLASS AirspeedSens;
         static SFOutput_t _SFOutput;
 

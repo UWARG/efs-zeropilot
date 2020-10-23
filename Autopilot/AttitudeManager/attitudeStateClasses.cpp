@@ -34,9 +34,26 @@ attitudeState& fetchInstructionsMode::getInstance()
     return singleton;
 }
 
+sensorFusionMode::sensorFusionMode()
+{
+#ifdef SIMULATION
+
+    imusns = new SimulatedIMU;
+
+#elif defined(UNIT_TESTING)
+
+    imusns = new MockIMU;
+
+#else
+
+    imusns = ICM20602::GetInstance();
+
+#endif
+}
+
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
 {
-    SFError_t ErrorStruct = SF_GetResult(&_SFOutput, &ImuSens, &AirspeedSens);
+    SFError_t ErrorStruct = SF_GetResult(&_SFOutput, imusns, &AirspeedSens);
 
     if (ErrorStruct.errorCode == 0)
     {
