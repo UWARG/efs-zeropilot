@@ -28,13 +28,6 @@ typedef struct
 class Gps
 {
 	public:
-
-		/**
-		* Initialises internal parameters.
-		* Should be called exactly once before anything is attempted to be done with the module.
-		*/
-		virtual void Init(void) = 0;
-
 		/**
 		* Begins the process of collecting the sensor's data.
 		* This is a non blocking function that returns right away.
@@ -47,28 +40,51 @@ class Gps
 		* or with old data (in case of old data, the dataIsNew flag of the result struct will be cleared).
 		* @param[out]		Data 		pointer to the result struct.
 		*/
-        virtual void GetResult(GpsData_t *Data) = 0;
+        virtual void GetResult(GpsData_t &Data) = 0;
 };
 
 class NEOM8 : public Gps 
 {
 	public:
-		/**
-         * Initializes GPS
-         * */
-		void Init(){};
+		NEOM8(const NEOM8*) = delete;
+		NEOM8* GetInstance();
 
 		/**
          * Triggers interrupt for new GPS measurement - stores raw data in variables and returns right away
          * */
-		void BeginMeasuring(){};
+		void BeginMeasuring();
 
 		 /**GetResult should:
          * 1. Reset dataIsNew flag
          * 2. Transfers raw data from variables to struct
          * 3. Updates utcTime and status values in struct as well
          * */
-		void GetResult(GpsData_t *Data){};
+		void GetResult(GpsData_t &Data);
+
+	private:
+		//Constructor
+		NEOM8();
+
+		//Static instance
+		static NEOM8* gps_Instance;
+
+		//Variables
+		bool isDataNew = false;
+		long double measuredLatitude, measuredLongitude;  // 8 Bytes
+		float measuredUtcTime;     // 4 Bytes. Time in seconds since 00:00 (midnight)
+		float measuredGroundSpeed; // in m/s
+		int measuredAltitude; // in m
+		int16_t measuredHeading; // in degrees. Should be between 0-360 at all times, but using integer just in case
+		uint8_t measuredNumSatellites;    // 1 Byte
+
+		//Methods
+		void get_gps_data();
 };
 
+#ifdef UNIT_TESTING
+#include "gpsMock.hpp"
 #endif
+
+
+#endif
+
