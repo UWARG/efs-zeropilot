@@ -163,7 +163,7 @@ void ICM20602::write_data(uint8_t *writeData) {
    spi_port->exchange_data(writeData, imuPlaceholderByte, 2);                                                                  
 }
 
-void ICM20602::get_accel_temp_gyro_reading(float *accx, float *accy, float *accz, float *gyrx, float *gyry, float *gyrz, float *temp) {
+void ICM20602::get_accel_temp_gyro_reading() {
    uint8_t imuBufferRead_FourteenBytes[15];
    imuBufferRead_FourteenBytes[0] = REG_ACCEL_XOUT_H | 0x80;
 
@@ -194,19 +194,19 @@ void ICM20602::get_accel_temp_gyro_reading(float *accx, float *accy, float *accz
    shiftedSensorGyroZ = (imu_raw_data[13] << 8) + imu_raw_data[14];
 
    //Converts 16-bit integers to a float. These are the actual measurements
-   *accx = ((float) shiftedSensorAccX)/accelConversionFactor; 
-   *accy = ((float) shiftedSensorAccY)/accelConversionFactor; 
-   *accz = ((float) shiftedSensorAccZ)/accelConversionFactor; 
+   measuredAccX = ((float) shiftedSensorAccX)/accelConversionFactor; 
+   measuredAccY = ((float) shiftedSensorAccY)/accelConversionFactor; 
+   measuredAccZ = ((float) shiftedSensorAccZ)/accelConversionFactor; 
 
-   *temp = ((float) shiftedSensorTemp)/tempConversionFactor;
+   measuredTemp = ((float) shiftedSensorTemp)/tempConversionFactor;
 
-   *gyrx = ((float) shiftedSensorGyroX)/gyroConversionFactor;
-   *gyry = ((float) shiftedSensorGyroY)/gyroConversionFactor;
-   *gyrz = ((float) shiftedSensorGyroZ)/gyroConversionFactor;
+   measuredGyroX = ((float) shiftedSensorGyroX)/gyroConversionFactor;
+   measuredGyroY = ((float) shiftedSensorGyroY)/gyroConversionFactor;
+   measuredGyroZ = ((float) shiftedSensorGyroZ)/gyroConversionFactor;
 }
  
 void ICM20602::Begin_Measuring() {
-   get_accel_temp_gyro_reading(&measuredAccX, &measuredAccY, &measuredAccZ, &measuredGyroX, &measuredGyroY, &measuredGyroZ, &measuredTemp);
+   get_accel_temp_gyro_reading();
    dataIsNew = true;
 }
  

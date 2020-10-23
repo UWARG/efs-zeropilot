@@ -81,7 +81,7 @@ class ICM20602: public IMU{
         float measuredTemp = 0; //Temperature reading
 
         //Methods
-        void get_accel_temp_gyro_reading(float *, float *, float *, float *, float *, float *, float *);
+        void get_accel_temp_gyro_reading();
         void write_data(uint8_t *);
 };
 
