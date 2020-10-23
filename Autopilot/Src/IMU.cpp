@@ -7,6 +7,7 @@
 #include "GPIO.hpp"
 #include "Status.hpp"
 #include "SPI.hpp"
+#include <stddef.h>
 
 //Address for ICM20602
 #define ICM20602_SPI hspi1 //SPI Port 1
@@ -51,9 +52,6 @@
 #define REG_WHO_AM_I 0x75
 
 /*** REGISTER DEFINITION ENDS ***/
- 
-bool ICM20602::isSPIBusDefined = false;
-bool ICM20602::dataIsNew = false;
 ICM20602* ICM20602::imu_Instance = NULL;
 
 static SPIPort *spi_port;
@@ -69,83 +67,91 @@ ICM20602* ICM20602::GetInstance() {
    return imu_Instance;
 }
  
-void ICM20602::Init() {
-   if(!isSPIBusDefined) {
-      // Configures the SPI Settings
-      hspi_1.port = SPI_PORT1;
-      hspi_1.mode = SPI_MODE_0;
-      hspi_1.master = true;
-      hspi_1.frequency = 10;                                            
-      
-      // Creates SPI Object
-      spi_port = new SPIPort(hspi_1);
-      GPIOPin pin(GPIO_PORT_A, 1, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_FREQ_HIGH, 0);                                //GET VALUES LATER 
-      imuSlaveIdentifier = spi_port->add_slave(pin); //Adds slave pin to the spi_port class object
+ICM20602::ICM20602() {
+   // Configures the SPI Settings
+   hspi_1.port = SPI_PORT1;
+   hspi_1.mode = SPI_MODE_0;
+   hspi_1.master = true;
+   hspi_1.frequency = 10;                                            
+   
+   // Creates SPI Object
+   spi_port = new SPIPort(hspi_1);
 
-      uint8_t *setup = 0;
-      uint8_t *imuBuffer_write; //tx buffer when writing one byte
-      uint8_t imuBufferRead_OneByte[2]; 
+   /*
+      SPI1_MISO - PG9
+      SPI1_NSS - PG10
+      SPI1_SCK - PG11
+      SPI1_MOSI - PD7
 
-      //Full reset of chip 
-      *setup = 0x80;
-      *imuBuffer_write = REG_PWR_MGMT_1 | 0x00; //0x80 means we are reading; 0x00 means we are writing
-      uint8_t writeData[2] = {*imuBuffer_write, *setup}; // writeData[0] -> register address; writeData[1] -> write instructions
-      write_data(writeData);
+      No option for GPIO_PORT_G, so I assume that GPIO_PORT_D is correct. 
 
-      //Verify chip is working properly
-      imuBufferRead_OneByte[0] = REG_WHO_AM_I | 0x80;
-      imuBufferRead_OneByte[1] = 0x00;
-      uint8_t dataFromIMUSensor[2] = {0x00, 0x00}; // dataFromIMUSensor[0] -> dummy byte; dataFromIMUSensor[1] -> data byte
-      spi_port->set_slave(imuSlaveIdentifier);
-      sensorSuccess = spi_port->exchange_data(imuBufferRead_OneByte, dataFromIMUSensor, 2); //Sending in two bytes to tx_data (One register byte and one dummy byte)
+   */
+   GPIOPin pin(GPIO_PORT_D, 7, GPIO_ALT_PP, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_FREQ_HIGH, GPIO_AF5_SPI1);                         
+   imuSlaveIdentifier = spi_port->add_slave(pin); //Adds slave pin to the spi_port class object
 
-      //Place accelerometer and gyroscopoe on standby
-      *setup = 0x3F;
-      *imuBuffer_write = REG_PWR_MGMT_2 | 0x00;
-      writeData[0] = *imuBuffer_write; 
-      writeData[1] = *setup; 
-      write_data(writeData); 
+   uint8_t *setup = 0;
+   uint8_t *imuBuffer_write = 0x00; //tx buffer when writing one byte
+   uint8_t imuBufferRead_OneByte[2] = {0x00, 0x00}; 
 
-      //Disable FIFO
-      *setup = 0x00;
-      *imuBuffer_write = REG_USER_CTRL | 0x00;
-      writeData[0] = *imuBuffer_write;
-      writeData[1] = *setup;
-      write_data(writeData); 
+   //Full reset of chip 
+   *setup = 0x80;
+   *imuBuffer_write = REG_PWR_MGMT_1 | 0x00; //0x80 means we are reading; 0x00 means we are writing
+   uint8_t writeData[2] = {*imuBuffer_write, *setup}; // writeData[0] -> register address; writeData[1] -> write instructions
+   write_data(writeData);
 
-      //Disable I2C
-      *setup = 0x40;
-      *imuBuffer_write = REG_I2C_IF | 0x00;
-      writeData[0] = *imuBuffer_write;
-      writeData[1] = *setup;
-      write_data(writeData); 
+   //Verify chip is working properly
+   imuBufferRead_OneByte[0] = REG_WHO_AM_I | 0x80;
+   imuBufferRead_OneByte[1] = 0x00;
+   uint8_t dataFromIMUSensor[2] = {0x00, 0x00}; // dataFromIMUSensor[0] -> dummy byte; dataFromIMUSensor[1] -> data byte
+   spi_port->set_slave(imuSlaveIdentifier);
+   sensorSuccess = spi_port->exchange_data(imuBufferRead_OneByte, dataFromIMUSensor, 2); //Sending in two bytes to tx_data (One register byte and one dummy byte)
 
-      //Set up gyroscope
-      *setup = 0x10; //Setting to 500 dps max for gyroscope; setting to 4G max for accelerometer
-      *imuBuffer_write = REG_GYRO_CONFIG | 0x00;
-      writeData[0] = *imuBuffer_write;
-      writeData[1] = *setup;
-      write_data(writeData); 
+   //Place accelerometer and gyroscopoe on standby
+   *setup = 0x3F;
+   *imuBuffer_write = REG_PWR_MGMT_2 | 0x00;
+   writeData[0] = *imuBuffer_write; 
+   writeData[1] = *setup; 
+   write_data(writeData); 
 
-      //set up accelerometer
-      *imuBuffer_write = REG_ACCEL_CONFIG | 0x00; 
-      writeData[0] = *imuBuffer_write;
-      write_data(writeData); 
+   //Disable FIFO
+   *setup = 0x00;
+   *imuBuffer_write = REG_USER_CTRL | 0x00;
+   writeData[0] = *imuBuffer_write;
+   writeData[1] = *setup;
+   write_data(writeData); 
 
-      *setup = 0x08;
-      *imuBuffer_write = REG_ACCEL_CONFIG_2 | 0x00;
-      writeData[0] = *imuBuffer_write;
-      writeData[1] = *setup;
-      write_data(writeData); 
-  
-      //Turn on gyroscope and accelerometer
-      *setup = 0x00;
-      *imuBuffer_write = REG_PWR_MGMT_2 | 0x00;
-      writeData[0] = *imuBuffer_write;
-      writeData[1] = *setup;
-      write_data(writeData); 
-   }
+   //Disable I2C
+   *setup = 0x40;
+   *imuBuffer_write = REG_I2C_IF | 0x00;
+   writeData[0] = *imuBuffer_write;
+   writeData[1] = *setup;
+   write_data(writeData); 
 
+   //Set up gyroscope
+   *setup = 0x10; //Setting to 500 dps max for gyroscope; setting to 4G max for accelerometer
+   *imuBuffer_write = REG_GYRO_CONFIG | 0x00;
+   writeData[0] = *imuBuffer_write;
+   writeData[1] = *setup;
+   write_data(writeData); 
+
+   //set up accelerometer
+   *imuBuffer_write = REG_ACCEL_CONFIG | 0x00; 
+   writeData[0] = *imuBuffer_write;
+   write_data(writeData); 
+
+   *setup = 0x08;
+   *imuBuffer_write = REG_ACCEL_CONFIG_2 | 0x00;
+   writeData[0] = *imuBuffer_write;
+   writeData[1] = *setup;
+   write_data(writeData); 
+
+   //Turn on gyroscope and accelerometer
+   *setup = 0x00;
+   *imuBuffer_write = REG_PWR_MGMT_2 | 0x00;
+   writeData[0] = *imuBuffer_write;
+   writeData[1] = *setup;
+   write_data(writeData); 
+   
    accelConversionFactor = ACCEL_SENSITIVITY_4G;
    gyroConversionFactor = GRYO_SENSITIVITY_500;
    tempConversionFactor = TEMPERATURE_SENSITIVITY;

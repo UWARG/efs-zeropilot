@@ -10,6 +10,7 @@
 #include <ctime>
 #include <cstdint>
 #include <math.h>
+#include "main.h"
 
 #define ICM_20602 0
 #define MPU9255 1
@@ -23,18 +24,13 @@ struct IMUData_t {
     float gyrx, gyry, gyrz; 
     float temp; 
 
-    bool isDataNew; 
+    bool isDataNew;
     int sensorStatus; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
     uint32_t utcTime; //Last time GetResult was called
 };
 
 class IMU{
     public:
-        /**
-         * Initializes IMU
-         * */
-        virtual void Init() = 0; 
-
         /**
          * Triggers interrupt for new IMU measurement - stores raw data in variables and returns right away
          * */
@@ -53,10 +49,6 @@ class ICM20602: public IMU{
     public:
         ICM20602(const ICM20602*) = delete;
         static ICM20602* GetInstance();
-        /**
-         * Initializes IMU
-         * */
-        void Init(); 
 
         /**
          * Triggers interrupt for new IMU measurement - stores raw data in variables and returns right away
@@ -69,10 +61,11 @@ class ICM20602: public IMU{
          * 3. Updates utcTime and status values in struct as well
          * */
         void GetResult(IMUData_t &Data); //
-
+             
+        
     private:
         //Constructor 
-        ICM20602() {}
+        ICM20602();
 
         //Object Instance
         static ICM20602* imu_Instance;
@@ -80,12 +73,12 @@ class ICM20602: public IMU{
         //Variables
         uint32_t timeOfResult;
         static bool isSPIBusDefined;
-        static bool dataIsNew;
+        bool dataIsNew = false;
         float accelConversionFactor, gyroConversionFactor, tempConversionFactor; //Conversion Factors
         uint32_t imuSlaveIdentifier;
-        float measuredAccX, measuredAccY, measuredAccZ; //Acceleration readings
-        float measuredGyroX, measuredGyroY, measuredGyroZ; //Gyroscope readings 
-        float measuredTemp; //Temperature reading
+        float measuredAccX = 0, measuredAccY = 0, measuredAccZ = 0; //Acceleration readings
+        float measuredGyroX = 0, measuredGyroY = 0, measuredGyroZ = 0; //Gyroscope readings 
+        float measuredTemp = 0; //Temperature reading
 
         //Methods
         void get_accel_temp_gyro_reading(float *, float *, float *, float *, float *, float *, float *);
