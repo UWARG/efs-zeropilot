@@ -24,9 +24,22 @@
 #define MS5637_PROM_C5 0xAA
 #define MS5637_PROM_C6 0xAC
 
-MS5637* MS5637::s_Instance = NULL; 
-
 static I2C_HandleTypeDef* hi2c;
+
+MS5637::MS5637()
+ {
+     hi2c = I2C_GetHandle(MS5637_I2C);
+
+     if (HAL_I2C_IsDeviceReady(hi2c, MS5637_WRITE_ADDR, 2, 5) != HAL_OK) {
+       //Debug code here?
+     }
+ }
+
+/*
+* Singleton Stuff:
+*
+*/
+MS5637* MS5637::s_Instance = NULL; 
 
 MS5637* MS5637::GetInstance()
 {
@@ -39,17 +52,9 @@ MS5637* MS5637::GetInstance()
 }
 
 
- void MS5637::Init()
- {
-     hi2c = I2C_GetHandle(MS5637_I2C);
 
-     if (HAL_I2C_IsDeviceReady(hi2c, MS5637_WRITE_ADDR, 2, 5) != HAL_OK) {
-       //Debug code here?
-     }
- }
-
-uint32_t MS5637::readFromMS5637(uint32_t commandToWrite) {
-  I2C_WriteByte(hi2c, MS5637_WRITE_ADDR, MS5637_INTERN_MEM_ADDRESS, commandToWrite);
+uint32_t MS5637::readFromMS5637(uint32_t commandToSend) {
+  I2C_WriteByte(hi2c, MS5637_WRITE_ADDR, MS5637_INTERN_MEM_ADDRESS, commandToSend);
    uint8_t data[3]; //3 integers to store 24 bits worth of data.
    I2C_ReadBytes(hi2c, MS5637_READ_ADDR, MS5637_READ_ADC, data, 3);
    uint32_t returnData = (data[2] << 16) + (data[1] << 8) + data[0];

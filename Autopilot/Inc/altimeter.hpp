@@ -21,11 +21,6 @@ struct AltimeterData_t {
 class Altimeter{
     public:
         /**
-         * Initializes Altimeter
-         * */
-        virtual void Init() = 0; 
-
-        /**
          * Triggers interrupt for new altimeter measurement - stores raw data in variables and returns right away
          * */
         virtual void Begin_Measuring() = 0; 
@@ -42,11 +37,10 @@ class MS5637 : public Altimeter {
     public:
         MS5637(const MS5637*) = delete; //Apparently if you try to copy a singleton this will give you errors?
         static MS5637* GetInstance();
-        void Init();
         void Begin_Measuring();
         void GetResult(AltimeterData_t *Data);
     private:
-        MS5637() {} //Constructor can never be called muwhahaha
+        MS5637(); //Constructor can never be called muwhahaha
         static MS5637* s_Instance;
         uint32_t readFromMS5637(uint32_t commandToWrite);
         void getRawPressureAndTemperature(float *displayPressure, float *displayTemperature, float *displayAltitude);
