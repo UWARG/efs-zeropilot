@@ -102,9 +102,12 @@ elif [[ $RUN_SIMULATION == true ]]; then
     BUILD_DIR="SimulationBuild"
 
     if [[ $CLEAN == true ]]; then
-    echo "Cleaning old build environment"
-    cmake -E remove_directory $BUILD_DIR
+        echo "Cleaning old build environment"
+        cmake -E remove_directory $BUILD_DIR
     fi
+
+    rm -r $BUILD_DIR/ActuatorCommands/* 2>/dev/null
+    rm -r $BUILD_DIR/SensorOutputs/* 2>/dev/null
 
     cmake -E make_directory $BUILD_DIR
     cmake -E chdir $BUILD_DIR \
