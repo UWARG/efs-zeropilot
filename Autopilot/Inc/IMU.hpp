@@ -71,8 +71,6 @@ class ICM20602: public IMU{
         static ICM20602* imu_Instance;
 
         //Variables
-        uint32_t timeOfResult;
-        static bool isSPIBusDefined;
         bool dataIsNew = false;
         float accelConversionFactor, gyroConversionFactor, tempConversionFactor; //Conversion Factors
         uint32_t imuSlaveIdentifier;
