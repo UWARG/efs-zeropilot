@@ -88,6 +88,16 @@ class UARTPort {
 	StatusCode setupDMA(size_t tx_buffer_size, size_t rx_buffer_size);
 
 	/**
+	 * Gets called when complete DMA packet is received
+	 * Call read inside the callback if you want to process it
+	 * If you don't register a callback whilst in DMA, you'll have to poll the
+	 * read_bytes() function
+	 * @param f Callback function
+	 * @return
+	 */
+	StatusCode registerDMAReceiveCallback(void (*f)());
+
+	/**
 	 * If DMA was setup for this channel, resets it so that synchronous transfers are done instead
 	 */
 	StatusCode resetDMA();

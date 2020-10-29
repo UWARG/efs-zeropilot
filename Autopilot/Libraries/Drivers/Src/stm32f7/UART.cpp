@@ -406,6 +406,21 @@ StatusCode UARTPort::resetDMA() {
 	return STATUS_CODE_OK;
 }
 
+StatusCode UARTPort::registerDMAReceiveCallback(void (*f)()) {
+	if (port == UART_PORT1) {
+		dma_config = &uart1_dma_config;
+	} else if (port == UART_PORT2) {
+		dma_config = &uart2_dma_config;
+	} else if (port == UART_PORT3) {
+		dma_config = &uart3_dma_config;
+	} else if (port == UART_PORT4) {
+		dma_config = &uart4_dma_config;
+	} 
+	dma_config->complete_callback = f;
+	
+	return STATUS_CODE_OK;
+}
+
 //Below code based off: https://github.com/akospasztor/stm32-dma-uart/blob/master/Src/main.c
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if (huart->Instance == USART1) {
