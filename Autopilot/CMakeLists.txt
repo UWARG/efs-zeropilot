@@ -230,10 +230,10 @@ elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager
 
     ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw
-    ${SIM_ROOT_DIR}/GeneratedCCode/R2018b/extern/include
-    ${SIM_ROOT_DIR}/GeneratedCCode/R2018b/rtw/c/src
-    ${SIM_ROOT_DIR}/GeneratedCCode/R2018b/rtw/c/src/ext_mode/common
-    ${SIM_ROOT_DIR}/GeneratedCCode/R2018b/simulink/include
+    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/extern/include
+    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/rtw/c/src
+    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/rtw/c/src/ext_mode/common
+    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/simulink/include
   )
 
   add_custom_target(make-ActuatorCommand-dir ALL
@@ -243,7 +243,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
 
 
   set(ATTITUDE_MANAGER_SIM_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/SimDriver/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/attitudeManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/attitudeStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/OutputMixing.cpp
@@ -260,6 +260,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
 )
   set(SIMULINK_GENERATED_SOURCES
   ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw/Spike.cpp
+  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw/Spike_data.cpp
   ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw/rt_nonfinite.cpp
   ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw/rtGetNaN.cpp
   ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw/rtGetInf.cpp

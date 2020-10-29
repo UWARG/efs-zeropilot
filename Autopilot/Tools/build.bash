@@ -20,11 +20,12 @@ set -o nounset
 CLEAN=false
 RUN_UNIT_TESTS=false
 RUN_SIMULATION=false
+SEND_SIM_TO_FLIGHTGEAR=false
 FLASH=false
 BUILD_TYPE="Debug"
 GENERATOR="Unix Makefiles"
 
-while getopts "c,s,t,h,f,r" opt; do
+while getopts "c,s,t,v,h,f,r," opt; do
     case $opt in
         c)
             CLEAN=true
@@ -34,6 +35,9 @@ while getopts "c,s,t,h,f,r" opt; do
         ;;
         s)
             RUN_SIMULATION=true
+        ;;
+        v)
+            SEND_SIM_TO_FLIGHTGEAR=true
         ;;
         f)
             FLASH=true
@@ -45,11 +49,12 @@ while getopts "c,s,t,h,f,r" opt; do
             printf "%s\n" "Usage: $0 [OPTIONS]"\
                 "Script to build the WARG Autopilot project"\
                 "    -f                 - flashes the Autopilot after building"\
-                "    -c                 - removes previous build files (available for unit test and target build) before building"\
+                "    -c                 - removes previous build files (available for unit test, simulation, and target build) before building"\
                 "    -h                 - outputs this message"\
                 "    -r                 - Sets the build type to release"\
                 "    -t                 - Runs all unit tests"\
-                "    -s                 - Runs the simulation"
+                "    -s                 - Runs the simulation"\
+                "    -v                 - (visualize) sends simulation results to flightgear"
             exit 1
         ;;
     esac
@@ -106,8 +111,8 @@ elif [[ $RUN_SIMULATION == true ]]; then
         cmake -E remove_directory $BUILD_DIR
     fi
 
-    rm -r $BUILD_DIR/ActuatorCommands/* 2>/dev/null
-    rm -r $BUILD_DIR/SensorOutputs/* 2>/dev/null
+    cmake -E remove_directory $BUILD_DIR/ActuatorCommands/* 2>/dev/null
+    cmake -E remove_directory $BUILD_DIR/SensorOutputs/* 2>/dev/null
 
     cmake -E make_directory $BUILD_DIR
     cmake -E chdir $BUILD_DIR \
@@ -120,8 +125,30 @@ elif [[ $RUN_SIMULATION == true ]]; then
     cmake --build $BUILD_DIR
 
     # Note that the program needs to be run from the build directory since it opens and closes files via relative paths.
-    cd $BUILD_DIR
+    cmake -E chdir $BUILD_DIR\
     ./sim
+
+elif [[ $SEND_SIM_TO_FLIGHTGEAR == true ]]; then
+
+    BUILD_DIR="Simulation/SendToFlightGear/build"
+
+    if [[ $CLEAN == true ]]; then
+        echo "Cleaning old build environment"
+        cmake -E remove_directory $BUILD_DIR
+    fi
+
+    cmake -E make_directory $BUILD_DIR
+
+    if [[ ! -e "SimulationBuild" ]]; then
+        echo "Cannot send sim data if sim was not run yet. Try running this script with -s first"
+    fi
+
+    cmake -E chdir $BUILD_DIR\
+        cmake -G "${GENERATOR}" ..
+
+    cmake --build $BUILD_DIR
+
+    ./$BUILD_DIR/SendToFG
 
 else
     echo "Building For The Microcontroller !"
