@@ -3,17 +3,12 @@
  * Author(s): Dhruv Rawat
  */
 
-/*
-    This video series is amazing:
-    - https://www.youtube.com/watch?v=TwhCX0c8Xe0&t=2089s
-    - https://www.youtube.com/watch?v=ylxwOg2pXrc
-*/
-
 #include "gps.hpp"
 #include "UART.hpp"
 #include "../Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.c"
 #include <stddef.h>
 #include <string.h>
+
 
 #define CMS_TO_MPS 0.01f //Converts from cm/s to m/s
 
@@ -48,7 +43,7 @@ void handle_DMA_input();
 /*** MAIN CODE BEGINS ***/
 
 NEOM8* NEOM8::GetInstance() {
-    if(!gps_Instance) {
+    if (!gps_Instance) {
         gps_Instance = new NEOM8;
     }
     return gps_Instance;
@@ -82,13 +77,22 @@ NEOM8::NEOM8() {
 
 void handle_DMA_input() {
     if (!isGPSConfigured) {
-        //Clear the buffer and inturrupt flag and 
+        //Assumed the wrapper will handle clearing the registers and all.
         return;
     }
 
     bool currentlyParsing = false;
     uint16_t bufferIndex = 0;
     uint8_t data = 0;
+    
+    /*
+
+        OH MY GOD WHAT AM I SUPPOSED TO DO HERE!?!!?!?!?!?!?!
+
+        NEED TO CHECK IF THERE IS STILL DATA IN THE REGISTER AND ONLY STOP THE 
+        WHILE LOOP WHEN THE DATA IS UP!!!!
+
+    */
 
     while(bufferIndex < 10) { //ADD AN ACTUAL WHILE CONDITION
         if (data == '$') {
@@ -109,20 +113,105 @@ void handle_DMA_input() {
     }
 }
 
-// bool NEOM8::is_check_sum_valid(char *input) {
-    
-// }
+bool NEOM8::is_check_sum_valid(char *input) {
+    uint16_t index = 0;
+    uint8_t checksum = 0;
 
+    while(input[index] != '*') {
+        checksum ^= input[index];
+        index++;
+    }
+
+    index++;
+    return uint8_to_hex((checksum & 0xF0) >> 4) == input[index] && uint8_to_hex(checksum & 0x0F) == input[index+1];
+}
+
+uint8_t NEOM8::uint8_to_hex(uint8_t toConvert) {
+    uint8_t intConverted = 0;
+
+    if (toConvert >= 0 && toConvert <= 9) {
+        intConverted = toConvert + 0x30;
+    } else if (toConvert >= 0xA && toConvert <= 0xF) {
+        intConverted = toConvert + 0x37;
+    }
+    
+    return intConverted;
+}
+
+uint8_t NEOM8::ascii_to_hex(uint8_t toConvert) {
+    uint8_t intConverted = 0;
+
+    if (toConvert == 0x2E) {
+        intConverted = 0x10;
+    } else if (toConvert >= 0x30 && toConvert <= 0x39) {
+        intConverted = toConvert - 0x30;
+    } else if (toConvert >= 0x41 && toConvert <= 0x46) {
+        intConverted = toConvert - 0x37;
+    }
+
+    return intConverted;
+}
+
+//Checks if there is new data, validates it, and then converts it to a form that the autopilot will understand
 void NEOM8::get_gps_data() {
+    if (newGGAData) {
+        newGGAData = false;
+        if (is_check_sum_valid(ggaValues)) {
+            dataAvailable = false;
+            parse_gga();
+            dataAvailable = true;
+        }
+    }
+
+    if (newVTGData) {
+        newVTGData = false;
+        if (is_check_sum_valid(vtgValues)) {
+            dataAvailable = false;
+            parse_vtg();
+            dataAvailable = true;
+        }
+    }
+}
+
+void NEOM8::parse_gga() {
     
 }
 
-void NEOM8::calculate_check_sum(uint8_t *check) {
+void NEOM8::parse_vtg() {
+    uint8_t raw_heading[6];
+    uint8_t raw_ground_speed[8];
+    
+    //Go through data array and filter out the values we want
+    uint16_t commas = 0;
+    uint16_t rawDataNavigator = 0;
+    uint8_t array_navigation = 0;
+    uint8_t raw_data = 0;
+
+    while(vtgValues[rawDataNavigator] != '*') {
+        raw_data = ascii_to_hex(vtgValues[rawDataNavigator]);
+
+        if (vtgValues[rawDataNavigator] == ',') {
+            commas++;
+            array_navigation = 0;
+        }
+
+        if (commas == 1 && array_navigation > 0) {
+            raw_heading[array_navigation] = raw_data;
+        } else if (commas == 7 && array_navigation > 0) {
+            raw_ground_speed[array_navigation] = raw_data;
+        }
+
+        array_navigation++;
+        rawDataNavigator++;
+    }
+
+    //Fniish this part
 
 }
 
 void NEOM8::BeginMeasuring() {
     get_gps_data();
+    isDataNew = true;
 }
 
 void NEOM8::GetResult(GpsData_t &Data) {

@@ -79,10 +79,13 @@ class NEOM8 : public Gps
 		int16_t measuredHeading; // in degrees. Should be between 0-360 at all times, but using integer just in case
 		uint8_t measuredNumSatellites;    // 1 Byte
 
-		//Methods
+		//Methods (Some code was transferred from PicPilor)
 		bool is_check_sum_valid(char *);
+		uint8_t uint8_to_hex(uint8_t);
+		uint8_t ascii_to_hex(uint8_t);
 		void get_gps_data();
-		void calculate_check_sum(uint8_t *);
+		void parse_gga();
+		void parse_vtg();
 };
 
 #ifdef UNIT_TESTING
