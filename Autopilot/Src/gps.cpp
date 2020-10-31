@@ -10,7 +10,7 @@
 #include <string.h>
 
 
-#define CMS_TO_MPS 0.01f //Converts from cm/s to m/s
+#define KTS_TO_MPS 0.51444f //Converts from cm/s to m/s
 
 #define GPS_UART_BAUDRATE 9600
 #define GPS_UART_BUFFER_SIZE 100
@@ -84,17 +84,12 @@ void handle_DMA_input() {
     bool currentlyParsing = false;
     uint16_t bufferIndex = 0;
     uint8_t data = 0;
-    
-    /*
 
-        OH MY GOD WHAT AM I SUPPOSED TO DO HERE!?!!?!?!?!?!?!
+    std::deque<uint8_t> dma_data = gpsUART->get_rx_queue(); //Copys double eneded queue in UARTPort class that contains data in the DMA registers
 
-        NEED TO CHECK IF THERE IS STILL DATA IN THE REGISTER AND ONLY STOP THE 
-        WHILE LOOP WHEN THE DATA IS UP!!!!
+    for (int i = 0; i < sizeof(dma_data) && newGGAData == false && newVTGData == false; i++) { // If new data is found, then the loop is terminated 
+        data = dma_data[i];
 
-    */
-
-    while(bufferIndex < 10) { //ADD AN ACTUAL WHILE CONDITION
         if (data == '$') {
             currentlyParsing = true;
             bufferIndex = 0;
@@ -108,7 +103,7 @@ void handle_DMA_input() {
             } 
         } else if (currentlyParsing) {
             generalBuffer[bufferIndex] = data;
-            bufferIndex = (bufferIndex + 1) % GPS_UART_BUFFER_SIZE; 
+            bufferIndex = (bufferIndex + 1) % GPS_UART_BUFFER_SIZE;
         }
     }
 }
@@ -141,11 +136,11 @@ uint8_t NEOM8::uint8_to_hex(uint8_t toConvert) {
 uint8_t NEOM8::ascii_to_hex(uint8_t toConvert) {
     uint8_t intConverted = 0;
 
-    if (toConvert == 0x2E) {
-        intConverted = 0x10;
-    } else if (toConvert >= 0x30 && toConvert <= 0x39) {
-        intConverted = toConvert - 0x30;
-    } else if (toConvert >= 0x41 && toConvert <= 0x46) {
+    if (toConvert == 46) {
+        intConverted = 46;
+    } else if (toConvert >= 48 && toConvert <= 57) {
+        intConverted = toConvert - 48;
+    } else if (toConvert >= 65 && toConvert <= 70) {
         intConverted = toConvert - 0x37;
     }
 
@@ -160,6 +155,7 @@ void NEOM8::get_gps_data() {
             dataAvailable = false;
             parse_gga();
             dataAvailable = true;
+            isDataNew = true;
         }
     }
 
@@ -169,17 +165,14 @@ void NEOM8::get_gps_data() {
             dataAvailable = false;
             parse_vtg();
             dataAvailable = true;
+            isDataNew = true;
         }
     }
 }
 
-void NEOM8::parse_gga() {
-    
-}
-
 void NEOM8::parse_vtg() {
-    uint8_t raw_heading[6];
-    uint8_t raw_ground_speed[8];
+    uint8_t raw_heading[5];
+    uint8_t raw_ground_speed[7];
     
     //Go through data array and filter out the values we want
     uint16_t commas = 0;
@@ -187,17 +180,19 @@ void NEOM8::parse_vtg() {
     uint8_t array_navigation = 0;
     uint8_t raw_data = 0;
 
-    while(vtgValues[rawDataNavigator] != '*') {
+     while(vtgValues[rawDataNavigator] != '*') {
         raw_data = ascii_to_hex(vtgValues[rawDataNavigator]);
-
-        if (vtgValues[rawDataNavigator] == ',') {
+        
+        while (vtgValues[rawDataNavigator] == ',' && ggaValues[rawDataNavigator + 1] != '*') { //Commas divide different data
             commas++;
             array_navigation = 0;
+            rawDataNavigator++;
+            raw_data = ascii_to_hex(vtgValues[rawDataNavigator]);
         }
 
-        if (commas == 1 && array_navigation > 0) {
+        if (commas == 1) { //If heading data is being displayed
             raw_heading[array_navigation] = raw_data;
-        } else if (commas == 7 && array_navigation > 0) {
+        } else if (commas == 7) {//If speed is being displayed
             raw_ground_speed[array_navigation] = raw_data;
         }
 
@@ -205,8 +200,184 @@ void NEOM8::parse_vtg() {
         rawDataNavigator++;
     }
 
-    //Fniish this part
+    array_navigation = 0;
+    uint64_t multiplier = 10;
+    uint16_t decimalPoint = 0;
 
+    // Converts Heading data (Measured in Degrees)
+    measuredHeading = 0;
+    float tempHeading = 0.0f;
+
+    for (int i = 0; i < 5; ++i) {
+        if(raw_heading[i] == 46) { //Decimal point
+            decimalPoint = i;
+        } else { //We get the digits of the heading. This ensures that the digit is in the correct place (tens, ones, tenths, etc.)
+            tempHeading += (float) (raw_heading[i]*100000 / multiplier);
+            multiplier *= 10;
+        }
+    }
+
+    decimalPoint -= 2; 
+    multiplier = 10000;
+    
+    while (decimalPoint > 0) { //Gets the multiplier that will place the decimal point in the correct place. 
+        multiplier /= 10;
+        decimalPoint--;
+    }
+
+    measuredHeading = (uint16_t) tempHeading / multiplier;
+
+    //Converts speed data (Measured in m/s)
+    array_navigation = 0;
+    multiplier = 10;
+    decimalPoint = 0;
+
+    measuredGroundSpeed = 0;
+
+    for(int i = 0; i < 7; i++) {
+        if(raw_ground_speed[i] == 46) {
+            decimalPoint = i;
+        } else {
+            measuredGroundSpeed += (float) (raw_ground_speed[i] * 1000000 / multiplier);
+            multiplier *= 10;
+        }
+    }
+
+    decimalPoint = decimalPoint -2;
+    multiplier = 100000;
+
+    while(decimalPoint > 0) {
+        multiplier /= 10;
+        decimalPoint--;
+    }
+    
+    measuredGroundSpeed /= multiplier;
+}
+
+void NEOM8::parse_gga() {
+    uint8_t raw_time[10];
+    uint8_t raw_lat[9];
+    uint8_t raw_long[10];
+    uint8_t raw_satellites[2] = {0, 10};
+    uint8_t raw_altitude[7];
+    uint8_t latitude_direction = 0; //North or South
+    uint8_t longitude_direction = 0; //East or west
+    uint8_t position_fix = 0; //Helps determine accuracy of data
+
+    //Parse through raw data and extract relevant info
+    uint8_t comma = 0;
+    uint8_t array_navigation = 0;
+    uint16_t rawDataNavigator = 0;
+    uint8_t raw_data = 0;
+    
+    while (ggaValues[rawDataNavigator] != '*') {
+        raw_data = ascii_to_hex(ggaValues[rawDataNavigator]);
+
+        if (raw_data == ',' && ggaValues[rawDataNavigator + 1] != '*') {
+            comma++;
+            array_navigation = 0;
+            rawDataNavigator++;
+        }
+
+        if (comma == 1) {
+            raw_time[array_navigation] = raw_data;
+        } else if (comma == 2) {
+            raw_lat[array_navigation] = raw_data;
+        } else if (comma == 3) {
+            latitude_direction = raw_data;
+        } else if (comma == 4) {
+            raw_long[array_navigation] = raw_data;
+        } else if (comma == 5) {
+            longitude_direction = raw_data;
+        } else if (comma == 6) {
+            position_fix = raw_data;
+        } else if (comma == 7) {
+            raw_satellites[array_navigation] = raw_data;
+        } else if (comma == 9) {
+            raw_altitude[array_navigation] = raw_data;
+        }   
+
+        array_navigation++;
+        rawDataNavigator++;
+    }
+
+    //Calclate time (Seconds since midnight)
+    measuredUtcTime = (float) raw_time[0] * 100000;
+    measuredUtcTime += (float) raw_time[1] * 10000;
+    measuredUtcTime += (float) raw_time[2] * 1000;
+    measuredUtcTime += (float) raw_time[3] * 100;
+    measuredUtcTime += (float) raw_time[4] * 10;
+    measuredUtcTime += (float) raw_time[5] * 1;
+    //Decimal Point
+    measuredUtcTime += (float) raw_time[6] * 0.1;
+    measuredUtcTime += (float) raw_time[7] * 0.01;
+    measuredUtcTime += (float) raw_time[8] * 0.001;
+
+    //Calculate latitude
+    measuredLatitude = raw_lat[2]*10.0;
+    measuredLatitude += raw_lat[3]*1.0;
+    measuredLatitude += raw_lat[5]*0.1;
+    measuredLatitude += raw_lat[6]*0.01;
+    measuredLatitude += raw_lat[7]*0.001;
+    measuredLatitude += raw_lat[8]*0.0001;
+    measuredLatitude /= 60;  //Converts from dd.mmmmmm to decimal degrees. (60 minutes in a degree)
+    //Then add the degrees (ranges from -90 to +90)
+    measuredLatitude += raw_lat[0]*10.0;
+    measuredLatitude += raw_lat[1]*1.0;
+
+    if (latitude_direction == 'S') {
+        measuredLatitude *= -1;
+    }
+
+    //Calculate longitude
+    measuredLongitude = raw_long[3]*10.0;
+    measuredLongitude += raw_long[4]*1.0;
+    measuredLongitude += raw_long[6]*0.1;
+    measuredLongitude += raw_long[7]*0.01;
+    measuredLongitude += raw_long[8]*0.001;
+    measuredLongitude += raw_long[9]*0.0001;
+    measuredLongitude /= 60;  //Converts from ddd.mmmmmm to decimal degrees. (60 minutes in a degree)
+    //Then add the degrees (ranges from -180 to +180)
+    measuredLongitude += raw_long[0]*100.0;
+    measuredLongitude += raw_long[1]*10.0;
+    measuredLongitude += raw_long[2]*1.0;
+
+    if (longitude_direction == 'W') {
+        measuredLongitude *= -1;
+    }
+
+    //calculate satellites
+    if (raw_satellites[1] == 10) {
+        measuredNumSatellites = raw_satellites[0];
+    } else {
+        measuredNumSatellites = raw_satellites[0]*10 + raw_satellites[1];
+    } 
+
+    //calculate altitude - tricky because of unknown 1-3 digits preceeding the decimal
+    long int multiplier = 10;
+    int decimalPoint = 0;
+    measuredAltitude = 0;
+    float tempAltitude = 0;
+
+    for (int i = 0; i < 7; i++) { //this code first generates an 6 digit decimal number
+        if (raw_altitude[i] == 0x10) //check for decimal point
+        {
+            decimalPoint = i;
+        } else {
+            tempAltitude += (float) (raw_altitude[i] * 1000000 / multiplier);
+            multiplier *= 10;
+        }
+    }
+
+    decimalPoint = decimalPoint - 2;
+    multiplier = 100000;
+
+    while (decimalPoint > 0) {
+        multiplier = multiplier / 10;
+        decimalPoint--;
+    }
+
+    measuredAltitude = (int) (tempAltitude / multiplier);
 }
 
 void NEOM8::BeginMeasuring() {

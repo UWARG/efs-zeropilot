@@ -76,16 +76,16 @@ class NEOM8 : public Gps
 		float measuredUtcTime;     // 4 Bytes. Time in seconds since 00:00 (midnight)
 		float measuredGroundSpeed; // in m/s
 		int measuredAltitude; // in m
-		int16_t measuredHeading; // in degrees. Should be between 0-360 at all times, but using integer just in case
-		uint8_t measuredNumSatellites;    // 1 Byte
+		uint16_t measuredHeading; // in degrees. Should be between 0-360 at all times, but using integer just in case
+		uint8_t measuredNumSatellites;  // 1 Byte
 
 		//Methods (Some code was transferred from PicPilor)
 		bool is_check_sum_valid(char *);
 		uint8_t uint8_to_hex(uint8_t);
 		uint8_t ascii_to_hex(uint8_t);
 		void get_gps_data();
-		void parse_gga();
 		void parse_vtg();
+		void parse_gga();
 };
 
 #ifdef UNIT_TESTING
