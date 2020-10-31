@@ -421,6 +421,10 @@ StatusCode UARTPort::registerDMAReceiveCallback(void (*f)()) {
 	return STATUS_CODE_OK;
 }
 
+std::deque<uint8_t> UARTPort::get_rx_queue() {
+	return *rx_queue;
+}
+
 //Below code based off: https://github.com/akospasztor/stm32-dma-uart/blob/master/Src/main.c
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if (huart->Instance == USART1) {

@@ -82,7 +82,7 @@ class NEOM8 : public Gps
 		//Methods (Some code was transferred from PicPilor)
 		bool is_check_sum_valid(char *);
 		uint8_t uint8_to_hex(uint8_t);
-		uint8_t ascii_to_hex(uint8_t);
+		int ascii_to_hex(int);
 		void get_gps_data();
 		void parse_vtg();
 		void parse_gga();

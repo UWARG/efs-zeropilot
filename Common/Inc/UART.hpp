@@ -132,6 +132,11 @@ class UARTPort {
 	 */
 	StatusCode transmit(uint8_t *data, size_t len);
 
+	/*
+	 * @return Returns the rx_queue parameter which contains data from the DMA  
+	*/
+	std::deque<uint8_t> get_rx_queue(); 
+
  private:
 	GPIOPin rx_pin;
 	GPIOPin tx_pin;

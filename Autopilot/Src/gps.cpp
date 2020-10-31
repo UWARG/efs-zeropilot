@@ -133,8 +133,8 @@ uint8_t NEOM8::uint8_to_hex(uint8_t toConvert) {
     return intConverted;
 }
 
-uint8_t NEOM8::ascii_to_hex(uint8_t toConvert) {
-    uint8_t intConverted = 0;
+int NEOM8::ascii_to_hex(int toConvert) {
+    int intConverted = 0;
 
     if (toConvert == 46) {
         intConverted = 46;
@@ -170,19 +170,20 @@ void NEOM8::get_gps_data() {
     }
 }
 
-void NEOM8::parse_vtg() {
-    uint8_t raw_heading[5];
-    uint8_t raw_ground_speed[7];
-    
-    //Go through data array and filter out the values we want
-    uint16_t commas = 0;
-    uint16_t rawDataNavigator = 0;
-    uint8_t array_navigation = 0;
-    uint8_t raw_data = 0;
 
-     while(vtgValues[rawDataNavigator] != '*') {
+//Checks if there is new data, validates it, and then converts it to a form that the autopilot will understand
+void NEOM8::parse_vtg() {
+    int raw_heading[5] = {0, 0, 0, 0, 0};
+    int raw_ground_speed[7] = {0, 0, 0, 0, 0, 0, 0};
+
+    //Go through data array and filter out the values we want
+    int commas = 0;
+    int rawDataNavigator = 0;
+    int array_navigation = 0;
+    int raw_data = 0;
+
+    while(vtgValues[rawDataNavigator] != '*') {
         raw_data = ascii_to_hex(vtgValues[rawDataNavigator]);
-        
         while (vtgValues[rawDataNavigator] == ',' && ggaValues[rawDataNavigator + 1] != '*') { //Commas divide different data
             commas++;
             array_navigation = 0;
@@ -201,8 +202,8 @@ void NEOM8::parse_vtg() {
     }
 
     array_navigation = 0;
-    uint64_t multiplier = 10;
-    uint16_t decimalPoint = 0;
+    long int multiplier = 10;
+    int decimalPoint = 0;
 
     // Converts Heading data (Measured in Degrees)
     measuredHeading = 0;
@@ -217,15 +218,15 @@ void NEOM8::parse_vtg() {
         }
     }
 
-    decimalPoint -= 2; 
+    decimalPoint -= 2;
     multiplier = 10000;
-    
-    while (decimalPoint > 0) { //Gets the multiplier that will place the decimal point in the correct place. 
+
+    while (decimalPoint >= 0) { //Gets the multiplier that will place the decimal point in the correct place.
         multiplier /= 10;
         decimalPoint--;
     }
 
-    measuredHeading = (uint16_t) tempHeading / multiplier;
+    measuredHeading = (int) (tempHeading / multiplier)%360;
 
     //Converts speed data (Measured in m/s)
     array_navigation = 0;
@@ -246,56 +247,57 @@ void NEOM8::parse_vtg() {
     decimalPoint = decimalPoint -2;
     multiplier = 100000;
 
-    while(decimalPoint > 0) {
+    while(decimalPoint >= 0) {
         multiplier /= 10;
         decimalPoint--;
     }
-    
+
     measuredGroundSpeed /= multiplier;
 }
 
 void NEOM8::parse_gga() {
-    uint8_t raw_time[10];
-    uint8_t raw_lat[9];
-    uint8_t raw_long[10];
-    uint8_t raw_satellites[2] = {0, 10};
+    int raw_time[10];
+    int raw_lat[10];
+    int raw_long[10];
+    int raw_satellites[2] = {0, 10};
     uint8_t raw_altitude[7];
-    uint8_t latitude_direction = 0; //North or South
-    uint8_t longitude_direction = 0; //East or west
-    uint8_t position_fix = 0; //Helps determine accuracy of data
+    int latitude_direction = 0; //North or South
+    int longitude_direction = 0; //East or west
+    int position_fix = 0; //Helps determine accuracy of data
 
     //Parse through raw data and extract relevant info
-    uint8_t comma = 0;
-    uint8_t array_navigation = 0;
-    uint16_t rawDataNavigator = 0;
-    uint8_t raw_data = 0;
-    
+    int commas = 0;
+    int array_navigation = 0;
+    int rawDataNavigator = 0;
+    int raw_data = 0;
+
     while (ggaValues[rawDataNavigator] != '*') {
         raw_data = ascii_to_hex(ggaValues[rawDataNavigator]);
 
-        if (raw_data == ',' && ggaValues[rawDataNavigator + 1] != '*') {
-            comma++;
+        while (ggaValues[rawDataNavigator] == ',' && ggaValues[rawDataNavigator + 1] != '*') { //Commas divide different data
+            commas++;
             array_navigation = 0;
             rawDataNavigator++;
+            raw_data = ascii_to_hex(ggaValues[rawDataNavigator]);
         }
 
-        if (comma == 1) {
+        if (commas == 1) {
             raw_time[array_navigation] = raw_data;
-        } else if (comma == 2) {
+        } else if (commas == 2) {
             raw_lat[array_navigation] = raw_data;
-        } else if (comma == 3) {
+        } else if (commas == 3) {
             latitude_direction = raw_data;
-        } else if (comma == 4) {
+        } else if (commas == 4) {
             raw_long[array_navigation] = raw_data;
-        } else if (comma == 5) {
+        } else if (commas == 5) {
             longitude_direction = raw_data;
-        } else if (comma == 6) {
+        } else if (commas == 6) {
             position_fix = raw_data;
-        } else if (comma == 7) {
+        } else if (commas == 7) {
             raw_satellites[array_navigation] = raw_data;
-        } else if (comma == 9) {
+        } else if (commas == 9) {
             raw_altitude[array_navigation] = raw_data;
-        }   
+        }
 
         array_navigation++;
         rawDataNavigator++;
@@ -312,6 +314,7 @@ void NEOM8::parse_gga() {
     measuredUtcTime += (float) raw_time[6] * 0.1;
     measuredUtcTime += (float) raw_time[7] * 0.01;
     measuredUtcTime += (float) raw_time[8] * 0.001;
+    measuredUtcTime = (int) measuredUtcTime%86400; //Seconds past midnight
 
     //Calculate latitude
     measuredLatitude = raw_lat[2]*10.0;
@@ -325,7 +328,7 @@ void NEOM8::parse_gga() {
     measuredLatitude += raw_lat[0]*10.0;
     measuredLatitude += raw_lat[1]*1.0;
 
-    if (latitude_direction == 'S') {
+    if (latitude_direction == 28) { //S
         measuredLatitude *= -1;
     }
 
@@ -342,7 +345,7 @@ void NEOM8::parse_gga() {
     measuredLongitude += raw_long[1]*10.0;
     measuredLongitude += raw_long[2]*1.0;
 
-    if (longitude_direction == 'W') {
+    if (longitude_direction == 32) { //W
         measuredLongitude *= -1;
     }
 
@@ -350,8 +353,8 @@ void NEOM8::parse_gga() {
     if (raw_satellites[1] == 10) {
         measuredNumSatellites = raw_satellites[0];
     } else {
-        measuredNumSatellites = raw_satellites[0]*10 + raw_satellites[1];
-    } 
+        measuredNumSatellites = raw_satellites[0] * 10 + raw_satellites[1];
+    }
 
     //calculate altitude - tricky because of unknown 1-3 digits preceeding the decimal
     long int multiplier = 10;
@@ -360,7 +363,7 @@ void NEOM8::parse_gga() {
     float tempAltitude = 0;
 
     for (int i = 0; i < 7; i++) { //this code first generates an 6 digit decimal number
-        if (raw_altitude[i] == 0x10) //check for decimal point
+        if (raw_altitude[i] == 46) //check for decimal point
         {
             decimalPoint = i;
         } else {
@@ -372,29 +375,12 @@ void NEOM8::parse_gga() {
     decimalPoint = decimalPoint - 2;
     multiplier = 100000;
 
-    while (decimalPoint > 0) {
-        multiplier = multiplier / 10;
+    while (decimalPoint >= 0) {
+        multiplier /= 10;
         decimalPoint--;
     }
 
     measuredAltitude = (int) (tempAltitude / multiplier);
-}
-
-void NEOM8::BeginMeasuring() {
-    get_gps_data();
-    isDataNew = true;
-}
-
-void NEOM8::GetResult(GpsData_t &Data) {
-    Data.dataIsNew = isDataNew;
-    isDataNew = false;
-    Data.latitude = measuredLatitude;
-    Data.longitude = measuredLongitude;
-    Data.utcTime = measuredUtcTime;
-    Data.groundSpeed = measuredGroundSpeed;
-    Data.altitude = measuredAltitude;
-    Data.heading = measuredHeading;
-    Data.numSatellites = measuredNumSatellites;
 }
 
 /*** MAIN CODE ENDS ***/
