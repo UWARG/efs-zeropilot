@@ -87,19 +87,10 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
           -iex "disconnect" -iex "quit")
 
 elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
-
-  add_definitions(
-    -DUSE_HAL_LIB
-    -DSTM32F7xx
-    -DSTM32F765xx
-    -DSTM32F765xG
-    -DARM_MATH_CM7
-  )
-
+  
   add_definitions(-DUNIT_TESTING)
 
-  # Required to get some of the CMSIS libraries to compile
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -fms-extensions -Wall -Wextra -g")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fms-extensions -Wall -Wextra -g")
 
   # Google test was built for c++11
   set(CMAKE_CXX_STANDARD 11)
@@ -111,9 +102,6 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
   endif()
 
   include_directories(
-    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/STM32F7xx_HAL_Driver/Inc
-    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/CMSIS/Include
-    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/CMSIS/Device/ST/STM32F7xx/Include
     SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Test/vendor/lib
     ${CMAKE_CURRENT_SOURCE_DIR}/../Common/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
@@ -134,8 +122,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
   #instruct cmake to store all binaries in their own directory
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-
+  
   # Collect the main function that runs our unit tests. It will be common for all executables
   set(UNIT_TEST_MAIN ${CMAKE_CURRENT_SOURCE_DIR}/Test/testMain.cpp)
 
