@@ -104,7 +104,7 @@ void sendToSafetyMode::execute(attitudeManager* attitudeMgr)
     for(int channel = 0; channel < 4; channel++)
     {
         ErrorStruct = SendToSafety_Execute(channel, channelOut[channel]);
-        if(ErrorStruct.errorCode == 0)
+        if(ErrorStruct.errorCode == 1)
         {
             attitudeMgr->setState(FatalFailureMode::getInstance());
         }
