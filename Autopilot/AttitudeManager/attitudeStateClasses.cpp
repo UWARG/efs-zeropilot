@@ -107,6 +107,7 @@ void sendToSafetyMode::execute(attitudeManager* attitudeMgr)
         if(ErrorStruct.errorCode == 1)
         {
             attitudeMgr->setState(FatalFailureMode::getInstance());
+            break;
         }
     }
 
