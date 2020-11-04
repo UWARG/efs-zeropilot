@@ -99,7 +99,12 @@ attitudeState& OutputMixingMode::getInstance()
 
 void sendToSafetyMode::execute(attitudeManager* attitudeMgr)
 {
+    SendToSafety_error_t ErrorStruct;
     float *channelOut = OutputMixingMode::GetChannelOut();
+    for(int channel = 0; channel < 4; channel++)
+    {
+        ErrorStruct = SendToSafety_Execute(channel, channelOut[channel]);
+    }
 
     SendToSafety_error_t ErrorStruct = SendToSafety_Execute(channelOut);
 
