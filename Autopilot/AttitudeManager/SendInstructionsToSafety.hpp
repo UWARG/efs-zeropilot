@@ -32,7 +32,7 @@ void SendToSafety_Init(void);
 * Communicates the desired actuator commands encoded in the channelOut array over I2C to
 * the safety chip. Internally, this function performs a conversion from percentages to pwm values.
 * This function is non blocking and returns right away.
-* @param[in]		channelOut 		the output channel for PWM
+* @param[in]		channel 		the output channel for PWM
 * @param[in]		percent 		the percentage between 0-100 that the PWM channel should be set to
 * @return							the error struct, containing all info about any errors that may have occured.
 */
