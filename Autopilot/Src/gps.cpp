@@ -4,10 +4,10 @@
  */
 
 #include "gps.hpp"
-#include "UART.hpp"
-#include "../Libraries/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.c"
 #include <stddef.h>
 #include <string.h>
+#include "stm32f7xx_hal.h"
+#include "UART.hpp"
 
 
 #define KTS_TO_MPS 0.51444f //Converts from cm/s to m/s
@@ -25,22 +25,47 @@
 #define VTG_MESSAGE "GPVTG"
 
 NEOM8* NEOM8::gps_Instance = NULL;
-UARTPort *gpsUART;
+static UARTPort *gpsUART;
 
-char vtgValues[GPS_UART_BUFFER_SIZE];
-char ggaValues[GPS_UART_BUFFER_SIZE];
-char generalBuffer[GPS_UART_BUFFER_SIZE];
-uint8_t tx_buffer[GPS_UART_BUFFER_SIZE];
-uint8_t rx_buffer[GPS_UART_BUFFER_SIZE];
+//Data buffers
+static char vtgValues[GPS_UART_BUFFER_SIZE];
+static char ggaValues[GPS_UART_BUFFER_SIZE];
+static char generalBuffer[GPS_UART_BUFFER_SIZE];
+static uint8_t tx_buffer[GPS_UART_BUFFER_SIZE];
+static uint8_t rx_buffer[GPS_UART_BUFFER_SIZE];
 
-bool isGPSConfigured = false;
-bool dataAvailable = false;
-bool newGGAData = false;
-bool newVTGData = false;
-
-void handle_DMA_input();
+static bool newGGAData = false;
+static bool newVTGData = false;
 
 /*** MAIN CODE BEGINS ***/
+
+static void handle_DMA_input() {
+    bool currentlyParsing = false;
+    uint16_t bufferIndex = 0;
+    uint8_t data = 0;
+
+    std::deque<uint8_t> dma_data = gpsUART->get_rx_queue(); //Copys double eneded queue in UARTPort class that contains data in the DMA registers
+
+    for (int i = 0; i < sizeof(dma_data) && newGGAData == false && newVTGData == false; i++) { // If new data is found, then the loop is terminated 
+        data = dma_data[i];
+
+        if (data == '$') {
+            currentlyParsing = true;
+            bufferIndex = 0;
+        } else if (data == '\r') {
+            if (strncmp(GGA_MESSAGE, generalBuffer, 5 == 0)) {
+                memcpy(ggaValues, generalBuffer, GPS_UART_BUFFER_SIZE);
+                newGGAData = true;
+            } else if (strncmp(VTG_MESSAGE, generalBuffer, 5 == 0)) {
+                memcpy(vtgValues, generalBuffer, GPS_UART_BUFFER_SIZE);
+                newVTGData = true;
+            } 
+        } else if (currentlyParsing) {
+            generalBuffer[bufferIndex] = data;
+            bufferIndex = (bufferIndex + 1) % GPS_UART_BUFFER_SIZE;
+        }
+    }
+}
 
 NEOM8* NEOM8::GetInstance() {
     if (!gps_Instance) {
@@ -72,83 +97,10 @@ NEOM8::NEOM8() {
     gpsUART->transmit((uint8_t*) PUBX_SET_GGA, sizeof(PUBX_SET_GGA));
     gpsUART->transmit((uint8_t*) PUBX_SET_VTG, sizeof(PUBX_SET_VTG));
     
-    isGPSConfigured = true;
-}
-
-void handle_DMA_input() {
-    if (!isGPSConfigured) {
-        //Assumed the wrapper will handle clearing the registers and all.
-        return;
-    }
-
-    bool currentlyParsing = false;
-    uint16_t bufferIndex = 0;
-    uint8_t data = 0;
-
-    std::deque<uint8_t> dma_data = gpsUART->get_rx_queue(); //Copys double eneded queue in UARTPort class that contains data in the DMA registers
-
-    for (int i = 0; i < sizeof(dma_data) && newGGAData == false && newVTGData == false; i++) { // If new data is found, then the loop is terminated 
-        data = dma_data[i];
-
-        if (data == '$') {
-            currentlyParsing = true;
-            bufferIndex = 0;
-        } else if (data == '\r') {
-            if (strncmp(GGA_MESSAGE, generalBuffer, 5 == 0)) {
-                memcpy(ggaValues, generalBuffer, GPS_UART_BUFFER_SIZE);
-                newGGAData = true;
-            } else if (strncmp(VTG_MESSAGE, generalBuffer, 5 == 0)) {
-                memcpy(vtgValues, generalBuffer, GPS_UART_BUFFER_SIZE);
-                newVTGData = true;
-            } 
-        } else if (currentlyParsing) {
-            generalBuffer[bufferIndex] = data;
-            bufferIndex = (bufferIndex + 1) % GPS_UART_BUFFER_SIZE;
-        }
-    }
-}
-
-bool NEOM8::is_check_sum_valid(char *input) {
-    uint16_t index = 0;
-    uint8_t checksum = 0;
-
-    while(input[index] != '*') {
-        checksum ^= input[index];
-        index++;
-    }
-
-    index++;
-    return uint8_to_hex((checksum & 0xF0) >> 4) == input[index] && uint8_to_hex(checksum & 0x0F) == input[index+1];
-}
-
-uint8_t NEOM8::uint8_to_hex(uint8_t toConvert) {
-    uint8_t intConverted = 0;
-
-    if (toConvert >= 0 && toConvert <= 9) {
-        intConverted = toConvert + 0x30;
-    } else if (toConvert >= 0xA && toConvert <= 0xF) {
-        intConverted = toConvert + 0x37;
-    }
-    
-    return intConverted;
-}
-
-int NEOM8::ascii_to_hex(int toConvert) {
-    int intConverted = 0;
-
-    if (toConvert == 46) {
-        intConverted = 46;
-    } else if (toConvert >= 48 && toConvert <= 57) {
-        intConverted = toConvert - 48;
-    } else if (toConvert >= 65 && toConvert <= 70) {
-        intConverted = toConvert - 0x37;
-    }
-
-    return intConverted;
 }
 
 //Checks if there is new data, validates it, and then converts it to a form that the autopilot will understand
-void NEOM8::get_gps_data() {
+void NEOM8::parse_gps_data() {
     if (newGGAData) {
         newGGAData = false;
         if (is_check_sum_valid(ggaValues)) {
@@ -156,6 +108,7 @@ void NEOM8::get_gps_data() {
             parse_gga();
             dataAvailable = true;
             isDataNew = true;
+            ggaDataNew = true;
         }
     }
 
@@ -166,12 +119,11 @@ void NEOM8::get_gps_data() {
             parse_vtg();
             dataAvailable = true;
             isDataNew = true;
+            vtgDataNew = true;
         }
     }
 }
 
-
-//Checks if there is new data, validates it, and then converts it to a form that the autopilot will understand
 void NEOM8::parse_vtg() {
     int raw_heading[5] = {0, 0, 0, 0, 0};
     int raw_ground_speed[7] = {0, 0, 0, 0, 0, 0, 0};
@@ -263,7 +215,6 @@ void NEOM8::parse_gga() {
     uint8_t raw_altitude[7];
     int latitude_direction = 0; //North or South
     int longitude_direction = 0; //East or west
-    int position_fix = 0; //Helps determine accuracy of data
 
     //Parse through raw data and extract relevant info
     int commas = 0;
@@ -291,8 +242,6 @@ void NEOM8::parse_gga() {
             raw_long[array_navigation] = raw_data;
         } else if (commas == 5) {
             longitude_direction = raw_data;
-        } else if (commas == 6) {
-            position_fix = raw_data;
         } else if (commas == 7) {
             raw_satellites[array_navigation] = raw_data;
         } else if (commas == 9) {
@@ -381,6 +330,63 @@ void NEOM8::parse_gga() {
     }
 
     measuredAltitude = (int) (tempAltitude / multiplier);
+}
+
+bool NEOM8::is_check_sum_valid(char *input) {
+    uint16_t index = 0;
+    uint8_t checksum = 0;
+
+    while(input[index] != '*') {
+        checksum ^= input[index];
+        index++;
+    }
+
+    index++;
+    return uint8_to_hex((checksum & 0xF0) >> 4) == input[index] && uint8_to_hex(checksum & 0x0F) == input[index+1];
+}
+
+uint8_t NEOM8::uint8_to_hex(unsigned int toConvert) {
+    uint8_t intConverted = 0;
+
+    if (toConvert >= 0 && toConvert <= 9) {
+        intConverted = toConvert + 0x30;
+    } else if (toConvert >= 0xA && toConvert <= 0xF) {
+        intConverted = toConvert + 0x37;
+    }
+    
+    return intConverted;
+}
+
+int NEOM8::ascii_to_hex(unsigned int toConvert) {
+    int intConverted = 0;
+
+    if (toConvert == 46) {
+        intConverted = 46;
+    } else if (toConvert >= 48 && toConvert <= 57) {
+        intConverted = toConvert - 48;
+    } else if (toConvert >= 65 && toConvert <= 70) {
+        intConverted = toConvert - 0x37;
+    }
+
+    return intConverted;
+}
+
+void NEOM8::GetResult(GpsData_t &Data) {
+    parse_gps_data();
+
+    Data.dataIsNew = isDataNew;
+    Data.ggaDataIsNew = ggaDataNew;
+    Data.vtgDataIsNew = vtgDataNew;
+    vtgDataNew = false;
+    ggaDataNew = false;
+    isDataNew = false;
+    Data.latitude = measuredLatitude;
+    Data.longitude = measuredLongitude;
+    Data.utcTime = measuredUtcTime;
+    Data.groundSpeed = measuredGroundSpeed;
+    Data.altitude = measuredAltitude;
+    Data.heading = measuredHeading;
+    Data.numSatellites = measuredNumSatellites;
 }
 
 /*** MAIN CODE ENDS ***/

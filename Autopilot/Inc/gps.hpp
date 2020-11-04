@@ -7,7 +7,6 @@
 #define	GPS_HPP
 
 #include <stdint.h>
-#include "stm32f7xx_hal.h"
 
 #define NEO_M8 0
 
@@ -24,6 +23,10 @@ typedef struct
     uint8_t sensorStatus; // 0 = no fix, 1 = gps fix, 2 = differential gps fix (DGPS) (other codes are possible)
     bool dataIsNew; // true if data has been refreshed since the previous time GetResult was called, false otherwise.
 	bool timeIsValid;
+
+	//Added these so autopilot knows which data is new
+	bool ggaDataIsNew; //Position, altitude, time, and number of satellites
+	bool vtgDataIsNew; //Groundspeed and Heading
 
 } GpsData_t;
 
@@ -54,7 +57,7 @@ class NEOM8 : public Gps
 		/**
          * Triggers interrupt for new GPS measurement - stores raw data in variables and returns right away
          * */
-		void BeginMeasuring();
+		void BeginMeasuring() {}; //No need to call this to get data. Just call GetResult()
 
 		 /**GetResult should:
          * 1. Reset dataIsNew flag
@@ -72,20 +75,24 @@ class NEOM8 : public Gps
 
 		//Variables
 		bool isDataNew = false;
+		bool ggaDataNew = false;
+		bool vtgDataNew = false;
 		long double measuredLatitude, measuredLongitude;  // 8 Bytes
 		float measuredUtcTime;     // 4 Bytes. Time in seconds since 00:00 (midnight)
 		float measuredGroundSpeed; // in m/s
 		int measuredAltitude; // in m
 		uint16_t measuredHeading; // in degrees. Should be between 0-360 at all times, but using integer just in case
 		uint8_t measuredNumSatellites;  // 1 Byte
+		bool dataAvailable = false;
 
-		//Methods (Some code was transferred from PicPilor)
+		//Methods (Some code was transferred from PICpilot [https://github.com/UWARG/PICpilot])
 		bool is_check_sum_valid(char *);
-		uint8_t uint8_to_hex(uint8_t);
-		int ascii_to_hex(int);
-		void get_gps_data();
+		uint8_t uint8_to_hex(unsigned int);
+		int ascii_to_hex(unsigned int);
+		void parse_gps_data();
 		void parse_vtg();
 		void parse_gga();
+
 };
 
 #ifdef UNIT_TESTING
