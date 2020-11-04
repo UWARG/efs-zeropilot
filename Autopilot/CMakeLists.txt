@@ -87,6 +87,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
           -iex "disconnect" -iex "quit")
 
 elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
+  
   add_definitions(-DUNIT_TESTING)
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fms-extensions -Wall -Wextra -g")
@@ -106,14 +107,6 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Inc
-  )
-
-  add_definitions(
-    -DUSE_HAL_LIB
-    -DSTM32F7xx
-    -DSTM32F765xx
-    -DSTM32F765xG
-    -DARM_MATH_CM7
   )
 
   # Let cmake know where to find all the find<Package>.cmake files
