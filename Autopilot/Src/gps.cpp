@@ -9,7 +9,6 @@
 #include "stm32f7xx_hal.h"
 #include "UART.hpp"
 
-
 #define KTS_TO_MPS 0.51444f //Converts from cm/s to m/s
 
 #define GPS_UART_BAUDRATE 9600
@@ -36,13 +35,23 @@ static uint8_t rx_buffer[GPS_UART_BUFFER_SIZE];
 
 static bool newGGAData = false;
 static bool newVTGData = false;
+static bool parsingForCollection = false; 
 
 /*** MAIN CODE BEGINS ***/
 
 static void handle_DMA_input() {
+    if (parsingForCollection) { //If we are parsing data, we don't want the program writing over the static data registers in this file.
+        return;
+    }
+
     bool currentlyParsing = false;
     uint16_t bufferIndex = 0;
     uint8_t data = 0;
+
+    /*
+        Without this, I don't have anything concrete to define the condition of the for loop
+        and copy data to the static data registers in this file. 
+    */
 
     std::deque<uint8_t> dma_data = gpsUART->get_rx_queue(); //Copys double eneded queue in UARTPort class that contains data in the DMA registers
 
@@ -372,7 +381,8 @@ int NEOM8::ascii_to_hex(unsigned int toConvert) {
 }
 
 void NEOM8::GetResult(GpsData_t &Data) {
-    parse_gps_data();
+    parsingForCollection = true;
+    parse_gps_data(); 
 
     Data.dataIsNew = isDataNew;
     Data.ggaDataIsNew = ggaDataNew;
@@ -387,6 +397,8 @@ void NEOM8::GetResult(GpsData_t &Data) {
     Data.altitude = measuredAltitude;
     Data.heading = measuredHeading;
     Data.numSatellites = measuredNumSatellites;
+
+    parsingForCollection = false;
 }
 
 /*** MAIN CODE ENDS ***/
