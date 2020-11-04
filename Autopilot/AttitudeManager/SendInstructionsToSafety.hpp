@@ -26,7 +26,7 @@ typedef struct
 * Initialises internal parameters and instructs the safety to set all actuator channels to their default safe settings.
 * Should be called exactly once before anything is attempted to be done with the module.
 */
-static void SendToSafety_Init(void);
+void SendToSafety_Init(void);
 
 /**
 * Communicates the desired actuator commands encoded in the channelOut array over I2C to
@@ -36,6 +36,6 @@ static void SendToSafety_Init(void);
 * @param[in]		percent 		the percentage between 0-100 that the PWM channel should be set to
 * @return							the error struct, containing all info about any errors that may have occured.
 */
-static SendToSafety_error_t SendToSafety_Execute(int channel, int percent);
+SendToSafety_error_t SendToSafety_Execute(int channel, int percent);
 
 #endif
