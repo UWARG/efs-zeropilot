@@ -2,8 +2,8 @@
 #include "Interchip_A.h"
 #define PWM_CHANNELS 12
 
-int16_t pwmPercentages[PWM_CHANNELS] = {0};
-int16_t initialPWMPercentages[PWM_CHANNELS] = {0}; //TODO: put in initial PWM states in here. 
+static int16_t pwmPercentages[PWM_CHANNELS] = {0};
+static int16_t initialPWMPercentages[PWM_CHANNELS] = {0}; //TODO: put in initial PWM states in here. 
 
 
 void SendToSafety_Init(void)
