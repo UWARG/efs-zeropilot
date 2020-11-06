@@ -251,6 +251,8 @@ void NEOM8::parse_gga() {
             raw_long[array_navigation] = raw_data;
         } else if (commas == 5) {
             longitude_direction = raw_data;
+        } else if (commas == 6) {
+            gpsFixStatus = raw_data;
         } else if (commas == 7) {
             raw_satellites[array_navigation] = raw_data;
         } else if (commas == 9) {
@@ -259,6 +261,15 @@ void NEOM8::parse_gga() {
 
         array_navigation++;
         rawDataNavigator++;
+    }
+
+    //Determine Fix status
+    if (gpsFixStatus == 6) { //Estimated/Dead Reckoning fix
+        gpsFixStatus = 3;
+    } else if (gpsFixStatus == 5 || gpsFixStatus == 4) { //Gps fix
+        gpsFixStatus = 1;
+    } else if (gpsFixStatus == 1 || gpsFixStatus == 2) { //DGSP fix
+        gpsFixStatus = 2;
     }
 
     //Calclate time (Seconds since midnight)
@@ -397,6 +408,7 @@ void NEOM8::GetResult(GpsData_t &Data) {
     Data.altitude = measuredAltitude;
     Data.heading = measuredHeading;
     Data.numSatellites = measuredNumSatellites;
+    Data.fixStatus = gpsFixStatus;
 
     parsingForCollection = false;
 }

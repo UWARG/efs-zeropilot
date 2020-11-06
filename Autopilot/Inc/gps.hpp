@@ -19,6 +19,7 @@ typedef struct
     int altitude; // in m
     int16_t heading; // in degrees. Should be between 0-360 at all times, but using integer just in case
     uint8_t numSatellites;    // 1 Byte
+	uint8_t fixStatus; //0 = No GPS, 1 = GPS fix, 2 = DGSP Fix, 3 = Estimated/Dead Recoking Fix
 
     uint8_t sensorStatus; // 0 = no fix, 1 = gps fix, 2 = differential gps fix (DGPS) (other codes are possible)
     bool dataIsNew; // true if data has been refreshed since the previous time GetResult was called, false otherwise.
@@ -83,6 +84,7 @@ class NEOM8 : public Gps
 		int measuredAltitude; // in m
 		uint16_t measuredHeading; // in degrees. Should be between 0-360 at all times, but using integer just in case
 		uint8_t measuredNumSatellites;  // 1 Byte
+		uint8_t gpsFixStatus;
 		bool dataAvailable = false;
 
 		//Methods (Some code was transferred from PICpilot [https://github.com/UWARG/PICpilot])
