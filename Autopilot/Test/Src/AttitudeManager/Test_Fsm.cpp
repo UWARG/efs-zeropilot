@@ -26,7 +26,7 @@ using ::testing::Test;
 FAKE_VALUE_FUNC(PMError_t, PM_GetCommands, PMCommands * );
 FAKE_VALUE_FUNC(SFError_t, SF_GetResult, SFOutput_t *, IMU *, airspeed *);
 FAKE_VALUE_FUNC(OutputMixing_error_t, OutputMixing_Execute, PID_Output_t * , float * );
-FAKE_VALUE_FUNC(SendToSafety_error_t, SendToSafety_Execute, float * );
+FAKE_VALUE_FUNC(SendToSafety_error_t, SendToSafety_Execute, int, int);
 
 /***********************************************************************************************************************
  * Definitions

@@ -99,17 +99,21 @@ attitudeState& OutputMixingMode::getInstance()
 
 void sendToSafetyMode::execute(attitudeManager* attitudeMgr)
 {
+    SendToSafety_error_t ErrorStruct;
     float *channelOut = OutputMixingMode::GetChannelOut();
-
-    SendToSafety_error_t ErrorStruct = SendToSafety_Execute(channelOut);
+    for(int channel = 0; channel < 4; channel++)
+    {
+        ErrorStruct = SendToSafety_Execute(channel, channelOut[channel]);
+        if(ErrorStruct.errorCode == 1)
+        {
+            attitudeMgr->setState(FatalFailureMode::getInstance());
+            break;
+        }
+    }
 
     if (ErrorStruct.errorCode == 0)
     {
         attitudeMgr->setState(fetchInstructionsMode::getInstance());
-    }
-    else
-    {
-        attitudeMgr->setState(FatalFailureMode::getInstance());
     }
 
 }
