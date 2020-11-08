@@ -16,6 +16,8 @@
 #ifndef AIRSPEED_HPP
 #define AIRSPEED_HPP
 
+#include<ctime>
+
 /*
     Currently there is only one airspeed sensor used, if this is 
     changed to a different sensor, part numbers and a selection
@@ -82,6 +84,26 @@ class dummyairspeed: public airspeed{
          * */
         void GetResult(airspeedData_t &Data) {};
 
+};
+
+class MPXV7002DP : public airspeed {
+    public:
+        MPXV7002DP(const MPXV7002DP*) = delete;
+        static MPXV7002DP* GetInstance();
+        void GetResult(airspeedData_t &Data);
+        void Begin_Measuring();
+        void Init();
+    private:
+        MPXV7002DP();
+        static MPXV7002DP* s_Instance; //single instance of airspeed
+        //command to interface with MPXV7002
+        double readFromMPXV7002DP();
+        int offset = 0;
+        bool dataNew = false;
+        double airspeed = 0; 
+        int sensorStatus = 0; //Im not 100% sure how to check for errors in the device :(
+        uint32_t timeOfLastResult = 0;
+        uint32_t getCurrentTime();
 };
 
 
