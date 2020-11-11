@@ -10,7 +10,7 @@
 
 MPXV7002DP::MPXV7002DP() {
     //constructor
-    //set up adc here? not sure
+    MX_ADC2_Init();
 }
 
 MPXV7002DP* MPXV7002DP::s_Instance = NULL;
