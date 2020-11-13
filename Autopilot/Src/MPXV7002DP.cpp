@@ -4,20 +4,16 @@
 #include <cmath>
 
 #define VS 5
-#define DENSITY_AIR 1.204
+#define DENSITY_AIR 1.2754
 #define ADC_RESOLUTION 4096
 
 
 MPXV7002DP::MPXV7002DP() {
     //constructor
     MX_ADC3_Init();
-    //HAL_ADC_START_IT(&hadc3);
+    HAL_ADC_START(&hadc3);
     //start the adc or whatever
 
-    
-    for(int x = 0; x < 100; x++) {
-        initialPressure += getPressure();
-    }
 }
 
 MPXV7002DP* MPXV7002DP::s_Instance = NULL;
@@ -38,40 +34,26 @@ void MPXV7002DP::GetResult(airspeedData_t *Data) {
 }
 
 void MPXV7002DP::Begin_Measuring() {
-        airspeed = readFromMPXV7002DP();
+        airspeed = getAirspeed();
         timeOfLastResult = getCurrentTime();
         dataNew = true;
 }
 
-
-//this entire function is super sus ngl
-//gonna rewrite it lol
-// double MPXV7002DP::readFromMPXV7002DP() {
-//     uint16_t adcVal = HAL_ADC_GetValue(&hadc2) - offset;
-
-//     if(adcVal < ADC_RESOLUTION/2) {
-//         return -std::sqrt( (-10000*(adcVal/(ADC_RESOLUTION-1) - 0.5))/DENSITY_AIR );
-//     } else if(adcVal > ADC_RESOLUTION/2) {
-//         return std::sqrt( (10000*(adcVal/(ADC_RESOLUTION-1) - 0.5))/DENSITY_AIR );
-//     } else {
-//         return 0;
-//     }
-// }
-
-float MPXV7002DP::getPressure() {
-    uint16_t adcVal = HAL_ADC_GetValue(&hadc3) - offset;
+float MPXV7002DP::getDiffPressure() {
+    uint16_t adcVal = HAL_ADC_GetValue(&hadc3);
 
     //formula from datasheet page 6
     return 5 * (float)adcVal/(ADC_RESOLUTION-1) - 2.5;
 }
 
 float MPXV7002DP::getAirspeed() {
-    float pressure = getPressure();
-    if(pressure < 0) {
+    float diffPressure = getDiffPressure();
+    if(diffPressure < 0) {
         sensorStatus = 1;
         return 0;
     } else {
-        return sqrt(2 * (pressure - offset)/DENSITY_AIR);
+        sensorStatus - 0;
+        return sqrt(2 * diffPressure/DENSITY_AIR);
     }
 }
 

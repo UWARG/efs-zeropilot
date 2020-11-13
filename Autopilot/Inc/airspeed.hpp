@@ -27,7 +27,7 @@
 struct airspeedData_t 
 {
     double airspeed;        // in m/s
-
+    //1 is errror, 0 is not error
     int sensorStatus;       // report any errors, possible malfunctions 
     bool isDataNew;         // is the data fresh?
     float utcTime;          // 4 Bytes. Time in seconds since 00:00 
@@ -86,7 +86,7 @@ class MPXV7002DP : public airspeed {
         static MPXV7002DP* s_Instance; //single instance of airspeed
         //command to interface with MPXV7002
         double readFromMPXV7002DP();
-        float getPressure();
+        float getDiffPressure();
         float getAirspeed();
         float initialPressure = 0;
         bool dataNew = false;
