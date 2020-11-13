@@ -36,12 +36,6 @@ struct airspeedData_t
 class airspeed {
     public:
         /**
-         *  Initializes ADC in order to recieve sensor readings 
-         *  (pitot tube reading)
-         * */
-        virtual void Init() = 0; 
-
-        /**
          *  Triggers interrupt for new airspeed measurement - stores 
          *  raw data in variables and returns right away
          * */
@@ -56,16 +50,11 @@ class airspeed {
          *  ensure that data acquired makes sense, has been
          *  gathered recently within reason (past 10s?)
          * */
-        virtual void GetResult(airspeedData_t &Data) = 0; 
+        virtual void GetResult(airspeedData_t *Data) = 0; 
 };
 
 class dummyairspeed: public airspeed{
     public:
-        /**
-         *  Initializes ADC in order to recieve sensor readings 
-         *  (pitot tube reading)
-         * */
-        void Init() {}; 
 
         /**
          *  Triggers interrupt for new airspeed measurement - stores 
@@ -90,15 +79,16 @@ class MPXV7002DP : public airspeed {
     public:
         MPXV7002DP(const MPXV7002DP*) = delete;
         static MPXV7002DP* GetInstance();
-        void GetResult(airspeedData_t &Data);
+        void GetResult(airspeedData_t *Data);
         void Begin_Measuring();
-        void Init();
     private:
         MPXV7002DP();
         static MPXV7002DP* s_Instance; //single instance of airspeed
         //command to interface with MPXV7002
         double readFromMPXV7002DP();
-        int offset = 0;
+        float getPressure();
+        float getAirspeed();
+        float initialPressure = 0;
         bool dataNew = false;
         double airspeed = 0; 
         int sensorStatus = 0; //Im not 100% sure how to check for errors in the device :(
