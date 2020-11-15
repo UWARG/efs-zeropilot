@@ -52,7 +52,7 @@ float MPXV7002DP::getAirspeed() {
         sensorStatus = 1;
         return 0;
     } else {
-        sensorStatus - 0;
+        sensorStatus = 0;
         return sqrt(2 * diffPressure/DENSITY_AIR);
     }
 }
