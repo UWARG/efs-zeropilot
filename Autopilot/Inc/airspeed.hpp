@@ -58,6 +58,8 @@ class MPXV7002DP : public airspeed {
         MPXV7002DP(const MPXV7002DP*) = delete;
         static MPXV7002DP* GetInstance();
         void GetResult(airspeedData_t *Data);
+        
+        //doesn't need to be called, just call getResult
         void Begin_Measuring();
     private:
         MPXV7002DP();
@@ -67,10 +69,8 @@ class MPXV7002DP : public airspeed {
         float getDiffPressure();
         float getAirspeed();
         float initialPressure = 0;
-        bool dataNew = false;
         double airspeed = 0; 
-        int sensorStatus = 0; //Im not 100% sure how to check for errors in the device :(
-        uint32_t timeOfLastResult = 0;
+        int sensorStatus = 0; 
         uint32_t getCurrentTime();
 };
 

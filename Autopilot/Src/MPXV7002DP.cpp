@@ -26,18 +26,13 @@ MPXV7002DP* MPXV7002DP::GetInstance() {
 }
 
 void MPXV7002DP::GetResult(airspeedData_t *Data) {
-        Data->airspeed = airspeed;
-        Data->isDataNew = dataNew;
-        dataNew = false;
+        Data->airspeed = getAirspeed();
+        Data->isDataNew = true;
         Data->sensorStatus = sensorStatus;
-        Data->utcTime = timeOfLastResult;
+        Data->utcTime = getCurrentTime();
 }
 
-void MPXV7002DP::Begin_Measuring() {
-        airspeed = getAirspeed();
-        timeOfLastResult = getCurrentTime();
-        dataNew = true;
-}
+void MPXV7002DP::Begin_Measuring() {}
 
 float MPXV7002DP::getDiffPressure() {
     uint16_t adcVal = HAL_ADC_GetValue(&hadc3);
