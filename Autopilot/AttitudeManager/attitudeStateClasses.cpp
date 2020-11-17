@@ -34,9 +34,28 @@ attitudeState& fetchInstructionsMode::getInstance()
     return singleton;
 }
 
+sensorFusionMode::sensorFusionMode()
+{
+    #ifdef SIMULATION
+
+        AirspeedSens = new SimulatedAirspeed;
+
+    #elif defined(UNIT_TESTING)
+
+        AirspeedSens = new MockAirspeed;
+
+    #else
+
+        AirspeedSens = MPXV7002DP::GetInstance();
+
+    #endif
+}
+
+
+
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
 {
-    SFError_t ErrorStruct = SF_GetResult(&_SFOutput, &ImuSens, &AirspeedSens);
+    SFError_t ErrorStruct = SF_GetResult(&_SFOutput, &ImuSens, AirspeedSens);
 
     if (ErrorStruct.errorCode == 0)
     {
