@@ -10,6 +10,7 @@
 *   per second
 *
 *    Author: Annie LePage
+*    Modified By: Aaditya Chaudhary
 **/
 
 
@@ -58,7 +59,7 @@ class MPXV7002DP : public airspeed {
         MPXV7002DP(const MPXV7002DP*) = delete;
         static MPXV7002DP* GetInstance();
         void GetResult(airspeedData_t *Data);
-        
+
         //doesn't need to be called, just call getResult
         void Begin_Measuring();
     private:

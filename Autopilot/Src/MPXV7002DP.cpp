@@ -1,3 +1,6 @@
+/**
+**   Author: Aaditya Chaudhary
+**/
 #include "airspeed.hpp"
 #include "adc.h"
 #include <stddef.h>
@@ -6,13 +9,16 @@
 #define VS 5
 #define DENSITY_AIR 1.2754
 #define ADC_RESOLUTION 4096
+#define KPA_TO_PA 1000
 
 
 MPXV7002DP::MPXV7002DP() {
     //constructor
     MX_ADC3_Init();
-    HAL_ADC_START(&hadc3);
-    //start the adc or whatever
+    HAL_StatusTypeDef status = HAL_ADC_Start(&hadc3);
+    if(status != HAL_OK) {
+        sensorStatus = 1;
+    }
 
 }
 
@@ -42,7 +48,7 @@ float MPXV7002DP::getDiffPressure() {
 }
 
 float MPXV7002DP::getAirspeed() {
-    float diffPressure = getDiffPressure();
+    float diffPressure = KPA_TO_PA * getDiffPressure();
     if(diffPressure < 0) {
         sensorStatus = 1;
         return 0;

@@ -33,7 +33,7 @@ SFError_t SF_GetResult(SFOutput_t *Output, IMU *imusns, airspeed *airspeedsns){
 
     //Retrieve raw IMU and Airspeed data
     imusns->GetResult(imudata);
-    airspeedsns->GetResult(airspeeddata);
+    airspeedsns->GetResult(&airspeeddata);
 
     //Abort if both sensors are busy or failed data collection
     if(imudata.sensorStatus != 0 || airspeeddata.sensorStatus != 0)
