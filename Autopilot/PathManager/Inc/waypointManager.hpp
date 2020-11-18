@@ -108,17 +108,20 @@ class WaypointManager {
         /**
         * Returns the waypointBuffer array if requested
         */
-        _PathData* get_waypoint_buffer(); //Returns the waypointBuffer array
+        _PathData* get_waypoint_buffer();
 
         /**
          * Called if user wants the plane to start circling
          * 
-         * To exit this pattern, the user can call get_next_direction() to start following the waypoints in the waypointBuffer array
+         * Even while circling, state machine should call get_next_direction().
+         * When user wants to exit this cycle, user can call this method again and pass in true for cancelTurning. This will set inHold to false.
+         * 
          * 
          * @param[in] float turnRadius -> radius of the turn 
          * @param[in] int direction -> 1 means clockwise (bank right); 0 means counter-clock wise (bank left)
+         * @param[in] bool cancelTurning -> false means we want plane to orbit. True means we want plane to stop orbiting and follow waypointBuffer array
          */
-        void start_circling(float turnRadius, int direction);
+        void start_circling(float turnRadius, int direction, bool cancelTurning);
 
         /**
          * Called if user wants the plane to just head home
@@ -126,8 +129,8 @@ class WaypointManager {
          * Steps:
          *  - The method will clear the waypointBuffer array
          *  - Since gps coordiantes of the home base are already stored in the homeBase parameter, the plane will just fly towards that direction
-         *  - As the plane flies, the state machine can call update_path_nodes() to update the waypointBuffer array.
-         *  - Once the waypoints are set, the user can call get_next_direction() to start following the waypoints in the waypointBuffer array
+         *  - As the plane flies, the state machine can call update_path_nodes() to update the waypointBuffer array. The state machine should also keep calling get_next_directions() to get desired heading and altitude
+         *  - Once the waypoints are set, user can call this method again to make the plane follow the waypointBuffer array. (when calling this the second time, goingHome will be set to False)
          */ 
         void head_home();
 
@@ -150,9 +153,9 @@ class WaypointManager {
         bool dataIsNew = false;
 
         //Status variables
-        bool goingHome = false;
+        bool goingHome = false;     // This is set to true when the head_home() function is called. 
         _WaypointStatus errorStatus;
-        bool inHold = false; //When this is true, plane will just circle in the sky until another command is given
+        bool inHold = false; // Set to true when start_circling() is called
         bool orbiting = false; //When this is true, the plane is orbiting
 
         //Helper Methods
