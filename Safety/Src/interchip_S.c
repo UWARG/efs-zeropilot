@@ -1,3 +1,4 @@
+/*
 #include "interchip_S.h"
 //#include "debug.h"
 #include <stdio.h>
@@ -52,6 +53,7 @@ void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi){
 }
 */
 
+/*
 int16_t *Interchip_GetPWM(void) 
 { 
   return dataRX->PWM; 
@@ -64,3 +66,4 @@ uint16_t Interchip_GetAutonomousLevel(void) {
 void Interchip_SetSafetyLevel(uint16_t data) {
   dataTX->safety_level = data;
 }
+*/

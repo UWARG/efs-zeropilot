@@ -11,115 +11,49 @@
 #include "stm32f0xx_hal.h"
 
 char buffer[200]; //buffer for printing
-
+StatusCode UARTinit();
+StatusCode setupPWM(PWMManager &manager);
+StatusCode setupPPM(PPMChannel &ppm);
 void print_ppm_state(char *buffer, PPMChannel &ppm);
 
 int main() {
-	StatusCode status;
-
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
+
+	StatusCode status;
 
 	//set clock sources
 	initialize_system_clock();
 	gpio_init();
-	init_debug(UART_PORT1, true);
 
-	info("\r\n\r\nStarting up...");
-	sprintf(buffer, "Compiled on %s at %s", __DATE__, __TIME__);
-	info(buffer);
-
-	print_reset_state(buffer, get_reset_cause());
-	info(buffer);
-
-	IndependentWatchdog iwdg;
-	status = iwdg.setup(10000);
-	info("Independent Watchdog Status:", status);
-
-	Profiler init;
-	init_profiler(&init);
-	start_profile(&init);
-
-
-//	WindowedWatchdog wwdg;
-//	status = wwdg.setup(3, 10);
-//	info("Window Watchdog Status:", status);
 
 	PWMManager &manager = PWMManager::getInstance();
-	status = manager.setup();
+	status = setupPWM(manager);
 	info("PWMSetup", status);
 
-	manager.channel(1).set(50);
-	manager.channel(2).set(25);
-	manager.channel(3).set(75);
-	manager.channel(4).set(100);
-	manager.channel(5).set(25);
-	manager.channel(6).set(75);
-	manager.channel(7).set(100);
-	manager.channel(8).set(25);
-	manager.channel(9).set(50);
-	manager.channel(10).set(75);
-	manager.channel(11).set(100);
-	manager.channel(12).set(50);
+	status = UARTinit();
+
 
 	PPMChannel ppm;
-	ppm.setNumChannels(8);
-	ppm.setLimits(1, 1000, 2000, 50);
-	status = ppm.setup();
-	ppm.setTimeout(200);
+	status = setupPPM(ppm);
+
 	info("PPM Setup", status);
 
 	GPIOPin led1 = GPIOPin(LED1_GPIO_PORT, LED1_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
 	GPIOPin led2 = GPIOPin(LED2_GPIO_PORT, LED2_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
 	GPIOPin led3 = GPIOPin(LED3_GPIO_PORT, LED3_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
 	GPIOPin buzzer = GPIOPin(BUZZER_GPIO_PORT, BUZZER_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
-//	led1.setup();
-//	led2.setup();
-//	led3.setup();
-//	buzzer.setup();
 	led1.set_state(GPIO_STATE_LOW);
 	led2.set_state(GPIO_STATE_LOW);
 
-	//  Safety_Init();
-	//  Safety_Run();
 
-	UARTSettings port_settings;
-	port_settings.rx_inverted = false;
-	port_settings.timeout = 50;
-	port_settings.stop_bits = 1;
-	port_settings.cts_rts = false;
-	port_settings.parity = UART_NO_PARITY; //double check this?
-	port_settings.baudrate = 115200;
+	while (true) 
+	{
+		led1.set_state(GPIO_STATE_HIGH);
+		led2.set_state(GPIO_STATE_HIGH);
 
-	UARTPort port = UARTPort(UART_PORT2, port_settings);
-
-	status = port.setup();
-	info("UART2 Setup", status);
-	status = port.setupDMA(0, 24);
-	info("UART2 DMA", status);
-
-	uint8_t ubuffer[24];
-
-	size_t bytes_read = 100;
-
-	stop_profile(&init);
-	print_profile_stats("init", buffer, &init);
-	info(buffer);
-
-	init_profiler(&init);
-
-	bool toggle = false;
-	while (true) {
-		start_profile(&init);
-		
-		
-
-
-		stop_profile(&init);
 	}
 }
-
-void readInterchip() {}
 
 void print_ppm_state(char *buffer, PPMChannel &ppm) {
 	int len = sprintf(buffer,
@@ -139,38 +73,54 @@ void print_ppm_state(char *buffer, PPMChannel &ppm) {
 	sprintf(&buffer[len], "PPM Disconnected? : %d\r\n", ppm.is_disconnected(get_system_time()));
 }
 
-void debug()
+StatusCode UARTinit()
 {
-	//code previously included:
-	/*
-	status = port.read_bytes(ubuffer, 24, bytes_read);
+	UARTSettings port_settings;
+	port_settings.rx_inverted = false;
+	port_settings.timeout = 50;
+	port_settings.stop_bits = 1;
+	port_settings.cts_rts = false;
+	port_settings.parity = UART_NO_PARITY; //double check this?
+	port_settings.baudrate = 115200;
 
-		if (bytes_read > 0) {
-			debug_array("array", ubuffer, bytes_read, false);
-			debug_array("array", ubuffer, bytes_read, true);
-		}
+	UARTPort port = UARTPort(UART_PORT2, port_settings);
 
-		print_ppm_state(buffer, ppm);
-		info(buffer);
+	StatusCode status = port.setup();
+	info("UART2 Setup", status);
+	status = port.setupDMA(0, 24);
+	info("UART2 DMA", status);
 
-		if (toggle) {
-			//buzzer.set_state(GPIO_STATE_HIGH);
-			led2.set_state(GPIO_STATE_LOW);
-			toggle = false;
-		} else {
-			//buzzer.set_state(GPIO_STATE_LOW);
-			led2.set_state(GPIO_STATE_HIGH);
-			toggle = true;
-		}
+	uint8_t ubuffer[24];
 
-		sprintf(buffer, "System Time (us): %u", get_system_time());
-		info(buffer);
+	size_t bytes_read = 100;
 
-		delay(1000);
+	return status;
+}
 
-		iwdg.reset_timer();
+StatusCode setupPWM(PWMManager &manager)
+{
+	StatusCode status = manager.setup();
+	manager.channel(1).set(50);
+	manager.channel(2).set(25);
+	manager.channel(3).set(75);
+	manager.channel(4).set(100);
+	manager.channel(5).set(25);
+	manager.channel(6).set(75);
+	manager.channel(7).set(100);
+	manager.channel(8).set(25);
+	manager.channel(9).set(50);
+	manager.channel(10).set(75);
+	manager.channel(11).set(100);
+	manager.channel(12).set(50);
 
-		int len = print_profile_stats("init", buffer, &init);
-		info(buffer);
-		*/
+	return status;
+}
+
+StatusCode setupPPM(PPMChannel &ppm)
+{
+	ppm.setNumChannels(8);
+	ppm.setLimits(1, 1000, 2000, 50);
+	StatusCode status = ppm.setup();
+	ppm.setTimeout(200);
+	return status;
 }
