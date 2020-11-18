@@ -49,7 +49,13 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 /* Includes ------------------------------------------------------------------*/
+
+// Anything specific to the Hal layer or the hardware should be in here so as to not confuse our testing or simulation
+#if !defined(UNIT_TESTING) && !defined(SIMULATION)
+
 #include "stm32f7xx_hal.h"
+
+#endif
 
 /* USER CODE BEGIN Includes */
 #ifdef __cplusplus
