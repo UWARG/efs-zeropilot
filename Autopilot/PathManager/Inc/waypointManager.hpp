@@ -87,7 +87,7 @@ class WaypointManager {
         * @param[in] _Gps_Data currentPosition -> contains the current coordinates, altitude, and heading
         * @param[out] _WaypointManager_Data_Out &Data -> Memory address for a structure that holds the data for the state machine
         */
-        void get_next_directions(_Gps_Data currentPosition, _WaypointManager_Data_Out &Data); 
+        void get_next_directions(_Gps_Data currentPosition, _WaypointManager_Data_Out *Data); 
 
         /**
         * Adds, inserts, updates, or deletes a single waypoint in the waypointBuffer array
