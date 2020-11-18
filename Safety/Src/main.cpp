@@ -110,10 +110,40 @@ int main() {
 
 	bool toggle = false;
 	while (true) {
-
 		start_profile(&init);
+		
+		
 
-		status = port.read_bytes(ubuffer, 24, bytes_read);
+
+		stop_profile(&init);
+	}
+}
+
+void readInterchip() {}
+
+void print_ppm_state(char *buffer, PPMChannel &ppm) {
+	int len = sprintf(buffer,
+					  "CH1 (p, us): %d %lu\r\nCH2 (p, us): %d %lu\r\n"
+					  "CH3 (p, us): %d %lu\r\nCH4 (p, us): %d %lu\r\n"
+					  "CH5 (p, us): %d %lu\r\nCH6 (p, us): %d %lu\r\n"
+					  "CH7 (p, us): %d %lu\r\nCH8 (p, us): %d %lu\r\n",
+					  ppm.get(1), ppm.get_us(1),
+					  ppm.get(2), ppm.get_us(2),
+					  ppm.get(3), ppm.get_us(3),
+					  ppm.get(4), ppm.get_us(4),
+					  ppm.get(5), ppm.get_us(5),
+					  ppm.get(6), ppm.get_us(6),
+					  ppm.get(7), ppm.get_us(7),
+					  ppm.get(8), ppm.get_us(8));
+
+	sprintf(&buffer[len], "PPM Disconnected? : %d\r\n", ppm.is_disconnected(get_system_time()));
+}
+
+void debug()
+{
+	//code previously included:
+	/*
+	status = port.read_bytes(ubuffer, 24, bytes_read);
 
 		if (bytes_read > 0) {
 			debug_array("array", ubuffer, bytes_read, false);
@@ -140,27 +170,7 @@ int main() {
 
 		iwdg.reset_timer();
 
-		stop_profile(&init);
-
 		int len = print_profile_stats("init", buffer, &init);
 		info(buffer);
-	}
-}
-
-void print_ppm_state(char *buffer, PPMChannel &ppm) {
-	int len = sprintf(buffer,
-					  "CH1 (p, us): %d %lu\r\nCH2 (p, us): %d %lu\r\n"
-					  "CH3 (p, us): %d %lu\r\nCH4 (p, us): %d %lu\r\n"
-					  "CH5 (p, us): %d %lu\r\nCH6 (p, us): %d %lu\r\n"
-					  "CH7 (p, us): %d %lu\r\nCH8 (p, us): %d %lu\r\n",
-					  ppm.get(1), ppm.get_us(1),
-					  ppm.get(2), ppm.get_us(2),
-					  ppm.get(3), ppm.get_us(3),
-					  ppm.get(4), ppm.get_us(4),
-					  ppm.get(5), ppm.get_us(5),
-					  ppm.get(6), ppm.get_us(6),
-					  ppm.get(7), ppm.get_us(7),
-					  ppm.get(8), ppm.get_us(8));
-
-	sprintf(&buffer[len], "PPM Disconnected? : %d\r\n", ppm.is_disconnected(get_system_time()));
+		*/
 }
