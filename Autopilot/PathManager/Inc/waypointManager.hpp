@@ -1,5 +1,5 @@
 /**
- * Waypoint Manager Functions and Helpers
+ * Waypoint Manager Methods and Helpers
  * Author: Dhruv Rawat
  * Created: November 2020
  * Last Updaetd: November 2020
@@ -143,8 +143,21 @@ class WaypointManager {
         bool orbiting = false; //When this is true, the plane is orbiting
 
         //Helper Methods
-        void distance_to_next(_Gps_Data currentPosition);                                 // Calculates the shortest distance to the next waypoint (if undergoing line following)
-        void heading_to_next(_Gps_Data currentPosition);                                  // Calculates the desired heading to get to the next waypoint
+        void follow_waypoints(_WaypointData * currentWaypoint, float* position, float heading);                         // Determines which of the methods below to call :))                      
+        void follow_line_segment(_WaypointData * currentWaypoint, float* position, float heading);                      // In the instance where the waypoint after the next is not defined, we continue on the path we are currently on
+        void follow_last_line_segment(_WaypointData * currentWaypoint, float* position, float heading);                 // In the instance where the next waypoint is not defined, follow previously defined path
+        void follow_orbit(float* center, float radius, char direction, float* position, float heading);                 // Makes the plane follow an orbit with defined radius and direction
+        void follow_straight_path(float* waypointDirection, float* targetWaypoint, float* position, float heading);     // Makes a plane follow a straight path (straight line following)
+        float maintain_altitude(_WaypointData* cPath);                                                                  // Makes plane maintain altitude
+        
+        /*
+        * Takes GPS long and lat data and converts it into coordinates (better for calculating headings and stuff)
+        * 
+        * @param long double longitude -> GPS longitide
+        * @param long double latitude -> GPS latitude
+        * @param float* xyCoordinates -> Array that will store the x and y coordinates of the plane
+        */
+        void get_coordinates(long double longitude, long double latitude, float* xyCoordinates); 
         
         int get_waypoint_index_from_id(int waypointId);                                   // If provided a waypoint id, this method finds the element index in the waypointBuffer array
         _WaypointData* initialize_waypoint();                                             // Creates a blank waypoint
