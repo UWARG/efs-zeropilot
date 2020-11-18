@@ -45,6 +45,6 @@ void CoordinatedTurns_Init(void);
 * @param[in]    Input              Input struct containing info about current heading, some other sensor info and desired heading.
 * @param[out]   AttManCommands     Output struct containing commands to be passed down directly to attitude manager.
 */
-void CoordinatedTurns_Compute(CoordinatedTurnInput_t *Input, TurnAttitudeManagerCommands_t *AttManCommands);
+void CoordinatedTurns_Compute(CoordinatedTurnInput_t *Input, CoordinatedTurnAttitudeManagerCommands_t *AttManCommands);
 
 #endif
