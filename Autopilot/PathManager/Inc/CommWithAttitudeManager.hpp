@@ -1,21 +1,23 @@
-#ifndef GET_FROM_PATH_MANAGER_HPP
-#define GET_FROM_PATH_MANAGER_HPP
+#ifndef COMM_WITH_ATTITUDE_MANAGER_HPP
+#define COMM_WITH_ATTITUDE_MANAGER_HPP
 
 //Commands to send to attitude manager.
-struct CommandsForAM{
+typedef struct CommandsForAM{
 	float roll,pitch,yaw;	// commanded orientation (radians)
 	float airspeed;			// commanded airspeed (m/s)
-};
+} CommandsForAM;
 
 //Data to receive from attitude manager.
-struct AttitudeData{
+typedef struct AttitudeData{
 	float roll,pitch,yaw;	// current orientation (radians)
 	float airspeed;			// current airspeed (m/s)
-};
+	float accX, accY, accZ; // accelerometer data
+	float gyrX, gyrY, gyrZ; // gyroscope data
+} AttitudeData;
 
 /**
  * Sends commands to the attitude manager.
- * @param[out]   Commands   Pointer to struct with commands.
+ * @param[in]   Commands   Pointer to struct with commands.
  */
 void SendCommandsForAM(CommandsForAM *Commands);
 
