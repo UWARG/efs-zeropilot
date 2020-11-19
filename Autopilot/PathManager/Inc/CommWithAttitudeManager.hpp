@@ -1,3 +1,8 @@
+/**
+ * Communicates with the attitude manager to send commands and receive useful data.
+ * Author: Anthony Bertnyk
+ */
+
 #ifndef COMM_WITH_ATTITUDE_MANAGER_HPP
 #define COMM_WITH_ATTITUDE_MANAGER_HPP
 
