@@ -39,7 +39,7 @@ WaypointManager::WaypointManager(_PathData *initialWaypoints, int numberOfWaypoi
 }
 
 
-/*** UNIVERSAL HELPERS ***/
+/*** UNIVERSAL HELPERS (universal to this file, ofc) ***/
 
 
 int WaypointManager::get_waypoint_index_from_id(int waypointId) {
@@ -61,16 +61,18 @@ void WaypointManager::get_coordinates(long double longitude, long double latitud
 }
 
 float WaypointManager::get_distance(long double lat1, long double lon1, long double lat2, long double lon2) {
-    long double dLat = deg2rad(lat2 - lat1);
-    long double dLon = deg2rad(lon2 - lon1);
+    // Longitude and latitude stored in degree format.
+    
+    // This calculation uses the Haversine formula
+    long double change_in_Lat = deg2rad(lat2 - lat1); //Converts change in latitude to radians
+    long double change_in_lon = deg2rad(lon2 - lon1); //Converts change in longitude to radians
 
-    float a = sin(dLat / 2) * sin(dLat / 2) + cos(deg2rad(lat1)) * cos(deg2rad(lat2)) * sin(dLon / 2) * sin(dLon / 2);
+    double haversine_ans = sin(change_in_Lat / 2) * sin(change_in_Lat / 2) + cos(deg2rad(lat1)) * cos(deg2rad(lat2)) * sin(change_in_lon / 2) * sin(change_in_lon / 2);
 
-    if ((dLat >= 0 && dLon >=0)||(dLat < 0 && dLon < 0)){
-        return EARTH_RADIUS * (2 * atan2(sqrt(a),sqrt(1 - a))) * 1000;
-    }
-    else {
-         return EARTH_RADIUS * (2 * atan2(sqrt(a),sqrt(1 - a))) * -1000;
+    if ((change_in_Lat >= 0 && change_in_lon >=0)||(change_in_Lat < 0 && change_in_lon < 0)){ 
+        return EARTH_RADIUS * (2 * atan2(sqrt(haversine_ans),sqrt(1 - haversine_ans))) * 1000; //Multiply by 1000 to convert to metres
+    } else { // If result is negative. 
+         return EARTH_RADIUS * (2 * atan2(sqrt(haversine_ans),sqrt(1 - haversine_ans))) * -1000;
     }
 }
 
@@ -110,7 +112,6 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
     
     // Not setting time of data yet bc I think we need to come up with a way to get it???
 }
-
 
 void WaypointManager::start_circling(float radius, int direction, bool cancelTurning) {
     if (!cancelTurning) {
