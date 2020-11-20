@@ -13,8 +13,6 @@
 #define MAX_BANK_ANGLE 30    // In degrees. This value limits how fast we can achieve a desired heading change. (See confluence docs on this module.)
                              // Increasing it means we can make faster turns, but makes the aircraft harder to control.
 
-#define MAX_RUDDER_ANGLE 45 // In degrees. This should not be a user set thing, rather it is a physical constraint of the control surfaces of the aircraft.
-
 typedef struct
 {
     float currentHeading;    // degrees
