@@ -21,8 +21,8 @@
 #define MAX_PATH_APPROACH_ANGLE PI/2
 
 //Basic Mathematical Conversions
-#define deg2rad(DEG) ((DEG) * PI/180.0)
-#define rad2deg(RAD) ((RAD) * 180.0/PI)
+#define deg2rad(angle_in_degrees) ((angle_in_degrees) * PI/180.0)
+#define rad2deg(angle_in_radians) ((angle_in_radians) * 180.0/PI)
 
 //Waypoint Types
 #define DEFAULT_WAYPOINT 0 // Used to navigate flight path
@@ -142,14 +142,26 @@ class WaypointManager {
          */ 
         void head_home();
 
+        /**
+         * Called by state machine to create new _PathData objects. This moves all heap allocation and ID management to the waypoint manager, giving the state machine less work
+         * 
+         * First method returns an empty structure with only the ID initialized
+         * Second method initializes a regular waypoint
+         * Third method initializes a "hold" waypoint
+         * 
+         * Parameters have the same name as their corresponding parameters in the _Pathdata struct.
+         */ 
+        _PathData* initialize_waypoint();                                                                                              // Creates a blank waypoint
+        _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, int waypointType);                   // Initialize a regular waypoint
+        _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, int waypointType, float turnRadius); // Initialize a "hold" waypoint
+
     private:
         //Stores waypoints
-        _PathData waypointBuffer[PATH_BUFFER_SIZE]; //Stores all waypoints
+        _PathData* waypointBuffer[PATH_BUFFER_SIZE]; //Stores all waypoints
         _WaypointBufferStatus waypointBufferStatus[PATH_BUFFER_SIZE] = {FREE}; //Keeps status of elements in waypointBuffer array
-        int numWaypoints;
-        int lastFilledIndex; // Last index that was filled in waypointBuffer array
-        int currentWaypointId; // Last waypoint that was used (ID)
-        int currentIndex; // Last index that was used
+        int numWaypoints;   
+        int nextFilledIndex; // Index of the array that will be initialized next
+        int nextAssignedId; // ID of the next waypoint that will be initialized
         
         //Home base
         _PathData homeBase;
@@ -175,7 +187,7 @@ class WaypointManager {
         void follow_waypoints(_PathData * currentWaypoint, float* position, float heading);                               // Determines which of the methods below to call :))                      
         void follow_line_segment(_PathData * currentWaypoint, float* position, float heading);                            // In the instance where the waypoint after the next is not defined, we continue on the path we are currently on
         void follow_last_line_segment(_PathData * currentWaypoint, float* position, float heading);                       // In the instance where the next waypoint is not defined, follow previously defined path
-        void follow_orbit(float* center, float radius, char direction, float* position, float heading);                   // Makes the plane follow an orbit with defined radius and direction
+        void follow_orbit(float* orbitCenter, float radius, char direction, float* position, float heading);                   // Makes the plane follow an orbit with defined radius and direction
         void follow_straight_path(float* waypointDirection, float* targetWaypoint, float* position, float heading);       // Makes a plane follow a straight path (straight line following)
         float maintain_altitude(_PathData* currentPath);                                                                  // Makes plane maintain altitude
 
@@ -214,9 +226,8 @@ class WaypointManager {
         
         int get_waypoint_index_from_id(int waypointId);                                   // If provided a waypoint id, this method finds the element index in the waypointBuffer array
 
-        _PathData* initialize_waypoint();                                                 // Creates a blank waypoint
-        _PathData* initialize_waypoint_and_next();                                        // Creates a blank waypoint with the next waypoint defined
-        void append_waypoint(_PathData* newWaypoint);                                     // Adds a waypoint to the first free element in the waypointBuffer (array)
+        // _PathData* initialize_waypoint_and_next();                                        // Creates a blank waypoint with the next waypoint defined
+        void append_waypoint(_PathData* newWaypoint, int num);                                     // Adds a waypoint to the first free element in the waypointBuffer (array)
         void insert_new_waypoint(_PathData* newWaypoint, int previousId, int nextId);     // Inserts new waypoint in between the specified waypoints (identified using the waypoint IDs)
         void delete_waypoint(int waypointId);                                             // Deletes the waypoint with the specified ID
         void update_waypoint(_PathData* updatedWaypoint, int waypointId);                 // Updates the waypoint with the specified ID

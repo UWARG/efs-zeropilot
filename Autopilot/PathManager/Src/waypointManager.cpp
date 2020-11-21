@@ -17,6 +17,8 @@ WaypointManager::WaypointManager(_PathData *initialWaypoints, int numberOfWaypoi
     homeBase = *currentLocation;
 
     numWaypoints = numberOfWaypoints;
+    nextFilledIndex = 0;
+    nextAssignedId = 0;
     
     // Initializes the waypointBuffer array
     for (int i = 0; i < numWaypoints; i++) {
@@ -25,18 +27,64 @@ WaypointManager::WaypointManager(_PathData *initialWaypoints, int numberOfWaypoi
             initialWaypoints[i].next = &initialWaypoints[i+1]; // Passes address so any updates in initialWaypoints[i+1] is reflected in initialWaypoints[i].next
         } else if (i == numWaypoints - 1) { // If last waypoint, link to previous one only
             initialWaypoints[i].previous = &initialWaypoints[i-1];
+            nextAssignedId = initialWaypoints[i].waypointId + 1; // Gets last assigned ID and increments by 1 :))
         } else {
             initialWaypoints[i].next = &initialWaypoints[i+1];
             initialWaypoints[i].previous = &initialWaypoints[i-1];
         }
         
-        waypointBuffer[i] = initialWaypoints[i]; // Sets the element in the waypointBuffer
+        waypointBuffer[i] = &initialWaypoints[i]; // Sets the element in the waypointBuffer
         waypointBufferStatus[i] = FULL;
-        lastFilledIndex = i;
+        nextFilledIndex = i + 1;
     }
 
     errorStatus = WAYPOINT_SUCCESS;
 }
+
+_PathData* WaypointManager::initialize_waypoint() {
+    _PathData* waypoint = new _PathData(); // Create new waypoint in the heap
+    waypoint->waypointId = nextAssignedId++; // Set ID and increment
+    // Set next and previous waypoints to empty for now
+    waypoint->next = 0; 
+    waypoint->previous = 0;
+    return waypoint;
+}
+
+_PathData* WaypointManager::initialize_waypoint(long double longitude, long double latitude, int altitude, int waypointType) {
+    _PathData* waypoint = new _PathData(); // Create new waypoint in the heap
+    waypoint->waypointId = nextAssignedId++; // Set ID and increment
+    waypoint->latitude = latitude;
+    waypoint->longitude = longitude;
+    waypoint->altitude = altitude;
+    waypoint->waypointType = waypointType;
+    // Set next and previous waypoints to empty for now
+    waypoint->next = 0; 
+    waypoint->previous = 0;
+    return waypoint;
+}
+
+_PathData* WaypointManager::initialize_waypoint(long double longitude, long double latitude, int altitude, int waypointType, float turnRadius) {
+    _PathData* waypoint = new _PathData(); // Create new waypoint in the heap
+    waypoint->waypointId = nextAssignedId++; // Set ID and increment
+    waypoint->latitude = latitude;
+    waypoint->longitude = longitude;
+    waypoint->altitude = altitude;
+    waypoint->waypointType = waypointType;
+    waypoint->turnRadius = turnRadius;
+    // Set next and previous waypoints to empty for now
+    waypoint->next = 0; 
+    waypoint->previous = 0;
+    return waypoint;
+}
+
+// _PathData* WaypointManager::initialize_waypoint_and_next() {
+//     _PathData* waypoint = initialize_waypoint();
+//     // Link waypoints together
+//     waypoint->next = initialize_waypoint();
+//     waypoint->next->previous = waypoint; 
+//     return waypoint;
+// }
+
 
 
 /*** UNIVERSAL HELPERS (universal to this file, ofc) ***/
@@ -47,7 +95,7 @@ int WaypointManager::get_waypoint_index_from_id(int waypointId) {
         if(waypointBufferStatus[i] = FREE) { // If array is empty at the specified index, waypoint is not in buffer
             return -1; 
         }
-        if(waypointBuffer[i].waypointId == waypointId) { // If waypoint is found, return index
+        if(waypointBuffer[i]->waypointId == waypointId) { // If waypoint is found, return index
             return i;
         }
     }
@@ -61,18 +109,17 @@ void WaypointManager::get_coordinates(long double longitude, long double latitud
 }
 
 float WaypointManager::get_distance(long double lat1, long double lon1, long double lat2, long double lon2) {
-    // Longitude and latitude stored in degree format.
-    
+    // Longitude and latitude stored in degrees
     // This calculation uses the Haversine formula
     long double change_in_Lat = deg2rad(lat2 - lat1); //Converts change in latitude to radians
     long double change_in_lon = deg2rad(lon2 - lon1); //Converts change in longitude to radians
 
-    double haversine_ans = sin(change_in_Lat / 2) * sin(change_in_Lat / 2) + cos(deg2rad(lat1)) * cos(deg2rad(lat2)) * sin(change_in_lon / 2) * sin(change_in_lon / 2);
+    double haversine_ans = sin(change_in_Lat / 2) * sin(change_in_Lat / 2) + cos(deg2rad(lat1)) * cos(deg2rad(lat2)) * sin(change_in_lon / 2) * sin(change_in_lon / 2); // In kilometers
 
     if ((change_in_Lat >= 0 && change_in_lon >=0)||(change_in_Lat < 0 && change_in_lon < 0)){ 
         return EARTH_RADIUS * (2 * atan2(sqrt(haversine_ans),sqrt(1 - haversine_ans))) * 1000; //Multiply by 1000 to convert to metres
     } else { // If result is negative. 
-         return EARTH_RADIUS * (2 * atan2(sqrt(haversine_ans),sqrt(1 - haversine_ans))) * -1000;
+        return EARTH_RADIUS * (2 * atan2(sqrt(haversine_ans),sqrt(1 - haversine_ans))) * -1000;
     }
 }
 
@@ -131,7 +178,30 @@ void WaypointManager::head_home() {
     } else {
         goingHome = false;
     }
-    
+}
+
+void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* position, float heading) {
+
+}   
+
+void WaypointManager::follow_line_segment(_PathData * currentWaypoint, float* position, float heading) {
+
+}
+
+void WaypointManager::follow_last_line_segment(_PathData * currentWaypoint, float* position, float heading) {
+
+}
+
+void WaypointManager::follow_orbit(float* orbitCenter, float radius, char direction, float* position, float heading) {
+
+}
+
+void WaypointManager::follow_straight_path(float* waypointDirection, float* targetWaypoint, float* position, float heading) {
+
+}
+
+float WaypointManager::maintain_altitude(_PathData* currentPath) {
+
 }
 
 
@@ -164,20 +234,91 @@ _WaypointStatus WaypointManager::update_path_nodes(_PathData* waypoint, _Waypoin
 void WaypointManager::clear_path_nodes() {
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         if (waypointBufferStatus[i]) { // If array element has a waypoint in it
-            int destroyedId = destroy_waypoint(&waypointBuffer[i]); // Remove waypoint from the heap
+            int destroyedId = destroy_waypoint(waypointBuffer[i]); // Remove waypoint from the heap
         }
         waypointBufferStatus[i] = FREE; // Set array element free
-        waypointBuffer[i] = _PathData(); //Set buffer element to empty struct
+        waypointBuffer[i] = 0; //Set buffer element to empty struct
     }
     // Resets buffer status variables
     numWaypoints = 0; 
-    lastFilledIndex = 0; 
-    currentWaypointId = 0;
-    currentIndex = 0;
+    nextFilledIndex = 0; 
+    nextAssignedId = 0;
 }
 
 int WaypointManager::destroy_waypoint(_PathData *waypoint) {
     int destroyedId = waypoint->waypointId;
-    delete waypoint;
+    delete waypoint; // Free heap memory
     return destroyedId;
+}
+
+int WaypointManager::append_waypoint(_PathData* newWaypoint, int num) {
+    int previousIndex = 0;
+    
+    if (num > 1) { // If more than one waypoint is being appended
+        for(int i = 0; i < num; i++) { // Iterates over all _PathData object
+            previousIndex = nextFilledIndex - 1;
+            
+            waypointBuffer[nextFilledIndex] = newWaypoint;
+            numWaypoints++;
+            
+            if (previousIndex != -1) { //If we are not initializing the first element
+                waypointBuffer[nextFilledIndex]->previous = waypointBuffer[previousIndex]; // Links previous node to current one
+
+                // Confirms this waypoint is not a repeat of the previous waypoint
+                if (waypointBuffer[previousIndex]->latitude == waypointBuffer[nextFilledIndex]->latitude && waypointBuffer[previousIndex]->longitude == waypointBuffer[nextFilledIndex]->longitude) {
+                    return UNDEFINED_FALIURE;
+                }
+
+                waypointBuffer[previousIndex]->next = waypointBuffer[nextFilledIndex]; // Links previous waypoint to current one
+            }
+
+            nextFilledIndex++;
+        }
+
+    } else { // If only one waypoint is sent in
+        previousIndex = nextFilledIndex - 1;
+        waypointBuffer[nextFilledIndex] = newWaypoint;
+
+ 
+        if (previousIndex == -1) { //If we are initializing the first element
+            nextFilledIndex++;
+            numWaypoints++;
+
+            return WAYPOINT_SUCCESS;
+        }
+
+        waypointBuffer[nextFilledIndex]->previous = waypointBuffer[previousIndex];
+
+        // Confirms this waypoint is not a repeat of the previous waypoint
+        if (waypointBuffer[previousIndex]->latitude == waypointBuffer[nextFilledIndex]->latitude && waypointBuffer[previousIndex]->longitude == waypointBuffer[nextFilledIndex]->longitude) {
+            return UNDEFINED_FALIURE;
+        }
+
+        waypointBuffer[previousIndex]->next = waypointBuffer[nextFilledIndex];
+
+        nextFilledIndex++;
+        numWaypoints++;
+    }
+
+    return WAYPOINT_SUCCESS;
+}
+
+ void WaypointManager::insert_new_waypoint(_PathData* newWaypoint, int previousId, int nextId) {
+
+}
+
+void WaypointManager::delete_waypoint(int waypointId) {
+
+}
+
+void WaypointManager::update_waypoint(_PathData* updatedWaypoint, int waypointId) {
+
+}
+
+
+/*** MISCELLANEOUS ***/
+
+
+_PathData* WaypointManager::get_waypoint_buffer() {
+    return *waypointBuffer;
 }
