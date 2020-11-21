@@ -41,7 +41,7 @@ typedef struct _WaypointManager_Data_In {
 };
 
 // Stores error codes for the waypoint manager
-enum _WaypointStatus {WAYPOINT_SUCCESS = 0, WAYPOINT_UNDEFINED, INVALID_PARAMETER, UNDEFINED_FALIURE};
+enum _WaypointStatus {WAYPOINT_SUCCESS = 0, WAYPOINT_UNDEFINED, INVALID_PARAMETER, UNDEFINED_FAILURE};
 
 // Used in the waypointBufferStatus array to signal which elements are free
 enum _WaypointBufferStatus {FREE = 0, FULL};
@@ -227,10 +227,10 @@ class WaypointManager {
         int get_waypoint_index_from_id(int waypointId);                                   // If provided a waypoint id, this method finds the element index in the waypointBuffer array
 
         // _PathData* initialize_waypoint_and_next();                                        // Creates a blank waypoint with the next waypoint defined
-        void append_waypoint(_PathData* newWaypoint, int num);                                     // Adds a waypoint to the first free element in the waypointBuffer (array)
-        void insert_new_waypoint(_PathData* newWaypoint, int previousId, int nextId);     // Inserts new waypoint in between the specified waypoints (identified using the waypoint IDs)
-        void delete_waypoint(int waypointId);                                             // Deletes the waypoint with the specified ID
-        void update_waypoint(_PathData* updatedWaypoint, int waypointId);                 // Updates the waypoint with the specified ID
+        _WaypointStatus append_waypoint(_PathData* newWaypoint, int num);                                     // Adds a waypoint to the first free element in the waypointBuffer (array)
+        _WaypointStatus insert_new_waypoint(_PathData* newWaypoint, int previousId, int nextId);     // Inserts new waypoint in between the specified waypoints (identified using the waypoint IDs)
+        _WaypointStatus delete_waypoint(int waypointId);                                             // Deletes the waypoint with the specified ID
+        _WaypointStatus update_waypoint(_PathData* updatedWaypoint, int waypointId);                 // Updates the waypoint with the specified ID
 };
 
 #endif
