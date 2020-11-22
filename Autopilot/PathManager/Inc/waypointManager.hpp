@@ -227,8 +227,8 @@ class WaypointManager {
         int get_waypoint_index_from_id(int waypointId);                                   // If provided a waypoint id, this method finds the element index in the waypointBuffer array
 
         // _PathData* initialize_waypoint_and_next();                                        // Creates a blank waypoint with the next waypoint defined
-        _WaypointStatus append_waypoint(_PathData* newWaypoint, int num);                                     // Adds a waypoint to the first free element in the waypointBuffer (array)
-        _WaypointStatus insert_new_waypoint(_PathData* newWaypoint, int previousId, int nextId);     // Inserts new waypoint in between the specified waypoints (identified using the waypoint IDs)
+        _WaypointStatus append_waypoint(_PathData* newWaypoint, int num);                            // Adds a waypoint to the first free element in the waypointBuffer (array)
+        _WaypointStatus insert_new_waypoint(_PathData* newWaypoint, int previousId, int nextId);     // Inserts new waypoint in between the specified waypoints (identified using the waypoint IDs). Note, you cannot insert a waypoint to waypointBuffer[0] or waypointBuffer[PATH_BUFFER_SIZE-1]
         _WaypointStatus delete_waypoint(int waypointId);                                             // Deletes the waypoint with the specified ID
         _WaypointStatus update_waypoint(_PathData* updatedWaypoint, int waypointId);                 // Updates the waypoint with the specified ID
 };
