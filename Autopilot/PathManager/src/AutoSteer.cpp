@@ -2,7 +2,7 @@
  * Author: Anthony Berbari
  */
 
-#include "CoordinatedTurns.hpp"
+#include "AutoSteer.hpp"
 #include "PID.hpp"
 
 #include <math.h>
@@ -22,6 +22,8 @@
 static PIDController bankPid{1, 0, 0, 0, -MAX_BANK_ANGLE, MAX_BANK_ANGLE}; // PID gains need to be tuned
 static PIDController rudderPid{1, 0, 0, 0, -100, 100}; // PID gains need to be tuned
 
+static PIDController pitchPid{1, 0, 0, 0, -MAX_PITXH_ANGLE, MAX_PITCH_ANGLE}; // PID gains need to be tuned
+
 /***********************************************************************************************************************
  * Prototypes
  **********************************************************************************************************************/
@@ -32,12 +34,12 @@ static float GetRudderPercent(float bankAngle);
  * Code
  **********************************************************************************************************************/
 
-void CoordinatedTurns_Init(void)
+void AutoSteer_Init(void)
 {
 
 }
 
-void CoordinatedTurns_Compute(CoordinatedTurnInput_t *Input, CoordinatedTurnAttitudeManagerCommands_t *AttManCommands)
+void AutoSteer_ComputeCoordinatedTurn(CoordinatedTurnInput_t *Input, CoordinatedTurnAttitudeManagerCommands_t *AttManCommands)
 {
 
     float bankAngle = bankPid.execute(Input->desiredHeading, Input->currentHeading);
@@ -48,10 +50,20 @@ void CoordinatedTurns_Compute(CoordinatedTurnInput_t *Input, CoordinatedTurnAtti
 
     float rudderPercent = rudderSetPoint + rudderCorrection;
 
-    AttManCommands->desiredRoll = DEG_TO_RAD(bankAngle);
-    AttManCommands->desiredRudderPosition = rudderPercent;
+    AttManCommands->requiredRoll = DEG_TO_RAD(bankAngle);
+    AttManCommands->requiredRudderPosition = rudderPercent;
 
 }
+
+void AutoSteer_ComputeAltitudeAndAirspeed(AltitudeAirspeedInput_t *Input, AltitudeAirspeedCommands_t *AttManCommands)
+{
+    float pitchAngle = pitchPid.execute(Input->desiredAltitude, Input->currentAltitude);
+
+    AttManCommands->requiredPitch = DEG_TO_RAD(pitchAngle);
+    AttManCommands->requiredAirspeed = CRUISING_SPEED;      // a simple constant to start with. As things get more complex, circumstances will demand variable airspeeds.
+
+}
+
 
 static float GetRudderAngle(float bankAngle)
 {
