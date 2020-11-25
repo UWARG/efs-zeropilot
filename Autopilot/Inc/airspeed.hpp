@@ -84,4 +84,9 @@ class dummyairspeed: public airspeed{
 
 };
 
+
+#ifdef UNIT_TESTING
+#include "airspeed_Mock.hpp"
+#endif
+
 #endif
