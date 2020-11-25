@@ -7,14 +7,48 @@
 
 #include "../Inc/waypointManager.hpp"
 
+#define ORBIT_FOLLOWING 0
+#define LINE_FOLLOWING 1
+
+//Constants
+#define EARTH_RADIUS 6378.137
+#define MAX_PATH_APPROACH_ANGLE M_PI/2
+
+//Basic Mathematical Conversions
+#define deg2rad(angle_in_degrees) ((angle_in_degrees) * M_PI/180.0)
+#define rad2deg(angle_in_radians) ((angle_in_radians) * 180.0/M_PI)
+
+//Waypoint Types
+#define DEFAULT_WAYPOINT 0 // Used to navigate flight path
+#define WAYPOINT_USED 1 // Used by the waypint manager to signal that a waypoint has been used
+#define HOLD_WAYPOINT 2 // Circle
+
+// Latitude and longitude of starting area... will need to change accordingly
+#define RELATIVE_LATITUDE 43.473004
+#define RELATIVE_LONGITUDE -80.539678
+
 
 /*** INITIALIZATION ***/
 
+
 WaypointManager::WaypointManager() {
     nextAssignedId = 0;
+
+    // Sets boolean variables
+    inHold = false;
+    orbiting = false; 
+    goingHome = false;
+    dataIsNew = false;
 }
 
-void WaypointManager::initialize_waypoint_manager(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData *currentLocation) {
+_WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData *currentLocation) {
+    
+    // The waypointBuffer array must be empty before we initialize the flight path
+    if (numWaypoints != 0) {
+        errorStatus = UNDEFINED_FAILURE;
+        return errorStatus;
+    }
+
     homeBase = *currentLocation;
 
     numWaypoints = numberOfWaypoints;
@@ -31,7 +65,9 @@ void WaypointManager::initialize_waypoint_manager(_PathData ** initialWaypoints,
     for (int i = 0; i < numWaypoints; i++) {
         if (i == 0) { // If first waypoint, link to next one only
             waypointBuffer[i]->next = waypointBuffer[i+1];
+            waypointBuffer[i]->previous = NULL;
         } else if (i == numWaypoints - 1) { // If last waypoint, link to previous one only
+            waypointBuffer[i]->next = NULL;
             waypointBuffer[i]->previous = waypointBuffer[i-1];
         } else {
             waypointBuffer[i]->next = waypointBuffer[i+1];
@@ -40,14 +76,51 @@ void WaypointManager::initialize_waypoint_manager(_PathData ** initialWaypoints,
     }
 
     errorStatus = WAYPOINT_SUCCESS;
+    return errorStatus;
+}
+
+_WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints) {
+
+    // The waypointBuffer array must be empty before we initialize the flight path
+    if (numWaypoints != 0) {
+        errorStatus = UNDEFINED_FAILURE;
+        return errorStatus;
+    }
+
+    numWaypoints = numberOfWaypoints;
+    nextFilledIndex = 0;
+
+    // Initializes the waypointBuffer array
+    for (int i = 0; i < numWaypoints; i++) {
+        waypointBuffer[i] = initialWaypoints[i]; // Sets the element in the waypointBuffer
+        waypointBufferStatus[i] = FULL;
+        nextFilledIndex = i + 1;
+    }
+
+    // Links waypoints together
+    for (int i = 0; i < numWaypoints; i++) {
+        if (i == 0) { // If first waypoint, link to next one only
+            waypointBuffer[i]->next = waypointBuffer[i+1];
+            waypointBuffer[i]->previous = NULL;
+        } else if (i == numWaypoints - 1) { // If last waypoint, link to previous one only
+            waypointBuffer[i]->next = NULL;
+            waypointBuffer[i]->previous = waypointBuffer[i-1];
+        } else {
+            waypointBuffer[i]->next = waypointBuffer[i+1];
+            waypointBuffer[i]->previous = waypointBuffer[i-1];
+        }
+    }
+
+    errorStatus = WAYPOINT_SUCCESS;
+    return errorStatus;
 }
 
 _PathData* WaypointManager::initialize_waypoint() {
     _PathData* waypoint = new _PathData; // Create new waypoint in the heap
     waypoint->waypointId = nextAssignedId++; // Set ID and increment
     // Set next and previous waypoints to empty for now
-    waypoint->next = 0;
-    waypoint->previous = 0;
+    waypoint->next = NULL;
+    waypoint->previous = NULL;
 
     return waypoint;
 }
@@ -61,8 +134,8 @@ _PathData* WaypointManager::initialize_waypoint(long double longitude, long doub
     waypoint->altitude = altitude;
     waypoint->waypointType = waypointType;
     // Set next and previous waypoints to empty for now
-    waypoint->next = 0;
-    waypoint->previous = 0;
+    waypoint->next = NULL;
+    waypoint->previous = NULL;
 
     return waypoint;
 }
@@ -77,8 +150,8 @@ _PathData* WaypointManager::initialize_waypoint(long double longitude, long doub
     waypoint->waypointType = waypointType;
     waypoint->turnRadius = turnRadius;
     // Set next and previous waypoints to empty for now
-    waypoint->next = 0;
-    waypoint->previous = 0;
+    waypoint->next = NULL;
+    waypoint->previous = NULL;
 
     return waypoint;
 }
@@ -317,9 +390,9 @@ _WaypointStatus WaypointManager::delete_waypoint(int waypointId) {
 
     // Links previous and next buffers together
     if (waypointIndex == 0) { //First element
-        waypointBuffer[waypointIndex + 1]->previous = 0;
+        waypointBuffer[waypointIndex + 1]->previous = NULL;
     } else if (waypointIndex == PATH_BUFFER_SIZE - 1 || waypointBufferStatus[waypointIndex+1] == FREE) { // Last element
-        waypointBuffer[waypointIndex - 1]->next = 0;
+        waypointBuffer[waypointIndex - 1]->next = NULL;
     } else if (waypointBufferStatus[waypointIndex + 1] == FULL){ // Ensures that the next index is
         waypointBuffer[waypointIndex-1]->next = waypointBuffer[waypointIndex+1];
         waypointBuffer[waypointIndex+1]->previous = waypointBuffer[waypointIndex-1];

@@ -12,27 +12,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define ORBIT_FOLLOWING 0
-#define LINE_FOLLOWING 1
 
-//Constants
-#define PI 3.14159265
-#define EARTH_RADIUS 6378.137
 #define PATH_BUFFER_SIZE 100
-#define MAX_PATH_APPROACH_ANGLE PI/2
-
-//Basic Mathematical Conversions
-#define deg2rad(angle_in_degrees) ((angle_in_degrees) * PI/180.0)
-#define rad2deg(angle_in_radians) ((angle_in_radians) * 180.0/PI)
-
-//Waypoint Types
-#define DEFAULT_WAYPOINT 0 // Used to navigate flight path
-#define WAYPOINT_USED 1 // Used by the waypint manager to signal that a waypoint has been used
-#define HOLD_WAYPOINT 2 // Circle
-
-// Latitude and longitude of starting area... will need to change accordingly
-#define RELATIVE_LATITUDE 43.473004
-#define RELATIVE_LONGITUDE -80.539678
 
 typedef struct {
     long double latitude;
@@ -84,6 +65,9 @@ typedef struct {
 
 class WaypointManager {
 public:
+
+    WaypointManager(); // Call this to get an instance of the class
+
     /**
     * Constructor for this class
     *
@@ -91,8 +75,8 @@ public:
     * @param[in] int numberOfWaypoints -> Number of waypoints being initialized in the waypointBuffer array
     * @param[in] _PathData* currentLocation -> Home base.
     */
-    WaypointManager(); // Call this to get an instance of the class
-    void initialize_waypoint_manager(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData *currentLocation); // Call this to set the parameters
+    _WaypointStatus initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData *currentLocation); // Sets flight path and home base
+    _WaypointStatus initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints);                             // Sets flight path
 
     /**
     * Updates the _WaypointManager_Data_Out structure with new values.
@@ -120,9 +104,14 @@ public:
     void clear_path_nodes();
 
     /**
-    * Returns the waypointBuffer array if requested
+    * @return the waypointBuffer array if requested
     */
     _PathData** get_waypoint_buffer();
+
+    /**
+    * @return the value of the waypointBufferStatus array at a specified index.
+    * This can be used by the state machine to check if the waypointBuffer array is initialized at a specific index when iterating over it :))
+    */
     _WaypointBufferStatus get_status_of_index(int index);
 
     /**
@@ -179,15 +168,15 @@ private:
     long double desiredLatitude;
     long double desiredLongitude;
     _WaypointStatus errorCode;
-    bool dataIsNew = false;
+    bool dataIsNew;
 
     //Status variables
-    bool goingHome = false;     // This is set to true when the head_home() function is called.
+    bool goingHome;     // This is set to true when the head_home() function is called.
     _WaypointStatus errorStatus;
-    bool inHold = false; // Set to true when start_circling() is called
-    int turnDirection = 0; // 1 for CW, 2 for CCW
+    bool inHold; // Set to true when start_circling() is called
+    int turnDirection; // 1 for CW, 2 for CCW
     float turnRadius;
-    bool orbiting = false; //When this is true, the plane is orbiting
+    bool orbiting; //When this is true, the plane is orbiting
 
     //Helper Methods
     void follow_waypoints(_PathData * currentWaypoint, float* position, float heading);                               // Determines which of the methods below to call :))
@@ -216,15 +205,6 @@ private:
      */
     float get_distance(long double lat1, long double lon1, long double lat2, long double lon2);
 
-    // /**
-    //  * Links a waypoint to the other waypoints in the previous and next waypoint
-    //  *
-    //  * @param[out] _PathData * toLink -> Waypoint whose next and previous parameters will be updated
-    //  * @param[in] int typeOfLink -> 1 = first waypoint, 2 = last waypoint, 0 means regular waypoint
-    //  * @param[out] _PathData * prev, _PathData *next -> previous and next waypoints
-    //  */
-    // _WaypointStatus link_waypoints(_PathData * toLink, int typeOfLink, _PathData * prev, _PathData *next);
-
     /**
      * Removes waypoint from the heap
      */
@@ -232,7 +212,6 @@ private:
 
     int get_waypoint_index_from_id(int waypointId);                                   // If provided a waypoint id, this method finds the element index in the waypointBuffer array
 
-    // _PathData* initialize_waypoint_and_next();                                        // Creates a blank waypoint with the next waypoint defined
     _WaypointStatus append_waypoint(_PathData* newWaypoint);                            // Adds a waypoint to the first free element in the waypointBuffer (array)
     _WaypointStatus insert_new_waypoint(_PathData* newWaypoint, int previousId, int nextId);     // Inserts new waypoint in between the specified waypoints (identified using the waypoint IDs). Note, you cannot insert a waypoint to waypointBuffer[0] or waypointBuffer[PATH_BUFFER_SIZE-1]
     _WaypointStatus delete_waypoint(int waypointId);                                             // Deletes the waypoint with the specified ID

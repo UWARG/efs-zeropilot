@@ -175,7 +175,7 @@ int main(void) {
     std::cout << "PathData objects created\n\nInitializing waypointManager" << std::endl;
 
     // Initializes waypint maanger with the flight path
-    w->initialize_waypoint_manager(initialPaths, numPaths, homeBase);
+    w->initialize_flight_path(initialPaths, numPaths, homeBase);
 
 
     std::cout << "-\n-\n-\n-\nOriginal Array:\n-\n-\n-\n-" << std::endl;
