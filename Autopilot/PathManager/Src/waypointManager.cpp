@@ -49,7 +49,7 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
         return errorStatus;
     }
 
-    homeBase = *currentLocation;
+    homeBase = currentLocation;
 
     numWaypoints = numberOfWaypoints;
     nextFilledIndex = 0;
@@ -468,5 +468,9 @@ _PathData ** WaypointManager::get_waypoint_buffer() {
 
 _WaypointBufferStatus WaypointManager::get_status_of_index(int index) {
     return waypointBufferStatus[index];
+}
+
+_PathData * WaypointManager::get_home_base() {
+    return homeBase;
 }
 

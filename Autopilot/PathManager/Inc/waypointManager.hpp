@@ -114,6 +114,8 @@ public:
     */
     _WaypointBufferStatus get_status_of_index(int index);
 
+    _PathData * get_home_base();
+
     /**
      * Called if user wants the plane to start circling
      *
@@ -159,7 +161,7 @@ private:
     int nextAssignedId; // ID of the next waypoint that will be initialized
 
     //Home base
-    _PathData homeBase;
+    _PathData * homeBase;
 
     //Data that will be transferred
     uint16_t desiredHeading;
