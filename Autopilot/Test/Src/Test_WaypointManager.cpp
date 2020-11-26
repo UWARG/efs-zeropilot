@@ -933,75 +933,141 @@ TEST(Waypoint_Manager, deleteFirstElement) {
     ASSERT_EQ(e2, WAYPOINT_SUCCESS); // Tests equality of the two parameters
 }
 
-// TEST(Waypoint_Manager, deleteLastElement) {
+TEST(Waypoint_Manager, deleteLastElement) {
 
-//    	/***********************SETUP***********************/
+   	/***********************SETUP***********************/
 
-// 	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(); // Creates object
 
-//     // Creates the initial flight path and home base
+    // Creates the initial flight path and home base
 
-//     int numPaths = 57;
-//     int deleteIndex = numPaths-1;
+    int numPaths = 57;
+    int deleteIndex = numPaths-1;
 
-//     _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-//     _PathData ** deleteArray = new _PathData*[PATH_BUFFER_SIZE];
-//     _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
-//     _PathData * testHomeBase;
+    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData ** deleteArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * testHomeBase;
 
-//     _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
 
-//     long double longitude = 1;
-//     long double latitude = 10;
-//     int altitude = 100;
-//     int waypointType = 0;
+    long double longitude = 1;
+    long double latitude = 10;
+    int altitude = 100;
+    int waypointType = 0;
 	
-//     int id_array[500];
-//     int nextElement = 0;
+    int id_array[500];
+    int nextElement = 0;
 
-//     //Initializes ID array
-//     for(int i = 0; i < 500; i++) {
-//         id_array[i] = 0;
-//     }
+    //Initializes ID array
+    for(int i = 0; i < 500; i++) {
+        id_array[i] = 0;
+    }
 
-// 	/********************STEPTHROUGH********************/
+	/********************STEPTHROUGH********************/
 
-//     for(int i = 0; i < numPaths; i++) {
-//         if(i < numPaths) {
-//             initialPaths[i] = w2->initialize_waypoint(longitude, latitude, altitude, waypointType);
-//             id_array[i] = initialPaths[i]->waypointId;
-//             nextElement = i+1;
-//             longitude++;
-//             latitude++;
-//             altitude++;
-//         }
+    for(int i = 0; i < numPaths; i++) {
+        if(i < numPaths) {
+            initialPaths[i] = w2->initialize_waypoint(longitude, latitude, altitude, waypointType);
+            id_array[i] = initialPaths[i]->waypointId;
+            nextElement = i+1;
+            longitude++;
+            latitude++;
+            altitude++;
+        }
 
-//         if(i < deleteIndex) {
-//             deleteArray[i] = initialPaths[i];
-//             status[i] = FULL;
-//         } if (i > deleteIndex) {
-//             deleteArray[i-1] = initialPaths[i];
-//             status[i-1] = FULL;
-//         }
-//     }
+        if(i < deleteIndex) {
+            deleteArray[i] = initialPaths[i];
+            status[i] = FULL;
+        }
+    }
 
-//     _WaypointStatus e1 = w2->initialize_flight_path(initialPaths, numPaths);
+    _WaypointStatus e1 = w2->initialize_flight_path(initialPaths, numPaths);
 
-//     // Deletes first element
-//     numPaths--;
+    // Deletes first element
+    numPaths--;
 
-//     // Initializes waypint maanger with the flight path
-//     _WaypointStatus e2 = w2->update_path_nodes(nullptr, DELETE_WAYPOINT, id_array[deleteIndex], 0, 0);
-//     testArray = w2->get_waypoint_buffer();
-//     _ArrayStatus a = compare_arrays(deleteArray, testArray, numPaths);
-//     testHomeBase = w2->get_home_base();
-//     _ArrayStatus c = compare_buffer_status(status, w2);
+    // Initializes waypint maanger with the flight path
+    _WaypointStatus e2 = w2->update_path_nodes(nullptr, DELETE_WAYPOINT, id_array[deleteIndex], 0, 0);
+    testArray = w2->get_waypoint_buffer();
+    _ArrayStatus a = compare_arrays(deleteArray, testArray, numPaths);
+    testHomeBase = w2->get_home_base();
+    _ArrayStatus c = compare_buffer_status(status, w2);
 	
-// 	/**********************ASSERTS**********************/
+	/**********************ASSERTS**********************/
 
-// 	ASSERT_EQ(a, ARRAY_SUCCESS); // Tests equality of the two parameters
-//     ASSERT_EQ(c, ARRAY_SUCCESS); // Tests equality of the two parameters
-//     ASSERT_EQ(e1, WAYPOINT_SUCCESS); // Tests equality of the two parameters
-//     ASSERT_EQ(e2, WAYPOINT_SUCCESS); // Tests equality of the two parameters
-// }
+	ASSERT_EQ(a, ARRAY_SUCCESS); // Tests equality of the two parameters
+    ASSERT_EQ(c, ARRAY_SUCCESS); // Tests equality of the two parameters
+    ASSERT_EQ(e1, WAYPOINT_SUCCESS); // Tests equality of the two parameters
+    ASSERT_EQ(e2, WAYPOINT_SUCCESS); // Tests equality of the two parameters
+}
+
+TEST(Waypoint_Manager, deleteLastElementFullArray) {
+
+   	/***********************SETUP***********************/
+
+	WaypointManager * w2 = new WaypointManager(); // Creates object
+
+    // Creates the initial flight path and home base
+
+    int numPaths = 100;
+    int deleteIndex = numPaths-1;
+
+    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData ** deleteArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * testHomeBase;
+
+    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+
+    long double longitude = 1;
+    long double latitude = 10;
+    int altitude = 100;
+    int waypointType = 0;
+	
+    int id_array[500];
+    int nextElement = 0;
+
+    //Initializes ID array
+    for(int i = 0; i < 500; i++) {
+        id_array[i] = 0;
+    }
+
+	/********************STEPTHROUGH********************/
+
+    for(int i = 0; i < numPaths; i++) {
+        if(i < numPaths) {
+            initialPaths[i] = w2->initialize_waypoint(longitude, latitude, altitude, waypointType);
+            id_array[i] = initialPaths[i]->waypointId;
+            nextElement = i+1;
+            longitude++;
+            latitude++;
+            altitude++;
+        }
+
+        if(i < deleteIndex) {
+            deleteArray[i] = initialPaths[i];
+            status[i] = FULL;
+        }
+    }
+
+    _WaypointStatus e1 = w2->initialize_flight_path(initialPaths, numPaths);
+
+    // Deletes first element
+    numPaths--;
+
+    // Initializes waypint maanger with the flight path
+    _WaypointStatus e2 = w2->update_path_nodes(nullptr, DELETE_WAYPOINT, id_array[deleteIndex], 0, 0);
+    testArray = w2->get_waypoint_buffer();
+    _ArrayStatus a = compare_arrays(deleteArray, testArray, numPaths);
+    testHomeBase = w2->get_home_base();
+    _ArrayStatus c = compare_buffer_status(status, w2);
+	
+	/**********************ASSERTS**********************/
+
+	ASSERT_EQ(a, ARRAY_SUCCESS); // Tests equality of the two parameters
+    ASSERT_EQ(c, ARRAY_SUCCESS); // Tests equality of the two parameters
+    ASSERT_EQ(e1, WAYPOINT_SUCCESS); // Tests equality of the two parameters
+    ASSERT_EQ(e2, WAYPOINT_SUCCESS); // Tests equality of the two parameters
+}
 

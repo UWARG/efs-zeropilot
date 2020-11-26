@@ -458,21 +458,26 @@ _WaypointStatus WaypointManager::delete_waypoint(int waypointId) {
 
     // std::cout << "here" << std::endl;
 
-    // std::cout << numWaypoints - 1 << " " << waypointIndex << " " << waypointBufferStatus[numWaypoints] << " " <<  waypointBufferStatus[numWaypoints - 1] << std::endl;
-
     // Adjusts indeces so there are no empty elements
-    for(int i = waypointIndex; i < numWaypoints-1; i++) {
-        if (waypointBufferStatus[i+1] == FREE) {
-            // std::cout << i << " "  << "Here" << std::endl;
-            waypointBufferStatus[i] = FREE;
-            waypointBuffer[i] = nullptr;
-        } else if (waypointBufferStatus[i+1] == FULL) {
-            // std::cout << i << " "  << "Here2" << std::endl;
-            waypointBufferStatus[i] = FULL;
-            waypointBuffer[i] = waypointBuffer[i+1];
-            waypointBufferStatus[i+1] = FREE;
+    // std::cout << numWaypoints - 1 << " " << waypointIndex << " " << waypointBufferStatus[numWaypoints] << " " <<  waypointBufferStatus[numWaypoints - 1] << std::endl;
+    if(waypointIndex == numWaypoints - 1) { // Case where element is the last one in the current list
+        waypointBuffer[waypointIndex] = nullptr;
+        waypointBufferStatus[waypointIndex] = FREE;
+    } else {
+        for(int i = waypointIndex; i < numWaypoints-1; i++) {
+            if (waypointBufferStatus[i+1] == FREE) {
+                // std::cout << i << " "  << "Here" << std::endl;
+                waypointBufferStatus[i] = FREE;
+                waypointBuffer[i] = nullptr;
+            } else if (waypointBufferStatus[i+1] == FULL) {
+                // std::cout << i << " "  << "Here2" << std::endl;
+                waypointBufferStatus[i] = FULL;
+                waypointBuffer[i] = waypointBuffer[i+1];
+                waypointBufferStatus[i+1] = FREE;
+            }
         }
     }
+    
     // std::cout << "here2" << std::endl;
 
     // for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
