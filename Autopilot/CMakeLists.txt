@@ -107,7 +107,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/PathManage
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
   )
 
   # Let cmake know where to find all the find<Package>.cmake files

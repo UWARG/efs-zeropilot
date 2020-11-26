@@ -118,6 +118,11 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
 _PathData* WaypointManager::initialize_waypoint() {
     _PathData* waypoint = new _PathData; // Create new waypoint in the heap
     waypoint->waypointId = nextAssignedId++; // Set ID and increment
+    waypoint->latitude = -1;
+    waypoint->longitude = -1;
+    waypoint->altitude = -1;
+    waypoint->waypointType = -1;
+    waypoint->turnRadius = -1;
     // Set next and previous waypoints to empty for now
     waypoint->next = NULL;
     waypoint->previous = NULL;
@@ -133,6 +138,7 @@ _PathData* WaypointManager::initialize_waypoint(long double longitude, long doub
     waypoint->longitude = longitude;
     waypoint->altitude = altitude;
     waypoint->waypointType = waypointType;
+    waypoint->turnRadius = -1;
     // Set next and previous waypoints to empty for now
     waypoint->next = NULL;
     waypoint->previous = NULL;
