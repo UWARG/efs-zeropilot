@@ -148,7 +148,9 @@ public:
      *
      * Parameters have the same name as their corresponding parameters in the _Pathdata struct.
      */
-    _PathData* initialize_waypoint();                                                                                              // Creates a blank waypoint
+    _PathData* initialize_waypoint();  
+    _PathData* initialize_waypoint_without_id();                                                                                              // Creates a blank waypoint
+                                                                                            // Creates a blank waypoint
     _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, int waypointType);                   // Initialize a regular waypoint
     _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, int waypointType, float turnRadius); // Initialize a "hold" waypoint
 

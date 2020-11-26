@@ -140,6 +140,21 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
     return errorStatus;
 }
 
+_PathData* WaypointManager::initialize_waypoint_without_id() {
+    _PathData* waypoint = new _PathData; // Create new waypoint in the heap
+    waypoint->waypointId = 0; // Set ID and increment
+    waypoint->latitude = -1;
+    waypoint->longitude = -1;
+    waypoint->altitude = -1;
+    waypoint->waypointType = -1;
+    waypoint->turnRadius = -1;
+    // Set next and previous waypoints to empty for now
+    waypoint->next = nullptr;
+    waypoint->previous = nullptr;
+
+    return waypoint;
+}
+
 _PathData* WaypointManager::initialize_waypoint() {
     _PathData* waypoint = new _PathData; // Create new waypoint in the heap
     waypoint->waypointId = nextAssignedId++; // Set ID and increment
@@ -387,7 +402,7 @@ _WaypointStatus WaypointManager::insert_new_waypoint(_PathData* newWaypoint, int
     int nextIndex = get_waypoint_index_from_id(nextId);
     int previousIndex = get_waypoint_index_from_id(previousId);
 
-    std::cout << nextIndex << " " << previousIndex << std::endl;
+    // std::cout << nextIndex << " " << previousIndex << std::endl;
 
     // If any of the waypoints could not be found. Or, if the two IDs do not correspond to adjacent elements in waypointBuffer[]
     if (nextIndex == -1 || previousIndex == -1 || nextIndex - 1 != previousIndex || nextIndex == 0){
@@ -419,7 +434,7 @@ _WaypointStatus WaypointManager::insert_new_waypoint(_PathData* newWaypoint, int
 _WaypointStatus WaypointManager::delete_waypoint(int waypointId) {
     int waypointIndex = get_waypoint_index_from_id(waypointId);
 
-    std::cout << waypointIndex << std::endl;
+    // std::cout << waypointIndex << std::endl;
 
     if (waypointIndex == -1) {
         return UNDEFINED_FAILURE;
@@ -431,29 +446,38 @@ _WaypointStatus WaypointManager::delete_waypoint(int waypointId) {
     if (waypointIndex == 0) { //First element
         waypointBuffer[waypointIndex + 1]->previous = nullptr;
     } else if (waypointIndex == PATH_BUFFER_SIZE - 1 || waypointBufferStatus[waypointIndex+1] == FREE) { // Last element
+        std::cout << "Last eleemntn" << std::endl;
         waypointBuffer[waypointIndex - 1]->next = nullptr;
     } else if (waypointBufferStatus[waypointIndex + 1] == FULL){ // Ensures that the next index is
+        std::cout << " Note Last eleemntn" << std::endl;
         waypointBuffer[waypointIndex-1]->next = waypointBuffer[waypointIndex+1];
         waypointBuffer[waypointIndex+1]->previous = waypointBuffer[waypointIndex-1];
     }
 
     destroy_waypoint(waypointToDelete); // Frees heap memory
 
+    // std::cout << "here" << std::endl;
+
+    // std::cout << numWaypoints - 1 << " " << waypointIndex << " " << waypointBufferStatus[numWaypoints] << " " <<  waypointBufferStatus[numWaypoints - 1] << std::endl;
+
     // Adjusts indeces so there are no empty elements
-    for(int i = waypointIndex; i < PATH_BUFFER_SIZE - 1; i++) {
-        if (waypointBufferStatus[i+1] == FULL) {
-            waypointBuffer[i] = waypointBuffer[i+1];
-            if(i == PATH_BUFFER_SIZE - 2) {
-                waypointBufferStatus[i+1] = FREE;
-            }
-        } else if (waypointBufferStatus[i+1] == FREE) {
-            waypointBuffer[i] = 0;
+    for(int i = waypointIndex; i < numWaypoints-1; i++) {
+        if (waypointBufferStatus[i+1] == FREE) {
+            // std::cout << i << " "  << "Here" << std::endl;
             waypointBufferStatus[i] = FREE;
-            return WAYPOINT_SUCCESS;
-        } else if (waypointBufferStatus[i] == FREE) {
-            return WAYPOINT_SUCCESS;
+            waypointBuffer[i] = nullptr;
+        } else if (waypointBufferStatus[i+1] == FULL) {
+            // std::cout << i << " "  << "Here2" << std::endl;
+            waypointBufferStatus[i] = FULL;
+            waypointBuffer[i] = waypointBuffer[i+1];
+            waypointBufferStatus[i+1] = FREE;
         }
     }
+    // std::cout << "here2" << std::endl;
+
+    // for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
+    //     std::cout << i << " " << waypointBufferStatus[i] << std::endl;
+    // }
 
     // Updates array trackers
     numWaypoints--;
