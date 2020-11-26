@@ -29,7 +29,7 @@ enum _WaypointStatus {WAYPOINT_SUCCESS = 0, WAYPOINT_UNDEFINED, INVALID_PARAMETE
 enum _WaypointBufferStatus {FREE = 0, FULL};
 
 //Used to specify the modification type when updating the waypointBuffer array
-enum _WaypointBufferUpdateType {APPEND_WAYPONT = 0, UPDATE_WAYPOINT, INSERT_WAYPOINT, DELETE_WAYPOINT};
+enum _WaypointBufferUpdateType {APPEND_WAYPOINT = 0, UPDATE_WAYPOINT, INSERT_WAYPOINT, DELETE_WAYPOINT};
 
 /**
 * Structure stores information about the waypoints along our path to the destination and back.

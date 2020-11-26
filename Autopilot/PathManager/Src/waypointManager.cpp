@@ -39,6 +39,10 @@ WaypointManager::WaypointManager() {
     orbiting = false; 
     goingHome = false;
     dataIsNew = false;
+
+    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
+        waypointBufferStatus[i] = FREE;
+    }
 }
 
 _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData *currentLocation) {
@@ -48,10 +52,11 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
         errorStatus = UNDEFINED_FAILURE;
         return errorStatus;
     }
-
+    
     homeBase = currentLocation;
-
+    
     numWaypoints = numberOfWaypoints;
+
     nextFilledIndex = 0;
 
     // Initializes the waypointBuffer array
@@ -65,15 +70,25 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
     for (int i = 0; i < numWaypoints; i++) {
         if (i == 0) { // If first waypoint, link to next one only
             waypointBuffer[i]->next = waypointBuffer[i+1];
-            waypointBuffer[i]->previous = NULL;
+            waypointBuffer[i]->previous = nullptr;
         } else if (i == numWaypoints - 1) { // If last waypoint, link to previous one only
-            waypointBuffer[i]->next = NULL;
+            waypointBuffer[i]->next = nullptr;
             waypointBuffer[i]->previous = waypointBuffer[i-1];
         } else {
             waypointBuffer[i]->next = waypointBuffer[i+1];
             waypointBuffer[i]->previous = waypointBuffer[i-1];
         }
     }
+
+    #ifdef UNIT_TESTING
+        for(int i = numWaypoints; i < PATH_BUFFER_SIZE; i++) {
+            waypointBuffer[i] = initialize_waypoint();
+        }
+    #else
+        for(int i = numWaypoints; i < PATH_BUFFER_SIZE; i++) {
+            waypointBuffer[i] = nullptr;
+        }
+    #endif
 
     errorStatus = WAYPOINT_SUCCESS;
     return errorStatus;
@@ -101,15 +116,25 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
     for (int i = 0; i < numWaypoints; i++) {
         if (i == 0) { // If first waypoint, link to next one only
             waypointBuffer[i]->next = waypointBuffer[i+1];
-            waypointBuffer[i]->previous = NULL;
+            waypointBuffer[i]->previous = nullptr;
         } else if (i == numWaypoints - 1) { // If last waypoint, link to previous one only
-            waypointBuffer[i]->next = NULL;
+            waypointBuffer[i]->next = nullptr;
             waypointBuffer[i]->previous = waypointBuffer[i-1];
         } else {
             waypointBuffer[i]->next = waypointBuffer[i+1];
             waypointBuffer[i]->previous = waypointBuffer[i-1];
         }
     }
+
+    #ifdef UNIT_TESTING
+        for(int i = numWaypoints; i < PATH_BUFFER_SIZE; i++) {
+            waypointBuffer[i] = initialize_waypoint();
+        }
+    #else
+        for(int i = numWaypoints; i < PATH_BUFFER_SIZE; i++) {
+            waypointBuffer[i] = nullptr;
+        }
+    #endif
 
     errorStatus = WAYPOINT_SUCCESS;
     return errorStatus;
@@ -124,8 +149,8 @@ _PathData* WaypointManager::initialize_waypoint() {
     waypoint->waypointType = -1;
     waypoint->turnRadius = -1;
     // Set next and previous waypoints to empty for now
-    waypoint->next = NULL;
-    waypoint->previous = NULL;
+    waypoint->next = nullptr;
+    waypoint->previous = nullptr;
 
     return waypoint;
 }
@@ -140,8 +165,8 @@ _PathData* WaypointManager::initialize_waypoint(long double longitude, long doub
     waypoint->waypointType = waypointType;
     waypoint->turnRadius = -1;
     // Set next and previous waypoints to empty for now
-    waypoint->next = NULL;
-    waypoint->previous = NULL;
+    waypoint->next = nullptr;
+    waypoint->previous = nullptr;
 
     return waypoint;
 }
@@ -156,8 +181,8 @@ _PathData* WaypointManager::initialize_waypoint(long double longitude, long doub
     waypoint->waypointType = waypointType;
     waypoint->turnRadius = turnRadius;
     // Set next and previous waypoints to empty for now
-    waypoint->next = NULL;
-    waypoint->previous = NULL;
+    waypoint->next = nullptr;
+    waypoint->previous = nullptr;
 
     return waypoint;
 }
@@ -285,12 +310,15 @@ float WaypointManager::maintain_altitude(_PathData* currentPath) {
 
 
 _WaypointStatus WaypointManager::update_path_nodes(_PathData * waypoint, _WaypointBufferUpdateType updateType, int waypointId, int previousId, int nextId) {
-    if (numWaypoints == PATH_BUFFER_SIZE && (updateType == APPEND_WAYPONT || updateType == INSERT_WAYPOINT)) { // If array is already full, if we insert it will overflow
+    if (numWaypoints == PATH_BUFFER_SIZE && (updateType == APPEND_WAYPOINT || updateType == INSERT_WAYPOINT)) { // If array is already full, if we insert it will overflow
+        std::cout << "Gefefe" << std::endl;
         return UNDEFINED_FAILURE;
     }
 
+    // std::cout << "Gefeferewrwefwee" << std::endl;
+
     // Conducts a different operation based on the update type
-    if (updateType == APPEND_WAYPONT) {
+    if (updateType == APPEND_WAYPOINT) {
         errorCode = append_waypoint(waypoint);
     } else if (updateType == INSERT_WAYPOINT) {
         errorCode = insert_new_waypoint(waypoint, previousId, nextId);
@@ -299,7 +327,8 @@ _WaypointStatus WaypointManager::update_path_nodes(_PathData * waypoint, _Waypoi
     } else if (updateType == DELETE_WAYPOINT) {
         errorCode = delete_waypoint(waypointId);
     }
-
+    
+    // std::cout << "Error Code: " << errorCode << std::endl;
     return errorCode;
 }
 
@@ -330,6 +359,7 @@ _WaypointStatus WaypointManager::append_waypoint(_PathData * newWaypoint) {
 
     // Before initializing elements, checks if new waypoint is not a duplicate
     if (previousIndex != -1 && waypointBuffer[previousIndex]->latitude == newWaypoint->latitude && waypointBuffer[previousIndex]->longitude == newWaypoint->longitude) {
+        // std::cout << "Here " << waypointBuffer[previousIndex]->latitude << " " <<  newWaypoint->latitude << " | " << waypointBuffer[previousIndex]->longitude  << " " <<  newWaypoint->longitude << std::endl;
         return UNDEFINED_FAILURE;
     }
 
@@ -357,8 +387,11 @@ _WaypointStatus WaypointManager::insert_new_waypoint(_PathData* newWaypoint, int
     int nextIndex = get_waypoint_index_from_id(nextId);
     int previousIndex = get_waypoint_index_from_id(previousId);
 
+    std::cout << nextIndex << " " << previousIndex << std::endl;
+
     // If any of the waypoints could not be found. Or, if the two IDs do not correspond to adjacent elements in waypointBuffer[]
-    if (nextIndex == -1 || previousIndex == -1 || nextIndex - 1 != previousIndex){
+    if (nextIndex == -1 || previousIndex == -1 || nextIndex - 1 != previousIndex || nextIndex == 0){
+        // std::cout << "Here1" << std::endl;
         return UNDEFINED_FAILURE;
     }
 
@@ -396,9 +429,9 @@ _WaypointStatus WaypointManager::delete_waypoint(int waypointId) {
 
     // Links previous and next buffers together
     if (waypointIndex == 0) { //First element
-        waypointBuffer[waypointIndex + 1]->previous = NULL;
+        waypointBuffer[waypointIndex + 1]->previous = nullptr;
     } else if (waypointIndex == PATH_BUFFER_SIZE - 1 || waypointBufferStatus[waypointIndex+1] == FREE) { // Last element
-        waypointBuffer[waypointIndex - 1]->next = NULL;
+        waypointBuffer[waypointIndex - 1]->next = nullptr;
     } else if (waypointBufferStatus[waypointIndex + 1] == FULL){ // Ensures that the next index is
         waypointBuffer[waypointIndex-1]->next = waypointBuffer[waypointIndex+1];
         waypointBuffer[waypointIndex+1]->previous = waypointBuffer[waypointIndex-1];
