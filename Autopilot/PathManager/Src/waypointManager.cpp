@@ -27,12 +27,15 @@
 #define RELATIVE_LATITUDE 43.473004
 #define RELATIVE_LONGITUDE -80.539678
 
+static float k_gain[2] = {0.01, 1};
+
 
 /*** INITIALIZATION ***/
 
 
 WaypointManager::WaypointManager() {
     nextAssignedId = 0;
+    currentIndex = 0;
 
     // Sets boolean variables
     inHold = false;
@@ -129,21 +132,6 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
     return errorStatus;
 }
 
-_PathData* WaypointManager::initialize_waypoint_without_id() {
-    _PathData* waypoint = new _PathData; // Create new waypoint in the heap
-    waypoint->waypointId = 0; // Set ID and increment
-    waypoint->latitude = -1;
-    waypoint->longitude = -1;
-    waypoint->altitude = -1;
-    waypoint->waypointType = -1;
-    waypoint->turnRadius = -1;
-    // Set next and previous waypoints to empty for now
-    waypoint->next = nullptr;
-    waypoint->previous = nullptr;
-
-    return waypoint;
-}
-
 _PathData* WaypointManager::initialize_waypoint() {
     _PathData* waypoint = new _PathData; // Create new waypoint in the heap
     waypoint->waypointId = nextAssignedId++; // Set ID and increment
@@ -233,6 +221,33 @@ float WaypointManager::get_distance(long double lat1, long double lon1, long dou
 
 
 _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In currentStatus, _WaypointManager_Data_Out *Data) {
+    
+    // Gets current position
+    float position[3]; 
+
+    // Gets current heading
+    float currentHeading = (float) currentStatus.heading;
+    
+    // Holding is given higher priority to heading home
+    if (inHold) {   // If plane is currently circling and waiting for commands
+        if(turnRadius <= 0 || turnDirection < 1 || turnDirection > 2) {
+            return UNDEFINED_FAILURE;
+        }
+
+        position[0] = deg2rad(currentStatus.latitude);
+        position[1] = deg2rad(currentStatus.longitude);
+        position[2] = deg2rad(currentStatus.altitude);
+
+        follow_hold_pattern(position, currentHeading);
+
+        dataIsNew = true;
+        update_return_data(Data); // Updates the return structure
+        return errorCode;
+    }
+
+    get_coordinates(currentStatus.longitude, currentStatus.latitude, position);
+    position[2] = currentStatus.altitude;
+
     if (goingHome) { // If plane was instructed to go back to base (and is awaiting for waypointBuffer to be updated)
         // Do stuff
         dataIsNew = true;
@@ -240,12 +255,8 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
         return errorCode;
     }
 
-    if (inHold) {   // If plane is currently circling and waiting for commands
-        // Do stuff
-        dataIsNew = true;
-        update_return_data(Data); // Updates the return structure
-        return errorCode;
-    }
+    // Calls method to follow waypoints
+    follow_waypoints(waypointBuffer[currentIndex], (float*) position, currentHeading);
 
     dataIsNew = true;
     update_return_data(Data); // Updates the return structure
@@ -265,13 +276,14 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
     // Not setting time of data yet bc I think we need to come up with a way to get it???
 }
 
-void WaypointManager::start_circling(float radius, int direction, bool cancelTurning) {
+void WaypointManager::start_circling(float radius, int direction, int altitude, bool cancelTurning) {
     if (!cancelTurning) {
         inHold = true;
     } else {
         inHold = false;
     }
 
+    desiredAltitude = altitude;
     turnRadius = radius;
     turnDirection = direction;
 }
@@ -283,6 +295,54 @@ void WaypointManager::head_home() {
     } else {
         goingHome = false;
     }
+}
+
+void WaypointManager::follow_hold_pattern(float* position, float heading) {
+    
+    /*
+        Do math to calculate coordinates of the circle center 
+        
+        Given Information:
+            - Plane's current position, desired turn direction, and radius of turn
+        Methodology:
+            - We will position the turn center at a distance turnRadius 90 degrees from the plane's heading. 
+              If turnDirection = 1 (CW), center will be to right. If turnDirection = 2 (CCW), center will be to left
+            - Using the direction, we can get the direction and magnitude of the vector connecting the plane to the center of the orbit.
+            - We can use fancy math to get the coordinates of the circle center from this?
+
+        Resources:
+            - http://www.movable-type.co.uk/scripts/latlong.html#destPoint
+    */
+
+    float turnCenter[3]; // Coordinates of the circle center
+    turnCenter[2] = desiredAltitude;
+    float turnCenterBearing = 0.0f; // Bearing of line pointing to the center point of the turn
+
+    if (turnDirection == 1) {
+        turnCenterBearing = heading + 90;
+    } else if (turnDirection == 2) {
+        turnCenterBearing = heading - 90;
+    }
+
+    // Normalizes heading (keeps it between 0.0 and 259.9999)
+    while (turnCenterBearing >= 360.0) {
+        turnCenterBearing -= 360.0; // IF THERE IS A WAY TO DO THIS WITHOUT A WHILE LOOP PLS LMK
+    }
+
+    float angularDisplacement = turnRadius / (EARTH_RADIUS * 1000);
+
+    float turnCenterBearing_Radians = deg2rad(turnCenterBearing);
+
+    // Calculates latitude and longitude of end coordinates (Calculations taken from here: http://www.movable-type.co.uk/scripts/latlong.html#destPoint)
+    turnCenter[1] = asin(sin(position[1]) * cos(angularDisplacement) + cos(position[1]) * sin(angularDisplacement) * cos(turnCenterBearing_Radians));
+    turnCenter[0] = position[0] + atan2(sin(turnCenterBearing_Radians) * sin(angularDisplacement) * cos(position[1]), cos(angularDisplacement) - sin(position[1]) * sin(turnCenter[1]));
+
+    // Converts the position array and turnCenter array from radians to an xy coordinate system.
+    get_coordinates(position[0], position[1], position);
+    get_coordinates(turnCenter[0], turnCenter[1], turnCenter);
+
+    // Calls follow_orbit method 
+    follow_orbit(turnCenter, turnRadius, turnDirection, position, heading);
 }
 
 void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* position, float heading) {
@@ -297,8 +357,21 @@ void WaypointManager::follow_last_line_segment(_PathData * currentWaypoint, floa
 
 }
 
-void WaypointManager::follow_orbit(float* orbitCenter, float radius, char direction, float* position, float heading) {
+void WaypointManager::follow_orbit(float* orbitCenter, float radius, char direction, float* position, float currentHeading) {
+    currentHeading = deg2rad(90 - currentHeading);
 
+    float orbitDistance = sqrt(pow(position[0] - orbitCenter[0],2) + pow(position[1] - orbitCenter[1],2));
+    float courseAngle = atan2(position[1] - orbitCenter[1], position[0] - orbitCenter[0]); // (y,x) format
+
+    while (courseAngle - currentHeading < - M_PI){
+        courseAngle += 2 * M_PI;
+    }
+    while (courseAngle - currentHeading > M_PI){
+        courseAngle -= 2 * M_PI;
+    }
+
+    desiredHeading =  90 - rad2deg(courseAngle + direction * (M_PI/2 + atan(k_gain[ORBIT_FOLLOWING] * (orbitDistance - radius)/radius))); //Heading in degrees (magnetic)
+    distanceToNextWaypoint = 0;
 }
 
 void WaypointManager::follow_straight_path(float* waypointDirection, float* targetWaypoint, float* position, float heading) {
@@ -344,6 +417,7 @@ void WaypointManager::clear_path_nodes() {
     numWaypoints = 0;
     nextFilledIndex = 0;
     nextAssignedId = 0;
+    currentIndex = 0;
 }
 
 int WaypointManager::destroy_waypoint(_PathData *waypoint) {

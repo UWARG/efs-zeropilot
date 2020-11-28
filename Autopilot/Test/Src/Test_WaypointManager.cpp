@@ -21,15 +21,11 @@ enum _ArrayStatus{ARRAY_SUCCESS = 0, ARRAY_DIFFERENT};
 enum _WaypointSt{WAYPOINT_CORRECT = 0, WAYPOINT_INCORRECT};
 
 static _ArrayStatus compare_arrays(_PathData ** ans, _PathData ** testArray, int numElements) {
-    // don't be stupid, go through like a linked list
     _PathData * nextWaypoint;
     nextWaypoint = testArray[0];
 
-    // cout << "Here023" << endl;
-
     // Checks if nexts are linked properly
     for(int i = 0; i < numElements; i++) {
-        // std::cout << i << std::endl;
         if(ans[i]->waypointType != -1 && ans[i]->waypointId == nextWaypoint->waypointId && ans[i]->longitude == nextWaypoint->longitude && ans[i]->latitude == nextWaypoint->latitude && ans[i]->altitude == nextWaypoint->altitude && ans[i]->waypointType == nextWaypoint->waypointType && ans[i]->turnRadius == nextWaypoint->turnRadius) {
             nextWaypoint = nextWaypoint->next;
         } else if (ans[i]->waypointType == -1 && ans[i]->waypointId == nextWaypoint->waypointId && ans[i]->longitude == nextWaypoint->longitude && ans[i]->latitude == nextWaypoint->latitude && ans[i]->altitude == nextWaypoint->altitude && ans[i]->waypointType == nextWaypoint->waypointType && ans[i]->turnRadius == nextWaypoint->turnRadius) {
@@ -39,17 +35,13 @@ static _ArrayStatus compare_arrays(_PathData ** ans, _PathData ** testArray, int
         }
     }
 
-    // cout << "Here123" << endl;
-
     nextWaypoint = testArray[numElements - 1];
 
     // Checks if previous are linked properly
     for(int i = numElements-1; i >= 0; i--) {
-        // std::cout << i << std::endl;
         if(ans[i]->waypointType != -1 && ans[i]->waypointId == nextWaypoint->waypointId && ans[i]->longitude == nextWaypoint->longitude && ans[i]->latitude == nextWaypoint->latitude && ans[i]->altitude == nextWaypoint->altitude && ans[i]->waypointType == nextWaypoint->waypointType && ans[i]->turnRadius == nextWaypoint->turnRadius) {
             nextWaypoint = nextWaypoint->previous;
         } else if (ans[i]->waypointType == -1 && ans[i]->waypointType == -1 && ans[i]->waypointId == nextWaypoint->waypointId && ans[i]->longitude == nextWaypoint->longitude && ans[i]->latitude == nextWaypoint->latitude && ans[i]->altitude == nextWaypoint->altitude && ans[i]->waypointType == nextWaypoint->waypointType && ans[i]->turnRadius == nextWaypoint->turnRadius) {
-            // cout << "Here24234" << endl;
         } else {
             // cout << "Previous Check Index: " << i << " | " << ans[i]->waypointId << " " << nextWaypoint->waypointId << " | " << ans[i]->longitude << " " << nextWaypoint->longitude << " | " << ans[i]->latitude << " " << nextWaypoint->latitude << " | " << ans[i]->altitude << " " << nextWaypoint->altitude << " | " << ans[i]->waypointType << " " << nextWaypoint->waypointType << " | " << ans[i]->turnRadius << " " << nextWaypoint->turnRadius << endl;
             return ARRAY_DIFFERENT;
@@ -57,7 +49,7 @@ static _ArrayStatus compare_arrays(_PathData ** ans, _PathData ** testArray, int
     }
 
     // Checks if indexes are the same
-    for(int i = 0; i < numElements; i++) {
+    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         nextWaypoint = testArray[i];
         if(ans[i]->waypointId != nextWaypoint->waypointId && ans[i]->longitude != nextWaypoint->longitude && ans[i]->latitude != nextWaypoint->latitude && ans[i]->altitude != nextWaypoint->altitude && ans[i]->waypointType != nextWaypoint->waypointType && ans[i]->turnRadius != nextWaypoint->turnRadius) {
             // cout << "Array Equality Check Index: " << i << " | " << ans[i]->waypointId << " " << nextWaypoint->waypointId << " | " << ans[i]->longitude << " " << nextWaypoint->longitude << " | " << ans[i]->latitude << " " << nextWaypoint->latitude << " | " << ans[i]->altitude << " " << nextWaypoint->altitude << " | " << ans[i]->waypointType << " " << nextWaypoint->waypointType << " | " << ans[i]->turnRadius << " " << nextWaypoint->turnRadius << endl;
@@ -87,6 +79,9 @@ static _WaypointSt compare_waypoint(_PathData * ans, _PathData * test) {
 
     return WAYPOINT_CORRECT;
 }
+
+/************************ TESTING GETTING DESIRED HEADING/ALTITUDE/ETC ************************/
+
 
 TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
 
@@ -169,6 +164,15 @@ TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
     ASSERT_EQ(c, ARRAY_SUCCESS); // Tests equality of the two parameters
     ASSERT_EQ(e, WAYPOINT_SUCCESS); // Tests equality of the two parameters
 }
+
+
+/************************ TESTING GETTING DESIRED HEADING/ALTITUDE/ETC ************************/
+
+
+
+
+/************************ TESTING MODIFYING THE FLIGHT PATH ************************/
+
 
 TEST(Waypoint_Manager, AppendElementToNotFilledArray) {
 
@@ -715,7 +719,6 @@ TEST(Waypoint_Manager, InsertToArrayInMiddle) {
         } if (i > insertIndex) {
             insertPaths[i] = initialPaths[i-1];
         } else if (i == insertIndex) {
-            // std::cout << "Hello there" << std::endl;
             insertPaths[i] = insertElement;
         }
     }
@@ -1233,8 +1236,4 @@ TEST(Waypoint_Manager, updateMiddleElement) {
     ASSERT_EQ(e1, WAYPOINT_SUCCESS); // Tests equality of the two parameters
     ASSERT_EQ(e2, WAYPOINT_SUCCESS); // Tests equality of the two parameters
 }
-
-
-
-
 

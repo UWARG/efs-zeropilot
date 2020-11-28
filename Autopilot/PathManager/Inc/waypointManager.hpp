@@ -28,14 +28,15 @@ enum _WaypointStatus {WAYPOINT_SUCCESS = 0, WAYPOINT_UNDEFINED, INVALID_PARAMETE
 // Used in the waypointBufferStatus array to signal which elements are free
 enum _WaypointBufferStatus {FREE = 0, FULL};
 
-//Used to specify the modification type when updating the waypointBuffer array
+// Used to specify the modification type when updating the waypointBuffer array
 enum _WaypointBufferUpdateType {APPEND_WAYPOINT = 0, UPDATE_WAYPOINT, INSERT_WAYPOINT, DELETE_WAYPOINT};
+
+// Used to specify the type of output
+enum _WaypointOutputType {PATH_FOLLOW = 0, ORBIT_FOLLOW};
 
 /**
 * Structure stores information about the waypoints along our path to the destination and back.
 */
-
-//typedef struct _PathData;
 
 struct _PathData {
     int waypointId;                  // Id of the waypoint
@@ -52,16 +53,17 @@ struct _PathData {
 * Structure contains the data that will be returned to the Path Manager state manager.
 * This data will be used by the PID and coordinated turn engine to determine the commands to be sent to the Attitude Manager.
 */
-typedef struct {
+struct _WaypointManager_Data_Out{
     uint16_t desiredHeading;            // Desired heading to stay on path
     int desiredAltitude;                // Desired altitude at next waypoint
     long double distanceToNextWaypoint; // Distance to the next waypoint (helps with airspeed PID)
     float radius;                       // Radius of turn if required
-    int turnDirection;                  // Direction of turn -> 1 = CW (Right bank), 2 = CCW (Left bank)
+    int turnDirection;                  // Direction of turn -> 1 = CW (Right bank), 2 = CCW (Left bank). (Looking down from sky)
     _WaypointStatus errorCode;          // Contains error codes
     bool isDataNew;                     // Notifies PID modules if the data in this structure is new
     uint32_t timeOfData;                // The time that the data in this structure was collected
-} _WaypointManager_Data_Out;
+    _WaypointOutputType out_type;       // Output type (determines which parameters are defined)
+};
 
 class WaypointManager {
 public:
@@ -114,6 +116,9 @@ public:
     */
     _WaypointBufferStatus get_status_of_index(int index);
 
+    /**
+     * @return returns the _PathData pointer of the home base 
+     */ 
     _PathData * get_home_base();
 
     /**
@@ -126,7 +131,7 @@ public:
      * @param[in] int direction -> 1 means clockwise (bank right); 0 means counter-clock wise (bank left)
      * @param[in] bool cancelTurning -> false means we want plane to orbit. True means we want plane to stop orbiting and follow waypointBuffer array
      */
-    void start_circling(float radius, int direction, bool cancelTurning);
+    void start_circling(float radius, int direction, int altitude, bool cancelTurning);
 
     /**
      * Called if user wants the plane to just head home
@@ -148,9 +153,7 @@ public:
      *
      * Parameters have the same name as their corresponding parameters in the _Pathdata struct.
      */
-    _PathData* initialize_waypoint();  
-    _PathData* initialize_waypoint_without_id();                                                                                              // Creates a blank waypoint
-                                                                                            // Creates a blank waypoint
+    _PathData* initialize_waypoint();                                                                                              // Creates a blank waypoint
     _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, int waypointType);                   // Initialize a regular waypoint
     _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, int waypointType, float turnRadius); // Initialize a "hold" waypoint
 
@@ -161,6 +164,7 @@ private:
     int numWaypoints;
     int nextFilledIndex; // Index of the array that will be initialized next
     int nextAssignedId; // ID of the next waypoint that will be initialized
+    int currentIndex;   // Index for the waypoint in our flight path we are currently on
 
     //Home base
     _PathData * homeBase;
@@ -169,8 +173,6 @@ private:
     uint16_t desiredHeading;
     int desiredAltitude;
     long double distanceToNextWaypoint;
-    long double desiredLatitude;
-    long double desiredLongitude;
     _WaypointStatus errorCode;
     bool dataIsNew;
 
@@ -183,6 +185,7 @@ private:
     bool orbiting; //When this is true, the plane is orbiting
 
     //Helper Methods
+    void follow_hold_pattern(float* position, float heading);
     void follow_waypoints(_PathData * currentWaypoint, float* position, float heading);                               // Determines which of the methods below to call :))
     void follow_line_segment(_PathData * currentWaypoint, float* position, float heading);                            // In the instance where the waypoint after the next is not defined, we continue on the path we are currently on
     void follow_last_line_segment(_PathData * currentWaypoint, float* position, float heading);                       // In the instance where the next waypoint is not defined, follow previously defined path
