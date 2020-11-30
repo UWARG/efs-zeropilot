@@ -17,8 +17,9 @@ using ::testing::Test;
  * Tests
  **********************************************************************************************************************/
 
-enum _ArrayStatus{ARRAY_SUCCESS = 0, ARRAY_DIFFERENT};
-enum _WaypointSt{WAYPOINT_CORRECT = 0, WAYPOINT_INCORRECT};
+enum _ArrayStatus {ARRAY_SUCCESS = 0, ARRAY_DIFFERENT};
+enum _WaypointSt {WAYPOINT_CORRECT = 0, WAYPOINT_INCORRECT};
+enum _OutputStatus {OUTPUT_CORRECT = 0, OUTPUT_INCORRECT};
 
 static _ArrayStatus compare_arrays(_PathData ** ans, _PathData ** testArray, int numElements) {
     _PathData * nextWaypoint;
@@ -49,10 +50,10 @@ static _ArrayStatus compare_arrays(_PathData ** ans, _PathData ** testArray, int
     }
 
     // Checks if indexes are the same
-    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
+    for(int i = 0; i < numElements; i++) {
         nextWaypoint = testArray[i];
         if(ans[i]->waypointId != nextWaypoint->waypointId && ans[i]->longitude != nextWaypoint->longitude && ans[i]->latitude != nextWaypoint->latitude && ans[i]->altitude != nextWaypoint->altitude && ans[i]->waypointType != nextWaypoint->waypointType && ans[i]->turnRadius != nextWaypoint->turnRadius) {
-            // cout << "Array Equality Check Index: " << i << " | " << ans[i]->waypointId << " " << nextWaypoint->waypointId << " | " << ans[i]->longitude << " " << nextWaypoint->longitude << " | " << ans[i]->latitude << " " << nextWaypoint->latitude << " | " << ans[i]->altitude << " " << nextWaypoint->altitude << " | " << ans[i]->waypointType << " " << nextWaypoint->waypointType << " | " << ans[i]->turnRadius << " " << nextWaypoint->turnRadius << endl;
+            cout << "Array Equality Check Index: " << i << " | " << ans[i]->waypointId << " " << nextWaypoint->waypointId << " | " << ans[i]->longitude << " " << nextWaypoint->longitude << " | " << ans[i]->latitude << " " << nextWaypoint->latitude << " | " << ans[i]->altitude << " " << nextWaypoint->altitude << " | " << ans[i]->waypointType << " " << nextWaypoint->waypointType << " | " << ans[i]->turnRadius << " " << nextWaypoint->turnRadius << endl;
             return ARRAY_DIFFERENT;
         }
     }
@@ -80,7 +81,27 @@ static _WaypointSt compare_waypoint(_PathData * ans, _PathData * test) {
     return WAYPOINT_CORRECT;
 }
 
-/************************ TESTING GETTING DESIRED HEADING/ALTITUDE/ETC ************************/
+static _OutputStatus compare_output_data(_WaypointManager_Data_Out *ans, _WaypointManager_Data_Out *test) {
+    if(ans->desiredAltitude == test->desiredAltitude && ans->desiredHeading == test->desiredHeading && ans->distanceToNextWaypoint == test->distanceToNextWaypoint && ans->radius == test->radius && ans->turnDirection == test->turnDirection && ans->out_type == test->out_type) {
+        return OUTPUT_CORRECT;
+    } else {
+        cout << "Comparing Output Data: Alt " << ans->desiredAltitude << " " << test->desiredAltitude << " | Heading " << ans->desiredHeading << " " << test->desiredHeading << " | Distance " << ans->distanceToNextWaypoint << " " << test->distanceToNextWaypoint << " | Radius " << ans->radius << " " << test->radius << " | Direction " << ans->turnDirection << " " << test->turnDirection << " | OutType " << ans->out_type << " " << test->out_type << endl;
+        return OUTPUT_INCORRECT;
+    }
+}
+
+static _OutputStatus compare_coordinates(float * ans, float * test) {
+    // Accept an error of maximum 0.01 degrees
+    if (abs((ans[0]- test[0])/ans[0]) < 0.01 && abs((ans[1]- test[1])/ans[1]) < 0.01 && abs((ans[2]- test[2])/ans[2]) < 0.01) {
+        return OUTPUT_CORRECT; 
+    } else {
+        cout << "Comparing Coordinates: " << ans[0] << " " << test[0] << " | " << ans[1] << " " << test[1] << " | " << ans[2] << " " << test[2] << endl;
+        return OUTPUT_INCORRECT;
+    }
+}
+
+
+/************************ TESTING INITIALIZING AND SETTING WAYPOINT MANAGER OBJECT ************************/
 
 
 TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
@@ -169,6 +190,112 @@ TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
 /************************ TESTING GETTING DESIRED HEADING/ALTITUDE/ETC ************************/
 
 
+TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
+    /***********************SETUP***********************/
+
+	WaypointManager * w = new WaypointManager(); // Creates object
+
+    // Stores outputs from four tests
+    _WaypointManager_Data_Out * out1 = new _WaypointManager_Data_Out;
+    out1->desiredHeading = 0;
+    out1->desiredAltitude = 0;
+    out1->distanceToNextWaypoint = 0;
+    out1->radius = 0;
+    out1->turnDirection = 0;
+    out1->errorCode = WAYPOINT_SUCCESS;
+    out1->isDataNew = false;
+    out1->timeOfData = 0;
+    out1->out_type = PATH_FOLLOW;
+
+    _WaypointManager_Data_Out * out2 = new _WaypointManager_Data_Out;;
+    out2->desiredHeading = 0;
+    out2->desiredAltitude = 0;
+    out2->distanceToNextWaypoint = 0;
+    out2->radius = 0;
+    out2->turnDirection = 0;
+    out2->errorCode = WAYPOINT_SUCCESS;
+    out2->isDataNew = false;
+    out2->timeOfData = 0;
+    out2->out_type = PATH_FOLLOW;
+
+    // Creates two test values!
+    _WaypointManager_Data_In input1 = {43.467998128, 80.537331184, 100, 100};  // latitude, longitude, altitude, heading
+    _WaypointManager_Data_In input2 = {43.467998128, 80.537331184, 100, 30};  // latitude, longitude, altitude, heading
+
+
+    // Stores answers for four tests
+    float center_ans1[3] = {80.54500000, 43.47138889, 78}; // longitude, latitude, altitude
+    _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
+    ans1->desiredHeading = 273;
+    ans1->desiredAltitude = 78;
+    ans1->distanceToNextWaypoint = 0;
+    ans1->radius = 100;
+    ans1->turnDirection = 1;
+    ans1->errorCode = WAYPOINT_SUCCESS;
+    ans1->isDataNew = true;
+    ans1->timeOfData = 0;
+    ans1->out_type = ORBIT_FOLLOW;
+
+    float center_ans2[3] = {80.54527778, 43.47250000, 110}; 
+    _WaypointManager_Data_Out * ans2 = new _WaypointManager_Data_Out;
+    ans2->desiredHeading = 28;
+    ans2->desiredAltitude = 110;
+    ans2->distanceToNextWaypoint = 0;
+    ans2->radius = 30;
+    ans2->turnDirection = 2;
+    ans2->errorCode = WAYPOINT_SUCCESS;
+    ans2->isDataNew = true;
+    ans2->timeOfData = 0;
+    ans2->out_type = ORBIT_FOLLOW;
+
+
+	/********************STEPTHROUGH********************/
+
+    int turnRadius[2] = {100, 30};
+    int turnDirection[4] = {1, 2}; // 1 = right, 2 = left
+    int altitude[4] = {78, 110};
+    bool cancelTurning = false;
+
+    // std::cout << "Here1" << std::endl;
+
+    w->start_circling(turnRadius[0], turnDirection[0], altitude[0], cancelTurning); // Sets circling
+
+    _WaypointStatus s1 = w->get_next_directions(input1, out1);
+
+    // std::cout << "Here2" << std::endl;
+
+    float response[3]; // longitude, latitude
+    response[0] = w->orbitCentreLong;
+    response[1] = w->orbitCentreLat;
+    response[2] = w->orbitCentreAlt;
+
+    _OutputStatus test1_center = compare_coordinates(center_ans1, response);
+    _OutputStatus test1_output = compare_output_data(ans1, out1);
+
+    // std::cout << "Here3" << std::endl;
+
+    w->start_circling(turnRadius[1], turnDirection[1], altitude[1], cancelTurning); // Sets circling
+
+    _WaypointStatus s2 =w->get_next_directions(input2, out2);
+
+    response[0] = w->orbitCentreLong;
+    response[1] = w->orbitCentreLat;
+    response[2] = w->orbitCentreAlt;
+
+    _OutputStatus test2_center = compare_coordinates(center_ans2, response);
+    _OutputStatus test2_output = compare_output_data(ans2, out2);
+	
+	/**********************ASSERTS**********************/
+
+    ASSERT_EQ(s1, WAYPOINT_SUCCESS);
+    ASSERT_EQ(s2, WAYPOINT_SUCCESS);
+
+    ASSERT_EQ(test1_center, OUTPUT_CORRECT);
+    ASSERT_EQ(test1_output, OUTPUT_CORRECT);
+
+    ASSERT_EQ(test2_center, OUTPUT_CORRECT);
+    ASSERT_EQ(test2_output, OUTPUT_CORRECT);
+}
 
 
 /************************ TESTING MODIFYING THE FLIGHT PATH ************************/

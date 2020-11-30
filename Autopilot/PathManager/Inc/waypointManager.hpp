@@ -15,12 +15,12 @@
 
 #define PATH_BUFFER_SIZE 100
 
-typedef struct {
+struct _WaypointManager_Data_In {
     long double latitude;
     long double longitude;
     int altitude;
     uint16_t heading;
-} _WaypointManager_Data_In;
+};
 
 // Stores error codes for the waypoint manager
 enum _WaypointStatus {WAYPOINT_SUCCESS = 0, WAYPOINT_UNDEFINED, INVALID_PARAMETER, UNDEFINED_FAILURE};
@@ -157,6 +157,11 @@ public:
     _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, int waypointType);                   // Initialize a regular waypoint
     _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, int waypointType, float turnRadius); // Initialize a "hold" waypoint
 
+    // For testing purposes only:
+    float orbitCentreLat;
+    float orbitCentreLong;
+    float orbitCentreAlt;
+
 private:
     //Stores waypoints
     _PathData * waypointBuffer[PATH_BUFFER_SIZE]; //Stores all waypoints
@@ -175,6 +180,7 @@ private:
     long double distanceToNextWaypoint;
     _WaypointStatus errorCode;
     bool dataIsNew;
+    _WaypointOutputType outputType;
 
     //Status variables
     bool goingHome;     // This is set to true when the head_home() function is called.
@@ -189,7 +195,7 @@ private:
     void follow_waypoints(_PathData * currentWaypoint, float* position, float heading);                               // Determines which of the methods below to call :))
     void follow_line_segment(_PathData * currentWaypoint, float* position, float heading);                            // In the instance where the waypoint after the next is not defined, we continue on the path we are currently on
     void follow_last_line_segment(_PathData * currentWaypoint, float* position, float heading);                       // In the instance where the next waypoint is not defined, follow previously defined path
-    void follow_orbit(float* orbitCenter, float radius, char direction, float* position, float heading);                   // Makes the plane follow an orbit with defined radius and direction
+    void follow_orbit(float* orbitCenter, float* position, float heading);                   // Makes the plane follow an orbit with defined radius and direction
     void follow_straight_path(float* waypointDirection, float* targetWaypoint, float* position, float heading);       // Makes a plane follow a straight path (straight line following)
     float maintain_altitude(_PathData* currentPath);                                                                  // Makes plane maintain altitude
 
