@@ -28,7 +28,7 @@
 #define RELATIVE_LATITUDE 43.467998128
 #define RELATIVE_LONGITUDE 80.537331184
 
-static float k_gain[2] = {0.01, 1};
+static float k_gain[2] = {0.01, 1.0f};
 
 
 /*** INITIALIZATION ***/
@@ -197,12 +197,12 @@ int WaypointManager::get_waypoint_index_from_id(int waypointId) {
     return -1; // If waypoint is not found
 }
 
-void WaypointManager::get_coordinates(long double longitude, long double latitude, float* xyCoordinates) {
+void WaypointManager::get_coordinates(long double longitude, long double latitude, float* xyCoordinates) { // Parameters expected to be in degrees
     xyCoordinates[0] = get_distance(RELATIVE_LATITUDE, RELATIVE_LONGITUDE, RELATIVE_LATITUDE, longitude); //Calculates longitude (x coordinate) relative to defined origin (RELATIVE_LONGITUDE, RELATIVE_LATITUDE)
     xyCoordinates[1] = get_distance(RELATIVE_LATITUDE, RELATIVE_LONGITUDE, latitude, RELATIVE_LONGITUDE); //Calculates latitude (y coordinate) relative to defined origin (RELATIVE_LONGITUDE, RELATIVE_LATITUDE)
 }
 
-float WaypointManager::get_distance(long double lat1, long double lon1, long double lat2, long double lon2) {
+float WaypointManager::get_distance(long double lat1, long double lon1, long double lat2, long double lon2) { // Parameters expected to be in degrees
     // Longitude and latitude stored in degrees
     // This calculation uses the Haversine formula
     long double change_in_Lat = deg2rad(lat2 - lat1); //Converts change in latitude to radians
@@ -236,8 +236,8 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
         }
 
         // Sets position array
-        position[0] = deg2rad(currentStatus.longitude);
-        position[1] = deg2rad(currentStatus.latitude);
+        position[0] = currentStatus.longitude;
+        position[1] = currentStatus.latitude;
         position[2] = (float) currentStatus.altitude;
 
         // Calculates desired heading 
@@ -284,12 +284,58 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
     // Not setting time of data yet bc I think we need to come up with a way to get it???
 }
 
-void WaypointManager::start_circling(float radius, int direction, int altitude, bool cancelTurning) {
+void WaypointManager::start_circling(_WaypointManager_Data_In currentStatus, float radius, int direction, int altitude, bool cancelTurning) {
     if (!cancelTurning) {
         inHold = true;
         desiredAltitude = altitude;
         turnRadius = radius;
         turnDirection = direction;
+
+        // Gets current heading
+        float currentHeading = (float) currentStatus.heading;
+
+        // Gets current position
+        float position[3]; 
+        position[0] = deg2rad(currentStatus.longitude);
+        position[1] = deg2rad(currentStatus.latitude);
+        position[2] = (float) currentStatus.altitude;
+
+        turnCenter[2] = desiredAltitude;
+        float turnCenterBearing = 0.0f; // Bearing of line pointing to the center point of the turn
+
+        if (turnDirection == 1) {
+            turnCenterBearing = currentHeading + 90;
+        } else if (turnDirection == 2) {
+            turnCenterBearing = currentHeading - 90;
+        }
+
+        // Normalizes heading (keeps it between 0.0 and 259.9999)
+        while (turnCenterBearing >= 360.0) {
+            turnCenterBearing -= 360.0; // IF THERE IS A WAY TO DO THIS WITHOUT A WHILE LOOP PLS LMK
+        }
+
+        while (turnCenterBearing < 0.0) {
+            turnCenterBearing += 360.0; // IF THERE IS A WAY TO DO THIS WITHOUT A WHILE LOOP PLS LMK
+        }
+
+        float angularDisplacement = turnRadius / (EARTH_RADIUS * 1000);
+
+        double turnCenterBearing_Radians = deg2rad(turnCenterBearing);
+
+        // Calculates latitude and longitude of end coordinates (Calculations taken from here: http://www.movable-type.co.uk/scripts/latlong.html#destPoint)
+        turnCenter[1] = asin(sin(position[1]) * cos(angularDisplacement) + cos(position[1]) * sin(angularDisplacement) * cos(turnCenterBearing_Radians)); // latitude
+        turnCenter[0] = position[0] + atan2(sin(turnCenterBearing_Radians) * sin(angularDisplacement) * cos(position[1]), cos(angularDisplacement) - sin(position[1]) * sin(turnCenter[1])); // Longitude
+
+        #ifdef UNIT_TESTING
+            orbitCentreLong = rad2deg(turnCenter[0]);
+            orbitCentreLat = rad2deg(turnCenter[1]);
+            orbitCentreAlt = turnCenter[2];
+
+            // std::cout << "Check 1: Lat - " << orbitCentreLat << " " << orbitCentreLong << std::endl;
+        #endif
+
+        get_coordinates(rad2deg(turnCenter[0]), rad2deg(turnCenter[1]), turnCenter);
+
     } else {
         inHold = false;
     }
@@ -305,55 +351,14 @@ void WaypointManager::head_home() {
 }
 
 void WaypointManager::follow_hold_pattern(float* position, float heading) {
-
-    float turnCenter[3]; // Coordinates of the circle center
-    turnCenter[2] = desiredAltitude;
-    float turnCenterBearing = 0.0f; // Bearing of line pointing to the center point of the turn
-
-    if (turnDirection == 1) {
-        turnCenterBearing = heading + 90;
-    } else if (turnDirection == 2) {
-        turnCenterBearing = heading - 90;
-    }
-
-    // Normalizes heading (keeps it between 0.0 and 259.9999)
-    // while (turnCenterBearing >= 360.0) {
-    //     turnCenterBearing -= 360.0; // IF THERE IS A WAY TO DO THIS WITHOUT A WHILE LOOP PLS LMK
-    // }
-
-    // while (turnCenterBearing < 0.0) {
-    //     turnCenterBearing += 360.0; // IF THERE IS A WAY TO DO THIS WITHOUT A WHILE LOOP PLS LMK
-    // }
-
-    float angularDisplacement = turnRadius / (EARTH_RADIUS * 1000);
-
-    double turnCenterBearing_Radians = deg2rad(turnCenterBearing);
-
-    // std::cout << turnCenterBearing << " " << angularDisplacement << " " << turnCenterBearing_Radians << std::endl;
-    // std::cout << position[0] << " " << position[1] << " " << position[2] << std::endl;
-    // std::cout << 0 << std::endl;
-
-    // Calculates latitude and longitude of end coordinates (Calculations taken from here: http://www.movable-type.co.uk/scripts/latlong.html#destPoint)
-    turnCenter[1] = asin(sin(position[1]) * cos(angularDisplacement) + cos(position[1]) * sin(angularDisplacement) * cos(turnCenterBearing_Radians)); // latitude
-    turnCenter[0] = position[0] + atan2(sin(turnCenterBearing_Radians) * sin(angularDisplacement) * cos(position[1]), cos(angularDisplacement) - sin(position[1]) * sin(turnCenter[1])); // Longitude
-    
-    #ifdef UNIT_TESTING
-        orbitCentreLong = rad2deg(turnCenter[0]);
-        orbitCentreLat = rad2deg(turnCenter[1]);
-        orbitCentreAlt = turnCenter[2];
-
-        // std::cout << "Check 1: Lat - " << orbitCentreLat << " " << orbitCentreLong << std::endl;
-    #endif
-
-    // Converts the position array and turnCenter array from radians to an xy coordinate system. The get_coordinates() method expects values to be in degrees
-    get_coordinates(rad2deg(position[0]), rad2deg(position[1]), position);
-    get_coordinates(rad2deg(turnCenter[0]), rad2deg(turnCenter[1]), turnCenter);
+    // Converts the position array and turnCenter array from radians to an xy coordinate system.
+    get_coordinates(position[0], position[1], position);
 
     // std::cout << "Check 2: Lat - " << turnCenter[1] << " " << turnCenter[0] << std::endl;
     // std::cout << "Lat - " << position[1] << " " << position[0] << " " << heading << std::endl;
 
     // Calls follow_orbit method 
-    follow_orbit(turnCenter, position, heading);
+    follow_orbit(position, heading);
 }
 
 void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* position, float heading) {
@@ -368,12 +373,13 @@ void WaypointManager::follow_last_line_segment(_PathData * currentWaypoint, floa
 
 }
 
-void WaypointManager::follow_orbit(float* orbitCenter, float* position, float currentHeading) {
-    currentHeading = deg2rad(90 - currentHeading);
+void WaypointManager::follow_orbit(float* position, float heading) {
+    float currentHeading = deg2rad(90 - heading);
 
-    float orbitDistance = sqrt(pow(position[0] - orbitCenter[0],2) + pow(position[1] - orbitCenter[1],2));
-    float courseAngle = atan2(position[1] - orbitCenter[1], position[0] - orbitCenter[0]); // (y,x) format
+    float orbitDistance = sqrt(pow(position[0] - turnCenter[0],2) + pow(position[1] - turnCenter[1],2));
+    float courseAngle = atan2(position[1] - turnCenter[1], position[0] - turnCenter[0]); // (y,x) format
 
+    // Gets angle between plane and line connecting it and center of orbit
     while (courseAngle - currentHeading < - M_PI){
         courseAngle += 2 * M_PI;
     }
@@ -381,16 +387,16 @@ void WaypointManager::follow_orbit(float* orbitCenter, float* position, float cu
         courseAngle -= 2 * M_PI;
     }
 
-    // std::cout << courseAngle << std::endl;
+    // std::cout << heading << " " << currentHeading << " " << orbitDistance << " " << courseAngle << std::endl;
 
-    int turnDirectionConstant = 0;
-    if (turnDirection == 1) {
+    int turnDirectionConstant = 0; 
+    if (turnDirection == 1) { // CW
         turnDirectionConstant = 1;
-    } else if (turnDirection == 2){
+    } else if (turnDirection == 2) { // CCW
         turnDirectionConstant = -1;
     }
 
-    // std::cout <<  courseAngle << " " << turnDirectionConstant * (M_PI/2 + atan(k_gain[ORBIT_FOLLOWING] * (orbitDistance - turnRadius)/turnRadius)) << " " <<  rad2deg(courseAngle + turnDirectionConstant * (M_PI/2 + atan(k_gain[ORBIT_FOLLOWING] * (orbitDistance - turnRadius)/turnRadius))) << std::endl;
+    // std::cout << atan(k_gain[ORBIT_FOLLOWING] * (orbitDistance - turnRadius)/turnRadius) << " " << (orbitDistance - turnRadius)/turnRadius << " " << std::endl;
 
     int calcHeading = round(90 - rad2deg(courseAngle + turnDirectionConstant * (M_PI/2 + atan(k_gain[ORBIT_FOLLOWING] * (orbitDistance - turnRadius)/turnRadius)))); //Heading in degrees (magnetic)
     
@@ -404,7 +410,6 @@ void WaypointManager::follow_orbit(float* orbitCenter, float* position, float cu
     }
     
     desiredHeading = calcHeading;
-    
     distanceToNextWaypoint = 0.0;
 }
 

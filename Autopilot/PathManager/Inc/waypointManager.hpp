@@ -131,7 +131,7 @@ public:
      * @param[in] int direction -> 1 means clockwise (bank right); 0 means counter-clock wise (bank left)
      * @param[in] bool cancelTurning -> false means we want plane to orbit. True means we want plane to stop orbiting and follow waypointBuffer array
      */
-    void start_circling(float radius, int direction, int altitude, bool cancelTurning);
+    void start_circling(_WaypointManager_Data_In currentStatus, float radius, int direction, int altitude, bool cancelTurning);
 
     /**
      * Called if user wants the plane to just head home
@@ -186,6 +186,7 @@ private:
     bool goingHome;     // This is set to true when the head_home() function is called.
     _WaypointStatus errorStatus;
     bool inHold; // Set to true when start_circling() is called
+    float turnCenter[3];
     int turnDirection; // 1 for CW, 2 for CCW
     float turnRadius;
     bool orbiting; //When this is true, the plane is orbiting
@@ -195,7 +196,7 @@ private:
     void follow_waypoints(_PathData * currentWaypoint, float* position, float heading);                               // Determines which of the methods below to call :))
     void follow_line_segment(_PathData * currentWaypoint, float* position, float heading);                            // In the instance where the waypoint after the next is not defined, we continue on the path we are currently on
     void follow_last_line_segment(_PathData * currentWaypoint, float* position, float heading);                       // In the instance where the next waypoint is not defined, follow previously defined path
-    void follow_orbit(float* orbitCenter, float* position, float heading);                   // Makes the plane follow an orbit with defined radius and direction
+    void follow_orbit(float* position, float heading);                                                                // Makes the plane follow an orbit with defined radius and direction
     void follow_straight_path(float* waypointDirection, float* targetWaypoint, float* position, float heading);       // Makes a plane follow a straight path (straight line following)
     float maintain_altitude(_PathData* currentPath);                                                                  // Makes plane maintain altitude
 

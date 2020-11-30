@@ -219,9 +219,11 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
     out2->out_type = PATH_FOLLOW;
 
     // Creates two test values!
+    _WaypointManager_Data_In setup1 = {43.467998128, 80.537331184, 100, 100};  // latitude, longitude, altitude, heading
+    _WaypointManager_Data_In setup2 = {43.467998128, 80.537331184, 100, 30};  // latitude, longitude, altitude, heading
+    
     _WaypointManager_Data_In input1 = {43.467998128, 80.537331184, 100, 100};  // latitude, longitude, altitude, heading
     _WaypointManager_Data_In input2 = {43.467998128, 80.537331184, 100, 30};  // latitude, longitude, altitude, heading
-
 
     // Stores answers for four tests
     float center_ans1[3] = {80.54500000, 43.47138889, 78}; // longitude, latitude, altitude
@@ -258,7 +260,7 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
 
     // std::cout << "Here1" << std::endl;
 
-    w->start_circling(turnRadius[0], turnDirection[0], altitude[0], cancelTurning); // Sets circling
+    w->start_circling(setup1, turnRadius[0], turnDirection[0], altitude[0], cancelTurning); // Sets circling
 
     _WaypointStatus s1 = w->get_next_directions(input1, out1);
 
@@ -274,7 +276,7 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
 
     // std::cout << "Here3" << std::endl;
 
-    w->start_circling(turnRadius[1], turnDirection[1], altitude[1], cancelTurning); // Sets circling
+    w->start_circling(setup2, turnRadius[1], turnDirection[1], altitude[1], cancelTurning); // Sets circling
 
     _WaypointStatus s2 =w->get_next_directions(input2, out2);
 
