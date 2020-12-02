@@ -68,7 +68,7 @@ struct _WaypointManager_Data_Out{
 class WaypointManager {
 public:
 
-    WaypointManager(); // Call this to get an instance of the class
+    WaypointManager(float relLat, float relLong); // Call this to get an instance of the class
 
     /**
     * Constructor for this class
@@ -173,6 +173,10 @@ private:
 
     //Home base
     _PathData * homeBase;
+
+    // Relative lat and long for coordinate calcilation
+    float relativeLongitude;
+    float relativeLatitude;
 
     //Data that will be transferred
     uint16_t desiredHeading;

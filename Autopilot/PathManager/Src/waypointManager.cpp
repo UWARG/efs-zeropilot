@@ -5,11 +5,10 @@
  * Last Updated: November 2020 (Dhruv)
  */
 
-#include "../Inc/waypointManager.hpp"
+#include "waypointManager.hpp"
 
 #define LINE_FOLLOWING 0
 #define ORBIT_FOLLOWING 1
-
 
 //Constants
 #define EARTH_RADIUS 6378.137
@@ -24,19 +23,19 @@
 #define WAYPOINT_USED 1 // Used by the waypint manager to signal that a waypoint has been used
 #define HOLD_WAYPOINT 2 // Circle
 
-// Latitude and longitude of starting area... will need to change accordingly
-#define RELATIVE_LATITUDE 43.467998128
-#define RELATIVE_LONGITUDE 80.537331184
-
 static float k_gain[2] = {0.01, 1.0f};
 
 
 /*** INITIALIZATION ***/
 
 
-WaypointManager::WaypointManager() {
+WaypointManager::WaypointManager(float relLat, float relLong) {
     nextAssignedId = 0;
     currentIndex = 0;
+
+    // Sets relative long and lat
+    relativeLongitude = relLong;
+    relativeLatitude = relLat;
 
     // Sets boolean variables
     inHold = false;
@@ -198,8 +197,8 @@ int WaypointManager::get_waypoint_index_from_id(int waypointId) {
 }
 
 void WaypointManager::get_coordinates(long double longitude, long double latitude, float* xyCoordinates) { // Parameters expected to be in degrees
-    xyCoordinates[0] = get_distance(RELATIVE_LATITUDE, RELATIVE_LONGITUDE, RELATIVE_LATITUDE, longitude); //Calculates longitude (x coordinate) relative to defined origin (RELATIVE_LONGITUDE, RELATIVE_LATITUDE)
-    xyCoordinates[1] = get_distance(RELATIVE_LATITUDE, RELATIVE_LONGITUDE, latitude, RELATIVE_LONGITUDE); //Calculates latitude (y coordinate) relative to defined origin (RELATIVE_LONGITUDE, RELATIVE_LATITUDE)
+    xyCoordinates[0] = get_distance(relativeLatitude, relativeLongitude, relativeLatitude, longitude); //Calculates longitude (x coordinate) relative to defined origin (RELATIVE_LONGITUDE, RELATIVE_LATITUDE)
+    xyCoordinates[1] = get_distance(relativeLatitude, relativeLongitude, latitude, relativeLongitude); //Calculates latitude (y coordinate) relative to defined origin (RELATIVE_LONGITUDE, RELATIVE_LATITUDE)
 }
 
 float WaypointManager::get_distance(long double lat1, long double lon1, long double lat2, long double lon2) { // Parameters expected to be in degrees
@@ -280,6 +279,7 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
     Data->isDataNew = dataIsNew;
     dataIsNew = false;
     Data->timeOfData = 0;
+    Data->out_type = outputType;
 
     // Not setting time of data yet bc I think we need to come up with a way to get it???
 }
@@ -387,8 +387,6 @@ void WaypointManager::follow_orbit(float* position, float heading) {
         courseAngle -= 2 * M_PI;
     }
 
-    // std::cout << heading << " " << currentHeading << " " << orbitDistance << " " << courseAngle << std::endl;
-
     int turnDirectionConstant = 0; 
     if (turnDirection == 1) { // CW
         turnDirectionConstant = 1;
@@ -396,8 +394,7 @@ void WaypointManager::follow_orbit(float* position, float heading) {
         turnDirectionConstant = -1;
     }
 
-    // std::cout << atan(k_gain[ORBIT_FOLLOWING] * (orbitDistance - turnRadius)/turnRadius) << " " << (orbitDistance - turnRadius)/turnRadius << " " << std::endl;
-
+    // This line is causing some problems
     int calcHeading = round(90 - rad2deg(courseAngle + turnDirectionConstant * (M_PI/2 + atan(k_gain[ORBIT_FOLLOWING] * (orbitDistance - turnRadius)/turnRadius)))); //Heading in degrees (magnetic)
     
     // Normalizes heading (keeps it between 0.0 and 259.9999)
@@ -411,6 +408,7 @@ void WaypointManager::follow_orbit(float* position, float heading) {
     
     desiredHeading = calcHeading;
     distanceToNextWaypoint = 0.0;
+    outputType = ORBIT_FOLLOW;
 }
 
 void WaypointManager::follow_straight_path(float* waypointDirection, float* targetWaypoint, float* position, float heading) {
