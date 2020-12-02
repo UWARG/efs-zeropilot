@@ -6,11 +6,6 @@
 #ifndef COMM_WITH_ATTITUDE_MANAGER_HPP
 #define COMM_WITH_ATTITUDE_MANAGER_HPP
 
-extern "C"
-{
-#include "cmsis_os.h"
-}
-
 //Commands to send to attitude manager.
 typedef struct CommandsForAM{
 	float roll,pitch,yaw;	// commanded orientation (radians)
@@ -24,11 +19,6 @@ typedef struct AttitudeData{
 	float accX, accY, accZ; // accelerometer data
 	float gyrX, gyrY, gyrZ; // gyroscope data
 } AttitudeData;
-
-//Set up a mail queue for sending commands to the attitude manager
-const uint8_t COMMANDS_MAIL_Q_SIZE = 10;
-osMailQDef(commandsMailQ, COMMANDS_MAIL_Q_SIZE, CommandsForAM);
-osMailQId commandsMailQ;
 
 /**
  * Initiate communication with the attitude manager.
@@ -46,5 +36,10 @@ void SendCommandsForAM(CommandsForAM *Commands);
  * @return Attitude/airspeed data.
  */
 AttitudeData GetAttitudeData();
+
+/**
+ * Empties a mail slot so it can store new data
+ */
+void FreeAttitudeData(AttitudeData *data);
 
 #endif
