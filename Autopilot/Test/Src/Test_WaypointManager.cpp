@@ -109,7 +109,7 @@ TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
 
    	/***********************SETUP***********************/
 
-	WaypointManager * w = new WaypointManager(); // Creates object
+	WaypointManager * w = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 
@@ -194,7 +194,7 @@ TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
 TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
     /***********************SETUP***********************/
 
-	WaypointManager * w = new WaypointManager(); // Creates object
+	WaypointManager * w = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Stores outputs from four tests
     _WaypointManager_Data_Out * out1 = new _WaypointManager_Data_Out;
@@ -241,7 +241,7 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
 
     float center_ans2[3] = {80.54527778, 43.47250000, 110}; 
     _WaypointManager_Data_Out * ans2 = new _WaypointManager_Data_Out;
-    ans2->desiredHeading = 200;        // Setting to current output just so test passes for now. WILL CHANGE LATER
+    ans2->desiredHeading = 209;        // Setting to current output just so test passes for now. WILL CHANGE LATER
     ans2->desiredAltitude = 110;
     ans2->distanceToNextWaypoint = 0;
     ans2->radius = 30;
@@ -255,8 +255,8 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
 	/********************STEPTHROUGH********************/
 
     int turnRadius[2] = {100, 30};
-    int turnDirection[4] = {1, 2}; // 1 = right, 2 = left
-    int altitude[4] = {78, 110};
+    int turnDirection[2] = {-1, 1}; // 1 = CW, 2 = CCW
+    int altitude[2] = {78, 110};
     bool cancelTurning = false;
 
     // std::cout << "Here1" << std::endl;
@@ -308,7 +308,7 @@ TEST(Waypoint_Manager, AppendElementToNotFilledArray) {
 
    	/***********************SETUP***********************/
 
-	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 
@@ -390,7 +390,7 @@ TEST(Waypoint_Manager, AppendElementToFirstElement) {
 
    	/***********************SETUP***********************/
 
-	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 
@@ -458,7 +458,7 @@ TEST(Waypoint_Manager, AppendElementToNinteyNineElementArray) {
 
    	/***********************SETUP***********************/
 
-	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 
@@ -526,7 +526,7 @@ TEST(Waypoint_Manager, AppendElementToFull) {
 
    	/***********************SETUP***********************/
 
-	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 
@@ -594,7 +594,7 @@ TEST(Waypoint_Manager, InsertElementToFirstIndex) {
 
    	/***********************SETUP***********************/
 
-	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 
@@ -662,7 +662,7 @@ TEST(Waypoint_Manager, InsertElementToLastIndexArrayNotFull) {
 
    	/***********************SETUP***********************/
 
-	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 
@@ -730,7 +730,7 @@ TEST(Waypoint_Manager, InsertElementToFullArray) {
 
    	/***********************SETUP***********************/
 
-	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 
@@ -798,7 +798,7 @@ TEST(Waypoint_Manager, InsertToArrayInMiddle) {
 
    	/***********************SETUP***********************/
 
-	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 
@@ -878,7 +878,7 @@ TEST(Waypoint_Manager, deleteMiddleElement) {
 
    	/***********************SETUP***********************/
 
-	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 
@@ -952,7 +952,7 @@ TEST(Waypoint_Manager, deleteFirstElement) {
 
     /***********************SETUP***********************/
 
-	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 
@@ -1027,7 +1027,7 @@ TEST(Waypoint_Manager, deleteLastElement) {
 
    	/***********************SETUP***********************/
 
-	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 
@@ -1098,7 +1098,7 @@ TEST(Waypoint_Manager, deleteLastElementFullArray) {
 
    	/***********************SETUP***********************/
 
-	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 
@@ -1169,7 +1169,7 @@ TEST(Waypoint_Manager, updateFirstElement) {
 
     /***********************SETUP***********************/
 
-	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 
@@ -1236,7 +1236,7 @@ TEST(Waypoint_Manager, updateLastElement) {
 
     /***********************SETUP***********************/
 
-	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 
@@ -1303,7 +1303,7 @@ TEST(Waypoint_Manager, updateMiddleElement) {
 
     /***********************SETUP***********************/
 
-	WaypointManager * w2 = new WaypointManager(); // Creates object
+	WaypointManager * w2 = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
 

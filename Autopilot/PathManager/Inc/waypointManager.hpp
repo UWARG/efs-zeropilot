@@ -40,8 +40,8 @@ enum _WaypointOutputType {PATH_FOLLOW = 0, ORBIT_FOLLOW};
 
 struct _PathData {
     int waypointId;                  // Id of the waypoint
-    _PathData * next;          // Next waypoint
-    _PathData * previous;      // Previous waypoint
+    _PathData * next;               // Next waypoint
+    _PathData * previous;            // Previous waypoint
     long double latitude;             // Latitude of waypoint
     long double longitude;            // Longitude of waypoint
     int altitude;                     // Altitude of waypoint
@@ -58,7 +58,7 @@ struct _WaypointManager_Data_Out{
     int desiredAltitude;                // Desired altitude at next waypoint
     long double distanceToNextWaypoint; // Distance to the next waypoint (helps with airspeed PID)
     float radius;                       // Radius of turn if required
-    int turnDirection;                  // Direction of turn -> 1 = CW (Right bank), 2 = CCW (Left bank). (Looking down from sky)
+    int turnDirection;                  // Direction of turn -> -1 = CW (Right bank), 1 = CCW (Left bank). (Looking down from sky)
     _WaypointStatus errorCode;          // Contains error codes
     bool isDataNew;                     // Notifies PID modules if the data in this structure is new
     uint32_t timeOfData;                // The time that the data in this structure was collected
@@ -68,10 +68,16 @@ struct _WaypointManager_Data_Out{
 class WaypointManager {
 public:
 
+    /**
+    * Constructor for this class
+    *
+    * @param[in] float relLat -> This is the relative latitude of the point that will be used as (0,0) when converting lat-long coordinates to cartesian coordiantes. 
+    * @param[in] float relLong -> This is the relative longitude of the point that will be used as (0,0) when converting lat-long coordinates to cartesian coordiantes.
+    */
     WaypointManager(float relLat, float relLong); // Call this to get an instance of the class
 
     /**
-    * Constructor for this class
+    * Initializes the flight path
     *
     * @param[in] _PathData * initialWaypoints -> These waypoints will be used to initialize the waypointBuffer array
     * @param[in] int numberOfWaypoints -> Number of waypoints being initialized in the waypointBuffer array
@@ -127,8 +133,10 @@ public:
      * Even while circling, state machine should call get_next_direction().
      * When user wants to exit this cycle, user can call this method again and pass in true for cancelTurning. This will set inHold to false.
      *
+     * @param[in] _WaypointManager_Data_in currentStatus -> stores current gps info 
      * @param[in] float radius -> radius of the turn
-     * @param[in] int direction -> 1 means clockwise (bank right); 0 means counter-clock wise (bank left)
+     * @param[in] int direction -> -1 means clockwise (bank right); 1 means counter-clock wise (bank left)
+     * @param[in] int altitude -> altitude of hold pattern
      * @param[in] bool cancelTurning -> false means we want plane to orbit. True means we want plane to stop orbiting and follow waypointBuffer array
      */
     void start_circling(_WaypointManager_Data_In currentStatus, float radius, int direction, int altitude, bool cancelTurning);
@@ -169,7 +177,8 @@ private:
     int numWaypoints;
     int nextFilledIndex; // Index of the array that will be initialized next
     int nextAssignedId; // ID of the next waypoint that will be initialized
-    int currentIndex;   // Index for the waypoint in our flight path we are currently on
+    int currentIndex;   // Index for the waypoint in our flight path we are currently on (If we are going from waypint A and B, currentIndex is the index of waypoint A)
+    int orbitPathStatus; // Are we orbiting or following a straight path
 
     //Home base
     _PathData * homeBase;

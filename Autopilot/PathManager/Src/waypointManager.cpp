@@ -42,6 +42,7 @@ WaypointManager::WaypointManager(float relLat, float relLong) {
     orbiting = false; 
     goingHome = false;
     dataIsNew = false;
+    orbitPathStatus = PATH_FOLLOW;
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         waypointBufferStatus[i] = FREE;
@@ -230,7 +231,7 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
     
     // Holding is given higher priority to heading home
     if (inHold) {   // If plane is currently circling and waiting for commands
-        if(turnRadius <= 0 || turnDirection < 1 || turnDirection > 2) {
+        if(turnRadius <= 0 || turnDirection < -1 || turnDirection > 1) {
             return UNDEFINED_FAILURE;
         }
 
@@ -261,6 +262,10 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
         return errorCode;
     }
 
+    // Sets position array
+    get_coordinates(currentStatus.longitude, currentStatus.latitude, position);
+    position[2] = (float) currentStatus.altitude;
+
     // Calls method to follow waypoints
     follow_waypoints(waypointBuffer[currentIndex], (float*) position, currentHeading);
 
@@ -287,6 +292,7 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
 void WaypointManager::start_circling(_WaypointManager_Data_In currentStatus, float radius, int direction, int altitude, bool cancelTurning) {
     if (!cancelTurning) {
         inHold = true;
+
         desiredAltitude = altitude;
         turnRadius = radius;
         turnDirection = direction;
@@ -303,9 +309,9 @@ void WaypointManager::start_circling(_WaypointManager_Data_In currentStatus, flo
         turnCenter[2] = desiredAltitude;
         float turnCenterBearing = 0.0f; // Bearing of line pointing to the center point of the turn
 
-        if (turnDirection == 1) {
+        if (turnDirection == -1) { // CW
             turnCenterBearing = currentHeading + 90;
-        } else if (turnDirection == 2) {
+        } else if (turnDirection == 1) { // CCW
             turnCenterBearing = currentHeading - 90;
         }
 
@@ -335,7 +341,6 @@ void WaypointManager::start_circling(_WaypointManager_Data_In currentStatus, flo
         #endif
 
         get_coordinates(rad2deg(turnCenter[0]), rad2deg(turnCenter[1]), turnCenter);
-
     } else {
         inHold = false;
     }
@@ -362,7 +367,74 @@ void WaypointManager::follow_hold_pattern(float* position, float heading) {
 }
 
 void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* position, float heading) {
+    float waypointPosition[3]; 
+    get_coordinates(currentWaypoint->longitude, currentWaypoint->latitude, waypointPosition);
+    waypointPosition[2] = currentWaypoint->altitude;
 
+    if (currentWaypoint->next == nullptr) { // If target waypoint is not defined
+
+    }
+    if (currentWaypoint->next->next == nullptr) { // If waypoint after target waypoint is not defined
+
+    }
+
+    // Defines target waypoint
+    _PathData * targetWaypoint = currentWaypoint->next;
+    float targetCoordinates[3];
+    get_coordinates(targetWaypoint->longitude, targetWaypoint->latitude, targetCoordinates);
+    targetCoordinates[2] = targetWaypoint->altitude;
+
+    // Defines waypoint after target waypoint
+    _PathData* waypointAfterTarget = targetWaypoint->next;
+    float waypointAfterTargetCoordinates[3];
+    get_coordinates(waypointAfterTarget->longitude, waypointAfterTarget->latitude, waypointAfterTargetCoordinates);
+    waypointAfterTargetCoordinates[2] = waypointAfterTarget->altitude;
+
+    // Gets the unit vectors representing the direction towards the target waypoint
+    float waypointDirection[3];
+    float norm = sqrt(pow(targetCoordinates[0] - waypointPosition[0],2) + pow(targetCoordinates[1] - waypointPosition[1],2) + pow(targetCoordinates[2] - waypointPosition[2],2));
+    waypointDirection[0] = (targetCoordinates[0] - waypointPosition[0])/norm;
+    waypointDirection[1] = (targetCoordinates[1] - waypointPosition[1])/norm;
+    waypointDirection[2] = (targetCoordinates[2] - waypointPosition[2])/norm;
+
+    // Gets the unit vectors representing the direction vector from the target waypoint to the waypoint after the target waypoint 
+    float nextWaypointDirection[3];
+    float norm2 = sqrt(pow(waypointAfterTargetCoordinates[0] - targetCoordinates[0],2) + pow(waypointAfterTargetCoordinates[1] - targetCoordinates[1],2) + pow(waypointAfterTargetCoordinates[2] - targetCoordinates[2],2));
+    nextWaypointDirection[0] = (waypointAfterTargetCoordinates[0] - targetCoordinates[0])/norm2;
+    nextWaypointDirection[1] = (waypointAfterTargetCoordinates[1] - targetCoordinates[1])/norm2;
+    nextWaypointDirection[2] = (waypointAfterTargetCoordinates[2] - targetCoordinates[2])/norm2;
+
+    float turningAngle = acos(-deg2rad(waypointDirection[0] * nextWaypointDirection[0] + waypointDirection[1] * nextWaypointDirection[1] + waypointDirection[2] * nextWaypointDirection[2]));
+    float tangentFactor = targetWaypoint->turnRadius/tan(turningAngle/2);
+
+     float halfPlane[3];
+        halfPlane[0] = targetCoordinates[0] - tangentFactor * waypointDirection[0];
+        halfPlane[1] = targetCoordinates[1] - tangentFactor * waypointDirection[1];
+        halfPlane[2] = targetCoordinates[2] - tangentFactor * waypointDirection[2];
+
+    if (orbitPathStatus = PATH_FOLLOW) {
+        float dotProduct = waypointDirection[0] * (position[0] - halfPlane[0]) + waypointDirection[1] * (position[1] - halfPlane[1]) + waypointDirection[2] * (position[2] - halfPlane[2]);
+        if (dotProduct > 0){
+            orbitPathStatus = ORBIT_FOLLOW;
+            if (targetWaypoint->waypointType == HOLD_WAYPOINT) {
+                inHold = true;
+            }
+        }
+    }  else {
+        // Determines turn direction (CCW returns 2; CW returns 1)
+        turnDirection = waypointDirection[0] * nextWaypointDirection[1] - waypointDirection[1] * nextWaypointDirection[0]>0?2:1;
+        
+        // WHAT THE FUCK IS HAPPENING HERE
+        float euclideanWaypointDirection = sqrt(pow(nextWaypointDirection[0] - waypointDirection[0],2) + pow(nextWaypointDirection[1] - waypointDirection[1],2) + pow(nextWaypointDirection[2] - waypointDirection[2],2)) * ((nextWaypointDirection[0] - waypointDirection[0]) < 0?-1:1) * ((nextWaypointDirection[1] - waypointDirection[1]) < 0?-1:1) * ((nextWaypointDirection[2] - waypointDirection[2]) < 0?-1:1);
+
+        // Determines coordinates of the turn center
+        turnCenter[0] = targetCoordinates[0] + (tangentFactor * (nextWaypointDirection[0] - waypointDirection[0])/euclideanWaypointDirection);
+        turnCenter[1] = targetCoordinates[1] + (tangentFactor * (nextWaypointDirection[1] - waypointDirection[1])/euclideanWaypointDirection);
+        turnCenter[2] = targetCoordinates[2] + (tangentFactor * (nextWaypointDirection[2] - waypointDirection[2])/euclideanWaypointDirection);
+
+    }
+
+    currentIndex++;
 }
 
 void WaypointManager::follow_line_segment(_PathData * currentWaypoint, float* position, float heading) {
@@ -387,15 +459,8 @@ void WaypointManager::follow_orbit(float* position, float heading) {
         courseAngle -= 2 * M_PI;
     }
 
-    int turnDirectionConstant = 0; 
-    if (turnDirection == 1) { // CW
-        turnDirectionConstant = 1;
-    } else if (turnDirection == 2) { // CCW
-        turnDirectionConstant = -1;
-    }
-
     // This line is causing some problems
-    int calcHeading = round(90 - rad2deg(courseAngle + turnDirectionConstant * (M_PI/2 + atan(k_gain[ORBIT_FOLLOWING] * (orbitDistance - turnRadius)/turnRadius)))); //Heading in degrees (magnetic)
+    int calcHeading = round(90 - rad2deg(courseAngle + turnDirection * (M_PI/2 + atan(k_gain[ORBIT_FOLLOWING] * (orbitDistance - turnRadius)/turnRadius)))); //Heading in degrees (magnetic)
     
     // Normalizes heading (keeps it between 0.0 and 259.9999)
     while (calcHeading >= 360.0) {
