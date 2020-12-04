@@ -1,6 +1,5 @@
 #include "main.hpp"
 #include "Debug.hpp"
-#include "safety_control.h"
 #include "GPIO.hpp"
 #include "Clock.hpp"
 #include "UART.hpp"
@@ -9,6 +8,8 @@
 #include "Watchdog.hpp"
 #include "Profiler.h"
 #include "stm32f0xx_hal.h"
+#include "stm32f0xx_hal_iwdg.h"
+#include "safety_controller.hpp"
 
 char buffer[200]; //buffer for printing
 StatusCode UARTinit();
@@ -16,9 +17,13 @@ StatusCode setupPWM(PWMManager &manager);
 StatusCode setupPPM(PPMChannel &ppm);
 void print_ppm_state(char *buffer, PPMChannel &ppm);
 
+IWDG_HandleTypeDef hiwdg2; //HAL Watchdog Decleration
+
+
 int main() {
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
+	HAL_IWDG_Init(&hiwdg2); //Start the watchdog
 
 	StatusCode status;
 
@@ -46,11 +51,13 @@ int main() {
 	led1.set_state(GPIO_STATE_LOW);
 	led2.set_state(GPIO_STATE_LOW);
 
+	safety_controller_init();
 
 	while (true) 
 	{
 		led1.set_state(GPIO_STATE_HIGH);
 		led2.set_state(GPIO_STATE_HIGH);
+		safety_run(hiwdg2, ppm);
 
 	}
 }

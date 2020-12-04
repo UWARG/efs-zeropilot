@@ -14,6 +14,8 @@
  *  Timer14 - PPM
  *  PPM PIN - B1
  */
+#ifndef PPM_H
+#define PPM_H
 
 #include <stdint.h>
 #include "GPIO.hpp"
@@ -96,3 +98,5 @@ class PPMChannel {
 	bool is_setup = false;
 	GPIOPin ppm_pin;
 };
+
+#endif
