@@ -1,7 +1,7 @@
 #include "safety_controller.hpp"
 #include "PWM.hpp"
 #include "Interchip.h"
-#include "interchip_S.c"
+#include "interchip_S.hpp"
 #include "stdlib.h"
 #include "stm32f0xx_hal_iwdg.h"
 
@@ -17,7 +17,7 @@ void safety_controller_init()
     
     dataTX = (Interchip_StoA_Packet*) malloc(sizeof(Interchip_StoA_Packet));
     dataRX = (Interchip_AtoS_Packet*) malloc(sizeof(Interchip_AtoS_Packet));
-    //Interchip_Init(dataTX, dataRX);
+    Interchip_Init(dataTX, dataRX);
 }
 
 void safety_run(IWDG_HandleTypeDef &hiwdg, PPMChannel &ppm)
