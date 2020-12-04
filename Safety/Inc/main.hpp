@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../../Common/Inc/GPIO.hpp"
+#include "stm32f0xx_hal.h"
 
+void Error_Handler(void);
 
 const GPIOPort LED1_GPIO_PORT = GPIO_PORT_C;
 const GPIOPinNum LED1_GPIO_PIN = 10;
