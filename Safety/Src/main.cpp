@@ -1,4 +1,7 @@
-#include "main.hpp"
+#ifdef EVERYONE_IS_HIGH
+
+
+#include "main.h"
 #include "Debug.hpp"
 #include "safety_control.h"
 #include "GPIO.hpp"
@@ -22,6 +25,9 @@ int main() {
 
 	//set clock sources
 	initialize_system_clock();
+
+
+  #if 0
 	gpio_init();
 	init_debug(UART_PORT1, true);
 
@@ -62,12 +68,16 @@ int main() {
 	manager.channel(11).set(100);
 	manager.channel(12).set(50);
 
+  #endif
+
 	PPMChannel ppm;
 	ppm.setNumChannels(8);
 	ppm.setLimits(1, 1000, 2000, 50);
 	status = ppm.setup();
 	ppm.setTimeout(200);
 	info("PPM Setup", status);
+
+  #if 0
 
 	GPIOPin led1 = GPIOPin(LED1_GPIO_PORT, LED1_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
 	GPIOPin led2 = GPIOPin(LED2_GPIO_PORT, LED2_GPIO_PIN, GPIO_OUTPUT, GPIO_STATE_LOW, GPIO_RES_NONE);
@@ -109,7 +119,14 @@ int main() {
 	init_profiler(&init);
 
 	bool toggle = false;
+
+  #endif
+
 	while (true) {
+
+    __NOP();
+
+    #if 0
 
 		start_profile(&init);
 
@@ -144,6 +161,8 @@ int main() {
 
 		int len = print_profile_stats("init", buffer, &init);
 		info(buffer);
+
+    #endif
 	}
 }
 
@@ -164,3 +183,5 @@ void print_ppm_state(char *buffer, PPMChannel &ppm) {
 
 	sprintf(&buffer[len], "PPM Disconnected? : %d\r\n", ppm.is_disconnected(get_system_time()));
 }
+
+#endif

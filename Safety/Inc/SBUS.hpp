@@ -8,6 +8,8 @@
  *  https://raw.githubusercontent.com/UWARG/ZeroPilot-SW/devel/LICENSE.md
  */
 
+#if 0
+
 #pragma once
 
 #include <stdint.h>
@@ -54,3 +56,5 @@ class SBUSPort {
 	UARTPort port;
 	SBUSSettings settings;
 };
+
+#endif
