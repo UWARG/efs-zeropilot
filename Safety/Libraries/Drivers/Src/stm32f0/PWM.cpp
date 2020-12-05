@@ -4,6 +4,7 @@
 #include "stm32f0xx_hal.h"
 #include <math.h>
 
+#if 0
 typedef struct PWMPinConfig {
 	GPIOPinNum num;
 	GPIOPort port;
@@ -19,7 +20,7 @@ struct PWMCounterSettings {
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim3;
-TIM_HandleTypeDef htim15;
+// TIM_HandleTypeDef htim15; No !
 TIM_HandleTypeDef htim16;
 TIM_HandleTypeDef htim17;
 
@@ -381,3 +382,5 @@ static StatusCode init_timer(TIM_HandleTypeDef *timer,
 	}
 	return STATUS_CODE_OK;
 }
+
+#endif

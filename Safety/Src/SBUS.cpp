@@ -1,5 +1,5 @@
 #include "SBUS.hpp"
-
+#if 0
 SBUSPort::SBUSPort(UARTPortNum num, SBUSSettings settings) {
 	UARTSettings port_settings;
 	port_settings.rx_inverted = true;
@@ -47,3 +47,5 @@ uint32_t SBUSPort::get_us(PWMChannelNum num) {
 bool SBUSPort::is_disconnected(uint32_t sys_time) {
 	return false;
 }
+
+#endif

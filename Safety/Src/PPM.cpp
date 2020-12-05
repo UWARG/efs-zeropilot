@@ -1,21 +1,10 @@
 #include "PPM.hpp"
-#include "GPIO.hpp"
-#include "Clock.hpp"
 #include "tim.h"
 #include <stdint.h>
 #include "stm32f0xx_hal.h"
 
 //number of milliseconds expected between subsequent PPM packets
 uint32_t PPM_PACKET_TIMEOUT = 3;
-
-extern StatusCode get_status_code(HAL_StatusTypeDef status);
-
-//if modifying the below pin numbers, also modify the ISR routine down below to match
-static const GPIOPinNum PPM_PIN_NUM = 14;
-static const GPIOPort PPM_PORT = GPIO_PORT_B;
-
-static const uint16_t TIMER_PRESCALER = 2; // since we're capturing 2000us max signal
-static const uint16_t TIMER_PERIOD = 0xFFFF;
 
 static uint8_t num_channels = 0;
 static volatile uint16_t capture_value[MAX_PPM_CHANNELS] = {0};
@@ -25,11 +14,16 @@ static volatile uint8_t ppm_index = 0;
 volatile uint32_t ppm_last_received_time = 0;
 volatile uint8_t ppm_packet_timeout_reached = 1;
 
+
+
+#if 0
+
 // 1 tick is prescaler / 48000000Hz (internal clock)
 //therefore capture in us = capture * prescaler * 1E6 / 8E6
 inline static uint32_t convert_ticks_to_us(int32_t ticks) {
 	return (ticks * (TIMER_PRESCALER + 1)) / (get_system_clock() / (1000000UL));
 }
+#endif
 
 PPMChannel::PPMChannel(uint8_t channels, uint32_t timeout) {
 	if (channels > MAX_PPM_CHANNELS || channels <= 0) {
@@ -46,8 +40,8 @@ PPMChannel::PPMChannel(uint8_t channels, uint32_t timeout) {
 		deadzones[i] = 0;
 	}
 
-	ppm_pin =
-		GPIOPin(PPM_PORT, PPM_PIN_NUM, GPIO_ALT_PP, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_FREQ_LOW, GPIO_AF0_TIM15);
+	HAL_TIM_IC_Start_IT(&htim15, TIM_CHANNEL_1);
+  	HAL_TIM_IC_Start_IT(&htim15, TIM_CHANNEL_2);
 }
 
 StatusCode PPMChannel::setLimits(uint8_t channel, uint32_t min, uint32_t max, uint32_t deadzone) {
@@ -78,12 +72,15 @@ StatusCode PPMChannel::setNumChannels(uint8_t num) {
 	return STATUS_CODE_OK;
 }
 
+
+#if 0
 uint8_t PPMChannel::get(PWMChannelNum num) {
 	if (num <= 0 || num > num_channels) {
 		return 0;
 	}
 
 	int32_t capture = capture_value[num - 1];
+
 
 	// 1 tick is prescaler / 48000000Hz (internal clock)
 	//therefore capture in us = capture * prescaler * 1E6 / 8E6
@@ -105,6 +102,10 @@ uint8_t PPMChannel::get(PWMChannelNum num) {
 	return (uint8_t) percent;
 }
 
+#endif
+
+#if 0
+
 uint32_t PPMChannel::get_us(PWMChannelNum num) {
 	if (num <= 0 || num > num_channels) {
 		return 0;
@@ -113,32 +114,7 @@ uint32_t PPMChannel::get_us(PWMChannelNum num) {
 	int32_t capture = capture_value[num - 1];
 	return convert_ticks_to_us(capture);
 }
-
-StatusCode PPMChannel::setup() {
-	if (is_setup) {
-		return STATUS_CODE_INVALID_ARGS;
-	}
-	__HAL_RCC_TIM15_CLK_ENABLE();
-
-  	MX_TIM15_Init();
-
-
-	return STATUS_CODE_OK;
-}
-
-StatusCode PPMChannel::reset() {
-	if (!is_setup) {
-		return STATUS_CODE_INVALID_ARGS;
-	}
-
-	__HAL_RCC_TIM15_CLK_DISABLE();
-	StatusCode status = ppm_pin.reset();
-	HAL_NVIC_DisableIRQ(TIM15_IRQn);
-
-	is_setup = false;
-
-	return status;
-}
+#endif
 
 bool PPMChannel::is_disconnected(uint32_t sys_time) {
 	bool disconnected = (sys_time - ppm_last_received_time) >= this->disconnect_timeout;
@@ -155,7 +131,11 @@ bool PPMChannel::is_disconnected(uint32_t sys_time) {
 
 //our interrupt callback for when we get a pulse capture
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
+
+// We can get here! Up to yall to figure out how the hell to interpret PPm though. It's 4am... I'm done lmao.
 	if (htim->Instance == TIM15) {
+
+		#if 0
 		ppm_last_received_time = get_system_time();
 		auto time_diff = (uint16_t) HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 
@@ -166,8 +146,12 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 
 		capture_value[ppm_index] = time_diff;
 		ppm_index = (uint8_t) (ppm_index + 1) % num_channels;
+		#endif
+
 		__HAL_TIM_SET_COUNTER(htim, 0);
 	}
+
+
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
