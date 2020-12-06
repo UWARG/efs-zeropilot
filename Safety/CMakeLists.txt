@@ -27,6 +27,10 @@ file(GLOB_RECURSE C_SOURCES  "boardfiles/Drivers/STM32F0xx_HAL_Driver/Src*.c" "b
 file(GLOB_RECURSE CXX_SOURCES "boardfiles/Src/*.cpp" "Src/*.cpp")
 
 
+if( EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/boardfiles/Src/main.c")
+  message( FATAL_ERROR "Hey Bub, you screwed up, but it's all good. You see, CubeMx generates a main.c rather than a main.cpp, so before generation, you need to change the extension of boardfiles/Src/main.cpp to boardfiles/Src/main.c, allowing cubeMX to update your main file. Then, after generation, rename the file to boardfiles/Src/main.cpp." )
+endif()
+
 set(STARTUP_ASM startup_stm32f030xc.s)
 set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F030RCTx_FLASH.ld)
 
