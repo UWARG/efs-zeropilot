@@ -274,10 +274,14 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
     // std::cout << "Here1 --> " << position[0] << " " << position[1] << " " << position[2] << std::endl;
 
     // Calls method to follow waypoints
-    follow_waypoints(waypointBuffer[currentIndex], (float*) position, currentHeading);
+    follow_waypoints(waypointBuffer[currentIndex], position, currentHeading);
 
     dataIsNew = true;
+
+    // std::cout << "setting!" << std::endl;
     update_return_data(Data); // Updates the return structure
+    // std::cout << "returning!" << std::endl;
+
     return errorCode;
 }
 
@@ -379,10 +383,14 @@ void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* posit
     waypointPosition[2] = currentWaypoint->altitude;
 
     if (currentWaypoint->next == nullptr) { // If target waypoint is not defined
+        // std::cout << "Next not defined" << std::endl;
         follow_last_line_segment(currentWaypoint, position, heading);
+        return;
     }
     if (currentWaypoint->next->next == nullptr) { // If waypoint after target waypoint is not defined
+        // std::cout << "Next to next not defined" << std::endl;
         follow_line_segment(currentWaypoint, position, heading);
+        return;
     }
 
     // Defines target waypoint
@@ -494,6 +502,15 @@ void WaypointManager::follow_line_segment(_PathData * currentWaypoint, float* po
     waypointDirection[1] = (targetCoordinates[1] - waypointPosition[1])/norm;
     waypointDirection[2] = (targetCoordinates[2] - waypointPosition[2])/norm;
 
+    // Calculates distance to next waypoint
+    float distanceToWaypoint = sqrt(pow(targetCoordinates[0] - position[0],2) + pow(targetCoordinates[1] - position[1],2) + pow(targetCoordinates[2] - position[2],2));
+    distanceToNextWaypoint = distanceToWaypoint; // Stores distance to next waypoint :))
+
+    // std::cout << "Here1.1 --> " << waypointDirection[0] << " " << waypointDirection[1] << " " << waypointDirection[2] << std::endl;
+    // std::cout << "Here1.2 --> " << targetCoordinates[0] << " " << targetCoordinates[1] << " " << targetCoordinates[2] << std::endl;
+    // std::cout << "Here1.3 --> " << waypointPosition[0] << " " << waypointPosition[1] << " " << waypointPosition[2] << std::endl;
+    // std::cout << heading << std::endl;
+
     follow_straight_path(waypointDirection, targetCoordinates, position, heading);
 }
 
@@ -514,9 +531,19 @@ void WaypointManager::follow_last_line_segment(_PathData * currentWaypoint, floa
     waypointDirection[1] = (targetCoordinates[1] - waypointPosition[1])/norm;
     waypointDirection[2] = (targetCoordinates[2] - waypointPosition[2])/norm;
 
+    // Calculates distance to next waypoint
+    float distanceToWaypoint = sqrt(pow(targetCoordinates[0] - position[0],2) + pow(targetCoordinates[1] - position[1],2) + pow(targetCoordinates[2] - position[2],2));
+    distanceToNextWaypoint = distanceToWaypoint; // Stores distance to next waypoint :))
+
     float dotProduct = waypointDirection[0] * (position[0] - targetCoordinates[0]) + waypointDirection[1] * (position[1] - targetCoordinates[1]) + waypointDirection[2] * (position[2] - targetCoordinates[2]);
     if (dotProduct > 0){
-        inHold = true; 
+        inHold = true;
+        turnDirection = 1; // Automatically turn CCW
+        turnRadius = 50;
+        turnDesiredAltitude = targetWaypoint->altitude;
+        turnCenter[0] = targetWaypoint->longitude;
+        turnCenter[1] = targetWaypoint->latitude;
+        turnCenter[2] = turnDesiredAltitude; 
     }
 
     follow_straight_path(waypointDirection, targetCoordinates, position, heading);
@@ -583,10 +610,12 @@ void WaypointManager::follow_straight_path(float* waypointDirection, float* targ
     desiredHeading = calcHeading;
     outputType = PATH_FOLLOW;
     desiredAltitude = targetWaypoint[2];
+
     if (!inHold) {
         turnRadius = 0;
         turnDirection = 0;
     }
+    // std::cout << "Done!" << std::endl;
 }
 
 float WaypointManager::maintain_altitude(_PathData* currentPath) {
