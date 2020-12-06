@@ -2,7 +2,7 @@
  * Waypoint Manager Methods and Helpers
  * Author: Dhruv Rawat
  * Created: November 2020
- * Last Updated: November 2020 (Dhruv)
+ * Last Updated: December 2020 (Dhruv)
  */
 
 #ifndef WAYPOINT_MANAGER_H
@@ -11,7 +11,6 @@
 #include <iostream>
 #include <stdlib.h>
 #include <math.h>
-
 
 #define PATH_BUFFER_SIZE 100
 
@@ -32,21 +31,21 @@ enum _WaypointBufferStatus {FREE = 0, FULL};
 enum _WaypointBufferUpdateType {APPEND_WAYPOINT = 0, UPDATE_WAYPOINT, INSERT_WAYPOINT, DELETE_WAYPOINT};
 
 // Used to specify the type of output
-enum _WaypointOutputType {PATH_FOLLOW = 0, ORBIT_FOLLOW};
+enum _WaypointOutputType {PATH_FOLLOW = 0, ORBIT_FOLLOW, HOLD_WAYPOINT};
 
 /**
 * Structure stores information about the waypoints along our path to the destination and back.
 */
 
 struct _PathData {
-    int waypointId;                  // Id of the waypoint
-    _PathData * next;               // Next waypoint
-    _PathData * previous;            // Previous waypoint
+    int waypointId;                   // Id of the waypoint
+    _PathData * next;                 // Next waypoint
+    _PathData * previous;             // Previous waypoint
     long double latitude;             // Latitude of waypoint
     long double longitude;            // Longitude of waypoint
     int altitude;                     // Altitude of waypoint
     float turnRadius;                 // if hold is commanded (type = 2), then this is the radius of the hold cycle
-    int waypointType;                // 0 = regular waypoint, 2 = hold waypoint (plane will circle)
+    _WaypointOutputType waypointType; // 0 = regular waypoint, 2 = hold waypoint (plane will circle)
 };
 
 /**
@@ -162,8 +161,8 @@ public:
      * Parameters have the same name as their corresponding parameters in the _Pathdata struct.
      */
     _PathData* initialize_waypoint();                                                                                              // Creates a blank waypoint
-    _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, int waypointType);                   // Initialize a regular waypoint
-    _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, int waypointType, float turnRadius); // Initialize a "hold" waypoint
+    _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, _WaypointOutputType waypointType);                   // Initialize a regular waypoint
+    _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, _WaypointOutputType waypointType, float turnRadius); // Initialize a "hold" waypoint
 
     // For testing purposes only:
     float orbitCentreLat;
@@ -200,9 +199,9 @@ private:
     _WaypointStatus errorStatus;
     bool inHold; // Set to true when start_circling() is called
     float turnCenter[3];
+    int turnDesiredAltitude;
     int turnDirection; // 1 for CW, 2 for CCW
     float turnRadius;
-    bool orbiting; //When this is true, the plane is orbiting
 
     //Helper Methods
     void follow_hold_pattern(float* position, float heading);
@@ -237,9 +236,9 @@ private:
      */
     int destroy_waypoint(_PathData * waypoint);
 
-    int get_waypoint_index_from_id(int waypointId);                                   // If provided a waypoint id, this method finds the element index in the waypointBuffer array
+    int get_waypoint_index_from_id(int waypointId);                                              // If provided a waypoint id, this method finds the element index in the waypointBuffer array
 
-    _WaypointStatus append_waypoint(_PathData* newWaypoint);                            // Adds a waypoint to the first free element in the waypointBuffer (array)
+    _WaypointStatus append_waypoint(_PathData* newWaypoint);                                     // Adds a waypoint to the first free element in the waypointBuffer (array)
     _WaypointStatus insert_new_waypoint(_PathData* newWaypoint, int previousId, int nextId);     // Inserts new waypoint in between the specified waypoints (identified using the waypoint IDs). Note, you cannot insert a waypoint to waypointBuffer[0] or waypointBuffer[PATH_BUFFER_SIZE-1]
     _WaypointStatus delete_waypoint(int waypointId);                                             // Deletes the waypoint with the specified ID
     _WaypointStatus update_waypoint(_PathData* updatedWaypoint, int waypointId);                 // Updates the waypoint with the specified ID
