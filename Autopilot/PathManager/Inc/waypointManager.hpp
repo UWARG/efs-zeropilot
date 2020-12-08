@@ -45,7 +45,7 @@ struct _PathData {
     long double longitude;            // Longitude of waypoint
     int altitude;                     // Altitude of waypoint
     float turnRadius;                 // if hold is commanded (type = 2), then this is the radius of the hold cycle
-    _WaypointOutputType waypointType; // 0 = regular waypoint, 2 = hold waypoint (plane will circle)
+    _WaypointOutputType waypointType; 
 };
 
 /**

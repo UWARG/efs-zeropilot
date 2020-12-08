@@ -194,7 +194,7 @@ TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
 TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
     /***********************SETUP***********************/
 
-	WaypointManager * w = new WaypointManager(43.467998128, 80.537331184); // Creates object
+    WaypointManager * w = new WaypointManager(43.467998128, -80.537331184); // Creates object
 
     // Stores outputs from four tests
     _WaypointManager_Data_Out * out1 = new _WaypointManager_Data_Out;
@@ -202,14 +202,14 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
     _WaypointManager_Data_Out * out2 = new _WaypointManager_Data_Out;;
 
     // Creates two test values!
-    _WaypointManager_Data_In setup1 = {43.467998128, 80.537331184, 100, 100};  // latitude, longitude, altitude, heading
-    _WaypointManager_Data_In setup2 = {43.467998128, 80.537331184, 100, 30};  // latitude, longitude, altitude, heading
-    
-    _WaypointManager_Data_In input1 = {43.467998128, 80.537331184, 100, 100};  // latitude, longitude, altitude, heading
-    _WaypointManager_Data_In input2 = {43.467998128, 80.537331184, 100, 30};  // latitude, longitude, altitude, heading
+    _WaypointManager_Data_In setup1 = {43.467998128, -80.537331184, 100, 100};  // latitude, longitude, altitude, heading
+    _WaypointManager_Data_In setup2 = {43.467998128, -80.537331184, 100, 30};  // latitude, longitude, altitude, heading
+
+    _WaypointManager_Data_In input1 = {43.467998128, -80.537331184, 100, 100};  // latitude, longitude, altitude, heading
+    _WaypointManager_Data_In input2 = {43.467998128, -80.537331184, 100, 30};  // latitude, longitude, altitude, heading
 
     // Stores answers for four tests
-    float center_ans1[3] = {80.54500000, 43.47138889, 78}; // longitude, latitude, altitude
+    float center_ans1[3] = {-80.54500000, 43.47138889, 78}; // longitude, latitude, altitude
     _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
     ans1->desiredHeading = 100;        
     ans1->desiredAltitude = 78;
@@ -221,9 +221,9 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
     ans1->timeOfData = 0;
     ans1->out_type = ORBIT_FOLLOW;
 
-    float center_ans2[3] = {80.54527778, 43.47250000, 110}; 
+    float center_ans2[3] = {-80.54527778, 43.47250000, 110}; 
     _WaypointManager_Data_Out * ans2 = new _WaypointManager_Data_Out;
-    ans2->desiredHeading = 29;       
+    ans2->desiredHeading = 30;       
     ans2->desiredAltitude = 110;
     ans2->distanceToNextWaypoint = 0;
     ans2->radius = 30;
@@ -234,16 +234,15 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
     ans2->out_type = ORBIT_FOLLOW;
 
 
-	/********************STEPTHROUGH********************/
+    /********************STEPTHROUGH********************/
 
     int turnRadius[2] = {100, 30};
     int turnDirection[2] = {-1, 1}; // 1 = CW, 2 = CCW
     int altitude[2] = {78, 110};
-    bool cancelTurning = false;
 
     // std::cout << "Here1" << std::endl;
 
-    w->start_circling(setup1, turnRadius[0], turnDirection[0], altitude[0], cancelTurning); // Sets circling
+    w->start_circling(setup1, turnRadius[0], turnDirection[0], altitude[0], false); // Sets circling
 
     _WaypointStatus s1 = w->get_next_directions(input1, out1);
 
@@ -259,7 +258,7 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
 
     // std::cout << "Here3" << std::endl;
 
-    w->start_circling(setup2, turnRadius[1], turnDirection[1], altitude[1], cancelTurning); // Sets circling
+    w->start_circling(setup2, turnRadius[1], turnDirection[1], altitude[1], false); // Sets circling
 
     _WaypointStatus s2 =w->get_next_directions(input2, out2);
 
@@ -269,8 +268,8 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
 
     _OutputStatus test2_center = compare_coordinates(center_ans2, response);
     _OutputStatus test2_output = compare_output_data(ans2, out2);
-	
-	/**********************ASSERTS**********************/
+
+    /**********************ASSERTS**********************/
 
     ASSERT_EQ(s1, WAYPOINT_SUCCESS);
     ASSERT_EQ(s2, WAYPOINT_SUCCESS);
@@ -373,7 +372,6 @@ TEST(Waypoint_Manager, DesiredHeadingStraightPathFollow) {
     ASSERT_EQ(o1, OUTPUT_CORRECT);
     ASSERT_EQ(o2, OUTPUT_CORRECT);
 }
-
 
 TEST(Waypoint_Manager, DesiredHeadingWhenNextToNextWaypointNotDefined) {
     /***********************SETUP***********************/
@@ -508,14 +506,12 @@ TEST(Waypoint_Manager, DesiredHeadingNextWaypointNotDefined) {
     1. 43.47075830402289, -80.5479053969044
     2. 43.469649460242174, -80.55044911526599
     3. 43.46764349709017, -80.54172626568685
-    4. 43.46430420301871, -80.54806720987989
     */
     float latitudes[numPaths] = {43.47075830402289, 43.469649460242174, 43.46764349709017};
     float longitudes[numPaths] = {-80.5479053969044, -80.55044911526599, -80.54172626568685};
     float altitudes[numPaths] = {10, 20, 30};
 
     // Creates waypoint array
-
     _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
     _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
 
@@ -557,21 +553,137 @@ TEST(Waypoint_Manager, DesiredHeadingNextWaypointNotDefined) {
     ASSERT_EQ(o2, OUTPUT_CORRECT);
 }
 
-// TEST(Waypoint_Manager, DesiredHeadingOrbitFollow) {
-//  /***********************SETUP***********************/
+TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
+    /***********************SETUP***********************/
+    WaypointManager * w = new WaypointManager(43.467998128, -80.537331184); // Creates object
 
-// 	/********************STEPTHROUGH********************/
+    // Stores outputs from four tests
+    _WaypointManager_Data_Out * out1 = new _WaypointManager_Data_Out;
+    _WaypointManager_Data_Out * out2 = new _WaypointManager_Data_Out;
+    _WaypointManager_Data_Out * out3 = new _WaypointManager_Data_Out;
+    
+    // Creates two test values!    
+    _WaypointManager_Data_In input1 = {43.567998128, -80.437331184, 11, 100};  // latitude, longitude, altitude, heading
+    _WaypointManager_Data_In input2 = {43.369649460242174, -80.37044911526599, 34, 86};  // latitude, longitude, altitude, heading
+    _WaypointManager_Data_In input3 = {43.469649460242174, -80.55044911526599, 34, 86};  // latitude, longitude, altitude, heading
+
+    // Stores answers for four tests
+    _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
+    ans1->desiredHeading = 215;        
+    ans1->desiredAltitude = 45;
+    ans1->distanceToNextWaypoint = 13755;
+    ans1->radius = 0;
+    ans1->turnDirection = 0;
+    ans1->errorCode = WAYPOINT_SUCCESS;
+    ans1->isDataNew = true;
+    ans1->timeOfData = 0;
+    ans1->out_type = PATH_FOLLOW;
+
+    _WaypointManager_Data_Out * ans2 = new _WaypointManager_Data_Out;
+    ans2->desiredHeading = 310;       
+    ans2->desiredAltitude = 45;
+    ans2->distanceToNextWaypoint = 17368;
+    ans2->radius = 0;
+    ans2->turnDirection = 0;
+    ans2->errorCode = WAYPOINT_SUCCESS;
+    ans2->isDataNew = true;
+    ans2->timeOfData = 0;
+    ans2->out_type = PATH_FOLLOW;
+
+    _WaypointManager_Data_Out * ans3 = new _WaypointManager_Data_Out;
+    ans3->desiredHeading = 153;        
+    ans3->desiredAltitude = 33;
+    ans3->distanceToNextWaypoint = 625;
+    ans3->radius = 0;
+    ans3->turnDirection = 0;
+    ans3->errorCode = WAYPOINT_SUCCESS;
+    ans3->isDataNew = true;
+    ans3->timeOfData = 0;
+    ans3->out_type = PATH_FOLLOW;
+
+    const int numPaths = 6;
+
+    // Defines flight path
+    /*
+    Waypoints:
+    1. 43.47075830402289, -80.5479053969044
+    2. 43.469649460242174, -80.55044911526599
+    3. 43.46764349709017, -80.54172626568685
+    4. 43.46430420301871, -80.54806720987989
+    5. 43.461854997441996, -80.5406705046026
+    6. 43.46144872072057, -80.53505945389745
+    */
+    float latitudes[numPaths] = {43.47075830402289, 43.469649460242174, 43.46764349709017, 43.46430420301871, 43.461854997441996, 43.46144872072057};
+    float longitudes[numPaths] = {-80.5479053969044, -80.55044911526599, -80.54172626568685, -80.54806720987989, -80.5406705046026, -80.53505945389745};
+    float altitudes[numPaths] = {10, 20, 30, 33, 32, 50};
+    
+    //Initializes ID array
+    int id_array[500];
+    for(int i = 0; i < 500; i++) {
+        id_array[i] = 0;
+    }
+
+    // Creates waypoint array
+    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+
+    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
+        status[i] = FREE;
+    }
+
+    for(int i = 0; i < numPaths; i++) {
+        initialPaths[i] = w->initialize_waypoint(longitudes[i], latitudes[i], altitudes[i], PATH_FOLLOW);
+        id_array[i] = initialPaths[i]->waypointId;
+    }
+
+    // Creates home object
+    _PathData * homeBase = w->initialize_waypoint(-80.537331184, 43.467998128, 45, HOLD_WAYPOINT);
+
+    _WaypointStatus e1 = w->initialize_flight_path(initialPaths, numPaths, homeBase); // Creates flight path
+
+	/********************STEPTHROUGH********************/
+
+    w->head_home();
+    _PathData ** testArray = new _PathData * [PATH_BUFFER_SIZE];
+    _PathData ** ansArray = new _PathData * [PATH_BUFFER_SIZE];
+    testArray = w->get_waypoint_buffer();
+
+    _ArrayStatus a1 = compare_arrays(ansArray, testArray, 0);
+    _ArrayStatus a2 = compare_buffer_status(status, w);
+
+    _WaypointStatus e2 = w->get_next_directions(input1, out1);
+    _OutputStatus o1 = compare_output_data(ans1, out1);
+
+    _WaypointStatus e3 = w->get_next_directions(input2, out2);
+    _OutputStatus o2 = compare_output_data(ans2, out2);
+
+    for(int i = 0; i < numPaths; i++) {
+        initialPaths[i] = w->initialize_waypoint(longitudes[i], latitudes[i], altitudes[i], PATH_FOLLOW);
+        id_array[i] = initialPaths[i]->waypointId;
+    }
+
+    // Re-initializes flight path and gets next direction
+    _WaypointStatus e4 = w->initialize_flight_path(initialPaths, numPaths); // Creates flight path
+    w->head_home(); // Cancels holding
+    _WaypointStatus e5 = w->get_next_directions(input3, out3); 
+    _OutputStatus o3 = compare_output_data(ans3, out3);
+
 	
-// 	/**********************ASSERTS**********************/
-// }
+	/**********************ASSERTS**********************/
 
-// TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
-//  /***********************SETUP***********************/
+    ASSERT_EQ(e1, WAYPOINT_SUCCESS);
+    ASSERT_EQ(e2, WAYPOINT_SUCCESS);
+    ASSERT_EQ(e3, WAYPOINT_SUCCESS);
+    ASSERT_EQ(e4, WAYPOINT_SUCCESS);
+    ASSERT_EQ(e5, WAYPOINT_SUCCESS);
 
-// 	/********************STEPTHROUGH********************/
-	
-// 	/**********************ASSERTS**********************/
-// }
+    ASSERT_EQ(a1, ARRAY_SUCCESS);
+    ASSERT_EQ(a2, ARRAY_SUCCESS);
+
+    ASSERT_EQ(o1, OUTPUT_CORRECT);
+    ASSERT_EQ(o2, OUTPUT_CORRECT);
+    ASSERT_EQ(o3, OUTPUT_CORRECT);
+}
 
 
 /************************ TESTING MODIFYING THE FLIGHT PATH ************************/

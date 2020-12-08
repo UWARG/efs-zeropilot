@@ -18,13 +18,7 @@
 #define deg2rad(angle_in_degrees) ((angle_in_degrees) * M_PI/180.0)
 #define rad2deg(angle_in_radians) ((angle_in_radians) * 180.0/M_PI)
 
-//Waypoint Types
-#define DEFAULT_WAYPOINT 0 // Used to navigate flight path
-#define WAYPOINT_USED 1 // Used by the waypint manager to signal that a waypoint has been used
-#define HOLD_WAYPOINT 2 // Circle
-
 static float k_gain[2] = {0.01, 1.0f};
-
 
 /*** INITIALIZATION ***/
 
@@ -104,6 +98,10 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
         errorStatus = UNDEFINED_FAILURE;
         return errorStatus;
     }
+
+    #if UNIT_TESTING
+        currentIndex = 2;
+    #endif
 
     numWaypoints = numberOfWaypoints;
     nextFilledIndex = 0;
@@ -227,13 +225,15 @@ float WaypointManager::get_distance(long double lat1, long double lon1, long dou
 
 
 _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In currentStatus, _WaypointManager_Data_Out *Data) {
-    
+
+    errorCode = WAYPOINT_SUCCESS;
+
     // Gets current position
     float position[3]; 
 
     // Gets current heading
     float currentHeading = (float) currentStatus.heading;
-    
+
     // Holding is given higher priority to heading home
     if (inHold) {   // If plane is currently circling and waiting for commands
         if(turnRadius <= 0 || turnDirection < -1 || turnDirection > 1) {
@@ -248,22 +248,11 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
         // Calculates desired heading 
         follow_hold_pattern(position, currentHeading);
 
+        // Updates the return structure
         outputType = ORBIT_FOLLOW;
-
         dataIsNew = true;
+        update_return_data(Data); 
 
-        update_return_data(Data); // Updates the return structure
-
-        return errorCode;
-    }
-
-    get_coordinates(currentStatus.longitude, currentStatus.latitude, position);
-    position[2] = currentStatus.altitude;
-
-    if (goingHome) { // If plane was instructed to go back to base (and is awaiting for waypointBuffer to be updated)
-        // Do stuff
-        dataIsNew = true;
-        update_return_data(Data); // Updates the return structure
         return errorCode;
     }
 
@@ -271,16 +260,47 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
     get_coordinates(currentStatus.longitude, currentStatus.latitude, position);
     position[2] = (float) currentStatus.altitude;
 
-    // std::cout << "Here1 --> " << position[0] << " " << position[1] << " " << position[2] << std::endl;
+    if (goingHome) { // If plane was instructed to go back to base (and is awaiting for waypointBuffer to be updated)
+        if (!homeBase) {
+            return UNDEFINED_FAILURE;
+        }
+
+        // Creates a path data object to represent current position
+        _PathData * currentPosition = new _PathData;
+        currentPosition->latitude = currentStatus.latitude;
+        currentPosition->longitude = currentStatus.longitude;
+        currentPosition->altitude = currentStatus.altitude;
+        currentPosition->turnRadius = -1;
+        currentPosition->waypointType = PATH_FOLLOW;
+        currentPosition->previous = nullptr;
+        currentPosition->next = homeBase;
+
+        // Updates home base object accordingly
+        homeBase->previous = currentPosition;
+        homeBase->next = nullptr;
+        homeBase->waypointType = HOLD_WAYPOINT;
+
+        follow_waypoints(currentPosition, position, currentHeading);
+        
+        // Updates the return structure
+        dataIsNew = true;
+        update_return_data(Data); 
+
+        // Removes currentPosition path data object from memory
+        homeBase->previous = nullptr;
+        delete currentPosition; 
+
+        return errorCode;
+    }
 
     // Calls method to follow waypoints
     follow_waypoints(waypointBuffer[currentIndex], position, currentHeading);
 
-    dataIsNew = true;
+    // std::cout << "Normal nav" << std::endl;
 
-    // std::cout << "setting!" << std::endl;
-    update_return_data(Data); // Updates the return structure
-    // std::cout << "returning!" << std::endl;
+    // Updates the return structure
+    dataIsNew = true;
+    update_return_data(Data); 
 
     return errorCode;
 }
@@ -348,7 +368,7 @@ void WaypointManager::start_circling(_WaypointManager_Data_In currentStatus, flo
             orbitCentreLat = rad2deg(turnCenter[1]);
             orbitCentreAlt = turnCenter[2];
 
-            // // std::cout << "Check 1: Lat - " << orbitCentreLat << " " << orbitCentreLong << std::endl;
+            // std::cout << "Check 1: Lat - " << orbitCentreLat << " " << orbitCentreLong << std::endl;
         #endif
 
         get_coordinates(rad2deg(turnCenter[0]), rad2deg(turnCenter[1]), turnCenter);
@@ -469,9 +489,10 @@ void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* posit
         turnCenter[1] = targetCoordinates[1] + (tangentFactor * (nextWaypointDirection[1] - waypointDirection[1])/euclideanWaypointDirection);
         turnCenter[2] = targetCoordinates[2] + (tangentFactor * (nextWaypointDirection[2] - waypointDirection[2])/euclideanWaypointDirection);
 
-        // if target waypoint is a hold waypoint the plane will follow the orbit until the break hold method is called
+        // if target waypoint is a hold waypoint the plane will follow the orbit until start_circling is called again
         if (inHold == true) {
             follow_orbit(position, heading);
+            return;
         }
 
         float dotProduct = nextWaypointDirection[0] * (position[0] - halfPlane[0]) + nextWaypointDirection[1] * (position[1] - halfPlane[1]) + nextWaypointDirection[2] * (position[2] - halfPlane[2]);
@@ -483,6 +504,10 @@ void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* posit
         if (euclideanWaypointDirection == 0){
             orbitPathStatus = PATH_FOLLOW;
         }
+
+        outputType = ORBIT_FOLLOW;
+
+        follow_orbit(position, heading);
     }
 }
 
@@ -536,6 +561,7 @@ void WaypointManager::follow_last_line_segment(_PathData * currentWaypoint, floa
     distanceToNextWaypoint = distanceToWaypoint; // Stores distance to next waypoint :))
 
     float dotProduct = waypointDirection[0] * (position[0] - targetCoordinates[0]) + waypointDirection[1] * (position[1] - targetCoordinates[1]) + waypointDirection[2] * (position[2] - targetCoordinates[2]);
+    
     if (dotProduct > 0){
         inHold = true;
         turnDirection = 1; // Automatically turn CCW
@@ -564,7 +590,7 @@ void WaypointManager::follow_orbit(float* position, float heading) {
     }
 
     // This line is causing some problems
-    int calcHeading = round(90 - rad2deg(courseAngle + turnDirection * (M_PI/2 + atan(k_gain[ORBIT_FOLLOWING] * (orbitDistance - turnRadius)/turnRadius)))); //Heading in degrees (magnetic)
+    int calcHeading = round(90 - rad2deg(courseAngle + turnDirection * (M_PI/2 + atan(k_gain[ORBIT_FOLLOW] * (orbitDistance - turnRadius)/turnRadius)))); //Heading in degrees (magnetic)
     
     // Normalizes heading (keeps it between 0.0 and 259.9999)
     while (calcHeading >= 360.0) {
@@ -651,7 +677,7 @@ void WaypointManager::clear_path_nodes() {
             int destroyedId = destroy_waypoint(waypointBuffer[i]); // Remove waypoint from the heap
         }
         waypointBufferStatus[i] = FREE; // Set array element free
-        waypointBuffer[i] = 0; //Set buffer element to empty struct
+        waypointBuffer[i] = nullptr; //Set buffer element to empty struct
     }
     // Resets buffer status variables
     numWaypoints = 0;
@@ -662,6 +688,8 @@ void WaypointManager::clear_path_nodes() {
 
 int WaypointManager::destroy_waypoint(_PathData *waypoint) {
     int destroyedId = waypoint->waypointId;
+    waypoint->next = nullptr;
+    waypoint->previous = nullptr;
     delete waypoint; // Free heap memory
     return destroyedId;
 }
