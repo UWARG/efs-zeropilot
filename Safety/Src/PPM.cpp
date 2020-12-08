@@ -2,6 +2,7 @@
 #include "tim.h"
 #include <stdint.h>
 #include "stm32f0xx_hal.h"
+#include "PWM.hpp"
 
 //number of milliseconds expected between subsequent PPM packets
 uint32_t PPM_PACKET_TIMEOUT = 3;
