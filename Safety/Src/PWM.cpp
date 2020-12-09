@@ -31,6 +31,15 @@ static const PWMPinConfig PWM_CONFIG[MAX_CHANNELS] =
 
 };
 
+void PWMChannel::setup()
+{
+    for(int i = 0; i < MAX_CHANNELS; i++)
+    {
+        PWMPinConfig currentChannel = PWM_CONFIG[i];
+        HAL_TIM_PWM_Start(currentChannel.timer,currentChannel.timer_channel);
+    }
+}
+
 void PWMChannel::set(uint8_t channel, uint8_t percent)
 {
     PWMPinConfig currentChannel = PWM_CONFIG[channel-1];
