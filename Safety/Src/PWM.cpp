@@ -44,7 +44,7 @@ void PWMChannel::set(uint8_t channel, uint8_t percent)
 {
     PWMPinConfig currentChannel = PWM_CONFIG[channel-1];
     uint32_t prescaler = (static_cast<TIM_HandleTypeDef *>(currentChannel.timer))->Init.Prescaler;
-	uint32_t us = ((percent * (PWMChannel::max_signal - PWMChannel::min_signal)) / 100 + min_signal);
+	uint32_t us = ((percent * 10 * (PWMChannel::max_signal - PWMChannel::min_signal)) / 100 + min_signal);
 	uint32_t ticks = (us * (48000000/1000000UL)) / (prescaler + 1);
     __HAL_TIM_SET_COMPARE((TIM_HandleTypeDef *) currentChannel.timer, currentChannel.timer_channel, (uint32_t) ticks);
     
