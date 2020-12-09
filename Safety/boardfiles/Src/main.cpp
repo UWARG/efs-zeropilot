@@ -181,18 +181,14 @@ int main(void)
   while (1)
   {
   /* USER CODE END WHILE */
+  
     
 
   /* USER CODE BEGIN 3 */
-    
-    for(int j = 0; j <= 100; j++)
-    {
-      for(int i = 1; i <= 8; i++)
-      {
-        pwm.set(i, j);
-      }
-      toggleLED();
-    }
+    pwm.set(4, 100);
+    toggleLED();
+    pwm.set(4, 0);
+    toggleLED();
     
   }
   /* USER CODE END 3 */
@@ -268,7 +264,7 @@ void toggleLED()
   HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
   HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
 
-  HAL_Delay(50);
+  HAL_Delay(200);
 
 }
 
