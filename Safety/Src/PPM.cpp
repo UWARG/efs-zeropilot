@@ -1,19 +1,25 @@
 #include "PPM.hpp"
 #include "tim.h"
 #include <stdint.h>
-#include "stm32f0xx_hal.h"
+//#include "stm32f0xx_hal.h"
 #include "PWM.hpp"
+
+
+#define BASE_FREQUENCY 48000000
+#define SEC_TO_MICROSEC 1000000
 
 //number of milliseconds expected between subsequent PPM packets
 uint32_t PPM_PACKET_TIMEOUT = 3;
-
-static uint8_t num_channels = 0;
-static volatile uint16_t capture_value[MAX_PPM_CHANNELS] = {0};
+PWMChannelNum num_channels = 0;
+//static uint8_t num_channels = 0;
+//static volatile uint16_t capture_value[MAX_PPM_CHANNELS] = {0};
+static volatile uint32_t ppm_values[MAX_PPM_CHANNELS] = {0};
 static volatile uint8_t ppm_index = 0;
 
 //these variables are used in the systick interrupt routine
-volatile uint32_t ppm_last_received_time = 0;
-volatile uint8_t ppm_packet_timeout_reached = 1;
+//volatile uint32_t ppm_last_received_time = 0;
+//volatile uint8_t ppm_packet_timeout_reached = 1;
+
 
 
 
@@ -35,7 +41,7 @@ PPMChannel::PPMChannel(uint8_t channels, uint32_t timeout) {
 	this->disconnect_timeout = timeout;
 
 	for (int i = 0; i < MAX_PPM_CHANNELS; i++) {
-		capture_value[i] = 0;
+		ppm_values[i] = 0;
 		min_values[i] = 1000;
 		max_values[i] = 2000;
 		deadzones[i] = 0;
@@ -57,13 +63,13 @@ StatusCode PPMChannel::setLimits(uint8_t channel, uint32_t min, uint32_t max, ui
 	return STATUS_CODE_OK;
 }
 
-StatusCode PPMChannel::setTimeout(uint32_t timeout) {
-	if (timeout > 0) {
-		this->disconnect_timeout = timeout;
-		return STATUS_CODE_OK;
-	}
-	return STATUS_CODE_INVALID_ARGS;
-}
+// StatusCode PPMChannel::setTimeout(uint32_t timeout) {
+// 	if (timeout > 0) {
+// 		this->disconnect_timeout = timeout;
+// 		return STATUS_CODE_OK;
+// 	}
+// 	return STATUS_CODE_INVALID_ARGS;
+// }
 
 StatusCode PPMChannel::setNumChannels(uint8_t num) {
 	if (num <= 0 || num > MAX_PPM_CHANNELS) {
@@ -116,7 +122,7 @@ uint32_t PPMChannel::get_us(PWMChannelNum num) {
 	return convert_ticks_to_us(capture);
 }
 #endif
-
+/*
 bool PPMChannel::is_disconnected(uint32_t sys_time) {
 	bool disconnected = (sys_time - ppm_last_received_time) >= this->disconnect_timeout;
 
@@ -129,14 +135,47 @@ bool PPMChannel::is_disconnected(uint32_t sys_time) {
 
 	return disconnected;
 }
+*/
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+	if (htim->Instance == TIM15) { // only timer we care about
+		ppm_index = 0;
+	}
+}
+
+//fix the int division
+uint32_t counter_to_time(uint16_t count, uint32_t psc) {
+	return count / (BASE_FREQUENCY/(psc+1)) * SEC_TO_MICROSEC;
+	//count divided by counter frequency to get time
+}
+
+uint8_t time_to_percentage(uint32_t max, uint32_t min, uint32_t deadzone, uint32_t time) {
+	if(time < deadzone) {
+		return 0;
+	}
+
+	return ((time-min)/(max-min)) * 100;
+}
 
 //our interrupt callback for when we get a pulse capture
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 
 // We can get here! Up to yall to figure out how the hell to interpret PPm though. It's 4am... I'm done lmao.
 	if (htim->Instance == TIM15) {
+		
+		uint16_t count_since_last = __HAL_TIM_GET_COUNTER(htim);
+		__HAL_TIM_SET_COUNTER(htim, 0);
 
-		#if 0
+		//convert counter to time
+		ppm_values[ppm_index] = counter_to_time(count_since_last, htim->Init.Prescaler);
+		
+		ppm_index++;
+		if(ppm_index >= num_channels) {
+			ppm_index = 0;
+		}
+		//get_system_time
+
+	/*	#if 0
 		ppm_last_received_time = get_system_time();
 		auto time_diff = (uint16_t) HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 
@@ -149,14 +188,24 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 		ppm_index = (uint8_t) (ppm_index + 1) % num_channels;
 		#endif
 
-		__HAL_TIM_SET_COUNTER(htim, 0);
-	}
-
-
-}
-
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-	if (htim->Instance == TIM15) { // only timer we care about
-		ppm_index = 0;
+		__HAL_TIM_SET_COUNTER(htim, 0); */
 	}
 }
+
+uint32_t PPMChannel::get_us(PWMChannelNum num)
+{
+	if(num >= num_channels || num >= MAX_PPM_CHANNELS) {
+		return 0;
+	}
+	return ppm_values[num];
+}
+
+uint8_t PPMChannel::get(PWMChannelNum num)
+{
+	if(num >= num_channels || num >= MAX_PPM_CHANNELS) {
+		return 0;
+	}
+	return time_to_percentage(max_values[num], min_values[num], deadzones[num], ppm_values[num]);
+}
+
+

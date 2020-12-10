@@ -47,12 +47,12 @@ class PPMChannel {
 	 */
 	StatusCode setLimits(uint8_t channel, uint32_t min, uint32_t max, uint32_t deadzone);
 
-	/**
-	 * Set the disconnect timeout
-	 * @param timeout
-	 * @return
-	 */
-	StatusCode setTimeout(uint32_t timeout);
+	// /**
+	//  * Set the disconnect timeout
+	//  * @param timeout
+	//  * @return
+	//  */
+	// StatusCode setTimeout(uint32_t timeout);
 
 	/**
 	 * Returns a percent value that was most recently received from the PPM channel, as a percentage
@@ -82,4 +82,8 @@ class PPMChannel {
 	int32_t max_values[MAX_PPM_CHANNELS]; //stores max tick values for each channel
 	uint32_t disconnect_timeout;
 	bool is_setup = false;
+
+//	uint32_t counter_to_time(uint16_t count, uint32_t psc);
+//	uint8_t time_to_percentage(uint32_t max, uint32_t min, uint32_t deadzone, uint32_t time);
+
 };
