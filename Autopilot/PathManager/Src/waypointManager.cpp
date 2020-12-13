@@ -511,19 +511,35 @@ void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* posit
         turnCenter[1] = targetCoordinates[1] + (tangentFactor * (nextWaypointDirection[1] - waypointDirection[1])/euclideanWaypointDirection);
         turnCenter[2] = targetCoordinates[2] + (tangentFactor * (nextWaypointDirection[2] - waypointDirection[2])/euclideanWaypointDirection);
 
-        // if target waypoint is a hold waypoint the plane will follow the orbit until start_circling is called again
-        if (inHold == true) {
-            follow_orbit(position, heading);
-            return;
-        }
-
         float dotProduct = nextWaypointDirection[0] * (position[0] - halfPlane[0]) + nextWaypointDirection[1] * (position[1] - halfPlane[1]) + nextWaypointDirection[2] * (position[2] - halfPlane[2]);
+        
         if (dotProduct > 0){
+            /*
+                It makes the most sense to increment the current index here. 
+
+                To explain this, I will define three waypoints: A, B, and C. The waypoints are located in adjacent indeces in 
+                the waypointBuffer array in alphabetic order. 
+
+                Let's say that the currentIndex initially pointed at waypoint A, meaning the plane was travelling from A to B. 
+                Since the lines AB and BC are not parallel, the plane needs to execute a (fabulous) turn before reaching waypoint 
+                B so it can travel along line BC. Now, this if statement is triggered when the plane has finished its turn and is 
+                now travelling along line BC. 
+
+                As a result, it makes sense that we increment the currentIndex parameter here since now we are targeting waypoint C 
+                (meaning we need to set waypoint B as the curent waypoint).
+
+                (NB: We will need to test to see if it is possible to accidentally trigger this)
+            */   
+            currentIndex++; 
+
             orbitPathStatus = PATH_FOLLOW;
         }
 
         //If two waypoints are parallel to each other (no turns)
         if (euclideanWaypointDirection == 0){
+            // For same reasons above, since the waypoints are parallel, we can switch the current waypoint and target the next one
+            currentIndex++;
+
             orbitPathStatus = PATH_FOLLOW;
         }
 
@@ -862,3 +878,6 @@ _PathData * WaypointManager::get_home_base() {
     return homeBase;
 }
 
+int WaypointManager::get_current_index() {
+    return currentIndex;
+}

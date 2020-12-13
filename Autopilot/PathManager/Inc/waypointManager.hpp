@@ -174,6 +174,11 @@ public:
     _WaypointBufferStatus get_status_of_index(int index);
 
     /**
+     * @return the value of the current index. 
+     */ 
+    int get_current_index();
+
+    /**
      * @return returns the _PathData pointer of the home base 
      */ 
     _PathData * get_home_base();
@@ -258,3 +263,4 @@ private:
 };
 
 #endif
+
