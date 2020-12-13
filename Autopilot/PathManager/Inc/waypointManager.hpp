@@ -1,5 +1,5 @@
 /**
- * Waypoint Manager Methods and Helpers
+ * Define Waypoint Manager Class and Helpers
  * Author: Dhruv Rawat
  * Created: November 2020
  * Last Updated: December 2020 (Dhruv)

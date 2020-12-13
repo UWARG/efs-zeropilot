@@ -972,7 +972,7 @@ TEST(Waypoint_Manager, AppendElementToFullAndReturnError) {
 	ASSERT_EQ(a, ARRAY_SUCCESS); // Tests equality of the two parameters
     ASSERT_EQ(c, ARRAY_SUCCESS); // Tests equality of the two parameters
     ASSERT_EQ(e1, WAYPOINT_SUCCESS); // Tests equality of the two parameters
-    ASSERT_EQ(e2, UNDEFINED_FAILURE); // Tests equality of the two parameters
+    ASSERT_EQ(e2, INVALID_PARAMETERS); // Tests equality of the two parameters
 }
 
 TEST(Waypoint_Manager, InsertElementToFirstIndexAndReturnError) {
@@ -1040,7 +1040,7 @@ TEST(Waypoint_Manager, InsertElementToFirstIndexAndReturnError) {
 	ASSERT_EQ(a, ARRAY_SUCCESS); // Tests equality of the two parameters
     ASSERT_EQ(c, ARRAY_SUCCESS); // Tests equality of the two parameters
     ASSERT_EQ(e1, WAYPOINT_SUCCESS); // Tests equality of the two parameters
-    ASSERT_EQ(e2, UNDEFINED_FAILURE); // Tests equality of the two parameters
+    ASSERT_EQ(e2, INVALID_PARAMETERS); // Tests equality of the two parameters
 }
 
 TEST(Waypoint_Manager, InsertElementToLastIndexArrayNotFullAndReturnError) {
@@ -1108,7 +1108,7 @@ TEST(Waypoint_Manager, InsertElementToLastIndexArrayNotFullAndReturnError) {
 	ASSERT_EQ(a, ARRAY_SUCCESS); // Tests equality of the two parameters
     ASSERT_EQ(c, ARRAY_SUCCESS); // Tests equality of the two parameters
     ASSERT_EQ(e1, WAYPOINT_SUCCESS); // Tests equality of the two parameters
-    ASSERT_EQ(e2, UNDEFINED_FAILURE); // Tests equality of the two parameters
+    ASSERT_EQ(e2, INVALID_PARAMETERS); // Tests equality of the two parameters
 }
 
 TEST(Waypoint_Manager, InsertElementToFullArrayAndReturnError) {
@@ -1176,7 +1176,7 @@ TEST(Waypoint_Manager, InsertElementToFullArrayAndReturnError) {
 	ASSERT_EQ(a, ARRAY_SUCCESS); // Tests equality of the two parameters
     ASSERT_EQ(c, ARRAY_SUCCESS); // Tests equality of the two parameters
     ASSERT_EQ(e1, WAYPOINT_SUCCESS); // Tests equality of the two parameters
-    ASSERT_EQ(e2, UNDEFINED_FAILURE); // Tests equality of the two parameters
+    ASSERT_EQ(e2, INVALID_PARAMETERS); // Tests equality of the two parameters
 }
 
 TEST(Waypoint_Manager, InsertToArrayInMiddle) {
