@@ -22,7 +22,7 @@ struct _WaypointManager_Data_In {
 };
 
 // Stores error codes for the waypoint manager
-enum _WaypointStatus {WAYPOINT_SUCCESS = 0, WAYPOINT_UNDEFINED, INVALID_PARAMETER, UNDEFINED_FAILURE};
+enum _WaypointStatus {WAYPOINT_SUCCESS = 0, UNDEFINED_FAILURE, CURRENT_INDEX_INVALID, UNDEFINED_PARAMETER, INVALID_PARAMETERS};
 
 // Used in the waypointBufferStatus array to signal which elements are free
 enum _WaypointBufferStatus {FREE = 0, FULL};
@@ -86,12 +86,64 @@ public:
     _WaypointStatus initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints);                             // Sets flight path
 
     /**
+     * Called by state machine to create new _PathData objects. This moves all heap allocation and ID management to the waypoint manager, giving the state machine less work
+     *
+     * First method returns an empty structure with only the ID initialized
+     * Second method initializes a regular waypoint
+     * Third method initializes a "hold" waypoint
+     *
+     * Parameters have the same name as their corresponding parameters in the _Pathdata struct.
+     */
+    _PathData* initialize_waypoint();                                                                                              // Creates a blank waypoint
+    _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, _WaypointOutputType waypointType);                   // Initialize a regular waypoint
+    _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, _WaypointOutputType waypointType, float turnRadius); // Initialize a "hold" waypoint
+
+    /**
     * Updates the _WaypointManager_Data_Out structure with new values.
     *
     * @param[in] _Waypoint_Data_In currentPosition -> contains the current coordinates, altitude, and heading
     * @param[out] _WaypointManager_Data_Out &Data -> Memory address for a structure that holds the data for the state machine
     */
     _WaypointStatus get_next_directions(_WaypointManager_Data_In currentStatus, _WaypointManager_Data_Out *Data);
+
+    /**
+     * Called if user wants the plane to start circling
+     *
+     * Even while circling, state machine should call get_next_direction().
+     * When user wants to exit this cycle, user can call this method again and pass in true for cancelTurning. This will set inHold to false.
+     *
+     * @param[in] _WaypointManager_Data_in currentStatus -> stores current gps info 
+     * @param[in] float radius -> radius of the turn
+     * @param[in] int direction -> -1 means clockwise (bank right); 1 means counter-clock wise (bank left)
+     * @param[in] int altitude -> altitude of hold pattern
+     * @param[in] bool cancelTurning -> false means we want plane to orbit. True means we want plane to stop orbiting and follow waypointBuffer array
+     */
+    void start_circling(_WaypointManager_Data_In currentStatus, float radius, int direction, int altitude, bool cancelTurning);
+
+    /**
+     * Called if user wants the plane to just head home
+     *
+     * Steps:
+     *  - The method will clear the waypointBuffer array
+     *  - Since gps coordiantes of the home base are already stored in the homeBase parameter, the plane will just fly towards that direction
+     *  - As the plane flies, the state machine can call update_path_nodes() to update the waypointBuffer array. The state machine should also keep calling get_next_directions() to get desired heading and altitude
+     *  - Once the waypoints are set, user can call this method again to make the plane follow the waypointBuffer array. (when calling this the second time, goingHome will be set to False)
+     * 
+     *  Returns true if goingHome was set to true. Returns false otherwise. Note that if the homeBase parameter is not initialized, this method will return false automatically
+     */
+    bool head_home();
+
+    /**
+     *  Called if user wants to change the waypoint that the plane is currently trying to target. 
+     *  How it works: Say you have waypoint m, n, y, and z. z comes after y. Currently, the plane is at waypoint m and is heading for n, but you want the plane to change and start heading for z. To do this, call this function and pass in the waypointId
+     *  of y. Done!
+     * 
+     *  @param[in] int id -> id of the waypoint that we want to set as the current waypoint (the plane will head towards the waypoint that is stored in its "next" parameter)
+     * 
+     *  @return -> returns error code in case the transfer was not successful
+     */ 
+
+    _WaypointStatus change_current_index(int id);
 
     /**
     * Adds, inserts, updates, or deletes a single waypoint in the waypointBuffer array
@@ -125,44 +177,6 @@ public:
      * @return returns the _PathData pointer of the home base 
      */ 
     _PathData * get_home_base();
-
-    /**
-     * Called if user wants the plane to start circling
-     *
-     * Even while circling, state machine should call get_next_direction().
-     * When user wants to exit this cycle, user can call this method again and pass in true for cancelTurning. This will set inHold to false.
-     *
-     * @param[in] _WaypointManager_Data_in currentStatus -> stores current gps info 
-     * @param[in] float radius -> radius of the turn
-     * @param[in] int direction -> -1 means clockwise (bank right); 1 means counter-clock wise (bank left)
-     * @param[in] int altitude -> altitude of hold pattern
-     * @param[in] bool cancelTurning -> false means we want plane to orbit. True means we want plane to stop orbiting and follow waypointBuffer array
-     */
-    void start_circling(_WaypointManager_Data_In currentStatus, float radius, int direction, int altitude, bool cancelTurning);
-
-    /**
-     * Called if user wants the plane to just head home
-     *
-     * Steps:
-     *  - The method will clear the waypointBuffer array
-     *  - Since gps coordiantes of the home base are already stored in the homeBase parameter, the plane will just fly towards that direction
-     *  - As the plane flies, the state machine can call update_path_nodes() to update the waypointBuffer array. The state machine should also keep calling get_next_directions() to get desired heading and altitude
-     *  - Once the waypoints are set, user can call this method again to make the plane follow the waypointBuffer array. (when calling this the second time, goingHome will be set to False)
-     */
-    void head_home();
-
-    /**
-     * Called by state machine to create new _PathData objects. This moves all heap allocation and ID management to the waypoint manager, giving the state machine less work
-     *
-     * First method returns an empty structure with only the ID initialized
-     * Second method initializes a regular waypoint
-     * Third method initializes a "hold" waypoint
-     *
-     * Parameters have the same name as their corresponding parameters in the _Pathdata struct.
-     */
-    _PathData* initialize_waypoint();                                                                                              // Creates a blank waypoint
-    _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, _WaypointOutputType waypointType);                   // Initialize a regular waypoint
-    _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, _WaypointOutputType waypointType, float turnRadius); // Initialize a "hold" waypoint
 
     // For testing purposes only:
     float orbitCentreLat;
@@ -210,7 +224,6 @@ private:
     void follow_last_line_segment(_PathData * currentWaypoint, float* position, float heading);                       // In the instance where the next waypoint is not defined, follow previously defined path
     void follow_orbit(float* position, float heading);                                                                // Makes the plane follow an orbit with defined radius and direction
     void follow_straight_path(float* waypointDirection, float* targetWaypoint, float* position, float heading);       // Makes a plane follow a straight path (straight line following)
-    float maintain_altitude(_PathData* currentPath);                                                                  // Makes plane maintain altitude
 
     void update_return_data(_WaypointManager_Data_Out *Data);       // Updates data in the output structure
 

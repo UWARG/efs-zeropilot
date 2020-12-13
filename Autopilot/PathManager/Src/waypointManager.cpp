@@ -220,6 +220,18 @@ float WaypointManager::get_distance(long double lat1, long double lon1, long dou
     }
 }
 
+_WaypointStatus WaypointManager::change_current_index(int id) {
+    int waypointIndex = get_waypoint_index_from_id(id); // Gets index of waypoint in waypointBuffer array
+
+    if (waypointIndex == -1 || waypointBuffer[waypointIndex]->next == nullptr || waypointBuffer[waypointIndex]->next->next == nullptr) { // If waypoint with set id does not exist. Or if the next waypoint or next to next waypoints are not defined. 
+        return INVALID_PARAMETERS;
+    }
+
+    currentIndex = waypointIndex; // If checks pass, then the current index value is updated
+    
+    return WAYPOINT_SUCCESS;
+}
+
 
 /*** NAVIGATION ***/
 
@@ -237,7 +249,7 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
     // Holding is given higher priority to heading home
     if (inHold) {   // If plane is currently circling and waiting for commands
         if(turnRadius <= 0 || turnDirection < -1 || turnDirection > 1) {
-            return UNDEFINED_FAILURE;
+            return INVALID_PARAMETERS;
         }
 
         // Sets position array
@@ -262,7 +274,7 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
 
     if (goingHome) { // If plane was instructed to go back to base (and is awaiting for waypointBuffer to be updated)
         if (!homeBase) {
-            return UNDEFINED_FAILURE;
+            return UNDEFINED_PARAMETER;
         }
 
         // Creates a path data object to represent current position
@@ -291,6 +303,10 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
         delete currentPosition; 
 
         return errorCode;
+    }
+
+    if (numWaypoints - currentIndex < 1 && numWaypoints >= 0) { // Ensures that the currentIndex parameter will not cause a segmentation fault
+        return CURRENT_INDEX_INVALID;
     }
 
     // Calls method to follow waypoints
@@ -377,12 +393,18 @@ void WaypointManager::start_circling(_WaypointManager_Data_In currentStatus, flo
     }
 }
 
-void WaypointManager::head_home() {
+bool WaypointManager::head_home() {
+    if (homeBase == nullptr) { // Checks if home waypoint is actually initialized.
+        return false;
+    }
+
     if (!goingHome) {
         clear_path_nodes(); // Clears path nodes so state machine can input new flight path
         goingHome = true;
+        return true;
     } else {
         goingHome = false;
+        return false;
     }
 }
 
@@ -644,17 +666,13 @@ void WaypointManager::follow_straight_path(float* waypointDirection, float* targ
     // std::cout << "Done!" << std::endl;
 }
 
-float WaypointManager::maintain_altitude(_PathData* currentPath) {
-
-}
-
 
 /*** FLIGHT PATH MANAGEMENT ***/
 
 
 _WaypointStatus WaypointManager::update_path_nodes(_PathData * waypoint, _WaypointBufferUpdateType updateType, int waypointId, int previousId, int nextId) {
     if (numWaypoints == PATH_BUFFER_SIZE && (updateType == APPEND_WAYPOINT || updateType == INSERT_WAYPOINT)) { // If array is already full, if we insert it will overflow
-        return UNDEFINED_FAILURE;
+        return INVALID_PARAMETERS;
     }
 
     // Conducts a different operation based on the update type
@@ -701,7 +719,7 @@ _WaypointStatus WaypointManager::append_waypoint(_PathData * newWaypoint) {
 
     // Before initializing elements, checks if new waypoint is not a duplicate
     if (previousIndex != -1 && waypointBuffer[previousIndex]->latitude == newWaypoint->latitude && waypointBuffer[previousIndex]->longitude == newWaypoint->longitude) {
-        return UNDEFINED_FAILURE;
+        return INVALID_PARAMETERS;
     }
 
     waypointBuffer[nextFilledIndex] = newWaypoint;
@@ -730,7 +748,7 @@ _WaypointStatus WaypointManager::insert_new_waypoint(_PathData* newWaypoint, int
 
     // If any of the waypoints could not be found. Or, if the two IDs do not correspond to adjacent elements in waypointBuffer[]
     if (nextIndex == -1 || previousIndex == -1 || nextIndex - 1 != previousIndex || nextIndex == 0){
-        return UNDEFINED_FAILURE;
+        return INVALID_PARAMETERS;
     }
 
     // Adjusts array. Starts at second last element
@@ -758,7 +776,7 @@ _WaypointStatus WaypointManager::delete_waypoint(int waypointId) {
     int waypointIndex = get_waypoint_index_from_id(waypointId);
 
     if (waypointIndex == -1) {
-        return UNDEFINED_FAILURE;
+        return INVALID_PARAMETERS;
     }
 
     _PathData* waypointToDelete = waypointBuffer[waypointIndex];
@@ -803,7 +821,7 @@ _WaypointStatus WaypointManager::update_waypoint(_PathData* updatedWaypoint, int
     int waypointIndex = get_waypoint_index_from_id(waypointId);
 
     if (waypointIndex == -1) {
-        return UNDEFINED_FAILURE;
+        return INVALID_PARAMETERS;
     }
 
     _PathData * oldWaypoint = waypointBuffer[waypointIndex];
