@@ -33,6 +33,9 @@ enum _WaypointBufferUpdateType {APPEND_WAYPOINT = 0, UPDATE_WAYPOINT, INSERT_WAY
 // Used to specify the type of output
 enum _WaypointOutputType {PATH_FOLLOW = 0, ORBIT_FOLLOW, HOLD_WAYPOINT};
 
+// Used to specify the status of the head_home() method
+enum _HeadHomeStatus {HOME_TRUE = 0, HOME_FALSE, HOME_UNDEFINED_PARAMETER};
+
 /**
 * Structure stores information about the waypoints along our path to the destination and back.
 */
@@ -120,7 +123,7 @@ public:
      * @param[in] int altitude -> altitude of hold pattern
      * @param[in] bool cancelTurning -> false means we want plane to orbit. True means we want plane to stop orbiting and follow waypointBuffer array
      */
-    void start_circling(_WaypointManager_Data_In currentStatus, float radius, int direction, int altitude, bool cancelTurning);
+    _WaypointStatus start_circling(_WaypointManager_Data_In currentStatus, float radius, int direction, int altitude, bool cancelTurning);
 
     /**
      * Called if user wants the plane to just head home
@@ -133,7 +136,7 @@ public:
      * 
      *  Returns true if goingHome was set to true. Returns false otherwise. Note that if the homeBase parameter is not initialized, this method will return false automatically
      */
-    bool head_home();
+    _HeadHomeStatus head_home();
 
     /**
      *  Called if user wants to change the waypoint that the plane is currently trying to target. 

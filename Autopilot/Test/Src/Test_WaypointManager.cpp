@@ -242,7 +242,7 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
 
     // std::cout << "Here1" << std::endl;
 
-    w->start_circling(setup1, turnRadius[0], turnDirection[0], altitude[0], false); // Sets circling
+    _WaypointStatus e10 = w->start_circling(setup1, turnRadius[0], turnDirection[0], altitude[0], false); // Sets circling
 
     _WaypointStatus s1 = w->get_next_directions(input1, out1);
 
@@ -258,7 +258,7 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
 
     // std::cout << "Here3" << std::endl;
 
-    w->start_circling(setup2, turnRadius[1], turnDirection[1], altitude[1], false); // Sets circling
+    _WaypointStatus e11 = w->start_circling(setup2, turnRadius[1], turnDirection[1], altitude[1], false); // Sets circling
 
     _WaypointStatus s2 =w->get_next_directions(input2, out2);
 
@@ -273,6 +273,9 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
 
     ASSERT_EQ(s1, WAYPOINT_SUCCESS);
     ASSERT_EQ(s2, WAYPOINT_SUCCESS);
+
+    ASSERT_EQ(e10, WAYPOINT_SUCCESS);
+    ASSERT_EQ(e11, WAYPOINT_SUCCESS);
 
     ASSERT_EQ(test1_center, OUTPUT_CORRECT);
     ASSERT_EQ(test1_output, OUTPUT_CORRECT);
@@ -643,7 +646,7 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
 
 	/********************STEPTHROUGH********************/
 
-    w->head_home();
+    _HeadHomeStatus h1 = w->head_home();
     _PathData ** testArray = new _PathData * [PATH_BUFFER_SIZE];
     _PathData ** ansArray = new _PathData * [PATH_BUFFER_SIZE];
     testArray = w->get_waypoint_buffer();
@@ -664,7 +667,7 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
 
     // Re-initializes flight path and gets next direction
     _WaypointStatus e4 = w->initialize_flight_path(initialPaths, numPaths); // Creates flight path
-    w->head_home(); // Cancels holding
+    _HeadHomeStatus h2 = w->head_home(); // Cancels holding
     _WaypointStatus e5 = w->get_next_directions(input3, out3); 
     _OutputStatus o3 = compare_output_data(ans3, out3);
 
@@ -676,6 +679,9 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
     ASSERT_EQ(e3, WAYPOINT_SUCCESS);
     ASSERT_EQ(e4, WAYPOINT_SUCCESS);
     ASSERT_EQ(e5, WAYPOINT_SUCCESS);
+
+    ASSERT_EQ(h1, HOME_TRUE);
+    ASSERT_EQ(h2, HOME_FALSE);
 
     ASSERT_EQ(a1, ARRAY_SUCCESS);
     ASSERT_EQ(a2, ARRAY_SUCCESS);

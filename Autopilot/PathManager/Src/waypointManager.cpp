@@ -146,7 +146,7 @@ _PathData* WaypointManager::initialize_waypoint() {
     nextAssignedId++; // Increment ID so next waypoint has a different one
     waypoint->latitude = -1;
     waypoint->longitude = -1;
-    waypoint->altitude = -1;
+    waypoint->altitude = 10; // Sets this to 10 as a default so plane does not crash. This can be changed by state machine.
     waypoint->waypointType = PATH_FOLLOW;
     waypoint->turnRadius = -1;
     // Set next and previous waypoints to empty for now
@@ -162,7 +162,14 @@ _PathData* WaypointManager::initialize_waypoint(long double longitude, long doub
     nextAssignedId++; // Increment ID so next waypoint has a different one 
     waypoint->latitude = latitude;
     waypoint->longitude = longitude;
-    waypoint->altitude = altitude;
+
+    // Does error catching before assigning value
+    if (altitude >= 0) {
+        waypoint->altitude = altitude;
+    } else {
+        waypoint->altitude = 10; // Default value
+    }    
+    
     waypoint->waypointType = waypointType;
     waypoint->turnRadius = -1; 
     // Set next and previous waypoints to empty for now
@@ -178,9 +185,23 @@ _PathData* WaypointManager::initialize_waypoint(long double longitude, long doub
     nextAssignedId++; // Increment ID so next waypoint has a different one 
     waypoint->latitude = latitude;
     waypoint->longitude = longitude;
-    waypoint->altitude = altitude;
+
+    // Does error catching before assigning value
+    if (altitude >= 0) {
+        waypoint->altitude = altitude;
+    } else {
+        waypoint->altitude = 10; // Default value
+    }
+    
     waypoint->waypointType = waypointType;
-    waypoint->turnRadius = turnRadius;
+
+    // Does error catching before assigning value
+    if (turnRadius > 0) {
+        waypoint->turnRadius = turnRadius;
+    } else {
+        waypoint->turnRadius = 30; // Default value
+    }
+    
     // Set next and previous waypoints to empty for now
     waypoint->next = nullptr;
     waypoint->previous = nullptr;
@@ -251,7 +272,8 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
 
     // Holding is given higher priority to heading home
     if (inHold) { // If plane is currently circling and waiting for commands
-        if(turnRadius <= 0 || (turnDirection != -1 && turnDirection != 1)) { // Checks if parameters are valid
+        // Checks if parameters are valid. If state machine gets this error it should immediately cancel the hold because output data will not be updated while the parameters are incorrect
+        if(turnRadius <= 0 || (turnDirection != -1 && turnDirection != 1)) { 
             return INVALID_PARAMETERS;
         }
 
@@ -339,11 +361,11 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
     Data->out_type = outputType;
 }
 
-void WaypointManager::start_circling(_WaypointManager_Data_In currentStatus, float radius, int direction, int altitude, bool cancelTurning) {
+_WaypointStatus WaypointManager::start_circling(_WaypointManager_Data_In currentStatus, float radius, int direction, int altitude, bool cancelTurning) {
     if (!cancelTurning) {
         // If parameters are not valid. Minimum altitude of 10 metres
-        if (radius <= 0 || (direction != -1 && direction != 1) || altitude < 10) { 
-            return; 
+        if (radius <= 0 || (direction != -1 && direction != 1) || altitude < 10) { // SHOULD I JUST SET THIS TO DEFAULT VALUES INSTEAD??????
+            return INVALID_PARAMETERS; 
         }
 
         inHold = true; // Sets holding indicator to true
@@ -400,20 +422,22 @@ void WaypointManager::start_circling(_WaypointManager_Data_In currentStatus, flo
     } else {
         inHold = false;
     }
+
+    return WAYPOINT_SUCCESS;
 }
 
-bool WaypointManager::head_home() {
+_HeadHomeStatus WaypointManager::head_home() {
     if (homeBase == nullptr) { // Checks if home waypoint is actually initialized.
-        return false;
+        return HOME_UNDEFINED_PARAMETER;
     }
 
     if (!goingHome) {
         clear_path_nodes(); // Clears path nodes so state machine can input new flight path
         goingHome = true;
-        return true;
+        return HOME_TRUE;
     } else {
         goingHome = false;
-        return false;
+        return HOME_FALSE;
     }
 }
 
