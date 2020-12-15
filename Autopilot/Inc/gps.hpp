@@ -46,7 +46,7 @@ class Gps
 		* or with old data (in case of old data, the dataIsNew flag of the result struct will be cleared).
 		* @param[out]		Data 		pointer to the result struct.
 		*/
-        virtual void GetResult(GpsData_t &Data) = 0;
+        virtual void GetResult(GpsData_t *Data) = 0;
 };
 
 class NEOM8 : public Gps 
