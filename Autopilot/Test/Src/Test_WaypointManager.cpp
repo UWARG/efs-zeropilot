@@ -284,18 +284,6 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
     _OutputStatus test2_center = compare_coordinates(center_ans2, response);
     _OutputStatus test2_output = compare_output_data(ans2, out2);
 
-    // Clears heap
-    /* 
-        Deleting WaypointManager object takes care of calling clear_path_nodes() and clear_home_base(). 
-    */
-    delete w; 
-   
-    // Removes helpers in this test from the heap
-    delete out1;
-    delete out2;
-    delete ans1;
-    delete ans2;
-
     /**********************ASSERTS**********************/
 
     ASSERT_EQ(s1, WAYPOINT_SUCCESS);
@@ -393,19 +381,6 @@ TEST(Waypoint_Manager, DesiredHeadingStraightPathFollow) {
     _WaypointStatus e3 = w2->get_next_directions(input2, out2);
     _OutputStatus o2 = compare_output_data(ans2, out2);
 
-    // Clears heap
-    /* 
-        Deleting WaypointManager object takes care of calling clear_path_nodes() and clear_home_base().
-    */
-    delete w2; 
-   
-    // Removes helpers in this test from the heap
-    delete out1;
-    delete out2;
-    delete ans1;
-    delete ans2;
-    delete[] status;
-
 	/**********************ASSERTS**********************/
 
     ASSERT_EQ(e1, WAYPOINT_SUCCESS);
@@ -497,19 +472,6 @@ TEST(Waypoint_Manager, DesiredHeadingWhenNextToNextWaypointNotDefined) {
     _WaypointStatus e3 = w2->get_next_directions(input2, out2);
     _OutputStatus o2 = compare_output_data(ans2, out2);
 
-    // Clears heap
-    /* 
-        Deleting WaypointManager object takes care of calling clear_path_nodes() and clear_home_base().
-    */
-    delete w2; 
-   
-    // Removes helpers in this test from the heap
-    delete out1;
-    delete out2;
-    delete ans1;
-    delete ans2;
-    delete[] status;
-
 	/**********************ASSERTS**********************/
 
     ASSERT_EQ(e1, WAYPOINT_SUCCESS);
@@ -598,19 +560,6 @@ TEST(Waypoint_Manager, DesiredHeadingNextWaypointNotDefined) {
 
     _WaypointStatus e3 = w2->get_next_directions(input2, out2);
     _OutputStatus o2 = compare_output_data(ans2, out2);
-
-    // Clears heap
-    /* 
-        Deleting WaypointManager object takes care of calling clear_path_nodes() and clear_home_base().
-    */
-    delete w2; 
-   
-    // Removes helpers in this test from the heap
-    delete out1;
-    delete out2;
-    delete ans1;
-    delete ans2;
-    delete[] status;
 
 	/**********************ASSERTS**********************/
 
@@ -736,20 +685,6 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
     _HeadHomeStatus h2 = w->head_home(); // Cancels holding
     _WaypointStatus e5 = w->get_next_directions(input3, out3); 
     _OutputStatus o3 = compare_output_data(ans3, out3);
-
-    // Clears heap
-    /* 
-        Deleting WaypointManager object takes care of calling clear_path_nodes() and clear_home_base().
-    */
-    delete w; 
-   
-    // Removes helpers in this test from the heap
-    delete out1;
-    delete out2;
-    delete ans1;
-    delete ans2;
-    delete[] status;
-    delete[] ansArray;
 	
 	/**********************ASSERTS**********************/
 
@@ -847,8 +782,6 @@ TEST(Waypoint_Manager, AppendElementToNotFilledArray) {
     _ArrayStatus a = compare_arrays(initialPaths, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
-
-    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 
