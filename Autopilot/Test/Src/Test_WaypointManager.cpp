@@ -114,13 +114,14 @@ TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
     // Creates the initial flight path and home base
 
     int numPaths = 20;
+    
+    // 
+    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE]; // Used to initialize waypointBuffer 
+    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE]; // Used to check validity of waypointBuffer
+    _PathData * homeBase; // Used to initialize homeBase
+    _PathData * testHomeBase; // Used to check validity of homeBase
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData * homeBase;
-    _PathData * testHomeBase;
-
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE]; // This array is used to check the validity of the waypointBufferStatus array
 
     // Initializes status array  
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
@@ -142,10 +143,12 @@ TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
 
 	/********************STEPTHROUGH********************/
 
-    homeBase = w->initialize_waypoint(1000,500, 5, HOLD_WAYPOINT);
+    homeBase = w->initialize_waypoint(1000,500, 5, HOLD_WAYPOINT); // Initializes homeBase (will be passed to module)
 
+    // Initializes original flight path
     for(int i = 0; i < numPaths/2; i++) {
-        initialPaths[i] = w->initialize_waypoint(longitude, latitude, altitude, waypointType);
+        initialPaths[i] = w->initialize_waypoint(longitude, latitude, altitude, waypointType); // Calls method to create waypoint on the heap
+        // Just does some stuff to record statuses and stuff
         status[i] = FULL;
         id_array[i] = initialPaths[i]->waypointId;
         nextElement = i+1;
@@ -158,7 +161,8 @@ TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
     float turnRadius = 10;
 
     for(int i = numPaths/2; i < numPaths; i++) {
-        initialPaths[i] = w->initialize_waypoint(longitude, latitude, altitude, waypointType, turnRadius);
+        initialPaths[i] = w->initialize_waypoint(longitude, latitude, altitude, waypointType, turnRadius); // Calls method to create waypoint on the heap
+        // Just does some stuff to record statuses and stuff
         status[i] = FULL;
         id_array[i] = initialPaths[i]->waypointId;
         nextElement = i+1;
@@ -169,22 +173,33 @@ TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
     }
 
     // Initializes waypint maanger with the flight path
-    _WaypointStatus e = w->initialize_flight_path(initialPaths, numPaths, homeBase);
+    _WaypointStatus initialize_check = w->initialize_flight_path(initialPaths, numPaths, homeBase);
 
-    testArray = w->get_waypoint_buffer();
-    _ArrayStatus a = compare_arrays(initialPaths, testArray, numPaths); // Compares the waypointBuffer arrays
+    testArray = w->get_waypoint_buffer(); // Gets the waypointBuffer array 
+    _ArrayStatus waypoint_buffer_check = compare_arrays(initialPaths, testArray, numPaths); // Compares the waypointBuffer arrays
 
-    testHomeBase = w->get_home_base();
-    _WaypointSt b = compare_waypoint(homeBase, testHomeBase);  // Checks if the homeBase waypoints are the same 
+    testHomeBase = w->get_home_base(); // gets the homeBase parameter
+    _WaypointSt home_base_check = compare_waypoint(homeBase, testHomeBase);  // Checks if the homeBase waypoints are the same 
 
-    _ArrayStatus c = compare_buffer_status(status, w); // Compares the waypointBufferStatus arrays
-	
+    _ArrayStatus waypoint_status_check = compare_buffer_status(status, w); // Compares the waypointBufferStatus arrays
+
+    // Clears heap
+    /* 
+        Deleting WaypointManager object takes care of calling clear_path_nodes() and clear_home_base(). 
+        This will also clear the waypoints in initialPaths, testArray, testHomeBase, and homeBase 
+    */
+    delete w; 
+   
+    // Removes helpers in this test from the heap
+    delete[] status;
+    delete[] initialPaths; // Removes the array structure
+
 	/**********************ASSERTS**********************/
 
-    ASSERT_EQ(b, WAYPOINT_CORRECT); // Tests equality of the two parameters
-	ASSERT_EQ(a, ARRAY_SUCCESS); // Tests equality of the two parameters
-    ASSERT_EQ(c, ARRAY_SUCCESS); // Tests equality of the two parameters
-    ASSERT_EQ(e, WAYPOINT_SUCCESS); // Tests equality of the two parameters
+    ASSERT_EQ(home_base_check, WAYPOINT_CORRECT); // Tests equality of the two parameters
+	ASSERT_EQ(waypoint_buffer_check, ARRAY_SUCCESS); // Tests equality of the two parameters
+    ASSERT_EQ(waypoint_status_check, ARRAY_SUCCESS); // Tests equality of the two parameters
+    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS); // Tests equality of the two parameters
 }
 
 
@@ -268,6 +283,18 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
 
     _OutputStatus test2_center = compare_coordinates(center_ans2, response);
     _OutputStatus test2_output = compare_output_data(ans2, out2);
+
+    // Clears heap
+    /* 
+        Deleting WaypointManager object takes care of calling clear_path_nodes() and clear_home_base(). 
+    */
+    delete w; 
+   
+    // Removes helpers in this test from the heap
+    delete out1;
+    delete out2;
+    delete ans1;
+    delete ans2;
 
     /**********************ASSERTS**********************/
 
@@ -366,6 +393,19 @@ TEST(Waypoint_Manager, DesiredHeadingStraightPathFollow) {
     _WaypointStatus e3 = w2->get_next_directions(input2, out2);
     _OutputStatus o2 = compare_output_data(ans2, out2);
 
+    // Clears heap
+    /* 
+        Deleting WaypointManager object takes care of calling clear_path_nodes() and clear_home_base().
+    */
+    delete w2; 
+   
+    // Removes helpers in this test from the heap
+    delete out1;
+    delete out2;
+    delete ans1;
+    delete ans2;
+    delete[] status;
+
 	/**********************ASSERTS**********************/
 
     ASSERT_EQ(e1, WAYPOINT_SUCCESS);
@@ -457,6 +497,19 @@ TEST(Waypoint_Manager, DesiredHeadingWhenNextToNextWaypointNotDefined) {
     _WaypointStatus e3 = w2->get_next_directions(input2, out2);
     _OutputStatus o2 = compare_output_data(ans2, out2);
 
+    // Clears heap
+    /* 
+        Deleting WaypointManager object takes care of calling clear_path_nodes() and clear_home_base().
+    */
+    delete w2; 
+   
+    // Removes helpers in this test from the heap
+    delete out1;
+    delete out2;
+    delete ans1;
+    delete ans2;
+    delete[] status;
+
 	/**********************ASSERTS**********************/
 
     ASSERT_EQ(e1, WAYPOINT_SUCCESS);
@@ -545,6 +598,19 @@ TEST(Waypoint_Manager, DesiredHeadingNextWaypointNotDefined) {
 
     _WaypointStatus e3 = w2->get_next_directions(input2, out2);
     _OutputStatus o2 = compare_output_data(ans2, out2);
+
+    // Clears heap
+    /* 
+        Deleting WaypointManager object takes care of calling clear_path_nodes() and clear_home_base().
+    */
+    delete w2; 
+   
+    // Removes helpers in this test from the heap
+    delete out1;
+    delete out2;
+    delete ans1;
+    delete ans2;
+    delete[] status;
 
 	/**********************ASSERTS**********************/
 
@@ -671,6 +737,19 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
     _WaypointStatus e5 = w->get_next_directions(input3, out3); 
     _OutputStatus o3 = compare_output_data(ans3, out3);
 
+    // Clears heap
+    /* 
+        Deleting WaypointManager object takes care of calling clear_path_nodes() and clear_home_base().
+    */
+    delete w; 
+   
+    // Removes helpers in this test from the heap
+    delete out1;
+    delete out2;
+    delete ans1;
+    delete ans2;
+    delete[] status;
+    delete[] ansArray;
 	
 	/**********************ASSERTS**********************/
 
@@ -768,6 +847,8 @@ TEST(Waypoint_Manager, AppendElementToNotFilledArray) {
     _ArrayStatus a = compare_arrays(initialPaths, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
+
+    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 
@@ -836,6 +917,8 @@ TEST(Waypoint_Manager, AppendElementToFirstElement) {
     _ArrayStatus a = compare_arrays(initialPaths, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
+
+    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 
@@ -904,6 +987,8 @@ TEST(Waypoint_Manager, AppendElementToNinteyNineElementArray) {
     _ArrayStatus a = compare_arrays(initialPaths, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
+
+    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 
@@ -972,6 +1057,8 @@ TEST(Waypoint_Manager, AppendElementToFullAndReturnError) {
     _ArrayStatus a = compare_arrays(initialPaths, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
+
+    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 
@@ -1040,6 +1127,8 @@ TEST(Waypoint_Manager, InsertElementToFirstIndexAndReturnError) {
     _ArrayStatus a = compare_arrays(initialPaths, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
+
+    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 
@@ -1108,6 +1197,8 @@ TEST(Waypoint_Manager, InsertElementToLastIndexArrayNotFullAndReturnError) {
     _ArrayStatus a = compare_arrays(initialPaths, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
+
+    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 
@@ -1176,6 +1267,8 @@ TEST(Waypoint_Manager, InsertElementToFullArrayAndReturnError) {
     _ArrayStatus a = compare_arrays(initialPaths, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
+
+    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 
@@ -1256,6 +1349,8 @@ TEST(Waypoint_Manager, InsertToArrayInMiddle) {
     _ArrayStatus a = compare_arrays(insertPaths, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
+
+    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 
@@ -1330,6 +1425,8 @@ TEST(Waypoint_Manager, deleteMiddleElement) {
     _ArrayStatus a = compare_arrays(deleteArray, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
+
+    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 
@@ -1405,6 +1502,8 @@ TEST(Waypoint_Manager, deleteFirstElement) {
     _ArrayStatus a = compare_arrays(deleteArray, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
+
+    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 
@@ -1476,6 +1575,8 @@ TEST(Waypoint_Manager, deleteLastElement) {
     _ArrayStatus a = compare_arrays(deleteArray, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
+
+    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 
@@ -1547,6 +1648,8 @@ TEST(Waypoint_Manager, deleteLastElementFullArray) {
     _ArrayStatus a = compare_arrays(deleteArray, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
+
+    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 
@@ -1614,6 +1717,8 @@ TEST(Waypoint_Manager, updateFirstElement) {
     _ArrayStatus a = compare_arrays(initialPaths, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
+
+    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 
@@ -1681,6 +1786,8 @@ TEST(Waypoint_Manager, updateLastElement) {
     _ArrayStatus a = compare_arrays(initialPaths, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
+
+    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 
@@ -1749,6 +1856,8 @@ TEST(Waypoint_Manager, updateMiddleElement) {
     _ArrayStatus a = compare_arrays(initialPaths, testArray, numPaths);
     testHomeBase = w2->get_home_base();
     _ArrayStatus c = compare_buffer_status(status, w2);
+
+    w2->clear_path_nodes(); // Removes all waypoints from the heap
 	
 	/**********************ASSERTS**********************/
 

@@ -48,8 +48,12 @@ WaypointManager::WaypointManager(float relLat, float relLong) {
 }
 
 WaypointManager::~WaypointManager() {
-    clear_home_base();
-    clear_path_nodes();
+    if (homeBase) {
+        clear_home_base();
+    }
+    if (numWaypoints != 0) {
+        clear_path_nodes();
+    }
 }
 
 _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData *currentLocation) {
