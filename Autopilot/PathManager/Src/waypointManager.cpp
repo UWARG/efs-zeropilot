@@ -950,3 +950,6 @@ int WaypointManager::get_current_index() {
 int WaypointManager::get_id_of_current_index() {
     return waypointBuffer[currentIndex]->waypointId;
 }
+
+
+
