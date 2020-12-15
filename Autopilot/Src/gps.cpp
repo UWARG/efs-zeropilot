@@ -391,24 +391,24 @@ int NEOM8::ascii_to_hex(unsigned int toConvert) {
     return intConverted;
 }
 
-void NEOM8::GetResult(GpsData_t &Data) {
+void NEOM8::GetResult(GpsData_t *Data) {
     parsingForCollection = true;
     parse_gps_data(); 
 
-    Data.dataIsNew = isDataNew;
-    Data.ggaDataIsNew = ggaDataNew;
-    Data.vtgDataIsNew = vtgDataNew;
+    Data->dataIsNew = isDataNew;
+    Data->ggaDataIsNew = ggaDataNew;
+    Data->vtgDataIsNew = vtgDataNew;
     vtgDataNew = false;
     ggaDataNew = false;
     isDataNew = false;
-    Data.latitude = measuredLatitude;
-    Data.longitude = measuredLongitude;
-    Data.utcTime = measuredUtcTime;
-    Data.groundSpeed = measuredGroundSpeed;
-    Data.altitude = measuredAltitude;
-    Data.heading = measuredHeading;
-    Data.numSatellites = measuredNumSatellites;
-    Data.fixStatus = gpsFixStatus;
+    Data->latitude = measuredLatitude;
+    Data->longitude = measuredLongitude;
+    Data->utcTime = measuredUtcTime;
+    Data->groundSpeed = measuredGroundSpeed;
+    Data->altitude = measuredAltitude;
+    Data->heading = measuredHeading;
+    Data->numSatellites = measuredNumSatellites;
+    Data->fixStatus = gpsFixStatus;
 
     parsingForCollection = false;
 }

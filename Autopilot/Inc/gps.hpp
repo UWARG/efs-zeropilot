@@ -65,7 +65,7 @@ class NEOM8 : public Gps
          * 2. Transfers raw data from variables to struct
          * 3. Updates utcTime and status values in struct as well
          * */
-		void GetResult(GpsData_t &Data);
+		void GetResult(GpsData_t *Data);
 
 	private:
 		//Constructor
