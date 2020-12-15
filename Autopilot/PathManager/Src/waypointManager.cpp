@@ -19,6 +19,7 @@
 #define deg2rad(angle_in_degrees) ((angle_in_degrees) * M_PI/180.0)
 #define rad2deg(angle_in_radians) ((angle_in_radians) * 180.0/M_PI)
 
+
 /*** INITIALIZATION ***/
 
 
@@ -48,10 +49,11 @@ WaypointManager::WaypointManager(float relLat, float relLong) {
 }
 
 WaypointManager::~WaypointManager() {
-    if (homeBase) {
+    if (homeBase) { // Only call if homeBase is initialized
         clear_home_base();
     }
-    if (numWaypoints != 0) {
+
+    if (numWaypoints != 0) { // Only call if the waypointBuffer has waypoints in it
         clear_path_nodes();
     }
 }
@@ -336,6 +338,7 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
 
         // Removes currentPosition path data object from memory
         homeBase->previous = nullptr;
+        currentPosition->next = nullptr;
         delete currentPosition; 
 
         return errorCode;
