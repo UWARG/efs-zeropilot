@@ -47,6 +47,11 @@ WaypointManager::WaypointManager(float relLat, float relLong) {
     }
 }
 
+WaypointManager::~WaypointManager() {
+    clear_home_base();
+    clear_path_nodes();
+}
+
 _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData *currentLocation) {
     
     // The waypointBuffer array must be empty before we initialize the flight path
@@ -763,6 +768,10 @@ void WaypointManager::clear_path_nodes() {
     nextFilledIndex = 0;
     nextAssignedId = 0;
     currentIndex = 0;
+}
+
+void WaypointManager::clear_home_base() {
+    destroy_waypoint(homeBase);
 }
 
 void WaypointManager::destroy_waypoint(_PathData *waypoint) {

@@ -77,6 +77,7 @@ public:
     * @param[in] float relLong -> This is the relative longitude of the point that will be used as (0,0) when converting lat-long coordinates to cartesian coordiantes.
     */
     WaypointManager(float relLat, float relLong); // Call this to get an instance of the class
+    ~WaypointManager();
 
     /**
     * Initializes the flight path
@@ -168,6 +169,7 @@ public:
     * Clears the waypointBuffer array.
     */
     void clear_path_nodes();
+    void clear_home_base();
 
     /**
     * @return the waypointBuffer array if requested
