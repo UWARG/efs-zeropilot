@@ -1,5 +1,0 @@
-/mnt/c/Users/Antho/repos/ZeroPilot-SW/Autopilot/simulationBuild/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/Antho/repos/ZeroPilot-SW/Autopilot/simulationBuild/CMakeFiles/edit_cache.dir
-/mnt/c/Users/Antho/repos/ZeroPilot-SW/Autopilot/simulationBuild/CMakeFiles/sim.dir
-/mnt/c/Users/Antho/repos/ZeroPilot-SW/Autopilot/simulationBuild/CMakeFiles/make-ActuatorCommand-dir.dir
-/mnt/c/Users/Antho/repos/ZeroPilot-SW/Autopilot/simulationBuild/CMakeFiles/make-SensorOutput-dir.dir

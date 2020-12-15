@@ -17,7 +17,7 @@
  **********************************************************************************************************************/
 
 // You can also send the packets to some other machine. Right now, functionality only exists for sending them to localhost.
-#define FLIGHTGEAR_UDP_PORT 5500 // this is also defined in the flightgear startup script. If you change it here, you'll have to change it there to
+#define FLIGHTGEAR_UDP_PORT 5500 // this is also defined in the flightgear startup script. If you change it here, you'll have to change it there too
 
 #define TIME_BETWEEN_PACKETS_MS 40  // Flight gear is set to refresh every 33 ms (configurable in the launch script for fg), anything slower than that should be fine to use. Anything faster, and it will drop packets.
 
@@ -43,9 +43,9 @@ int main(void)
     if (packets == NULL)
     {
         std::cerr << "System Out of memory, failed to create packet array" << std::endl;
-        return -1; 
+        return -1;
     }
-    
+
     for(int i = 0; i < numDataPoints; i++)
     {
         packets[i] = new char[100];
@@ -53,7 +53,7 @@ int main(void)
         if (packets[i] == NULL)
         {
             std::cerr << "System Out of memory, failed to create packet array" << std::endl;
-            return -1; 
+            return -1;
         }
     }
 
