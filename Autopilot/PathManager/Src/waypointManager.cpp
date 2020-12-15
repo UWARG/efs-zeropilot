@@ -7,6 +7,7 @@
 
 #include "waypointManager.hpp"
 
+// Values for orbitPathStatus parameter of WaypointManager
 #define LINE_FOLLOWING 0
 #define ORBIT_FOLLOWING 1
 
@@ -18,20 +19,18 @@
 #define deg2rad(angle_in_degrees) ((angle_in_degrees) * M_PI/180.0)
 #define rad2deg(angle_in_radians) ((angle_in_radians) * 180.0/M_PI)
 
-static float k_gain[2] = {0.01, 1.0f};
-
 /*** INITIALIZATION ***/
 
 
 WaypointManager::WaypointManager(float relLat, float relLong) {
-    nextAssignedId = 0;
-
-    #if UNIT_TESTING
-        // // std::cout << "Hewwo" << std::endl;
+    // Initializes important array and id navigation constants
+    #ifdef UNIT_TESTING
         currentIndex = 2;
-    #else 
+    #else
         currentIndex = 0;
     #endif
+
+    nextAssignedId = 0;
 
     // Sets relative long and lat
     relativeLongitude = relLong;
@@ -56,11 +55,13 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
         return errorStatus;
     }
     
-    homeBase = currentLocation;
-    
+    homeBase = currentLocation; 
     numWaypoints = numberOfWaypoints;
-
     nextFilledIndex = 0;
+    
+    #ifndef UNIT_TESTING
+        currentIndex = 0;
+    #endif
 
     // Initializes the waypointBuffer array
     for (int i = 0; i < numWaypoints; i++) {
@@ -83,11 +84,12 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
         }
     }
 
+    // Sets empty elements to null to prevent segmentation faults
     for(int i = numWaypoints; i < PATH_BUFFER_SIZE; i++) {
         waypointBuffer[i] = nullptr;
     }
 
-    errorStatus = WAYPOINT_SUCCESS;
+    errorStatus = WAYPOINT_SUCCESS; 
     return errorStatus;
 }
 
@@ -99,12 +101,14 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
         return errorStatus;
     }
 
-    #if UNIT_TESTING
-        currentIndex = 2;
-    #endif
-
     numWaypoints = numberOfWaypoints;
     nextFilledIndex = 0;
+    
+    #ifdef UNIT_TESTING
+        currentIndex = 2;
+    #else
+        currentIndex = 0;
+    #endif
 
     // Initializes the waypointBuffer array
     for (int i = 0; i < numWaypoints; i++) {
@@ -127,10 +131,10 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
         }
     }
 
+    // Sets empty elements to null to prevent segmentation faults
     for(int i = numWaypoints; i < PATH_BUFFER_SIZE; i++) {
         waypointBuffer[i] = nullptr;
     }
-    
 
     errorStatus = WAYPOINT_SUCCESS;
     return errorStatus;
@@ -138,7 +142,8 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
 
 _PathData* WaypointManager::initialize_waypoint() {
     _PathData* waypoint = new _PathData; // Create new waypoint in the heap
-    waypoint->waypointId = nextAssignedId++; // Set ID and increment
+    waypoint->waypointId = nextAssignedId;
+    nextAssignedId++; // Increment ID so next waypoint has a different one
     waypoint->latitude = -1;
     waypoint->longitude = -1;
     waypoint->altitude = -1;
@@ -153,13 +158,13 @@ _PathData* WaypointManager::initialize_waypoint() {
 
 _PathData* WaypointManager::initialize_waypoint(long double longitude, long double latitude, int altitude, _WaypointOutputType waypointType) {
     _PathData* waypoint = new _PathData; // Create new waypoint in the heap
-    waypoint->waypointId = nextAssignedId; // Set ID and increment
-    nextAssignedId++;
+    waypoint->waypointId = nextAssignedId; 
+    nextAssignedId++; // Increment ID so next waypoint has a different one 
     waypoint->latitude = latitude;
     waypoint->longitude = longitude;
     waypoint->altitude = altitude;
     waypoint->waypointType = waypointType;
-    waypoint->turnRadius = -1;
+    waypoint->turnRadius = -1; 
     // Set next and previous waypoints to empty for now
     waypoint->next = nullptr;
     waypoint->previous = nullptr;
@@ -169,8 +174,8 @@ _PathData* WaypointManager::initialize_waypoint(long double longitude, long doub
 
 _PathData* WaypointManager::initialize_waypoint(long double longitude, long double latitude, int altitude, _WaypointOutputType waypointType, float turnRadius) {
     _PathData* waypoint = new _PathData; // Create new waypoint in the heap
-    waypoint->waypointId = nextAssignedId; // Set ID and increment
-    nextAssignedId++;
+    waypoint->waypointId = nextAssignedId; 
+    nextAssignedId++; // Increment ID so next waypoint has a different one 
     waypoint->latitude = latitude;
     waypoint->longitude = longitude;
     waypoint->altitude = altitude;
@@ -215,7 +220,7 @@ float WaypointManager::get_distance(long double lat1, long double lon1, long dou
 
     if ((change_in_Lat >= 0 && change_in_lon >=0)||(change_in_Lat < 0 && change_in_lon < 0)){
         return EARTH_RADIUS * (2 * atan2(sqrt(haversine_ans),sqrt(1 - haversine_ans))) * 1000; //Multiply by 1000 to convert to metres
-    } else { // If result is negative.
+    } else {
         return EARTH_RADIUS * (2 * atan2(sqrt(haversine_ans),sqrt(1 - haversine_ans))) * -1000;
     }
 }
@@ -240,15 +245,13 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
 
     errorCode = WAYPOINT_SUCCESS;
 
-    // Gets current position
     float position[3]; 
-
     // Gets current heading
     float currentHeading = (float) currentStatus.heading;
 
     // Holding is given higher priority to heading home
-    if (inHold) {   // If plane is currently circling and waiting for commands
-        if(turnRadius <= 0 || turnDirection < -1 || turnDirection > 1) {
+    if (inHold) { // If plane is currently circling and waiting for commands
+        if(turnRadius <= 0 || (turnDirection != -1 && turnDirection != 1)) { // Checks if parameters are valid
             return INVALID_PARAMETERS;
         }
 
@@ -257,7 +260,7 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
         position[1] = currentStatus.latitude;
         position[2] = (float) currentStatus.altitude;
 
-        // Calculates desired heading 
+        // Calculates desired heading, altitude, and all output values
         follow_hold_pattern(position, currentHeading);
 
         // Updates the return structure
@@ -291,11 +294,13 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
         homeBase->previous = currentPosition;
         homeBase->next = nullptr;
         homeBase->waypointType = HOLD_WAYPOINT;
-
+        
+        // Calculates desired heading, altitude, and all output values
         follow_waypoints(currentPosition, position, currentHeading);
         
         // Updates the return structure
         dataIsNew = true;
+        outputType = PATH_FOLLOW;
         update_return_data(Data); 
 
         // Removes currentPosition path data object from memory
@@ -305,17 +310,17 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
         return errorCode;
     }
 
-    if (numWaypoints - currentIndex < 1 && numWaypoints >= 0) { // Ensures that the currentIndex parameter will not cause a segmentation fault
+    // Ensures that the currentIndex parameter will not cause a segmentation fault
+    if (numWaypoints - currentIndex < 1 && numWaypoints >= 0) { 
         return CURRENT_INDEX_INVALID;
     }
 
-    // Calls method to follow waypoints
+    // Calculates desired heading, altitude, and all output values
     follow_waypoints(waypointBuffer[currentIndex], position, currentHeading);
-
-    // std::cout << "Normal nav" << std::endl;
 
     // Updates the return structure
     dataIsNew = true;
+    outputType = PATH_FOLLOW;
     update_return_data(Data); 
 
     return errorCode;
@@ -329,17 +334,21 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
     Data->turnDirection = turnDirection;
     Data->errorCode = errorCode;
     Data->isDataNew = dataIsNew;
-    dataIsNew = false;
-    Data->timeOfData = 0;
+    dataIsNew = false; 
+    Data->timeOfData = 0; // Not setting time of data yet bc I think we need to come up with a way to get it???
     Data->out_type = outputType;
-
-    // Not setting time of data yet bc I think we need to come up with a way to get it???
 }
 
 void WaypointManager::start_circling(_WaypointManager_Data_In currentStatus, float radius, int direction, int altitude, bool cancelTurning) {
     if (!cancelTurning) {
-        inHold = true;
+        // If parameters are not valid. Minimum altitude of 10 metres
+        if (radius <= 0 || (direction != -1 && direction != 1) || altitude < 10) { 
+            return; 
+        }
 
+        inHold = true; // Sets holding indicator to true
+
+        // Sets class parameters
         turnDesiredAltitude = altitude;
         turnRadius = radius;
         turnDirection = direction;
@@ -412,9 +421,6 @@ void WaypointManager::follow_hold_pattern(float* position, float heading) {
     // Converts the position array and turnCenter array from radians to an xy coordinate system.
     get_coordinates(position[0], position[1], position);
 
-    // // std::cout << "Check 2: Lat - " << turnCenter[1] << " " << turnCenter[0] << std::endl;
-    // // std::cout << "Lat - " << position[1] << " " << position[0] << " " << heading << std::endl;
-
     // Calls follow_orbit method 
     follow_orbit(position, heading);
 }
@@ -465,7 +471,9 @@ void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* posit
     nextWaypointDirection[1] = (waypointAfterTargetCoordinates[1] - targetCoordinates[1])/norm2;
     nextWaypointDirection[2] = (waypointAfterTargetCoordinates[2] - targetCoordinates[2])/norm2;
 
+    // Required turning angle
     float turningAngle = acos(-deg2rad(waypointDirection[0] * nextWaypointDirection[0] + waypointDirection[1] * nextWaypointDirection[1] + waypointDirection[2] * nextWaypointDirection[2]));
+    // Calculates tangent factor that helps determine centre of turn 
     float tangentFactor = targetWaypoint->turnRadius/tan(turningAngle/2);
 
     float halfPlane[3];
@@ -475,9 +483,9 @@ void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* posit
 
     // Calculates distance to next waypoint
     float distanceToWaypoint = sqrt(pow(targetCoordinates[0] - position[0],2) + pow(targetCoordinates[1] - position[1],2) + pow(targetCoordinates[2] - position[2],2));
-    distanceToNextWaypoint = distanceToWaypoint; // Stores distance to next waypoint :))
-    // std::cout << "Distance = " << distanceToWaypoint << std::endl;
+    distanceToNextWaypoint = distanceToWaypoint; 
 
+    // Checks if plane is orbiting or flying in a straight line
     if (orbitPathStatus == PATH_FOLLOW) {
         float dotProduct = waypointDirection[0] * (position[0] - halfPlane[0]) + waypointDirection[1] * (position[1] - halfPlane[1]) + waypointDirection[2] * (position[2] - halfPlane[2]);
         
@@ -491,6 +499,10 @@ void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* posit
                 turnCenter[0] = targetWaypoint->longitude;
                 turnCenter[1] = targetWaypoint->latitude;
                 turnCenter[2] = turnDesiredAltitude;
+                /*
+                    Increment the currentIndex so the plane is not perpetually stuck in a holding pattern
+                */
+                currentIndex++; 
             }
         }
 
@@ -554,11 +566,13 @@ void WaypointManager::follow_line_segment(_PathData * currentWaypoint, float* po
     get_coordinates(currentWaypoint->longitude, currentWaypoint->latitude, waypointPosition);
     waypointPosition[2] = currentWaypoint->altitude;
 
+    // Defines target waypoint
     _PathData * targetWaypoint = currentWaypoint->next;
     float targetCoordinates[3];
     get_coordinates(targetWaypoint->longitude, targetWaypoint->latitude, targetCoordinates);
     targetCoordinates[2] = targetWaypoint->altitude;
 
+    // Direction to next waypoint
     float waypointDirection[3];
     float norm = sqrt(pow(targetCoordinates[0] - waypointPosition[0],2) + pow(targetCoordinates[1] - waypointPosition[1],2) + pow(targetCoordinates[2] - waypointPosition[2],2));
     waypointDirection[0] = (targetCoordinates[0] - waypointPosition[0])/norm;
@@ -578,16 +592,19 @@ void WaypointManager::follow_line_segment(_PathData * currentWaypoint, float* po
 }
 
 void WaypointManager::follow_last_line_segment(_PathData * currentWaypoint, float* position, float heading) {
+    // Current position is set to waypointPosition
     float waypointPosition[3];
     waypointPosition[0] = position[0];
     waypointPosition[1] = position[1];
     waypointPosition[2] = position[2];
 
+    // Target waypoint is the current waypoint
     _PathData * targetWaypoint = currentWaypoint;
     float targetCoordinates[3];
     get_coordinates(targetWaypoint->longitude, targetWaypoint->latitude, targetCoordinates);
     targetCoordinates[2] = targetWaypoint->altitude;
 
+    // Direction between waypoints
     float waypointDirection[3];
     float norm = sqrt(pow(targetCoordinates[0] - waypointPosition[0],2) + pow(targetCoordinates[1] - waypointPosition[1],2) + pow(targetCoordinates[2] - waypointPosition[2],2));
     waypointDirection[0] = (targetCoordinates[0] - waypointPosition[0])/norm;
@@ -598,8 +615,8 @@ void WaypointManager::follow_last_line_segment(_PathData * currentWaypoint, floa
     float distanceToWaypoint = sqrt(pow(targetCoordinates[0] - position[0],2) + pow(targetCoordinates[1] - position[1],2) + pow(targetCoordinates[2] - position[2],2));
     distanceToNextWaypoint = distanceToWaypoint; // Stores distance to next waypoint :))
 
+    // If dot product positive, then wait for commands
     float dotProduct = waypointDirection[0] * (position[0] - targetCoordinates[0]) + waypointDirection[1] * (position[1] - targetCoordinates[1]) + waypointDirection[2] * (position[2] - targetCoordinates[2]);
-    
     if (dotProduct > 0){
         inHold = true;
         turnDirection = 1; // Automatically turn CCW
@@ -616,6 +633,7 @@ void WaypointManager::follow_last_line_segment(_PathData * currentWaypoint, floa
 void WaypointManager::follow_orbit(float* position, float heading) {
     float currentHeading = deg2rad(90 - heading);
 
+    // Distance from centre of circle
     float orbitDistance = sqrt(pow(position[0] - turnCenter[0],2) + pow(position[1] - turnCenter[1],2));
     float courseAngle = atan2(position[1] - turnCenter[1], position[0] - turnCenter[0]); // (y,x) format
 
@@ -627,7 +645,7 @@ void WaypointManager::follow_orbit(float* position, float heading) {
         courseAngle -= 2 * M_PI;
     }
 
-    // This line is causing some problems
+    // Desired heading
     int calcHeading = round(90 - rad2deg(courseAngle + turnDirection * (M_PI/2 + atan(k_gain[ORBIT_FOLLOW] * (orbitDistance - turnRadius)/turnRadius)))); //Heading in degrees (magnetic)
     
     // Normalizes heading (keeps it between 0.0 and 259.9999)
@@ -658,6 +676,7 @@ void WaypointManager::follow_straight_path(float* waypointDirection, float* targ
         courseAngle -= 2 * M_PI;
     }
 
+    // Calculates desired heading
     float pathError = -sin(courseAngle) * (position[0] - targetWaypoint[0]) + cos(courseAngle) * (position[1] - targetWaypoint[1]);
     int calcHeading = 90 - rad2deg(courseAngle - MAX_PATH_APPROACH_ANGLE * 2/M_PI * atan(k_gain[PATH_FOLLOW] * pathError)); //Heading in degrees (magnetic) 
     
@@ -687,7 +706,8 @@ void WaypointManager::follow_straight_path(float* waypointDirection, float* targ
 
 
 _WaypointStatus WaypointManager::update_path_nodes(_PathData * waypoint, _WaypointBufferUpdateType updateType, int waypointId, int previousId, int nextId) {
-    if (numWaypoints == PATH_BUFFER_SIZE && (updateType == APPEND_WAYPOINT || updateType == INSERT_WAYPOINT)) { // If array is already full, if we insert it will overflow
+    // If array is already full, if we insert it will cause a segmentation fault
+    if (numWaypoints == PATH_BUFFER_SIZE && (updateType == APPEND_WAYPOINT || updateType == INSERT_WAYPOINT)) { 
         return INVALID_PARAMETERS;
     }
 
@@ -708,11 +728,12 @@ _WaypointStatus WaypointManager::update_path_nodes(_PathData * waypoint, _Waypoi
 void WaypointManager::clear_path_nodes() {
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         if (waypointBufferStatus[i] == FULL) { // If array element has a waypoint in it
-            int destroyedId = destroy_waypoint(waypointBuffer[i]); // Remove waypoint from the heap
+            destroy_waypoint(waypointBuffer[i]); // Remove waypoint from the heap
         }
         waypointBufferStatus[i] = FREE; // Set array element free
         waypointBuffer[i] = nullptr; //Set buffer element to empty struct
     }
+
     // Resets buffer status variables
     numWaypoints = 0;
     nextFilledIndex = 0;
@@ -720,17 +741,17 @@ void WaypointManager::clear_path_nodes() {
     currentIndex = 0;
 }
 
-int WaypointManager::destroy_waypoint(_PathData *waypoint) {
-    int destroyedId = waypoint->waypointId;
+void WaypointManager::destroy_waypoint(_PathData *waypoint) {
+    // Ensures waypoint is not linked before deleting
     waypoint->next = nullptr;
     waypoint->previous = nullptr;
-    delete waypoint; // Free heap memory
-    return destroyedId;
+
+    delete waypoint; 
 }
 
 _WaypointStatus WaypointManager::append_waypoint(_PathData * newWaypoint) {
+    // Gets index of waypoint that comes before appended waypoint
     int previousIndex = 0;
-
     previousIndex = nextFilledIndex - 1;
 
     // Before initializing elements, checks if new waypoint is not a duplicate
@@ -741,7 +762,8 @@ _WaypointStatus WaypointManager::append_waypoint(_PathData * newWaypoint) {
     waypointBuffer[nextFilledIndex] = newWaypoint;
     waypointBufferStatus[nextFilledIndex] = FULL;
 
-    if (previousIndex == -1) { //If we are initializing the first element
+    //If we are initializing the first element
+    if (previousIndex == -1) { 
         nextFilledIndex++;
         numWaypoints++;
 
@@ -752,6 +774,7 @@ _WaypointStatus WaypointManager::append_waypoint(_PathData * newWaypoint) {
     waypointBuffer[nextFilledIndex]->previous = waypointBuffer[previousIndex];
     waypointBuffer[previousIndex]->next = waypointBuffer[nextFilledIndex];
 
+    // Increments array navigation parameters since a new waypoint was added
     nextFilledIndex++;
     numWaypoints++;
 
@@ -763,7 +786,8 @@ _WaypointStatus WaypointManager::insert_new_waypoint(_PathData* newWaypoint, int
     int previousIndex = get_waypoint_index_from_id(previousId);
 
     // If any of the waypoints could not be found. Or, if the two IDs do not correspond to adjacent elements in waypointBuffer[]
-    if (nextIndex == -1 || previousIndex == -1 || nextIndex - 1 != previousIndex || nextIndex == 0){
+    // Also ensures we are not inserting before the currentIndex
+    if (nextIndex == -1 || previousIndex == -1 || nextIndex - 1 != previousIndex || nextIndex == 0 || previousIndex < currentIndex){
         return INVALID_PARAMETERS;
     }
 
@@ -785,6 +809,10 @@ _WaypointStatus WaypointManager::insert_new_waypoint(_PathData* newWaypoint, int
     waypointBuffer[previousIndex]->next = newWaypoint;
     waypointBuffer[nextIndex+1]->previous = newWaypoint;
 
+    // Increments array navigation parameters since a new waypoint was added
+    nextFilledIndex++;
+    numWaypoints++;
+
     return WAYPOINT_SUCCESS;
 }
 
@@ -802,7 +830,7 @@ _WaypointStatus WaypointManager::delete_waypoint(int waypointId) {
         waypointBuffer[waypointIndex + 1]->previous = nullptr;
     } else if (waypointIndex == PATH_BUFFER_SIZE - 1 || waypointBufferStatus[waypointIndex+1] == FREE) { // Last element
         waypointBuffer[waypointIndex - 1]->next = nullptr;
-    } else if (waypointBufferStatus[waypointIndex + 1] == FULL){ // Ensures that the next index is
+    } else if (waypointBufferStatus[waypointIndex + 1] == FULL){ // Middle element
         waypointBuffer[waypointIndex-1]->next = waypointBuffer[waypointIndex+1];
         waypointBuffer[waypointIndex+1]->previous = waypointBuffer[waypointIndex-1];
     }
@@ -814,11 +842,11 @@ _WaypointStatus WaypointManager::delete_waypoint(int waypointId) {
         waypointBuffer[waypointIndex] = nullptr;
         waypointBufferStatus[waypointIndex] = FREE;
     } else {
-        for(int i = waypointIndex; i < numWaypoints-1; i++) {
-            if (waypointBufferStatus[i+1] == FREE) {
+        for(int i = waypointIndex; i < numWaypoints-1; i++) { // Shifts all elements back one
+            if (waypointBufferStatus[i+1] == FREE) { // If next element is free, then we are done and set current index to empty
                 waypointBufferStatus[i] = FREE;
                 waypointBuffer[i] = nullptr;
-            } else if (waypointBufferStatus[i+1] == FULL) {
+            } else if (waypointBufferStatus[i+1] == FULL) { // If next index has an element, then set the current index's values equal to it.
                 waypointBufferStatus[i] = FULL;
                 waypointBuffer[i] = waypointBuffer[i+1];
                 waypointBufferStatus[i+1] = FREE;
@@ -826,7 +854,7 @@ _WaypointStatus WaypointManager::delete_waypoint(int waypointId) {
         }
     }
 
-    // Updates array trackers
+    // Decrements array trackers since a waypoint was removed
     numWaypoints--;
     nextFilledIndex--;
 
@@ -880,4 +908,8 @@ _PathData * WaypointManager::get_home_base() {
 
 int WaypointManager::get_current_index() {
     return currentIndex;
+}
+
+int WaypointManager::get_id_of_current_index() {
+    return waypointBuffer[currentIndex]->waypointId;
 }

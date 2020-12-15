@@ -94,7 +94,7 @@ public:
      *
      * Parameters have the same name as their corresponding parameters in the _Pathdata struct.
      */
-    _PathData* initialize_waypoint();                                                                                              // Creates a blank waypoint
+    _PathData* initialize_waypoint();                                                                                                              // Creates a blank waypoint
     _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, _WaypointOutputType waypointType);                   // Initialize a regular waypoint
     _PathData* initialize_waypoint(long double longitude, long double latitude, int altitude, _WaypointOutputType waypointType, float turnRadius); // Initialize a "hold" waypoint
 
@@ -103,6 +103,8 @@ public:
     *
     * @param[in] _Waypoint_Data_In currentPosition -> contains the current coordinates, altitude, and heading
     * @param[out] _WaypointManager_Data_Out &Data -> Memory address for a structure that holds the data for the state machine
+    * 
+    * @return status variable stating if any errors occured (0 means success)
     */
     _WaypointStatus get_next_directions(_WaypointManager_Data_In currentStatus, _WaypointManager_Data_Out *Data);
 
@@ -154,6 +156,8 @@ public:
     * @param[in] int waypointId -> the ID of the waypoint that will be updated or deleted. Set to 0 by default, so does not need to be passed (Set to 0 when appending)
     * @param[in] int previousId -> stores the ID of the waypoint that will come before the inserted waypoint. Set to 0 by default, so does not need to be passed (Set to 0 when NOT inserting)
     * @param[in] int nextId -> stores the ID of the waypoint that will come after the inserted waypoint. Set to 0 by default, so does not need to be passed (Set to 0 when NOT inserting)
+    * 
+    * @return status variable stating if any errors occured (0 means success)
     */
     _WaypointStatus update_path_nodes(_PathData *waypoint, _WaypointBufferUpdateType updateType, int waypointId, int previousId, int nextId);
 
@@ -179,6 +183,11 @@ public:
     int get_current_index();
 
     /**
+     * @return id of the waypoint at the current index
+     */ 
+    int get_id_of_current_index();
+
+    /**
      * @return returns the _PathData pointer of the home base 
      */ 
     _PathData * get_home_base();
@@ -194,12 +203,15 @@ private:
     _WaypointBufferStatus waypointBufferStatus[PATH_BUFFER_SIZE] = {FREE}; //Keeps status of elements in waypointBuffer array
     int numWaypoints;
     int nextFilledIndex; // Index of the array that will be initialized next
-    int nextAssignedId; // ID of the next waypoint that will be initialized
-    int currentIndex;   // Index for the waypoint in our flight path we are currently on (If we are going from waypint A and B, currentIndex is the index of waypoint A)
+    int nextAssignedId;  // ID of the next waypoint that will be initialized
+    int currentIndex;    // Index for the waypoint in our flight path we are currently on (If we are going from waypint A and B, currentIndex is the index of waypoint A)
     int orbitPathStatus; // Are we orbiting or following a straight path
 
     //Home base
     _PathData * homeBase;
+
+    // For calculating desired heading
+    float k_gain[2] = {0.01, 1.0f};
 
     // Relative lat and long for coordinate calcilation
     float relativeLongitude;
@@ -252,7 +264,7 @@ private:
     /**
      * Removes waypoint from the heap
      */
-    int destroy_waypoint(_PathData * waypoint);
+    void destroy_waypoint(_PathData * waypoint);
 
     int get_waypoint_index_from_id(int waypointId);                                              // If provided a waypoint id, this method finds the element index in the waypointBuffer array
 
