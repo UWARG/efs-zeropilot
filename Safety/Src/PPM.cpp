@@ -7,6 +7,7 @@
 
 #define BASE_FREQUENCY 48000000
 #define SEC_TO_MICROSEC 1000000
+#define PULSE_WIDTH 0 //this should be in us
 
 //number of milliseconds expected between subsequent PPM packets
 uint32_t PPM_PACKET_TIMEOUT = 3;
@@ -167,7 +168,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 		__HAL_TIM_SET_COUNTER(htim, 0);
 
 		//convert counter to time
-		ppm_values[ppm_index] = counter_to_time(count_since_last, htim->Init.Prescaler);
+		ppm_values[ppm_index] = counter_to_time(count_since_last, htim->Init.Prescaler) - PULSE_WIDTH;
 		
 		ppm_index++;
 		if(ppm_index >= num_channels) {
