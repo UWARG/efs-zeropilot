@@ -37,6 +37,8 @@ WaypointManager::WaypointManager(float relLat, float relLong) {
     relativeLongitude = relLong;
     relativeLatitude = relLat;
 
+    homeBase = nullptr; // Sets the pointer to null
+
     // Sets boolean variables
     inHold = false;
     goingHome = false;
@@ -49,67 +51,34 @@ WaypointManager::WaypointManager(float relLat, float relLong) {
 }
 
 WaypointManager::~WaypointManager() {
-    if (homeBase) { // Only call if homeBase is initialized
+    if (homeBase != nullptr) { // Only call if homeBase is initialized
         clear_home_base();
     }
+    // std::cout << "Hewwo" << std::endl;
 
     if (numWaypoints != 0) { // Only call if the waypointBuffer has waypoints in it
         clear_path_nodes();
     }
 }
 
-_WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData *currentLocation) {
-    
-    // The waypointBuffer array must be empty before we initialize the flight path
-    if (numWaypoints != 0) {
-        errorStatus = UNDEFINED_FAILURE;
-        return errorStatus;
-    }
-    
-    homeBase = currentLocation; 
-    numWaypoints = numberOfWaypoints;
-    nextFilledIndex = 0;
-    
-    #ifndef UNIT_TESTING
-        currentIndex = 0;
-    #endif
-
-    // Initializes the waypointBuffer array
-    for (int i = 0; i < numWaypoints; i++) {
-        waypointBuffer[i] = initialWaypoints[i]; // Sets the element in the waypointBuffer
-        waypointBufferStatus[i] = FULL;
-        nextFilledIndex = i + 1;
-    }
-
-    // Links waypoints together
-    for (int i = 0; i < numWaypoints; i++) {
-        if (i == 0) { // If first waypoint, link to next one only
-            waypointBuffer[i]->next = waypointBuffer[i+1];
-            waypointBuffer[i]->previous = nullptr;
-        } else if (i == numWaypoints - 1) { // If last waypoint, link to previous one only
-            waypointBuffer[i]->next = nullptr;
-            waypointBuffer[i]->previous = waypointBuffer[i-1];
-        } else {
-            waypointBuffer[i]->next = waypointBuffer[i+1];
-            waypointBuffer[i]->previous = waypointBuffer[i-1];
-        }
-    }
-
-    // Sets empty elements to null to prevent segmentation faults
-    for(int i = numWaypoints; i < PATH_BUFFER_SIZE; i++) {
-        waypointBuffer[i] = nullptr;
-    }
-
+_WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData * currentLocation) {
     errorStatus = WAYPOINT_SUCCESS; 
-    return errorStatus;
-}
-
-_WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints) {
 
     // The waypointBuffer array must be empty before we initialize the flight path
     if (numWaypoints != 0) {
         errorStatus = UNDEFINED_FAILURE;
         return errorStatus;
+    }
+
+    // If user passes in too many waypoints, the enum will notify them, but the flight path will be set with the maximum amount of waypoints allowed 
+    if (numberOfWaypoints > PATH_BUFFER_SIZE) {
+        errorStatus = TOO_MANY_WAYPOINTS;
+        numberOfWaypoints = PATH_BUFFER_SIZE;
+    }
+    
+    // If currentLocation was passed, then initializes homeBase
+    if (currentLocation != nullptr) {
+        homeBase = currentLocation;
     }
 
     numWaypoints = numberOfWaypoints;
@@ -147,12 +116,17 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
         waypointBuffer[i] = nullptr;
     }
 
-    errorStatus = WAYPOINT_SUCCESS;
     return errorStatus;
 }
 
 _PathData* WaypointManager::initialize_waypoint() {
     _PathData* waypoint = new _PathData; // Create new waypoint in the heap
+
+    if (!waypoint) {
+        delete waypoint;
+        return NULL;
+    }
+
     waypoint->waypointId = nextAssignedId;
     nextAssignedId++; // Increment ID so next waypoint has a different one
     waypoint->latitude = -1;
@@ -169,6 +143,12 @@ _PathData* WaypointManager::initialize_waypoint() {
 
 _PathData* WaypointManager::initialize_waypoint(long double longitude, long double latitude, int altitude, _WaypointOutputType waypointType) {
     _PathData* waypoint = new _PathData; // Create new waypoint in the heap
+
+    if (!waypoint) {
+        delete waypoint;
+        return NULL;
+    }
+
     waypoint->waypointId = nextAssignedId; 
     nextAssignedId++; // Increment ID so next waypoint has a different one 
     waypoint->latitude = latitude;
@@ -192,6 +172,12 @@ _PathData* WaypointManager::initialize_waypoint(long double longitude, long doub
 
 _PathData* WaypointManager::initialize_waypoint(long double longitude, long double latitude, int altitude, _WaypointOutputType waypointType, float turnRadius) {
     _PathData* waypoint = new _PathData; // Create new waypoint in the heap
+
+    if (!waypoint) {
+        delete waypoint;
+        return NULL;
+    }
+
     waypoint->waypointId = nextAssignedId; 
     nextAssignedId++; // Increment ID so next waypoint has a different one 
     waypoint->latitude = latitude;
@@ -285,7 +271,8 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
     if (inHold) { // If plane is currently circling and waiting for commands
         // Checks if parameters are valid. If state machine gets this error it should immediately cancel the hold because output data will not be updated while the parameters are incorrect
         if(turnRadius <= 0 || (turnDirection != -1 && turnDirection != 1)) { 
-            return INVALID_PARAMETERS;
+            errorCode = INVALID_PARAMETERS;
+            return errorCode;
         }
 
         // Sets position array
@@ -309,8 +296,9 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
     position[2] = (float) currentStatus.altitude;
 
     if (goingHome) { // If plane was instructed to go back to base (and is awaiting for waypointBuffer to be updated)
-        if (!homeBase) {
-            return UNDEFINED_PARAMETER;
+        if (homeBase == nullptr) {
+            errorCode = UNDEFINED_PARAMETER;
+            return errorCode;
         }
 
         // Creates a path data object to represent current position
@@ -346,7 +334,8 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
 
     // Ensures that the currentIndex parameter will not cause a segmentation fault
     if (numWaypoints - currentIndex < 1 && numWaypoints >= 0) { 
-        return CURRENT_INDEX_INVALID;
+        errorCode = CURRENT_INDEX_INVALID;
+        return errorCode;
     }
 
     // Calculates desired heading, altitude, and all output values
@@ -406,12 +395,10 @@ _WaypointStatus WaypointManager::start_circling(_WaypointManager_Data_In current
         }
 
         // Normalizes heading (keeps it between 0.0 and 259.9999)
-        while (turnCenterBearing >= 360.0) {
-            turnCenterBearing -= 360.0; // IF THERE IS A WAY TO DO THIS WITHOUT A WHILE LOOP PLS LMK
-        }
-
-        while (turnCenterBearing < 0.0) {
-            turnCenterBearing += 360.0; // IF THERE IS A WAY TO DO THIS WITHOUT A WHILE LOOP PLS LMK
+        if (turnCenterBearing >= 360.0) {
+            turnCenterBearing = fmod(turnCenterBearing, 360.0);
+        } else if (turnCenterBearing < 0.0) {
+            turnCenterBearing = fmod(turnCenterBearing, 360.0) + 360.0;
         }
 
         float angularDisplacement = turnRadius / (EARTH_RADIUS * 1000);
@@ -438,12 +425,12 @@ _WaypointStatus WaypointManager::start_circling(_WaypointManager_Data_In current
     return WAYPOINT_SUCCESS;
 }
 
-_HeadHomeStatus WaypointManager::head_home() {
+_HeadHomeStatus WaypointManager::head_home(bool startHeadingHome) {
     if (homeBase == nullptr) { // Checks if home waypoint is actually initialized.
         return HOME_UNDEFINED_PARAMETER;
     }
 
-    if (!goingHome) {
+    if (startHeadingHome) {
         clear_path_nodes(); // Clears path nodes so state machine can input new flight path
         goingHome = true;
         return HOME_TRUE;
@@ -673,11 +660,15 @@ void WaypointManager::follow_orbit(float* position, float heading) {
     float orbitDistance = sqrt(pow(position[0] - turnCenter[0],2) + pow(position[1] - turnCenter[1],2));
     float courseAngle = atan2(position[1] - turnCenter[1], position[0] - turnCenter[0]); // (y,x) format
 
-    // Gets angle between plane and line connecting it and center of orbit
-    while (courseAngle - currentHeading < - M_PI){
-        courseAngle += 2 * M_PI;
+    // Normalizes angles
+    // First gets the angle between 0 and 2 pi
+    if (courseAngle - heading >= 2 * M_PI) {
+        courseAngle = fmod(courseAngle, 2 * M_PI);
+    } else if (courseAngle - heading < 0.0) {
+        courseAngle = fmod(courseAngle, 2 * M_PI) + 2 * M_PI;
     }
-    while (courseAngle - currentHeading > M_PI){
+    // Now ensures that courseAngle is between -pi and pi
+    if (courseAngle > M_PI && courseAngle <= 2 * M_PI) {
         courseAngle -= 2 * M_PI;
     }
 
@@ -685,12 +676,10 @@ void WaypointManager::follow_orbit(float* position, float heading) {
     int calcHeading = round(90 - rad2deg(courseAngle + turnDirection * (M_PI/2 + atan(k_gain[ORBIT_FOLLOW] * (orbitDistance - turnRadius)/turnRadius)))); //Heading in degrees (magnetic)
     
     // Normalizes heading (keeps it between 0.0 and 259.9999)
-    while (calcHeading >= 360.0) {
-        calcHeading -= 360.0; // IF THERE IS A WAY TO DO THIS WITHOUT A WHILE LOOP PLS LMK
-    }
-
-    while (calcHeading < 0.0) {
-        calcHeading += 360.0; // IF THERE IS A WAY TO DO THIS WITHOUT A WHILE LOOP PLS LMK
+    if (calcHeading >= 360.0) {
+        calcHeading = fmod(calcHeading, 360.0);
+    } else if (calcHeading < 0.0) {
+        calcHeading = fmod(calcHeading, 360.0) + 360.0;
     }
     
     // Sets the return values
@@ -704,11 +693,15 @@ void WaypointManager::follow_straight_path(float* waypointDirection, float* targ
     heading = deg2rad(90 - heading);//90 - heading = magnetic heading to cartesian heading
     float courseAngle = atan2(waypointDirection[1], waypointDirection[0]); // (y,x) format
     
-    // Adjusts angle values so they are within -pi and pi inclusive
-    while (courseAngle - heading < -M_PI){
-        courseAngle += 2 * M_PI;
+    // Normalizes angles
+    // First gets the angle between 0 and 2 pi
+    if (courseAngle - heading >= 2 * M_PI) {
+        courseAngle = fmod(courseAngle, 2 * M_PI);
+    } else if (courseAngle - heading < 0.0) {
+        courseAngle = fmod(courseAngle, 2 * M_PI) + 2 * M_PI;
     }
-    while (courseAngle - heading > M_PI){
+    // Now ensures that courseAngle is between -pi and pi
+    if (courseAngle > M_PI && courseAngle <= 2 * M_PI) {
         courseAngle -= 2 * M_PI;
     }
 
@@ -717,12 +710,10 @@ void WaypointManager::follow_straight_path(float* waypointDirection, float* targ
     int calcHeading = 90 - rad2deg(courseAngle - MAX_PATH_APPROACH_ANGLE * 2/M_PI * atan(k_gain[PATH_FOLLOW] * pathError)); //Heading in degrees (magnetic) 
     
     // Normalizes heading (keeps it between 0.0 and 259.9999)
-    while (calcHeading >= 360.0) {
-        calcHeading -= 360.0; // IF THERE IS A WAY TO DO THIS WITHOUT A WHILE LOOP PLS LMK
-    }
-
-    while (calcHeading < 0.0) {
-        calcHeading += 360.0; // IF THERE IS A WAY TO DO THIS WITHOUT A WHILE LOOP PLS LMK
+    if (calcHeading >= 360.0) {
+        calcHeading = fmod(calcHeading, 360.0);
+    } else if (calcHeading < 0.0) {
+        calcHeading = fmod(calcHeading, 360.0) + 360.0;
     }
     
     // Sets the return values 
@@ -734,7 +725,6 @@ void WaypointManager::follow_straight_path(float* waypointDirection, float* targ
         turnRadius = 0;
         turnDirection = 0;
     }
-    // std::cout << "Done!" << std::endl;
 }
 
 
@@ -744,7 +734,8 @@ void WaypointManager::follow_straight_path(float* waypointDirection, float* targ
 _WaypointStatus WaypointManager::update_path_nodes(_PathData * waypoint, _WaypointBufferUpdateType updateType, int waypointId, int previousId, int nextId) {
     // If array is already full, if we insert it will cause a segmentation fault
     if (numWaypoints == PATH_BUFFER_SIZE && (updateType == APPEND_WAYPOINT || updateType == INSERT_WAYPOINT)) { 
-        return INVALID_PARAMETERS;
+        errorCode = INVALID_PARAMETERS;
+        return errorCode;
     }
 
     // Conducts a different operation based on the update type

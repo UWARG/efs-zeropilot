@@ -180,10 +180,7 @@ TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
     _ArrayStatus waypoint_status_check = compare_buffer_status(status, waypointManagerInstance); // Compares the waypointBufferStatus arrays
 
     // Clears heap
-    /* 
-        Deleting WaypointManager object takes care of calling clear_path_nodes() and clear_home_base(). 
-        This will also clear the waypoints in initialPaths, testArray, testHomeBase, and homeBase 
-    */
+    // Deleting WaypointManager object takes care of calling clear_path_nodes() and clear_home_base(). 
     delete waypointManagerInstance; 
 
 	/**********************ASSERTS**********************/
@@ -205,8 +202,26 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
 
     // Stores outputs from four tests
     _WaypointManager_Data_Out * out1 = new _WaypointManager_Data_Out;
+    // out1->desiredHeading = -1;        
+    // out1->desiredAltitude = -1;
+    // out1->distanceToNextWaypoint = -1;
+    // out1->radius = -1;
+    // out1->turnDirection = -1;
+    // out1->errorCode = UNDEFINED_FAILURE;
+    // out1->isDataNew = false;
+    // out1->timeOfData = 124124;
+    // out1->out_type = PATH_FOLLOW;
 
-    _WaypointManager_Data_Out * out2 = new _WaypointManager_Data_Out;;
+    _WaypointManager_Data_Out * out2 = new _WaypointManager_Data_Out;
+    // out2->desiredHeading = -1;        
+    // out2->desiredAltitude = -1;
+    // out2->distanceToNextWaypoint = -1;
+    // out2->radius = -1;
+    // out2->turnDirection = -1;
+    // out2->errorCode = UNDEFINED_FAILURE;
+    // out2->isDataNew = false;
+    // out2->timeOfData = 124124;
+    // out2->out_type = PATH_FOLLOW;
 
     // Creates two test values!
     _WaypointManager_Data_In setup1 = {43.467998128, -80.537331184, 100, 100};  // latitude, longitude, altitude, heading
@@ -653,7 +668,7 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
 
 	/********************STEPTHROUGH********************/
 
-    _HeadHomeStatus home_check_1 = waypointManagerInstance->head_home();
+    _HeadHomeStatus home_check_1 = waypointManagerInstance->head_home(true);
     _PathData ** testArray = new _PathData * [PATH_BUFFER_SIZE];
     _PathData ** ansArray = new _PathData * [PATH_BUFFER_SIZE];
     testArray = waypointManagerInstance->get_waypoint_buffer();
@@ -675,7 +690,7 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
 
     // Re-initializes flight path and gets next direction
     _WaypointStatus reinitialize_check = waypointManagerInstance->initialize_flight_path(initialPaths, numPaths); // Creates flight path
-    _HeadHomeStatus home_check_2 = waypointManagerInstance->head_home(); // Cancels holding
+    _HeadHomeStatus home_check_2 = waypointManagerInstance->head_home(false); // Cancels holding
     _WaypointStatus get_directions_check_3 = waypointManagerInstance->get_next_directions(input3, out3); 
     _OutputStatus output_check_3 = compare_output_data(ans3, out3);
 	
@@ -748,8 +763,6 @@ TEST(Waypoint_Manager, AppendElementToNotFilledArray) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
-
-    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
@@ -805,8 +818,6 @@ TEST(Waypoint_Manager, AppendElementToFirstElement) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
-
-    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
@@ -863,8 +874,6 @@ TEST(Waypoint_Manager, AppendElementToNinteyNineElementArray) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
-
-    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
@@ -910,8 +919,6 @@ TEST(Waypoint_Manager, AppendElementToFullAndReturnError) {
 
     // Updates the waypointBuffer and waypointBufferStatus and compares values
     _WaypointStatus update_fail_check = waypointManagerInstance->update_path_nodes(appendElement, APPEND_WAYPOINT, 0, 0, 0); // Only need to check that it returns an error
-
-    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
@@ -969,8 +976,6 @@ TEST(Waypoint_Manager, InsertElementToFirstIndexAndReturnError) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
-
-    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
@@ -1030,8 +1035,6 @@ TEST(Waypoint_Manager, InsertElementToLastIndexArrayNotFullAndReturnError) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
-
-    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
@@ -1091,8 +1094,6 @@ TEST(Waypoint_Manager, InsertElementToFullArrayAndReturnError) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
-
-    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
@@ -1167,8 +1168,6 @@ TEST(Waypoint_Manager, InsertToArrayInMiddle) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(insertPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
-
-    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
@@ -1238,8 +1237,6 @@ TEST(Waypoint_Manager, deleteMiddleElement) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(deleteArray, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
-
-    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
@@ -1306,8 +1303,6 @@ TEST(Waypoint_Manager, deleteFirstElement) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(deleteArray, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
-
-    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
@@ -1374,8 +1369,6 @@ TEST(Waypoint_Manager, deleteLastElement) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(deleteArray, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
-
-    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
@@ -1442,8 +1435,6 @@ TEST(Waypoint_Manager, deleteLastElementFullArray) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(deleteArray, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
-
-    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
@@ -1506,8 +1497,6 @@ TEST(Waypoint_Manager, updateFirstElement) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
-
-    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
@@ -1570,8 +1559,6 @@ TEST(Waypoint_Manager, updateLastElement) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
-
-    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
@@ -1635,8 +1622,6 @@ TEST(Waypoint_Manager, updateMiddleElement) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
-
-    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 

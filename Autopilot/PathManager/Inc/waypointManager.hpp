@@ -8,7 +8,6 @@
 #ifndef WAYPOINT_MANAGER_H
 #define WAYPOINT_MANAGER_H
 
-#include <iostream>
 #include <stdlib.h>
 #include <math.h>
 
@@ -22,7 +21,7 @@ struct _WaypointManager_Data_In {
 };
 
 // Stores error codes for the waypoint manager
-enum _WaypointStatus {WAYPOINT_SUCCESS = 0, UNDEFINED_FAILURE, CURRENT_INDEX_INVALID, UNDEFINED_PARAMETER, INVALID_PARAMETERS};
+enum _WaypointStatus {WAYPOINT_SUCCESS = 0, UNDEFINED_FAILURE, CURRENT_INDEX_INVALID, UNDEFINED_PARAMETER, INVALID_PARAMETERS, TOO_MANY_WAYPOINTS};
 
 // Used in the waypointBufferStatus array to signal which elements are free
 enum _WaypointBufferStatus {FREE = 0, FULL};
@@ -86,8 +85,7 @@ public:
     * @param[in] int numberOfWaypoints -> Number of waypoints being initialized in the waypointBuffer array
     * @param[in] _PathData* currentLocation -> Home base.
     */
-    _WaypointStatus initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData *currentLocation); // Sets flight path and home base
-    _WaypointStatus initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints);                             // Sets flight path
+    _WaypointStatus initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData * currentLocation = nullptr); // Sets flight path and home base
 
     /**
      * Called by state machine to create new _PathData objects. This moves all heap allocation and ID management to the waypoint manager, giving the state machine less work
@@ -129,15 +127,13 @@ public:
     /**
      * Called if user wants the plane to just head home
      *
-     * Steps:
-     *  - The method will clear the waypointBuffer array
-     *  - Since gps coordiantes of the home base are already stored in the homeBase parameter, the plane will just fly towards that direction
-     *  - As the plane flies, the state machine can call update_path_nodes() to update the waypointBuffer array. The state machine should also keep calling get_next_directions() to get desired heading and altitude
-     *  - Once the waypoints are set, user can call this method again to make the plane follow the waypointBuffer array. (when calling this the second time, goingHome will be set to False)
+     * To learn how to use this, refer to the docs: https://uwarg-docs.atlassian.net/wiki/spaces/ZP/pages/1169883137 
+     * 
+     *  @param[in] bool startHeadingHome -> true if you want plane to head home, false if you want plane to start following the flight path in waypointBuffer.
      * 
      *  Returns true if goingHome was set to true. Returns false otherwise. Note that if the homeBase parameter is not initialized, this method will return false automatically
      */
-    _HeadHomeStatus head_home();
+    _HeadHomeStatus head_home(bool startHeadingHome);
 
     /**
      *  Called if user wants to change the waypoint that the plane is currently trying to target. 
@@ -174,7 +170,7 @@ public:
     /**
     * @return the waypointBuffer array if requested
     */
-    _PathData** get_waypoint_buffer();
+    _PathData ** get_waypoint_buffer();
     _PathData * get_waypoint(int index);
 
     /**
