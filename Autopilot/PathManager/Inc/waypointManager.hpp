@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <cstdint>
 
 #define PATH_BUFFER_SIZE 100
 
