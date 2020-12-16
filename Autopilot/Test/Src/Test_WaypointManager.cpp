@@ -110,16 +110,14 @@ TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
 	WaypointManager * waypointManagerInstance = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
-
     int numPaths = 20;
     
-    // 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE]; // Used to initialize waypointBuffer 
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE]; // Used to check validity of waypointBuffer
+    _PathData * initialPaths[PATH_BUFFER_SIZE]; // Used to initialize waypointBuffer 
+    _PathData ** testArray; // Used to check validity of waypointBuffer
     _PathData * homeBase; // Used to initialize homeBase
     _PathData * testHomeBase; // Used to check validity of homeBase
 
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE]; // This array is used to check the validity of the waypointBufferStatus array
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE]; // This array is used to check the validity of the waypointBufferStatus array
 
     // Initializes status array  
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
@@ -187,10 +185,6 @@ TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
         This will also clear the waypoints in initialPaths, testArray, testHomeBase, and homeBase 
     */
     delete waypointManagerInstance; 
-   
-    // Removes helpers in this test from the heap
-    delete[] status;
-    delete[] initialPaths; // Removes the array structure
 
 	/**********************ASSERTS**********************/
 

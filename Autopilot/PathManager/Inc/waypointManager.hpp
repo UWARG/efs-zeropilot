@@ -175,6 +175,7 @@ public:
     * @return the waypointBuffer array if requested
     */
     _PathData** get_waypoint_buffer();
+    _PathData * get_waypoint(int index);
 
     /**
     * @return the value of the waypointBufferStatus array at a specified index.

@@ -938,7 +938,19 @@ _PathData ** WaypointManager::get_waypoint_buffer() {
     return waypointBuffer;
 }
 
+_PathData * WaypointManager::get_waypoint(int index) {
+    if (index < 0 || index > PATH_BUFFER_SIZE || !waypointBuffer[index]) {
+        return nullptr;
+    }
+
+    return waypointBuffer[index];
+}
+
 _WaypointBufferStatus WaypointManager::get_status_of_index(int index) {
+    if (index < 0 || index > PATH_BUFFER_SIZE) {
+        return FULL;
+    }
+
     return waypointBufferStatus[index];
 }
 
