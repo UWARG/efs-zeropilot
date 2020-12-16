@@ -5,11 +5,16 @@
 #include "AutoSteer.hpp"
 #include "PID.hpp"
 
-#include <math.h>
+#include <cmath>
 
 /***********************************************************************************************************************
  * Definitions
  **********************************************************************************************************************/
+
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846f
+#endif
+
 
 #define DEG_TO_RAD(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
 
@@ -20,9 +25,9 @@
 static PIDController bankPid{1, 0, 0, 0, -MAX_BANK_ANGLE, MAX_BANK_ANGLE}; // PID gains need to be tuned
 static PIDController rudderPid{1, 0, 0, 0, -100, 100}; // PID gains need to be tuned
 
-static PIDController pitchPid{1, 0, 0, 0, -MAX_PITXH_ANGLE, MAX_PITCH_ANGLE}; // PID gains need to be tuned
+static PIDController pitchPid{1, 0, 0, 0, -MAX_PITCH_ANGLE, MAX_PITCH_ANGLE}; // PID gains need to be tuned
 
-static const RUDDER_SCALING_FACTOR 0.8f // should be experimentally determined
+static const float RUDDER_SCALING_FACTOR = 0.8f; // should be experimentally determined
 
 /***********************************************************************************************************************
  * Prototypes
@@ -65,7 +70,7 @@ void AutoSteer_ComputeAltitudeAndAirspeed(AltitudeAirspeedInput_t *Input, Altitu
 }
 
 
-static float GetRudderAngle(float bankAngle)
+static float GetRudderPercent(float bankAngle)
 {
     return ((RUDDER_SCALING_FACTOR * bankAngle) / (M_PI / 2.0f)) * 100.0f;   // very simple for now. Experiments may give us a better formula. The PID will fix any discrepancy though
 }
