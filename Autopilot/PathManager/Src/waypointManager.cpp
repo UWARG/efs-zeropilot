@@ -13,7 +13,7 @@
 
 //Constants
 #define EARTH_RADIUS 6378.137
-#define PI 3.14159265358979323846 // Was giving me problems with M_PI, so I resorted to defining PI myself
+#define PI 3.14159265358979323846 // Was giving me problems with M_PI, so I resorted to defining it myself
 #define MAX_PATH_APPROACH_ANGLE PI/2
 
 //Basic Mathematical Conversions
