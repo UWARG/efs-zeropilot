@@ -13,11 +13,12 @@
 
 //Constants
 #define EARTH_RADIUS 6378.137
-#define MAX_PATH_APPROACH_ANGLE M_PI/2
+#define PI 3.14159265358979323846 // Was giving me problems with M_PI, so I resorted to defining PI myself
+#define MAX_PATH_APPROACH_ANGLE PI/2
 
 //Basic Mathematical Conversions
-#define deg2rad(angle_in_degrees) ((angle_in_degrees) * M_PI/180.0)
-#define rad2deg(angle_in_radians) ((angle_in_radians) * 180.0/M_PI)
+#define deg2rad(angle_in_degrees) ((angle_in_degrees) * PI/180.0)
+#define rad2deg(angle_in_radians) ((angle_in_radians) * 180.0/PI)
 
 
 /*** INITIALIZATION ***/
@@ -654,7 +655,7 @@ void WaypointManager::follow_last_line_segment(_PathData * currentWaypoint, floa
 }
 
 void WaypointManager::follow_orbit(float* position, float heading) {
-    float currentHeading = deg2rad(90 - heading);
+    heading = deg2rad(90 - heading);
 
     // Distance from centre of circle
     float orbitDistance = sqrt(pow(position[0] - turnCenter[0],2) + pow(position[1] - turnCenter[1],2));
@@ -662,18 +663,18 @@ void WaypointManager::follow_orbit(float* position, float heading) {
 
     // Normalizes angles
     // First gets the angle between 0 and 2 pi
-    if (courseAngle - heading >= 2 * M_PI) {
-        courseAngle = fmod(courseAngle, 2 * M_PI);
+    if (courseAngle - heading >= 2 * PI) {
+        courseAngle = fmod(courseAngle, 2 * PI);
     } else if (courseAngle - heading < 0.0) {
-        courseAngle = fmod(courseAngle, 2 * M_PI) + 2 * M_PI;
+        courseAngle = fmod(courseAngle, 2 * PI) + 2 * PI;
     }
     // Now ensures that courseAngle is between -pi and pi
-    if (courseAngle > M_PI && courseAngle <= 2 * M_PI) {
-        courseAngle -= 2 * M_PI;
+    if (courseAngle > PI && courseAngle <= 2 * PI) {
+        courseAngle -= 2 * PI;
     }
 
     // Desired heading
-    int calcHeading = round(90 - rad2deg(courseAngle + turnDirection * (M_PI/2 + atan(k_gain[ORBIT_FOLLOW] * (orbitDistance - turnRadius)/turnRadius)))); //Heading in degrees (magnetic)
+    int calcHeading = round(90 - rad2deg(courseAngle + turnDirection * (PI/2 + atan(k_gain[ORBIT_FOLLOW] * (orbitDistance - turnRadius)/turnRadius)))); //Heading in degrees (magnetic)
     
     // Normalizes heading (keeps it between 0.0 and 259.9999)
     if (calcHeading >= 360.0) {
@@ -695,19 +696,19 @@ void WaypointManager::follow_straight_path(float* waypointDirection, float* targ
     
     // Normalizes angles
     // First gets the angle between 0 and 2 pi
-    if (courseAngle - heading >= 2 * M_PI) {
-        courseAngle = fmod(courseAngle, 2 * M_PI);
+    if (courseAngle - heading >= 2 * PI) {
+        courseAngle = fmod(courseAngle, 2 * PI);
     } else if (courseAngle - heading < 0.0) {
-        courseAngle = fmod(courseAngle, 2 * M_PI) + 2 * M_PI;
+        courseAngle = fmod(courseAngle, 2 * PI) + 2 * PI;
     }
     // Now ensures that courseAngle is between -pi and pi
-    if (courseAngle > M_PI && courseAngle <= 2 * M_PI) {
-        courseAngle -= 2 * M_PI;
+    if (courseAngle > PI && courseAngle <= 2 * PI) {
+        courseAngle -= 2 * PI;
     }
 
     // Calculates desired heading
     float pathError = -sin(courseAngle) * (position[0] - targetWaypoint[0]) + cos(courseAngle) * (position[1] - targetWaypoint[1]);
-    int calcHeading = 90 - rad2deg(courseAngle - MAX_PATH_APPROACH_ANGLE * 2/M_PI * atan(k_gain[PATH_FOLLOW] * pathError)); //Heading in degrees (magnetic) 
+    int calcHeading = 90 - rad2deg(courseAngle - MAX_PATH_APPROACH_ANGLE * 2/PI * atan(k_gain[PATH_FOLLOW] * pathError)); //Heading in degrees (magnetic) 
     
     // Normalizes heading (keeps it between 0.0 and 259.9999)
     if (calcHeading >= 360.0) {
