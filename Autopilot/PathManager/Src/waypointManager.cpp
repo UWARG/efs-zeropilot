@@ -26,13 +26,10 @@
 
 WaypointManager::WaypointManager(float relLat, float relLong) {
     // Initializes important array and id navigation constants
-    #ifdef UNIT_TESTING
-        currentIndex = 2;
-    #else
-        currentIndex = 0;
-    #endif
-
+    currentIndex = 0;
     nextAssignedId = 0;
+    numWaypoints = 0;
+    nextFilledIndex = 0;
 
     // Sets relative long and lat
     relativeLongitude = relLong;
@@ -45,20 +42,21 @@ WaypointManager::WaypointManager(float relLat, float relLong) {
     goingHome = false;
     dataIsNew = false;
     orbitPathStatus = PATH_FOLLOW;
+    errorStatus = WAYPOINT_SUCCESS;
+
+    // Initialize all other parameters (defaults)
+    desiredHeading = 0;
+    desiredAltitude = 0;
+    distanceToNextWaypoint = 0.0;
+    errorCode = WAYPOINT_SUCCESS;
+    dataIsNew = false;
+    outputType = PATH_FOLLOW;
+    turnDesiredAltitude = 0;
+    turnDirection = 0; // 1 for CW, 2 for CCW
+    turnRadius = 0.0;
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         waypointBufferStatus[i] = FREE;
-    }
-}
-
-WaypointManager::~WaypointManager() {
-    if (homeBase != nullptr) { // Only call if homeBase is initialized
-        clear_home_base();
-    }
-    // std::cout << "Hewwo" << std::endl;
-
-    if (numWaypoints != 0) { // Only call if the waypointBuffer has waypoints in it
-        clear_path_nodes();
     }
 }
 
@@ -124,7 +122,6 @@ _PathData* WaypointManager::initialize_waypoint() {
     _PathData* waypoint = new _PathData; // Create new waypoint in the heap
 
     if (!waypoint) {
-        delete waypoint;
         return NULL;
     }
 
@@ -146,7 +143,6 @@ _PathData* WaypointManager::initialize_waypoint(long double longitude, long doub
     _PathData* waypoint = new _PathData; // Create new waypoint in the heap
 
     if (!waypoint) {
-        delete waypoint;
         return NULL;
     }
 
@@ -175,7 +171,6 @@ _PathData* WaypointManager::initialize_waypoint(long double longitude, long doub
     _PathData* waypoint = new _PathData; // Create new waypoint in the heap
 
     if (!waypoint) {
-        delete waypoint;
         return NULL;
     }
 
@@ -735,6 +730,7 @@ void WaypointManager::follow_straight_path(float* waypointDirection, float* targ
 _WaypointStatus WaypointManager::update_path_nodes(_PathData * waypoint, _WaypointBufferUpdateType updateType, int waypointId, int previousId, int nextId) {
     // If array is already full, if we insert it will cause a segmentation fault
     if (numWaypoints == PATH_BUFFER_SIZE && (updateType == APPEND_WAYPOINT || updateType == INSERT_WAYPOINT)) { 
+        destroy_waypoint(waypoint); // To pevent memory leaks from occuring, if there is an error the waypoint is removed from memory.
         errorCode = INVALID_PARAMETERS;
         return errorCode;
     }
@@ -777,7 +773,6 @@ void WaypointManager::destroy_waypoint(_PathData *waypoint) {
     // Ensures waypoint is not linked before deleting
     waypoint->next = nullptr;
     waypoint->previous = nullptr;
-
     delete waypoint; 
 }
 
@@ -788,6 +783,7 @@ _WaypointStatus WaypointManager::append_waypoint(_PathData * newWaypoint) {
 
     // Before initializing elements, checks if new waypoint is not a duplicate
     if (previousIndex != -1 && waypointBuffer[previousIndex]->latitude == newWaypoint->latitude && waypointBuffer[previousIndex]->longitude == newWaypoint->longitude) {
+        destroy_waypoint(newWaypoint); // To pevent memory leaks from occuring, if there is an error the waypoint is removed from memory.
         return INVALID_PARAMETERS;
     }
 
@@ -820,6 +816,7 @@ _WaypointStatus WaypointManager::insert_new_waypoint(_PathData* newWaypoint, int
     // If any of the waypoints could not be found. Or, if the two IDs do not correspond to adjacent elements in waypointBuffer[]
     // Also ensures we are not inserting before the currentIndex
     if (nextIndex == -1 || previousIndex == -1 || nextIndex - 1 != previousIndex || nextIndex == 0 || previousIndex < currentIndex){
+        destroy_waypoint(newWaypoint); // To pevent memory leaks from occuring, if there is an error the waypoint is removed from memory.
         return INVALID_PARAMETERS;
     }
 
@@ -897,6 +894,7 @@ _WaypointStatus WaypointManager::update_waypoint(_PathData* updatedWaypoint, int
     int waypointIndex = get_waypoint_index_from_id(waypointId);
 
     if (waypointIndex == -1) {
+        destroy_waypoint(updatedWaypoint); // To pevent memory leaks from occuring, if there is an error the waypoint is removed from memory.
         return INVALID_PARAMETERS;
     }
 
@@ -956,6 +954,17 @@ int WaypointManager::get_current_index() {
 
 int WaypointManager::get_id_of_current_index() {
     return waypointBuffer[currentIndex]->waypointId;
+}
+
+// For valgrind tests
+WaypointManager::~WaypointManager() {
+    if (homeBase != nullptr) { // Only call if homeBase is initialized
+        clear_home_base();
+    }
+
+    if (numWaypoints != 0) { // Only call if the waypointBuffer has waypoints in it
+        clear_path_nodes();
+    }
 }
 
 
