@@ -3,6 +3,9 @@
 #include "stdlib.h"
 #include "stm32f0xx_hal_iwdg.h"
 
+static void setPWMChannel(PWMChannel &pwm, int channel, int percentage);
+static int getPPM(PPMChannel &ppm, int channel);
+
 
 
 //static Interchip_AtoS_Packet *dataRX;
@@ -39,7 +42,7 @@ void safety_run(PWMChannel &pwm, PPMChannel &ppm)
 /*
 * Sets an individual PWM channel to the desired output.
 */
-void setPWMChannel(PWMChannel &pwm, int channel, int percentage)
+static void setPWMChannel(PWMChannel &pwm, int channel, int percentage)
 {
     //Input protection
     if(percentage > 100) {percentage = 100;}
@@ -56,7 +59,7 @@ bool isSafetyManual()
     return false;
 }
 
-int getPPM(PPMChannel &ppm, int channel)
+static int getPPM(PPMChannel &ppm, int channel)
 {
     return ppm.get(channel);
 }
