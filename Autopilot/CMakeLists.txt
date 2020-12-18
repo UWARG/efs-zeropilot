@@ -88,7 +88,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
           -iex "disconnect" -iex "quit")
 
 elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
-  
+
   add_definitions(-DUNIT_TESTING)
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fms-extensions -Wall -Wextra -g")
@@ -124,7 +124,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
   #instruct cmake to store all binaries in their own directory
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-  
+
   # Collect the main function that runs our unit tests. It will be common for all executables
   set(UNIT_TEST_MAIN ${CMAKE_CURRENT_SOURCE_DIR}/Test/testMain.cpp)
 
@@ -199,37 +199,21 @@ elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
 
   add_definitions(-DSIMULATION)
 
-  set(SIM_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../Simulink-Sim/Spike)
+  set(SIM_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../Simulink-Sim/Infinion)
 
-  add_definitions(
-    -DUSE_HAL_LIB
-    -DSTM32F7xx
-    -DSTM32F765xx
-    -DSTM32F765xG
-    -DARM_MATH_CM7
-  )
-
-  # Required to get some of the CMSIS libraries to compile
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -fms-extensions -Wall -Wextra -g")
+  # allow debugging if required
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
   set(CMAKE_CXX_STANDARD 11)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-  # Required to allow us to point to the gtest directory using an environment variable. (This has only been an issue on the windows CI)
-  if(POLICY CMP0074)
-    cmake_policy(SET CMP0074 NEW)
-  endif()
 
   include_directories(
-    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/STM32F7xx_HAL_Driver/Inc
-    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/CMSIS/Include
-    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/CMSIS/Device/ST/STM32F7xx/Include
-    SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Test/vendor/lib
     ${CMAKE_CURRENT_SOURCE_DIR}/../Common/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager
 
-    ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw
+    ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw
     ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/extern/include
     ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/rtw/c/src
     ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/rtw/c/src/ext_mode/common
@@ -257,18 +241,19 @@ elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
   ${SIM_ROOT_DIR}/ZeroPilotSwHooks/SendToSafetyIntercept.cpp
   ${SIM_ROOT_DIR}/ZeroPilotSwHooks/AirspeedSensorIntercept.cpp
   ${SIM_ROOT_DIR}/ZeroPilotSwHooks/IMUSensorIntercept.cpp
-)
+  )
+
   set(SIMULINK_GENERATED_SOURCES
-  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw/Spike.cpp
-  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw/Spike_data.cpp
-  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw/rt_nonfinite.cpp
-  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw/rtGetNaN.cpp
-  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Spike_grt_rtw/rtGetInf.cpp
-)
+  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw/Infinion.cpp
+  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw/Infinion_data.cpp
+  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw/rt_nonfinite.cpp
+  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw/rtGetNaN.cpp
+  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw/rtGetInf.cpp
+  )
 
   add_executable(sim ${ATTITUDE_MANAGER_SIM_SOURCES} ${ZERO_PILOT_HOOK_SOURCES} ${SIMULINK_GENERATED_SOURCES})
-  target_link_libraries(sim m)
 
-#########
+  # Link with the math library
+  target_link_libraries(sim m)
 
 endif()
