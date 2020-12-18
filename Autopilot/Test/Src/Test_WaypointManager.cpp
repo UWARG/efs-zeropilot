@@ -51,7 +51,7 @@ static _ArrayStatus compare_arrays(_PathData ** ans, _PathData ** testArray, int
     for(int i = 0; i < numElements; i++) {
         nextWaypoint = testArray[i];
         if(ans[i]->waypointId != nextWaypoint->waypointId && ans[i]->longitude != nextWaypoint->longitude && ans[i]->latitude != nextWaypoint->latitude && ans[i]->altitude != nextWaypoint->altitude && ans[i]->waypointType != nextWaypoint->waypointType && ans[i]->turnRadius != nextWaypoint->turnRadius) {
-            cout << "Array Equality Check Index: " << i << " | " << ans[i]->waypointId << " " << nextWaypoint->waypointId << " | " << ans[i]->longitude << " " << nextWaypoint->longitude << " | " << ans[i]->latitude << " " << nextWaypoint->latitude << " | " << ans[i]->altitude << " " << nextWaypoint->altitude << " | " << ans[i]->waypointType << " " << nextWaypoint->waypointType << " | " << ans[i]->turnRadius << " " << nextWaypoint->turnRadius << endl;
+            // cout << "Array Equality Check Index: " << i << " | " << ans[i]->waypointId << " " << nextWaypoint->waypointId << " | " << ans[i]->longitude << " " << nextWaypoint->longitude << " | " << ans[i]->latitude << " " << nextWaypoint->latitude << " | " << ans[i]->altitude << " " << nextWaypoint->altitude << " | " << ans[i]->waypointType << " " << nextWaypoint->waypointType << " | " << ans[i]->turnRadius << " " << nextWaypoint->turnRadius << endl;
             return ARRAY_DIFFERENT;
         }
     }
@@ -62,7 +62,7 @@ static _ArrayStatus compare_arrays(_PathData ** ans, _PathData ** testArray, int
 static _ArrayStatus compare_buffer_status(_WaypointBufferStatus * ans, WaypointManager * waypointManagerInstance) {
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         if(ans[i] != waypointManagerInstance->get_status_of_index(i)) {
-            cout << "Buffer Compare Index: " << i << " | " << ans[i] << " " << waypointManagerInstance->get_status_of_index(i) << endl;
+            // cout << "Buffer Compare Index: " << i << " | " << ans[i] << " " << waypointManagerInstance->get_status_of_index(i) << endl;
             return ARRAY_DIFFERENT;
         }
     }
@@ -83,7 +83,7 @@ static _OutputStatus compare_output_data(_WaypointManager_Data_Out *ans, _Waypoi
     if(ans->desiredAltitude == test->desiredAltitude && ans->desiredHeading == test->desiredHeading && ans->distanceToNextWaypoint == round(test->distanceToNextWaypoint) && ans->radius == test->radius && ans->turnDirection == test->turnDirection && ans->out_type == test->out_type) {
         return OUTPUT_CORRECT;
     } else {
-        cout << "Comparing Output Data: Alt " << ans->desiredAltitude << " " << test->desiredAltitude << " | Heading " << ans->desiredHeading << " " << test->desiredHeading << " | Distance " << ans->distanceToNextWaypoint << " " << test->distanceToNextWaypoint << " | Radius " << ans->radius << " " << test->radius << " | Direction " << ans->turnDirection << " " << test->turnDirection << " | OutType " << ans->out_type << " " << test->out_type << endl;
+        // cout << "Comparing Output Data: Alt " << ans->desiredAltitude << " " << test->desiredAltitude << " | Heading " << ans->desiredHeading << " " << test->desiredHeading << " | Distance " << ans->distanceToNextWaypoint << " " << test->distanceToNextWaypoint << " | Radius " << ans->radius << " " << test->radius << " | Direction " << ans->turnDirection << " " << test->turnDirection << " | OutType " << ans->out_type << " " << test->out_type << endl;
         return OUTPUT_INCORRECT;
     }
 }
@@ -94,7 +94,7 @@ static _OutputStatus compare_coordinates(float * ans, float * test) {
         // cout << "Comparing Coordinates: " << ans[0] << " " << test[0] << " | " << ans[1] << " " << test[1] << " | " << ans[2] << " " << test[2] << endl;
         return OUTPUT_CORRECT; 
     } else {
-        cout << "Comparing Coordinates: " << ans[0] << " " << test[0] << " | " << ans[1] << " " << test[1] << " | " << ans[2] << " " << test[2] << endl;
+        // cout << "Comparing Coordinates: " << ans[0] << " " << test[0] << " | " << ans[1] << " " << test[1] << " | " << ans[2] << " " << test[2] << endl;
         return OUTPUT_INCORRECT;
     }
 }
@@ -113,9 +113,9 @@ TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
     int numPaths = 20;
     
     _PathData * initialPaths[PATH_BUFFER_SIZE]; // Used to initialize waypointBuffer 
-    _PathData ** testArray; // Used to check validity of waypointBuffer
-    _PathData * homeBase; // Used to initialize homeBase
-    _PathData * testHomeBase; // Used to check validity of homeBase
+    _PathData ** testArray = nullptr; // Used to check validity of waypointBuffer
+    _PathData * homeBase = nullptr; // Used to initialize homeBase
+    _PathData * testHomeBase = nullptr; // Used to check validity of homeBase
 
     _WaypointBufferStatus status[PATH_BUFFER_SIZE]; // This array is used to check the validity of the waypointBufferStatus array
 
@@ -173,10 +173,10 @@ TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
 
 	/**********************ASSERTS**********************/
 
-    ASSERT_EQ(home_base_check, WAYPOINT_CORRECT);  
-	ASSERT_EQ(waypoint_buffer_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(waypoint_status_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);  
+    EXPECT_EQ(home_base_check, WAYPOINT_CORRECT);  
+	EXPECT_EQ(waypoint_buffer_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(waypoint_status_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);  
 }
 
 
@@ -190,26 +190,7 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
 
     // Stores outputs from four tests
     _WaypointManager_Data_Out * out1 = new _WaypointManager_Data_Out;
-    // out1->desiredHeading = -1;        
-    // out1->desiredAltitude = -1;
-    // out1->distanceToNextWaypoint = -1;
-    // out1->radius = -1;
-    // out1->turnDirection = -1;
-    // out1->errorCode = UNDEFINED_FAILURE;
-    // out1->isDataNew = false;
-    // out1->timeOfData = 124124;
-    // out1->out_type = PATH_FOLLOW;
-
     _WaypointManager_Data_Out * out2 = new _WaypointManager_Data_Out;
-    // out2->desiredHeading = -1;        
-    // out2->desiredAltitude = -1;
-    // out2->distanceToNextWaypoint = -1;
-    // out2->radius = -1;
-    // out2->turnDirection = -1;
-    // out2->errorCode = UNDEFINED_FAILURE;
-    // out2->isDataNew = false;
-    // out2->timeOfData = 124124;
-    // out2->out_type = PATH_FOLLOW;
 
     // Creates two test values!
     _WaypointManager_Data_In setup1 = {43.467998128, -80.537331184, 100, 100};  // latitude, longitude, altitude, heading
@@ -250,13 +231,9 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
     int turnDirection[2] = {-1, 1}; // 1 = CW, 2 = CCW
     int altitude[2] = {78, 110};
 
-    // std::cout << "Here1" << std::endl;
-
     _WaypointStatus circling_start_check_1 = waypointManagerInstance->start_circling(setup1, turnRadius[0], turnDirection[0], altitude[0], false); // Sets circling
 
     _WaypointStatus get_directions_check_1 = waypointManagerInstance->get_next_directions(input1, out1);
-
-    // std::cout << "Here2" << std::endl;
 
     float response[3]; // longitude, latitude
     response[0] = waypointManagerInstance->orbitCentreLong;
@@ -265,8 +242,6 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
 
     _OutputStatus test1_center = compare_coordinates(center_ans1, response);
     _OutputStatus test1_output = compare_output_data(ans1, out1);
-
-    // std::cout << "Here3" << std::endl;
 
     _WaypointStatus circling_start_check_2 = waypointManagerInstance->start_circling(setup2, turnRadius[1], turnDirection[1], altitude[1], false); // Sets circling
 
@@ -279,19 +254,21 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
     _OutputStatus test2_center = compare_coordinates(center_ans2, response);
     _OutputStatus test2_output = compare_output_data(ans2, out2);
 
+    delete out1; delete out2; delete ans1; delete ans2; delete waypointManagerInstance;
+
     /**********************ASSERTS**********************/
 
-    ASSERT_EQ(get_directions_check_1, WAYPOINT_SUCCESS);
-    ASSERT_EQ(get_directions_check_2, WAYPOINT_SUCCESS);
+    EXPECT_EQ(get_directions_check_1, WAYPOINT_SUCCESS);
+    EXPECT_EQ(get_directions_check_2, WAYPOINT_SUCCESS);
 
-    ASSERT_EQ(circling_start_check_1, WAYPOINT_SUCCESS);
-    ASSERT_EQ(circling_start_check_2, WAYPOINT_SUCCESS);
+    EXPECT_EQ(circling_start_check_1, WAYPOINT_SUCCESS);
+    EXPECT_EQ(circling_start_check_2, WAYPOINT_SUCCESS);
 
-    ASSERT_EQ(test1_center, OUTPUT_CORRECT);
-    ASSERT_EQ(test1_output, OUTPUT_CORRECT);
+    EXPECT_EQ(test1_center, OUTPUT_CORRECT);
+    EXPECT_EQ(test1_output, OUTPUT_CORRECT);
 
-    ASSERT_EQ(test2_center, OUTPUT_CORRECT);
-    ASSERT_EQ(test2_output, OUTPUT_CORRECT);
+    EXPECT_EQ(test2_center, OUTPUT_CORRECT);
+    EXPECT_EQ(test2_output, OUTPUT_CORRECT);
 }
 
 TEST(Waypoint_Manager, DesiredHeadingStraightPathFollow) {
@@ -344,8 +321,10 @@ TEST(Waypoint_Manager, DesiredHeadingStraightPathFollow) {
     float altitudes[numPaths] = {10, 20, 30, 33, 32, 50};
 
     // Creates waypoint array
-
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
+        initialPaths[i] = nullptr;
+    }   
     
     for(int i = 0; i < numPaths; i++) {
         initialPaths[i] = waypointManagerInstance->initialize_waypoint(longitudes[i], latitudes[i], altitudes[i], PATH_FOLLOW);
@@ -358,19 +337,19 @@ TEST(Waypoint_Manager, DesiredHeadingStraightPathFollow) {
     _WaypointStatus get_directions_check_1 = waypointManagerInstance->get_next_directions(input1, out1);
     _OutputStatus output_check_1 = compare_output_data(ans1, out1);
 
-    // cout << endl;
-
     _WaypointStatus get_directions_check_2 = waypointManagerInstance->get_next_directions(input2, out2);
     _OutputStatus output_check_2 = compare_output_data(ans2, out2);
 
+    delete out1; delete out2; delete ans1; delete ans2; delete waypointManagerInstance;
+
 	/**********************ASSERTS**********************/
 
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);
-    ASSERT_EQ(get_directions_check_1, WAYPOINT_SUCCESS);
-    ASSERT_EQ(get_directions_check_2, WAYPOINT_SUCCESS);
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);
+    EXPECT_EQ(get_directions_check_1, WAYPOINT_SUCCESS);
+    EXPECT_EQ(get_directions_check_2, WAYPOINT_SUCCESS);
     
-    ASSERT_EQ(output_check_1, OUTPUT_CORRECT);
-    ASSERT_EQ(output_check_2, OUTPUT_CORRECT);
+    EXPECT_EQ(output_check_1, OUTPUT_CORRECT);
+    EXPECT_EQ(output_check_2, OUTPUT_CORRECT);
 }
 
 TEST(Waypoint_Manager, DesiredHeadingWhenNextToNextWaypointNotDefined) {
@@ -422,8 +401,10 @@ TEST(Waypoint_Manager, DesiredHeadingWhenNextToNextWaypointNotDefined) {
     float altitudes[numPaths] = {10, 20, 30, 33};
 
     // Creates waypoint array
-
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
+        initialPaths[i] = nullptr;
+    }
 
     for(int i = 0; i < numPaths; i++) {
         initialPaths[i] = waypointManagerInstance->initialize_waypoint(longitudes[i], latitudes[i], altitudes[i], PATH_FOLLOW);
@@ -441,14 +422,16 @@ TEST(Waypoint_Manager, DesiredHeadingWhenNextToNextWaypointNotDefined) {
     _WaypointStatus get_directions_check_2 = waypointManagerInstance->get_next_directions(input2, out2);
     _OutputStatus output_check_2 = compare_output_data(ans2, out2);
 
+    delete out1; delete out2; delete ans1; delete ans2; delete waypointManagerInstance;
+
 	/**********************ASSERTS**********************/
 
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);
-    ASSERT_EQ(get_directions_check_1, WAYPOINT_SUCCESS);
-    ASSERT_EQ(get_directions_check_2, WAYPOINT_SUCCESS);
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);
+    EXPECT_EQ(get_directions_check_1, WAYPOINT_SUCCESS);
+    EXPECT_EQ(get_directions_check_2, WAYPOINT_SUCCESS);
     
-    ASSERT_EQ(output_check_1, OUTPUT_CORRECT);
-    ASSERT_EQ(output_check_2, OUTPUT_CORRECT);
+    EXPECT_EQ(output_check_1, OUTPUT_CORRECT);
+    EXPECT_EQ(output_check_2, OUTPUT_CORRECT);
 }
 
 TEST(Waypoint_Manager, DesiredHeadingNextWaypointNotDefined) {
@@ -499,7 +482,10 @@ TEST(Waypoint_Manager, DesiredHeadingNextWaypointNotDefined) {
     float altitudes[numPaths] = {10, 20, 30};
 
     // Creates waypoint array
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
+        initialPaths[i] = nullptr;
+    }
 
     for(int i = 0; i < numPaths; i++) {
         initialPaths[i] = waypointManagerInstance->initialize_waypoint(longitudes[i], latitudes[i], altitudes[i], PATH_FOLLOW);
@@ -517,14 +503,16 @@ TEST(Waypoint_Manager, DesiredHeadingNextWaypointNotDefined) {
     _WaypointStatus get_directions_check_2 = waypointManagerInstance->get_next_directions(input2, out2);
     _OutputStatus output_check_2 = compare_output_data(ans2, out2);
 
+    delete out1; delete out2; delete ans1; delete ans2; delete waypointManagerInstance;
+
 	/**********************ASSERTS**********************/
 
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);
-    ASSERT_EQ(get_directions_check_1, WAYPOINT_SUCCESS);
-    ASSERT_EQ(get_directions_check_2, WAYPOINT_SUCCESS);
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);
+    EXPECT_EQ(get_directions_check_1, WAYPOINT_SUCCESS);
+    EXPECT_EQ(get_directions_check_2, WAYPOINT_SUCCESS);
     
-    ASSERT_EQ(output_check_1, OUTPUT_CORRECT);
-    ASSERT_EQ(output_check_2, OUTPUT_CORRECT);
+    EXPECT_EQ(output_check_1, OUTPUT_CORRECT);
+    EXPECT_EQ(output_check_2, OUTPUT_CORRECT);
 }
 
 TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
@@ -592,11 +580,15 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
     float altitudes[numPaths] = {10, 20, 30, 33, 32, 50};
 
     // Creates waypoint array
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE];
+    _PathData ** testArray = nullptr;
+    _PathData * ansArray[PATH_BUFFER_SIZE];
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         status[i] = FREE;
+        ansArray[i] = nullptr;
+        initialPaths[i] = nullptr;
     }
 
     for(int i = 0; i < numPaths; i++) {
@@ -611,8 +603,7 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
 	/********************STEPTHROUGH********************/
 
     _HeadHomeStatus home_check_1 = waypointManagerInstance->head_home(true);
-    _PathData ** testArray = new _PathData * [PATH_BUFFER_SIZE];
-    _PathData ** ansArray = new _PathData * [PATH_BUFFER_SIZE];
+
     testArray = waypointManagerInstance->get_waypoint_buffer();
 
     _ArrayStatus path_compare_1 = compare_arrays(ansArray, testArray, 0);
@@ -636,25 +627,27 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
     _ArrayStatus path_status_compare_2 = compare_buffer_status(status, waypointManagerInstance);
     _WaypointStatus get_directions_check_3 = waypointManagerInstance->get_next_directions(input3, out3); 
     _OutputStatus output_check_3 = compare_output_data(ans3, out3);
+
+    delete out1; delete out2; delete out3; delete ans1; delete ans2; delete ans3; delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);
-    ASSERT_EQ(get_directions_check_1, WAYPOINT_SUCCESS);
-    ASSERT_EQ(get_directions_check_2, WAYPOINT_SUCCESS);
-    ASSERT_EQ(reinitialize_check, WAYPOINT_SUCCESS);
-    ASSERT_EQ(get_directions_check_3, WAYPOINT_SUCCESS);
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);
+    EXPECT_EQ(get_directions_check_1, WAYPOINT_SUCCESS);
+    EXPECT_EQ(get_directions_check_2, WAYPOINT_SUCCESS);
+    EXPECT_EQ(reinitialize_check, WAYPOINT_SUCCESS);
+    EXPECT_EQ(get_directions_check_3, WAYPOINT_SUCCESS);
 
-    ASSERT_EQ(home_check_1, HOME_TRUE);
-    ASSERT_EQ(home_check_2, HOME_FALSE);
+    EXPECT_EQ(home_check_1, HOME_TRUE);
+    EXPECT_EQ(home_check_2, HOME_FALSE);
 
-    ASSERT_EQ(path_compare_1, ARRAY_SUCCESS);
-    ASSERT_EQ(path_status_compare_1, ARRAY_SUCCESS);
-    ASSERT_EQ(path_status_compare_2, ARRAY_SUCCESS);
+    EXPECT_EQ(path_compare_1, ARRAY_SUCCESS);
+    EXPECT_EQ(path_status_compare_1, ARRAY_SUCCESS);
+    EXPECT_EQ(path_status_compare_2, ARRAY_SUCCESS);
 
-    ASSERT_EQ(output_check_1, OUTPUT_CORRECT);
-    ASSERT_EQ(output_check_2, OUTPUT_CORRECT);
-    ASSERT_EQ(output_check_3, OUTPUT_CORRECT);
+    EXPECT_EQ(output_check_1, OUTPUT_CORRECT);
+    EXPECT_EQ(output_check_2, OUTPUT_CORRECT);
+    EXPECT_EQ(output_check_3, OUTPUT_CORRECT);
 }
 
 
@@ -670,13 +663,14 @@ TEST(Waypoint_Manager, AppendElementToNotFilledArray) {
     // Creates the initial flight path and home base
     int numPaths = 50;
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    _PathData ** testArray = nullptr;
 
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE];
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         status[i] = FREE;
+        initialPaths[i] = nullptr;
     }
 
     long double longitude = 1;
@@ -707,13 +701,15 @@ TEST(Waypoint_Manager, AppendElementToNotFilledArray) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
+
+    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(paths_equal_check, ARRAY_SUCCESS); 
-    ASSERT_EQ(paths_status_equal_check, ARRAY_SUCCESS); 
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS); 
-    ASSERT_EQ(update_success_check, WAYPOINT_SUCCESS); 
+	EXPECT_EQ(paths_equal_check, ARRAY_SUCCESS); 
+    EXPECT_EQ(paths_status_equal_check, ARRAY_SUCCESS); 
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS); 
+    EXPECT_EQ(update_success_check, WAYPOINT_SUCCESS); 
 }
 
 TEST(Waypoint_Manager, AppendElementToFirstElement) {
@@ -725,13 +721,14 @@ TEST(Waypoint_Manager, AppendElementToFirstElement) {
     // Creates the initial flight path and home base
     int numPaths = 0;
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    _PathData ** testArray = nullptr;
 
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE];
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         status[i] = FREE;
+        initialPaths[i] = nullptr;
     }
 
     long double longitude = 1;
@@ -762,13 +759,15 @@ TEST(Waypoint_Manager, AppendElementToFirstElement) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
+
+    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(paths_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);  
-    ASSERT_EQ(update_success_check, WAYPOINT_SUCCESS);  
+	EXPECT_EQ(paths_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);  
+    EXPECT_EQ(update_success_check, WAYPOINT_SUCCESS);  
 }
 
 TEST(Waypoint_Manager, AppendElementToNinteyNineElementArray) {
@@ -781,13 +780,14 @@ TEST(Waypoint_Manager, AppendElementToNinteyNineElementArray) {
 
     int numPaths = 99;
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    _PathData ** testArray = nullptr;
 
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE];
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         status[i] = FREE;
+        initialPaths[i] = nullptr;
     }
 
     long double longitude = 1;
@@ -818,13 +818,15 @@ TEST(Waypoint_Manager, AppendElementToNinteyNineElementArray) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
+
+    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(paths_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);  
-    ASSERT_EQ(update_success_check, WAYPOINT_SUCCESS);  
+	EXPECT_EQ(paths_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);  
+    EXPECT_EQ(update_success_check, WAYPOINT_SUCCESS);  
 }
 
 TEST(Waypoint_Manager, AppendElementToFullAndReturnError) {
@@ -837,7 +839,11 @@ TEST(Waypoint_Manager, AppendElementToFullAndReturnError) {
 
     int numPaths = PATH_BUFFER_SIZE;
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+
+    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
+        initialPaths[i] = nullptr;
+    }
 
     long double longitude = 1;
     long double latitude = 10;
@@ -862,11 +868,13 @@ TEST(Waypoint_Manager, AppendElementToFullAndReturnError) {
 
     // Updates the waypointBuffer and waypointBufferStatus and compares values
     _WaypointStatus update_fail_check = waypointManagerInstance->update_path_nodes(appendElement, APPEND_WAYPOINT, 0, 0, 0); // Only need to check that it returns an error
+
+    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);  
-    ASSERT_EQ(update_fail_check, INVALID_PARAMETERS);  
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);  
+    EXPECT_EQ(update_fail_check, INVALID_PARAMETERS);  
 }
 
 TEST(Waypoint_Manager, InsertElementToFirstIndexAndReturnError) {
@@ -878,13 +886,14 @@ TEST(Waypoint_Manager, InsertElementToFirstIndexAndReturnError) {
     // Creates the initial flight path and home base
     int numPaths = 50;
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    _PathData ** testArray = nullptr;
 
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE];
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         status[i] = FREE;
+        initialPaths[i] = nullptr;
     }
 
     long double longitude = 1;
@@ -919,13 +928,15 @@ TEST(Waypoint_Manager, InsertElementToFirstIndexAndReturnError) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
+
+    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(paths_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);  
-    ASSERT_EQ(update_fail_check, INVALID_PARAMETERS);  
+	EXPECT_EQ(paths_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);  
+    EXPECT_EQ(update_fail_check, INVALID_PARAMETERS);  
 }
 
 TEST(Waypoint_Manager, InsertElementToLastIndexArrayNotFullAndReturnError) {
@@ -937,13 +948,14 @@ TEST(Waypoint_Manager, InsertElementToLastIndexArrayNotFullAndReturnError) {
     // Creates the initial flight path and home base
     int numPaths = 50;
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    _PathData ** testArray = nullptr;
 
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE];
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         status[i] = FREE;
+        initialPaths[i] = nullptr;
     }
 
     long double longitude = 1;
@@ -978,13 +990,15 @@ TEST(Waypoint_Manager, InsertElementToLastIndexArrayNotFullAndReturnError) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
+
+    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(paths_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);  
-    ASSERT_EQ(update_success_check, INVALID_PARAMETERS); 
+	EXPECT_EQ(paths_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);  
+    EXPECT_EQ(update_success_check, INVALID_PARAMETERS); 
 }
 
 TEST(Waypoint_Manager, InsertElementToFullArrayAndReturnError) {
@@ -996,13 +1010,14 @@ TEST(Waypoint_Manager, InsertElementToFullArrayAndReturnError) {
     // Creates the initial flight path and home base
     int numPaths = 100;
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    _PathData ** testArray = nullptr;
 
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE];
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         status[i] = FREE;
+        initialPaths[i] = nullptr;
     }
 
     long double longitude = 1;
@@ -1037,13 +1052,15 @@ TEST(Waypoint_Manager, InsertElementToFullArrayAndReturnError) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
+
+    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(paths_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);  
-    ASSERT_EQ(update_fail_check, INVALID_PARAMETERS);   
+	EXPECT_EQ(paths_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);  
+    EXPECT_EQ(update_fail_check, INVALID_PARAMETERS);   
 }
 
 TEST(Waypoint_Manager, InsertToArrayInMiddle) {
@@ -1053,17 +1070,19 @@ TEST(Waypoint_Manager, InsertToArrayInMiddle) {
 	WaypointManager * waypointManagerInstance = new WaypointManager(43.467998128, 80.537331184); // Creates object
 
     // Creates the initial flight path and home base
-    int numPaths = 80;
-    int insertIndex = 50;
+    int numPaths = 30;
+    int insertIndex = 15;
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** insertPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    _PathData * insertPaths[PATH_BUFFER_SIZE];
+    _PathData ** testArray = nullptr;
 
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE];
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         status[i] = FREE;
+        initialPaths[i] = nullptr;
+        insertPaths[i] = nullptr;
     }
 
     _PathData * insertElement = waypointManagerInstance->initialize_waypoint(1000, 1000, 1000, PATH_FOLLOW);
@@ -1083,7 +1102,7 @@ TEST(Waypoint_Manager, InsertToArrayInMiddle) {
 
     for(int i = 0; i < numPaths+1; i++) {
         if(i < numPaths) {
-            initialPaths[i] = waypointManagerInstance->initialize_waypoint(longitude, latitude, altitude, waypointType);
+            initialPaths[i] = waypointManagerInstance->initialize_waypoint(longitude, latitude, altitude, waypointType);            
             status[i] = FULL;
             id_array[i] = initialPaths[i]->waypointId;
             longitude++;
@@ -1111,13 +1130,16 @@ TEST(Waypoint_Manager, InsertToArrayInMiddle) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(insertPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
+
+    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
+	
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);  
+    EXPECT_EQ(update_success_check, WAYPOINT_SUCCESS);
 
-	ASSERT_EQ(paths_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);  
-    ASSERT_EQ(update_success_check, WAYPOINT_SUCCESS);
+    EXPECT_EQ(paths_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
 }
 
 TEST(Waypoint_Manager, deleteMiddleElement) {
@@ -1131,14 +1153,16 @@ TEST(Waypoint_Manager, deleteMiddleElement) {
     int numPaths = 57;
     int deleteIndex = 50;
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** deleteArray = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    _PathData * deleteArray[PATH_BUFFER_SIZE];
+    _PathData ** testArray = nullptr;
 
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE];
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         status[i] = FREE;
+        initialPaths[i] = nullptr;
+        deleteArray[i] = nullptr;
     }
 
     long double longitude = 1;
@@ -1180,13 +1204,15 @@ TEST(Waypoint_Manager, deleteMiddleElement) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(deleteArray, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
+
+    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(paths_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);  
-    ASSERT_EQ(update_success_check, WAYPOINT_SUCCESS);
+	EXPECT_EQ(paths_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);  
+    EXPECT_EQ(update_success_check, WAYPOINT_SUCCESS);
 }
 
 TEST(Waypoint_Manager, deleteFirstElement) {
@@ -1200,14 +1226,16 @@ TEST(Waypoint_Manager, deleteFirstElement) {
     int numPaths = 57;
     int deleteIndex = 0;
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** deleteArray = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    _PathData * deleteArray[PATH_BUFFER_SIZE];
+    _PathData ** testArray = nullptr;
 
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE];
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         status[i] = FREE;
+        initialPaths[i] = nullptr;
+        deleteArray[i] = nullptr;
     }
 
     long double longitude = 1;
@@ -1246,13 +1274,15 @@ TEST(Waypoint_Manager, deleteFirstElement) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(deleteArray, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
+
+    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(paths_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);  
-    ASSERT_EQ(update_success_check, WAYPOINT_SUCCESS);  
+	EXPECT_EQ(paths_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);  
+    EXPECT_EQ(update_success_check, WAYPOINT_SUCCESS);  
 }
 
 TEST(Waypoint_Manager, deleteLastElement) {
@@ -1266,14 +1296,16 @@ TEST(Waypoint_Manager, deleteLastElement) {
     int numPaths = 57;
     int deleteIndex = numPaths-1;
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** deleteArray = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    _PathData * deleteArray[PATH_BUFFER_SIZE];
+    _PathData ** testArray = nullptr;
 
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE];
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         status[i] = FREE;
+        initialPaths[i] = nullptr;
+        deleteArray[i] = nullptr;
     }
 
     long double longitude = 1;
@@ -1312,13 +1344,15 @@ TEST(Waypoint_Manager, deleteLastElement) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(deleteArray, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
+
+    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(paths_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);  
-    ASSERT_EQ(update_success_check, WAYPOINT_SUCCESS);  
+	EXPECT_EQ(paths_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);  
+    EXPECT_EQ(update_success_check, WAYPOINT_SUCCESS);  
 }
 
 TEST(Waypoint_Manager, deleteLastElementFullArray) {
@@ -1332,14 +1366,16 @@ TEST(Waypoint_Manager, deleteLastElementFullArray) {
     int numPaths = 100;
     int deleteIndex = numPaths-1;
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** deleteArray = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    _PathData * deleteArray[PATH_BUFFER_SIZE];
+    _PathData ** testArray = nullptr;
 
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE];
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         status[i] = FREE;
+        initialPaths[i] = nullptr;
+        deleteArray[i] = nullptr;
     }
 
     long double longitude = 1;
@@ -1378,13 +1414,15 @@ TEST(Waypoint_Manager, deleteLastElementFullArray) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(deleteArray, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
+
+    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(paths_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);  
-    ASSERT_EQ(update_success_check, WAYPOINT_SUCCESS);  
+	EXPECT_EQ(paths_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);  
+    EXPECT_EQ(update_success_check, WAYPOINT_SUCCESS);  
 }
 
 TEST(Waypoint_Manager, updateFirstElement) {
@@ -1398,13 +1436,14 @@ TEST(Waypoint_Manager, updateFirstElement) {
     int numPaths = 50;
     int updateElement = 0;
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    _PathData ** testArray = nullptr;
 
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE];
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         status[i] = FREE;
+        initialPaths[i] = nullptr;
     }
 
     long double longitude = 1;
@@ -1440,13 +1479,15 @@ TEST(Waypoint_Manager, updateFirstElement) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
+
+    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(paths_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);  
-    ASSERT_EQ(update_success_check, WAYPOINT_SUCCESS);
+	EXPECT_EQ(paths_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);  
+    EXPECT_EQ(update_success_check, WAYPOINT_SUCCESS);
 }
 
 TEST(Waypoint_Manager, updateLastElement) {
@@ -1460,13 +1501,14 @@ TEST(Waypoint_Manager, updateLastElement) {
     int numPaths = 50;
     int updateElement = numPaths-1;
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    _PathData ** testArray = nullptr;
 
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE];
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         status[i] = FREE;
+        initialPaths[i] = nullptr;
     }
 
     long double longitude = 1;
@@ -1502,13 +1544,15 @@ TEST(Waypoint_Manager, updateLastElement) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
+
+    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(paths_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);  
-    ASSERT_EQ(update_success_check, WAYPOINT_SUCCESS);
+	EXPECT_EQ(paths_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);  
+    EXPECT_EQ(update_success_check, WAYPOINT_SUCCESS);
 }
 
 TEST(Waypoint_Manager, updateMiddleElement) {
@@ -1522,13 +1566,14 @@ TEST(Waypoint_Manager, updateMiddleElement) {
     int numPaths = 50;
     int updateElement = 20;
 
-    _PathData ** initialPaths = new _PathData*[PATH_BUFFER_SIZE];
-    _PathData ** testArray = new _PathData*[PATH_BUFFER_SIZE];
+    _PathData * initialPaths[PATH_BUFFER_SIZE];
+    _PathData ** testArray = nullptr;
 
-    _WaypointBufferStatus * status = new _WaypointBufferStatus[PATH_BUFFER_SIZE];
+    _WaypointBufferStatus status[PATH_BUFFER_SIZE];
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         status[i] = FREE;
+        initialPaths[i] = nullptr;
     }
 
     long double longitude = 1;
@@ -1565,12 +1610,14 @@ TEST(Waypoint_Manager, updateMiddleElement) {
     testArray = waypointManagerInstance->get_waypoint_buffer();
     _ArrayStatus paths_equal_check = compare_arrays(initialPaths, testArray, numPaths);
     _ArrayStatus paths_status_equal_check = compare_buffer_status(status, waypointManagerInstance);
+
+    delete waypointManagerInstance;
 	
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(paths_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
-    ASSERT_EQ(initialize_check, WAYPOINT_SUCCESS);  
-    ASSERT_EQ(update_success_check, WAYPOINT_SUCCESS);  
+	EXPECT_EQ(paths_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(paths_status_equal_check, ARRAY_SUCCESS);  
+    EXPECT_EQ(initialize_check, WAYPOINT_SUCCESS);  
+    EXPECT_EQ(update_success_check, WAYPOINT_SUCCESS);  
 }
 
