@@ -24,6 +24,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
     Libraries/CMSIS/Device/ST/STM32F7xx/Include
     Lib
     AttitudeManager
+    PathManager/Inc
   )
 
   # Add ARM math directory for linker to find
@@ -36,9 +37,9 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
   add_subdirectory(Libraries/FreeRTOS)
 
   file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/*.c Libraries/Drivers/Src/*.c)
-  file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/*.cpp Libraries/Drivers/Src/*.cpp)
+  file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/*.cpp Libraries/Drivers/Src/*.cpp PathManager/Src/*.cpp)
   file(GLOB_RECURSE C_INC "Inc/*.h")
-  file(GLOB_RECURSE CXX_INC "Inc/*.hpp")
+  file(GLOB_RECURSE CXX_INC "Inc/*.hpp" PathManager/Inc/*.hpp)
 
   if(NOT NUCLEO)
     set(STARTUP_ASM startup_stm32f765xx.s)
@@ -107,6 +108,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
   )
 
   # Let cmake know where to find all the find<Package>.cmake files
@@ -159,6 +161,21 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
   add_executable(attitudeManagerModules ${ATTITUDE_MANAGER_MODULES_SOURCES} ${ATTITUDE_MANAGER_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
   target_link_libraries(attitudeManagerModules ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
+
+#########
+
+######### Path manager modules
+
+  set(PATH_MANAGER_MODULES_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/waypointManager.cpp
+  )
+
+  set(PATH_MANAGER_MODULES_UNIT_TEST_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/Test_WaypointManager.cpp
+  )
+
+  add_executable(pathManagerModules ${PATH_MANAGER_MODULES_SOURCES} ${PATH_MANAGER_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
+  target_link_libraries(pathManagerModules ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
 
 #########
 
