@@ -45,6 +45,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "PWM.hpp"
 
 /* USER CODE BEGIN Includes */
 
@@ -77,6 +78,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void toggleLED();
 
 /* USER CODE BEGIN PFP */
 
@@ -169,6 +171,9 @@ int main(void)
   ppm.setNumChannels(8);
   ppm.setLimits(1, 1000, 2000, 50);
 
+  PWMChannel pwm;
+  pwm.setup();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -176,12 +181,15 @@ int main(void)
   while (1)
   {
   /* USER CODE END WHILE */
+  
+    
 
   /* USER CODE BEGIN 3 */
-    HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-
-
-    HAL_Delay (10);  // wait for some time
+    pwm.set(4, 100);
+    toggleLED();
+    pwm.set(4, 0);
+    toggleLED();
+    
   }
   /* USER CODE END 3 */
 
@@ -249,6 +257,16 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+void toggleLED()
+{
+  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+  HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+
+  HAL_Delay(200);
+
+}
 
 /* USER CODE END 4 */
 

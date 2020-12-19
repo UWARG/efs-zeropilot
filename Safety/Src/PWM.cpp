@@ -31,12 +31,27 @@ static const PWMPinConfig PWM_CONFIG[MAX_CHANNELS] =
 
 };
 
+void PWMChannel::setup()
+{
+    for(int i = 0; i < MAX_CHANNELS; i++)
+    {
+        PWMPinConfig currentChannel = PWM_CONFIG[i];
+        HAL_TIM_PWM_Start(currentChannel.timer,currentChannel.timer_channel);
+    }
+}
+
 void PWMChannel::set(uint8_t channel, uint8_t percent)
 {
+    if(channel > MAX_CHANNELS || channel < 0)
+    {
+        channel = 0;
+    }
+
     PWMPinConfig currentChannel = PWM_CONFIG[channel-1];
     uint32_t prescaler = (static_cast<TIM_HandleTypeDef *>(currentChannel.timer))->Init.Prescaler;
-	uint32_t us = ((percent * (PWMChannel::max_signal - PWMChannel::min_signal)) / 100 + min_signal);
-	uint32_t ticks = (us * (48000000/1000000UL)) / (prescaler + 1);
+	uint32_t us = ((percent * (PWMChannel::max_signal - PWMChannel::min_signal)) / 100 + PWMChannel::min_signal);
+    uint32_t period = (static_cast<TIM_HandleTypeDef *>(currentChannel.timer))->Init.Period;
+	uint32_t ticks = us*period/(PWMChannel::min_signal*20);
     __HAL_TIM_SET_COMPARE((TIM_HandleTypeDef *) currentChannel.timer, currentChannel.timer_channel, (uint32_t) ticks);
     
 }
