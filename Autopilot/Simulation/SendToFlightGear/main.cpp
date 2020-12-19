@@ -16,10 +16,10 @@
  * Definition
  **********************************************************************************************************************/
 
-// You can also send the packets to some other machine. Right now, functionality only exists for sending them to localhost.
-#define FLIGHTGEAR_UDP_PORT 5500 // this is also defined in the flightgear startup script. If you change it here, you'll have to change it there too
+// You can also send the packets to some other machine. Right now, functionality only exists for sending them to local host.
+#define FLIGHTGEAR_UDP_PORT 5500 // this is also defined in the FlightGear startup script. If you change it here, you'll have to change it there too
 
-#define TIME_BETWEEN_PACKETS_MS 40  // Flight gear is set to refresh every 33 ms (configurable in the launch script for fg), anything slower than that should be fine to use. Anything faster, and it will drop packets.
+#define TIME_BETWEEN_PACKETS_MS 40  // FlightGear is set to refresh every 33 ms (configurable in the launch script for FlightGear), anything slower than that should be fine to use. Anything faster, and it will drop packets.
 
 /***********************************************************************************************************************
  * Prototypes
@@ -104,7 +104,7 @@ static void fillPackets(char** packets, int numPackets)
     rollFile.open("SimulationBuild/SensorOutputs/roll.txt");
     pitchFile.open("SimulationBuild/SensorOutputs/pitch.txt");
     yawFile.open("SimulationBuild/SensorOutputs/yaw.txt");
-    latFile.open("SimulationBuild/SensorOutputs/lattitude.txt");
+    latFile.open("SimulationBuild/SensorOutputs/latitude.txt");
     longFile.open("SimulationBuild/SensorOutputs/longitude.txt");
     altitudeFile.open("SimulationBuild/SensorOutputs/altitude.txt");
 
@@ -117,7 +117,7 @@ static void fillPackets(char** packets, int numPackets)
         getline(longFile, longLine);
         getline(altitudeFile, altitudeLine);
 
-
+        // This packet format was defined inside the flight gear protocol file: Simulink-Sim/FlightGear/WargFGPacketStructure.xml If you haven't yet, copy that file into FlightGear's protocols folder
         sprintf(packets[i], "%.2f,%.6f,%.6f,%.2f,%.2f,%.2f,\n", std::stof(altitudeLine), std::stof(latLine), std::stof(longLine), std::stof(rollLine), std::stof(pitchLine), std::stof(yawLine));
 
     }
@@ -139,6 +139,6 @@ static void sendPacketsToFlightGear(char** packets, int numPackets)
     {
         socket->writeDatagram(QByteArray((char*)packets[i], strlen(packets[i])), ipaddr, FLIGHTGEAR_UDP_PORT);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(40));
+        std::this_thread::sleep_for(std::chrono::milliseconds(TIME_BETWEEN_PACKETS_MS));
     }
 }

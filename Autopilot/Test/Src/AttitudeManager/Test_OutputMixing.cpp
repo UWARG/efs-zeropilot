@@ -259,8 +259,8 @@ TEST(AttitudeManager_OutputMixing, CannotReturnOutOfRangeValuesWhenGivenValidInp
 
 	ASSERT_EQ(error.errorCode, 0);
 
-	ASSERT_TRUE( (mixedOutput[L_TAIL_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[L_TAIL_OUT_CHANNEL] >= -100.0f ) );
-	ASSERT_TRUE( (mixedOutput[R_TAIL_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[R_TAIL_OUT_CHANNEL] >= -100.0f ) );
+	ASSERT_TRUE( (mixedOutput[ELEVATOR_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[ELEVATOR_OUT_CHANNEL] >= -100.0f ) );
+	ASSERT_TRUE( (mixedOutput[RUDDER_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[RUDDER_OUT_CHANNEL] >= -100.0f ) );
 	ASSERT_TRUE( (mixedOutput[AILERON_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[AILERON_OUT_CHANNEL] >= -100.0f ) );
 	ASSERT_TRUE( (mixedOutput[THROTTLE_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[THROTTLE_OUT_CHANNEL] >= 0.0f ) );
 

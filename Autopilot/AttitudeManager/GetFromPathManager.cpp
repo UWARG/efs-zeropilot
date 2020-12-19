@@ -8,7 +8,7 @@
 PMError_t PM_GetCommands(PMCommands *Commands)
 {
 #ifdef SIMULATION
-// Commands are hard coded atm. If people want to get really fancy, they can make some python script to generate an input file read by this function or something
+// Commands are hard coded until the path manager state machine is written and can communicate with attitude manager.
 
 
 	Commands->roll = 0;

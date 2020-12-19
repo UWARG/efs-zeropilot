@@ -20,12 +20,11 @@ set -o nounset
 CLEAN=false
 RUN_UNIT_TESTS=false
 RUN_SIMULATION=false
-SEND_SIM_TO_FLIGHTGEAR=false
 FLASH=false
 BUILD_TYPE="Debug"
 GENERATOR="Unix Makefiles"
 
-while getopts "c,s,t,v,h,f,r," opt; do
+while getopts "c,s,t,h,f,r" opt; do
     case $opt in
         c)
             CLEAN=true
@@ -35,9 +34,6 @@ while getopts "c,s,t,v,h,f,r," opt; do
         ;;
         s)
             RUN_SIMULATION=true
-        ;;
-        v)
-            SEND_SIM_TO_FLIGHTGEAR=true
         ;;
         f)
             FLASH=true
@@ -53,8 +49,7 @@ while getopts "c,s,t,v,h,f,r," opt; do
                 "    -h                 - outputs this message"\
                 "    -r                 - Sets the build type to release"\
                 "    -t                 - Runs all unit tests"\
-                "    -s                 - Runs the simulation"\
-                "    -v                 - (visualize) sends simulation results to flightgear"
+                "    -s                 - Runs the simulation and sends its results to flightGear"\
             exit 1
         ;;
     esac
@@ -100,6 +95,7 @@ if [[ $RUN_UNIT_TESTS == true ]]; then
     done
 
 elif [[ $RUN_SIMULATION == true ]]; then
+
     echo "Building Simulation !"
     echo ""
     echo ""
@@ -109,13 +105,13 @@ elif [[ $RUN_SIMULATION == true ]]; then
     if [[ $CLEAN == true ]]; then
         echo "Cleaning old build environment"
         cmake -E remove_directory $BUILD_DIR
+        cmake -E make_directory $BUILD_DIR
     fi
 
-    cmake -E remove_directory $BUILD_DIR/ActuatorCommands/* 2>/dev/null
-    cmake -E remove_directory $BUILD_DIR/SensorOutputs/* 2>/dev/null
+    # we only want to run the simulation if things have changed. To check this, we will check if the time stamp of the exe is older than the time stamp at time of build.
+    TIME_OF_BUILD=$(date +"%s")
 
-    cmake -E make_directory $BUILD_DIR
-    cmake -E chdir $BUILD_DIR \
+    cmake -E chdir $BUILD_DIR\
       cmake \
         -G "${GENERATOR}" \
         -D KIND_OF_BUILD="SIMULATION"\
@@ -124,30 +120,38 @@ elif [[ $RUN_SIMULATION == true ]]; then
         ../
     cmake --build $BUILD_DIR
 
-    # Note that the program needs to be run from the build directory since it opens and closes files via relative paths.
-    cmake -E chdir $BUILD_DIR\
-    ./sim
 
-elif [[ $SEND_SIM_TO_FLIGHTGEAR == true ]]; then
+    AGE_OF_EXE=$(date -r $BUILD_DIR/sim +"%s")
+
+    if [[ $AGE_OF_EXE -gt $TIME_OF_BUILD ]]; then
+        #clear any older simulation results
+        cmake -E remove_directory $BUILD_DIR/ActuatorCommands/* 2>/dev/null
+        cmake -E remove_directory $BUILD_DIR/SensorOutputs/* 2>/dev/null
+        # Note that the program needs to be run from the build directory since it opens and closes files via relative paths.
+        cmake -E chdir $BUILD_DIR\
+        ./sim
+    fi
+
+    echo ""
+    echo ""
+    echo "Now sending simulation results to flightGear !"
+    echo ""
+    echo ""
 
     BUILD_DIR="Simulation/SendToFlightGear/build"
 
     if [[ $CLEAN == true ]]; then
-        echo "Cleaning old build environment"
         cmake -E remove_directory $BUILD_DIR
     fi
 
     cmake -E make_directory $BUILD_DIR
-
-    if [[ ! -e "SimulationBuild" ]]; then
-        echo "Cannot send sim data if sim was not run yet. Try running this script with -s first"
-    fi
 
     cmake -E chdir $BUILD_DIR\
         cmake -G "${GENERATOR}" ..
 
     cmake --build $BUILD_DIR
 
+    # This program always needs to be run from the autopilot directory
     ./$BUILD_DIR/SendToFG
 
 else
