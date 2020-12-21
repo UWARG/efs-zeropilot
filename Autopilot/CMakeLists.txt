@@ -233,9 +233,12 @@ elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/OutputMixing.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/SensorFusion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/MadgwickAHRS.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/GetFromPathManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/PID.cpp
   )
+
+  set(AUTOPILOT_INTERCEPT_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/Intercepts/GetFromPathManager_Intercept.cpp
+    )
 
   set(ZERO_PILOT_HOOK_SOURCES
   ${SIM_ROOT_DIR}/ZeroPilotSwHooks/SendToSafetyIntercept.cpp
@@ -251,7 +254,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
   ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw/rtGetInf.cpp
   )
 
-  add_executable(sim ${ATTITUDE_MANAGER_SIM_SOURCES} ${ZERO_PILOT_HOOK_SOURCES} ${SIMULINK_GENERATED_SOURCES})
+  add_executable(sim ${ATTITUDE_MANAGER_SIM_SOURCES} ${AUTOPILOT_INTERCEPT_SOURCES} ${ZERO_PILOT_HOOK_SOURCES} ${SIMULINK_GENERATED_SOURCES})
 
   # Link with the math library
   target_link_libraries(sim m)
