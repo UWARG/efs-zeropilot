@@ -138,7 +138,7 @@ elif [[ $RUN_SIMULATION == true ]]; then
     echo ""
     echo ""
 
-    BUILD_DIR="Simulation/SendToFlightGear/build"
+    BUILD_DIR="../../Simulink-Sim/FlightGear/SendToFlightGear/build"
 
     if [[ $CLEAN == true ]]; then
         cmake -E remove_directory $BUILD_DIR
