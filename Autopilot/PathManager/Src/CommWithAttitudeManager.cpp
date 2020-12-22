@@ -10,52 +10,53 @@ extern "C"
 #include "cmsis_os.h"
 }
 
-//Set up a mail queue for sending commands to the attitude manager
-const uint8_t COMMANDS_MAIL_Q_SIZE = 10;
-osMailQDef(commandsMailQ, COMMANDS_MAIL_Q_SIZE, CommandsForAM);
-osMailQId commandsMailQ;
 
 void CommWithAMInit()
 {
     commandsMailQ = osMailCreate(osMailQ(commandsMailQ), NULL);
 }
 
-void SendCommandsForAM(CommandsForAM *Commands)
+void SendCommandsForAM(CommandsForAM *commands)
 {
+    //Remove previous command from mail queue if it exists
+    osEvent event;
+    CommandsForAM * prevCommands;
+    event = osMailGet(commandsMailQ, 0);
+    if(event.status == osEventMail)
+    {
+        prevCommands = static_cast<CommandsForAM *>(event.value.p);
+        osMailFree(commandsMailQ, prevCommands);
+    }
+
     //Allocate mail slot
     CommandsForAM *commandsOut;
     commandsOut = static_cast<CommandsForAM *>(osMailAlloc(commandsMailQ, osWaitForever));
     
     //Fill mail slot with data
-    *commandsOut = *Commands;
+    *commandsOut = *commands;
 
     //Post mail slot to mail queue
     osMailPut(commandsMailQ, commandsOut);
 }
 
-/*
-Set up a mail queue for recieving data from to the attitude manager.
-This may have to be moved to another file accessible by both the
-attitude manager and path manager interfaces.
-*/
-const uint8_t ATTITUDE_DATA_MAIL_Q_SIZE = 10;
-osMailQDef(attitudeDataMailQ, ATTITUDE_DATA_MAIL_Q_SIZE, AttitudeData);
-osMailQId attitudeDataMailQ;
-
-AttitudeData GetAttitudeData()
+bool GetAttitudeData(AttitudeData *data)
 {
+    //Try to get data from mail queue
     osEvent event;
     AttitudeData * dataIn;
-    event = osMailGet(attitudeDataMailQ, osWaitForever);
+    event = osMailGet(attitudeDataMailQ, 0);
     if(event.status == osEventMail)
     {
         dataIn = static_cast<AttitudeData *>(event.value.p);
+        
+        //Keep the data and remove it from the queue
+        *data = *dataIn;
+        osMailFree(attitudeDataMailQ, dataIn);
+        return true;
     }
-
-    return *dataIn;
-}
-
-void FreeAttitudeData(AttitudeData *data)
-{
-    osMailFree(attitudeDataMailQ, data);
+    else
+    {
+        //Indicate that no new data is available.
+        return false;
+    }
 }
