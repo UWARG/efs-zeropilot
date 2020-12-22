@@ -10,7 +10,6 @@ extern "C"
 #include "cmsis_os.h"
 }
 
-
 void CommWithAMInit()
 {
     commandsMailQ = osMailCreate(osMailQ(commandsMailQ), NULL);
@@ -19,13 +18,10 @@ void CommWithAMInit()
 void SendCommandsForAM(CommandsForAM *commands)
 {
     //Remove previous command from mail queue if it exists
-    osEvent event;
-    CommandsForAM * prevCommands;
-    event = osMailGet(commandsMailQ, 0);
+    osEvent event = osMailGet(commandsMailQ, 0);
     if(event.status == osEventMail)
     {
-        prevCommands = static_cast<CommandsForAM *>(event.value.p);
-        osMailFree(commandsMailQ, prevCommands);
+        osMailFree(commandsMailQ, static_cast<CommandsForAM *>(event.value.p));
     }
 
     //Allocate mail slot
