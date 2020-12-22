@@ -4,6 +4,8 @@ project(Autopilot C CXX ASM)
 #checks wether we are building for the microcontroller or to run the PC based unit tests
 if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
 
+  add_definitions(-DTARGET_BUILD)
+
   set(ELF_NAME ${PROJECT_NAME}.elf)
 
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

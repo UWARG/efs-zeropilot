@@ -18,13 +18,10 @@ void CommWithPMInit()
 void SendAttitudeData(AttitudeData *data)
 {
     //Remove previous data from mail queue if it exists
-    osEvent event;
-    AttitudeData * prevData;
-    event = osMailGet(attitudeDataMailQ, 0);
+    osEvent event = osMailGet(attitudeDataMailQ, 0);
     if(event.status == osEventMail)
     {
-        prevData = static_cast<AttitudeData *>(event.value.p);
-        osMailFree(attitudeDataMailQ, prevData);
+        osMailFree(attitudeDataMailQ, static_cast<AttitudeData *>(event.value.p));
     }
 
     //Allocate mail slot
