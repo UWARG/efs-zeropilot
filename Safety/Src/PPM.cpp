@@ -7,7 +7,7 @@
 
 #define BASE_FREQUENCY 48000000
 #define SEC_TO_MICROSEC 1000000
-#define PULSE_WIDTH 0 //this should be in us
+#define PULSE_WIDTH 310 //this should be in us
 
 //number of milliseconds expected between subsequent PPM packets
 uint32_t PPM_PACKET_TIMEOUT = 3;
