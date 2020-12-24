@@ -84,7 +84,7 @@ TEST_F(ExampleClass, ExampleTest) {
 	/********************STEPTHROUGH********************/
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(true, true);
+	EXPECT_EQ(true, true);
 }
 
 TEST_F(ExampleClass2, ExampleTest) {
@@ -94,6 +94,6 @@ TEST_F(ExampleClass2, ExampleTest) {
 	/********************STEPTHROUGH********************/
 	/**********************ASSERTS**********************/
 
-	ASSERT_LT(5.1, 7.0);
+	EXPECT_LT(5.1, 7.0);
 }
 
