@@ -32,7 +32,7 @@ TEST(AttitudeManager_OutputMixing, UnderNegative100RollReturnsError1) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 1);
+	EXPECT_EQ(error.errorCode, 1);
 }
 
 TEST(AttitudeManager_OutputMixing, UnderNegative100PitchReturnsError1) {
@@ -57,7 +57,7 @@ TEST(AttitudeManager_OutputMixing, UnderNegative100PitchReturnsError1) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 1);
+	EXPECT_EQ(error.errorCode, 1);
 }
 
 TEST(AttitudeManager_OutputMixing, UnderNegative100YawReturnsError1) {
@@ -82,7 +82,7 @@ TEST(AttitudeManager_OutputMixing, UnderNegative100YawReturnsError1) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 1);
+	EXPECT_EQ(error.errorCode, 1);
 }
 
 TEST(AttitudeManager_OutputMixing, NegativeThrottleReturnsError1) {
@@ -107,7 +107,7 @@ TEST(AttitudeManager_OutputMixing, NegativeThrottleReturnsError1) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 1);
+	EXPECT_EQ(error.errorCode, 1);
 }
 
 TEST(AttitudeManager_OutputMixing, Over100RollReturnsError2) {
@@ -132,7 +132,7 @@ TEST(AttitudeManager_OutputMixing, Over100RollReturnsError2) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 2);
+	EXPECT_EQ(error.errorCode, 2);
 }
 
 TEST(AttitudeManager_OutputMixing, Over100PitchReturnsError2) {
@@ -157,7 +157,7 @@ TEST(AttitudeManager_OutputMixing, Over100PitchReturnsError2) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 2);
+	EXPECT_EQ(error.errorCode, 2);
 }
 
 TEST(AttitudeManager_OutputMixing, Over100YawReturnsError2) {
@@ -182,7 +182,7 @@ TEST(AttitudeManager_OutputMixing, Over100YawReturnsError2) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 2);
+	EXPECT_EQ(error.errorCode, 2);
 }
 
 TEST(AttitudeManager_OutputMixing, Over100ThrottleReturnsError2) {
@@ -207,7 +207,7 @@ TEST(AttitudeManager_OutputMixing, Over100ThrottleReturnsError2) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 2);
+	EXPECT_EQ(error.errorCode, 2);
 }
 
 TEST(AttitudeManager_OutputMixing, AllInputValidReturnsError0) {
@@ -232,7 +232,7 @@ TEST(AttitudeManager_OutputMixing, AllInputValidReturnsError0) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 0);
+	EXPECT_EQ(error.errorCode, 0);
 }
 
 TEST(AttitudeManager_OutputMixing, CannotReturnOutOfRangeValuesWhenGivenValidInput) {
@@ -257,11 +257,11 @@ TEST(AttitudeManager_OutputMixing, CannotReturnOutOfRangeValuesWhenGivenValidInp
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 0);
+	EXPECT_EQ(error.errorCode, 0);
 
-	ASSERT_TRUE( (mixedOutput[L_TAIL_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[L_TAIL_OUT_CHANNEL] >= -100.0f ) );
-	ASSERT_TRUE( (mixedOutput[R_TAIL_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[R_TAIL_OUT_CHANNEL] >= -100.0f ) );
-	ASSERT_TRUE( (mixedOutput[AILERON_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[AILERON_OUT_CHANNEL] >= -100.0f ) );
-	ASSERT_TRUE( (mixedOutput[THROTTLE_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[THROTTLE_OUT_CHANNEL] >= 0.0f ) );
+	EXPECT_TRUE( (mixedOutput[L_TAIL_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[L_TAIL_OUT_CHANNEL] >= -100.0f ) );
+	EXPECT_TRUE( (mixedOutput[R_TAIL_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[R_TAIL_OUT_CHANNEL] >= -100.0f ) );
+	EXPECT_TRUE( (mixedOutput[AILERON_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[AILERON_OUT_CHANNEL] >= -100.0f ) );
+	EXPECT_TRUE( (mixedOutput[THROTTLE_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[THROTTLE_OUT_CHANNEL] >= 0.0f ) );
 
 }

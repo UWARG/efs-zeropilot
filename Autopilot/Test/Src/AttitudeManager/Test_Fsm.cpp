@@ -109,7 +109,7 @@ TEST(AttitudeManagerFSM, InitialStateIsFetchInstructions) {
 	/********************STEPTHROUGH********************/
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), fetchInstructionsMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), fetchInstructionsMode::getInstance());
 
 }
 
@@ -133,7 +133,7 @@ TEST(AttitudeManagerFSM, IfFetchInstructionsSucceedsTransitionToSensorFusion) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), sensorFusionMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), sensorFusionMode::getInstance());
 
 }
 
@@ -157,7 +157,7 @@ TEST(AttitudeManagerFSM, IfFetchInstructionsFailsTransitionToFatalFailure) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
 
 }
 
@@ -180,7 +180,7 @@ TEST(AttitudeManagerFSM, IfSensorFusionSucceedsTransitionToPID) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), PIDloopMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), PIDloopMode::getInstance());
 }
 
 TEST(AttitudeManagerFSM, IfSensorFusionFailsTransitionToFailed) {
@@ -202,7 +202,7 @@ TEST(AttitudeManagerFSM, IfSensorFusionFailsTransitionToFailed) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
 }
 
 
@@ -220,7 +220,7 @@ TEST(AttitudeManagerFSM, TransitionFromPIDToOutputMixing) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), OutputMixingMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), OutputMixingMode::getInstance());
 }
 
 TEST(AttitudeManagerFSM, IfOutputMixingSucceedsTransitionToSendToSafety) {
@@ -242,7 +242,7 @@ TEST(AttitudeManagerFSM, IfOutputMixingSucceedsTransitionToSendToSafety) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), sendToSafetyMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), sendToSafetyMode::getInstance());
 }
 
 TEST(AttitudeManagerFSM, IfOutputMixingFailsTransitionToFailed) {
@@ -264,7 +264,7 @@ TEST(AttitudeManagerFSM, IfOutputMixingFailsTransitionToFailed) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
 }
 
 TEST(AttitudeManagerFSM, IfSendToSafetySucceedsTransitionToFetchInstructions) {
@@ -286,7 +286,7 @@ TEST(AttitudeManagerFSM, IfSendToSafetySucceedsTransitionToFetchInstructions) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), fetchInstructionsMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), fetchInstructionsMode::getInstance());
 }
 
 TEST(AttitudeManagerFSM, IfSendToSafetyFailsTransitionToFailed) {
@@ -308,7 +308,7 @@ TEST(AttitudeManagerFSM, IfSendToSafetyFailsTransitionToFailed) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
 }
 
 /***********************************************************************************************************************
@@ -338,6 +338,6 @@ TEST(AttitudeManagerDataHandoff, CorrectDataIsFedFromOutputMixingToSendToSafety)
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(0, memcmp(OutputMixing_Execute_fake.arg1_val, channelOut_custom, 4*sizeof(float)));
+	EXPECT_EQ(0, memcmp(OutputMixing_Execute_fake.arg1_val, channelOut_custom, 4*sizeof(float)));
 }
 

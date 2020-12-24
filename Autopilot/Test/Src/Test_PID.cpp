@@ -25,7 +25,7 @@ TEST(PID, OutputCannotBeLargerThanMaxOutput) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(output, maxOutput);
+	EXPECT_EQ(output, maxOutput);
 }
 
 TEST(PID, OutputCannotBeSmallerThanMinOutput) {
@@ -43,5 +43,5 @@ TEST(PID, OutputCannotBeSmallerThanMinOutput) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(output, minOutput);
+	EXPECT_EQ(output, minOutput);
 }
