@@ -2,6 +2,8 @@
 #include "PWM.hpp"
 #include "stdlib.h"
 #include "stm32f0xx_hal_iwdg.h"
+//#include "Interchip.h"
+#include "interchip_S.hpp"
 
 static void setPWMChannel(PWMChannel &pwm, int channel, int percentage);
 static int getPPM(PPMChannel &ppm, int channel);
@@ -21,7 +23,7 @@ void safety_controller_init()
 
 void safety_run(PWMChannel &pwm, PPMChannel &ppm)
 {
-    if(isSafetyManual())
+    if(!isSafetyManual())
     {
         for(int channel = 0; channel < 12; channel++)
         {
@@ -56,7 +58,7 @@ bool isSafetyManual()
     *   TODO: ADD SYSTEM TO MAKE SAFETY MANUAL!
     */
     //Not sure what the implementation is for now...?
-    return false;
+    return true;
 }
 
 static int getPPM(PPMChannel &ppm, int channel)

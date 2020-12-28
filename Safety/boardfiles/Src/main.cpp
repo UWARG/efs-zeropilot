@@ -46,6 +46,8 @@
 #include "usart.h"
 #include "gpio.h"
 #include "PWM.hpp"
+#include "PPM.hpp"
+#include "safety_controller.hpp"
 
 /* USER CODE BEGIN Includes */
 
@@ -66,7 +68,7 @@
 /***************************************WARNING!************************************/
 /***************************************WARNING!************************************/
 
-#include "PPM.hpp"
+
 
 /* USER CODE END Includes */
 
@@ -173,6 +175,7 @@ int main(void)
 
   PWMChannel pwm;
   pwm.setup();
+  safety_controller_init();
 
   /* USER CODE END 2 */
 
@@ -185,11 +188,16 @@ int main(void)
     
 
   /* USER CODE BEGIN 3 */
+    /*
     pwm.set(4, 100);
     toggleLED();
     pwm.set(4, 0);
     toggleLED();
+    */
+
     
+    safety_run(pwm, ppm);
+
   }
   /* USER CODE END 3 */
 

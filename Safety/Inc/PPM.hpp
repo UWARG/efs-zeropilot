@@ -14,6 +14,8 @@
  *  Timer14 - PPM
  *  PPM PIN - B1
  */
+#pragma once
+
 #include "PWM.hpp"
 #include <stdint.h>
 
