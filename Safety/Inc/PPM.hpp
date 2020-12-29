@@ -79,9 +79,9 @@ class PPMChannel {
 	bool is_disconnected(uint32_t sys_time);
 
  private:
-	int32_t deadzones[MAX_PPM_CHANNELS];
-	int32_t min_values[MAX_PPM_CHANNELS]; //stores min tick values for each channel
-	int32_t max_values[MAX_PPM_CHANNELS]; //stores max tick values for each channel
+ 	PWMChannelNum num_channels = 0;
+	float min_values[MAX_PPM_CHANNELS]; //stores min microsecond values for each channel
+	float max_values[MAX_PPM_CHANNELS]; //stores max microsecond values for each channel
 	uint32_t disconnect_timeout;
 	bool is_setup = false;
 

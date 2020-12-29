@@ -15,7 +15,7 @@ static int getPPM(PPMChannel &ppm, int channel);
 
 void safety_controller_init()
 {
-    
+
     //dataTX = (Interchip_StoA_Packet*) malloc(sizeof(Interchip_StoA_Packet));
     //dataRX = (Interchip_AtoS_Packet*) malloc(sizeof(Interchip_AtoS_Packet));
     //Interchip_Init(dataTX, dataRX);
@@ -25,19 +25,19 @@ void safety_run(PWMChannel &pwm, PPMChannel &ppm)
 {
     if(!isSafetyManual())
     {
-        for(int channel = 0; channel < 12; channel++)
+        for(int channel = 0; channel < 8; channel++)
         {
             //setPWMChannel(pwm, channel, dataRX->PWM[channel]);
-        }   
+        }
     }
     else
     {
-        for(int channel = 0; channel < 12; channel++)
+        for(int channel = 0; channel < 8; channel++)
         {
-            setPWMChannel(pwm, channel, getPPM(ppm, channel));
+            setPWMChannel(pwm, channel, (uint32_t) getPPM(ppm, channel));
         }
     }
-    
+
 }
 
 
