@@ -40,14 +40,10 @@
 #include "main.h"
 #include "stm32f0xx_hal.h"
 #include "i2c.h"
-#include "iwdg.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-#include "PWM.hpp"
-#include "PPM.hpp"
-#include "safety_controller.hpp"
 
 /* USER CODE BEGIN Includes */
 
@@ -68,7 +64,9 @@
 /***************************************WARNING!************************************/
 /***************************************WARNING!************************************/
 
-
+#include "PPM.hpp"
+#include "PWM.hpp"
+#include "safety_controller.hpp"
 
 /* USER CODE END Includes */
 
@@ -80,7 +78,6 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-void toggleLED();
 
 /* USER CODE BEGIN PFP */
 
@@ -153,7 +150,6 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_I2C1_Init();
-  MX_IWDG_Init();
   MX_SPI1_Init();
   MX_TIM1_Init();
   MX_TIM3_Init();
@@ -171,7 +167,6 @@ int main(void)
 
   PPMChannel ppm;
   ppm.setNumChannels(8);
-  ppm.setLimits(1, 1000, 2000, 50);
 
   PWMChannel pwm;
   pwm.setup();
@@ -184,18 +179,9 @@ int main(void)
   while (1)
   {
   /* USER CODE END WHILE */
-  
-    
 
   /* USER CODE BEGIN 3 */
-    /*
-    pwm.set(4, 100);
-    toggleLED();
-    pwm.set(4, 0);
-    toggleLED();
-    */
 
-    
     safety_run(pwm, ppm);
 
   }
@@ -214,12 +200,10 @@ void SystemClock_Config(void)
 
     /**Initializes the CPU, AHB and APB busses clocks
     */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI
-                              |RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = 16;
-  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL6;
@@ -265,16 +249,6 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-void toggleLED()
-{
-  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-  HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
-
-  HAL_Delay(200);
-
-}
 
 /* USER CODE END 4 */
 

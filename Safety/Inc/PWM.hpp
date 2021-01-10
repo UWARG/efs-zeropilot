@@ -52,6 +52,7 @@ class PWMChannel {
 
  private:
 	//values in us
-	uint32_t min_signal = 1000; //standard for 50hz pwm signal
-	uint32_t max_signal = 2000;
+	uint32_t pwmPeriod = 20000;
+	uint32_t min_signal = 950; //standard for 50hz pwm signal, with a 100 Hz margin added to ensure we can reach the extreme values.
+	uint32_t max_signal = 2050;
 };

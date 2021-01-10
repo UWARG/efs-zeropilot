@@ -1,55 +1,53 @@
 #include "PPM.hpp"
 #include "tim.h"
 #include <stdint.h>
-//#include "stm32f0xx_hal.h"
-#include "PWM.hpp"
+
+/***********************************************************************************************************************
+ * Definitions
+ **********************************************************************************************************************/
+
+const float SEC_TO_MICROSEC = 1000000.0f;
+
+const float BASE_FREQUENCY = 48000000.0f;
+
+const float PULSE_WIDTH = 310.0f; // in us
+const float MIN_WIDTH_OF_RESET_PULSE = 5000.0f; // not really a pulse, this is slightly smaller than the difference in time between sequential PPM packets
+const float MIN_PULSE_WIDTH = 700.0f;
+const float MAX_PULSE_WIDTH = 1670.0f;
 
 
-#define BASE_FREQUENCY 48000000
-#define SEC_TO_MICROSEC 1000000
-#define PULSE_WIDTH 310 //this should be in us
+/***********************************************************************************************************************
+ * Variables
+ **********************************************************************************************************************/
 
-//number of milliseconds expected between subsequent PPM packets
-uint32_t PPM_PACKET_TIMEOUT = 3;
-PWMChannelNum num_channels = 0;
-//static uint8_t num_channels = 0;
-//static volatile uint16_t capture_value[MAX_PPM_CHANNELS] = {0};
-static volatile uint32_t ppm_values[MAX_PPM_CHANNELS] = {0};
-static volatile uint8_t ppm_index = 0;
+static volatile float ppm_values[MAX_PPM_CHANNELS]; // cannot be private because it's used by the ISR
 
-//these variables are used in the systick interrupt routine
-//volatile uint32_t ppm_last_received_time = 0;
-//volatile uint8_t ppm_packet_timeout_reached = 1;
+/***********************************************************************************************************************
+ * Prototypes
+ **********************************************************************************************************************/
+
+static float counter_to_time(uint32_t count, uint32_t psc);
+static uint8_t time_to_percentage(uint32_t max, uint32_t min, float time);
 
 
-
-
-#if 0
-
-// 1 tick is prescaler / 48000000Hz (internal clock)
-//therefore capture in us = capture * prescaler * 1E6 / 8E6
-inline static uint32_t convert_ticks_to_us(int32_t ticks) {
-	return (ticks * (TIMER_PRESCALER + 1)) / (get_system_clock() / (1000000UL));
-}
-#endif
+/***********************************************************************************************************************
+ * Code
+ **********************************************************************************************************************/
 
 PPMChannel::PPMChannel(uint8_t channels, uint32_t timeout) {
 	if (channels > MAX_PPM_CHANNELS || channels <= 0) {
 		num_channels = 8;
 	}
 
-	ppm_index = 0;
 	this->disconnect_timeout = timeout;
 
 	for (int i = 0; i < MAX_PPM_CHANNELS; i++) {
 		ppm_values[i] = 0;
-		min_values[i] = 1000;
-		max_values[i] = 2000;
-		deadzones[i] = 0;
+		min_values[i] = MIN_PULSE_WIDTH;
+		max_values[i] = MAX_PULSE_WIDTH;
 	}
 
 	HAL_TIM_IC_Start_IT(&htim15, TIM_CHANNEL_1);
-  	HAL_TIM_IC_Start_IT(&htim15, TIM_CHANNEL_2);
 }
 
 StatusCode PPMChannel::setLimits(uint8_t channel, uint32_t min, uint32_t max, uint32_t deadzone) {
@@ -59,18 +57,9 @@ StatusCode PPMChannel::setLimits(uint8_t channel, uint32_t min, uint32_t max, ui
 
 	this->min_values[channel - 1] = min;
 	this->max_values[channel - 1] = max;
-	this->deadzones[channel - 1] = deadzone;
 
 	return STATUS_CODE_OK;
 }
-
-// StatusCode PPMChannel::setTimeout(uint32_t timeout) {
-// 	if (timeout > 0) {
-// 		this->disconnect_timeout = timeout;
-// 		return STATUS_CODE_OK;
-// 	}
-// 	return STATUS_CODE_INVALID_ARGS;
-// }
 
 StatusCode PPMChannel::setNumChannels(uint8_t num) {
 	if (num <= 0 || num > MAX_PPM_CHANNELS) {
@@ -80,133 +69,75 @@ StatusCode PPMChannel::setNumChannels(uint8_t num) {
 	return STATUS_CODE_OK;
 }
 
-
-#if 0
-uint8_t PPMChannel::get(PWMChannelNum num) {
-	if (num <= 0 || num > num_channels) {
-		return 0;
-	}
-
-	int32_t capture = capture_value[num - 1];
-
-
-	// 1 tick is prescaler / 48000000Hz (internal clock)
-	//therefore capture in us = capture * prescaler * 1E6 / 8E6
-	uint32_t num_us = convert_ticks_to_us(capture);
-
-	int32_t min_diff = num_us - this->min_values[num - 1];
-
-	//if the input signal is lower than the minimum signal, or if we're not outside the deadzone, return 0%
-	if (min_diff < 0 || min_diff < deadzones[num - 1]) {
-		return 0;
-	}
-
-	uint32_t
-		percent = (num_us - this->min_values[num - 1]) * 100 / (this->max_values[num - 1] - this->min_values[num - 1]);
-
-	if (percent > 100) {
-		return 100;
-	}
-	return (uint8_t) percent;
-}
-
-#endif
-
-#if 0
-
-uint32_t PPMChannel::get_us(PWMChannelNum num) {
-	if (num <= 0 || num > num_channels) {
-		return 0;
-	}
-
-	int32_t capture = capture_value[num - 1];
-	return convert_ticks_to_us(capture);
-}
-#endif
-/*
-bool PPMChannel::is_disconnected(uint32_t sys_time) {
-	bool disconnected = (sys_time - ppm_last_received_time) >= this->disconnect_timeout;
-
-	if (disconnected) { //reset capture states if we get a disconnect timeout
-		for (int i = 0; i < num_channels; i++) {
-			capture_value[i] = 0;
-		}
-		ppm_index = 0;
-	}
-
-	return disconnected;
-}
-*/
-
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-	if (htim->Instance == TIM15) { // only timer we care about
-		ppm_index = 0;
-	}
-}
-
-//fix the int division
-uint32_t counter_to_time(uint16_t count, uint32_t psc) {
-	return count / (BASE_FREQUENCY/(psc+1)) * SEC_TO_MICROSEC;
-	//count divided by counter frequency to get time
-}
-
-uint8_t time_to_percentage(uint32_t max, uint32_t min, uint32_t deadzone, uint32_t time) {
-	if(time < deadzone) {
-		return 0;
-	}
-
-	return ((time-min)/(max-min)) * 100;
-}
-
-//our interrupt callback for when we get a pulse capture
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
-
-// We can get here! Up to yall to figure out how the hell to interpret PPm though. It's 4am... I'm done lmao.
-	if (htim->Instance == TIM15) {
-		
-		uint16_t count_since_last = __HAL_TIM_GET_COUNTER(htim);
-		__HAL_TIM_SET_COUNTER(htim, 0);
-
-		//convert counter to time
-		ppm_values[ppm_index] = counter_to_time(count_since_last, htim->Init.Prescaler) - PULSE_WIDTH;
-		
-		ppm_index++;
-		if(ppm_index >= num_channels) {
-			ppm_index = 0;
-		}
-		//get_system_time
-
-	/*	#if 0
-		ppm_last_received_time = get_system_time();
-		auto time_diff = (uint16_t) HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-
-		if (ppm_packet_timeout_reached) {
-			ppm_packet_timeout_reached = 0;
-			ppm_index = 0;
-		}
-
-		capture_value[ppm_index] = time_diff;
-		ppm_index = (uint8_t) (ppm_index + 1) % num_channels;
-		#endif
-
-		__HAL_TIM_SET_COUNTER(htim, 0); */
-	}
-}
-
 uint32_t PPMChannel::get_us(PWMChannelNum num)
 {
 	if(num >= num_channels || num >= MAX_PPM_CHANNELS) {
 		return 0;
 	}
-	return ppm_values[num];
+	return static_cast<uint32_t>(ppm_values[num]);
 }
+
+
 
 uint8_t PPMChannel::get(PWMChannelNum num)
 {
 	if(num >= num_channels || num >= MAX_PPM_CHANNELS) {
 		return 0;
 	}
-	return time_to_percentage(max_values[num], min_values[num], deadzones[num], ppm_values[num]);
+
+	uint8_t percentage = time_to_percentage(max_values[num], min_values[num], ppm_values[num]);
+	return percentage;
+}
+
+static float counter_to_time(uint32_t count, uint32_t psc)
+{
+	float ticksPerSecond = (BASE_FREQUENCY / (psc + 1.0f));
+	float ticksPerMicroSecond = ticksPerSecond / SEC_TO_MICROSEC;
+
+	float lengthOfPulse = count / ticksPerMicroSecond;
+
+	return lengthOfPulse;
 }
 
 
+static uint8_t time_to_percentage(uint32_t max, uint32_t min, float time) {
+
+	float percentage = ((time - min) / (max - min)) * 100.0f;
+
+	if (percentage > 100.0f)
+	{
+		percentage = 100.0f;
+	}
+	else if (percentage < 0.0f)
+	{
+		percentage = 0.0f;
+	}
+
+	return static_cast<uint8_t>(percentage);
+}
+
+//our interrupt callback for when we get a pulse capture
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+
+	if (htim->Instance == TIM15)
+	{
+
+		static volatile uint8_t index = 0;
+
+		volatile uint32_t time_diff = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+		__HAL_TIM_SET_COUNTER(htim, 0);
+
+		float pulseLength = counter_to_time(time_diff, htim->Init.Prescaler) - PULSE_WIDTH;
+
+		if (pulseLength > MIN_WIDTH_OF_RESET_PULSE)
+		{
+			index = 0;
+		}
+		else
+		{
+			ppm_values[index] = pulseLength;
+			index++;
+		}
+	}
+}

@@ -1,3 +1,4 @@
+#if 0
 #include "stm32f0xx_hal.h"
 #include "../../Common/Inc/Interchip.h"
 #include "../boardfiles/Inc/spi.h"
@@ -11,4 +12,5 @@ int16_t Interchip_TxRx(SPI_HandleTypeDef *hspi);
 int16_t *Interchip_GetPWM(void);
 void Interchip_SetAutonomousLevel(uint16_t data);
 
+#endif
 #endif

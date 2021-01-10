@@ -1,3 +1,5 @@
+#if 0
+
 /*
 #include "interchip_S.h"
 //#include "debug.h"
@@ -26,7 +28,7 @@ int16_t HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi){
         return 0;
     }
   }
-  return 1;  
+  return 1;
   //debug("%d", dataRX->PWM[0]);
 }
 
@@ -49,9 +51,9 @@ static Interchip_StoA_Packet *dataTX;
 void Interchip_SetAutonomousLevel(uint16_t data) {
   dataTX->autonomous_level = data;
 }
-int16_t *Interchip_GetPWM(void) 
-{ 
-  return dataRX->PWM; 
+int16_t *Interchip_GetPWM(void)
+{
+  return dataRX->PWM;
 }
 
 int16_t Interchip_Init(Interchip_StoA_Packet* ptrTX, Interchip_AtoS_Packet* ptrRX){
@@ -69,7 +71,7 @@ int16_t Interchip_Init(Interchip_StoA_Packet* ptrTX, Interchip_AtoS_Packet* ptrR
     }
 }
 
-//so this function was called HAL_SPI_TxRxCpltCallback, but that was interefering with another function called in the HAL library code. 
+//so this function was called HAL_SPI_TxRxCpltCallback, but that was interefering with another function called in the HAL library code.
 //the HAL version was void, but this one was int16_t, so I renamed it rather than change the return type
 int16_t Interchip_TxRx(SPI_HandleTypeDef *hspi){
   //Once packet recieved, listen for next packet
@@ -83,9 +85,9 @@ int16_t Interchip_TxRx(SPI_HandleTypeDef *hspi){
         return 0;
     }
   }
-  return 1;  
+  return 1;
   //debug("%d", dataRX->PWM[0]);
 }
 
-
+#endif
 
