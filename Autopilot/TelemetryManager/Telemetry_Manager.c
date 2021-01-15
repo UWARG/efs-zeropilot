@@ -1,8 +1,7 @@
 /**
- * @file TelemetryManager.c
+ * @file Telemetry_Manager.c
  * @author Jingting Liu
  * @date January 14th, 2021
- * @copyright Waterloo Aerial Robotics Group 2020-2021 \n
  */
 
 #include <stdio.h>
