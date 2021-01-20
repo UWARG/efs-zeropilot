@@ -16,9 +16,14 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
     -DARM_MATH_CM7
   )
 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+
+
+  get_filename_component(PARENT_DIR ../ ABSOLUTE)
+
   include_directories(
     Inc
-    ../Common/Inc
+    ${PARENT_DIR}/Common/Inc
     boardfiles/Inc
     boardfiles/Drivers/CMSIS/Include
     boardfiles/Drivers/CMSIS/Device/ST/STM32F7xx/Include
