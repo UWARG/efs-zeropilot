@@ -8,7 +8,7 @@
 #ifndef SENSORFUSION_HPP
 #define SENSORFUSION_HPP
 
-struct SFOutput_t{
+struct SFOutput_t {
     float IMUroll, IMUpitch, IMUyaw; //in rad (for now)
     float IMUrollrate, IMUpitchrate, IMUyawrate; //in rad/s (for now)
 
@@ -22,7 +22,10 @@ struct SFError_t{
     int errorCode;
 };
 
-SFError_t SF_GetResult(SFOutput_t *Output, IMU *imusns, airspeed *airspeedsns);
-
+/**
+ * Method takes in the data from the imu and airspeed sensors along with a SFOutput_t reference.
+ * This ensures SensorFusion does not have access to the sensor drivers
+ */ 
+SFError_t SF_GetResult(SFOutput_t *Output, IMUData_t *imudata, airspeedData_t *airspeeddata);
 
 #endif

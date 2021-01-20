@@ -20,7 +20,8 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 
     if (ErrorStruct.errorCode == 0)
     {
-        attitudeMgr->setState(sensorFusionMode::getInstance());
+        // Before calling sensor fusion, we must first get the new sensor data
+        attitudeMgr->setState(fetchSensorMeasurementsMode::getInstance()); 
     }
     else
     {
@@ -35,8 +36,11 @@ attitudeState& fetchInstructionsMode::getInstance()
 }
 
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
-{
-    SFError_t ErrorStruct = SF_GetResult(&_SFOutput, &ImuSens, &AirspeedSens);
+{   
+    IMUData_t *imudata = fetchSensorMeasurementsMode::GetIMUOutput();
+    airspeedData_t *airspeeddata = fetchSensorMeasurementsMode::GetAirspeedOutput();
+
+    SFError_t ErrorStruct = SF_GetResult(&_SFOutput, imudata, airspeeddata);
 
     if (ErrorStruct.errorCode == 0)
     {
@@ -51,6 +55,28 @@ void sensorFusionMode::execute(attitudeManager* attitudeMgr)
 attitudeState& sensorFusionMode::getInstance()
 {
     static sensorFusionMode singleton;
+    return singleton;
+}
+
+void fetchSensorMeasurementsMode::execute(attitudeManager* attitudeMgr) 
+{
+    // Initializes the sensor data structures 
+    SensorError_t ErrorStruct = SensorMeasurements_GetResult(&ImuSens, &AirspeedSens, &imudata, &airspeeddata); 
+
+    if (ErrorStruct.errorCode == 0)
+    {
+        // Sets state to sensor fusion
+        attitudeMgr->setState(sensorFusionMode::getInstance()); 
+    }
+    else 
+    {
+        attitudeMgr->setState(FatalFailureMode::getInstance());
+    }
+}
+
+attitudeState& fetchSensorMeasurementsMode::getInstance()
+{
+    static fetchSensorMeasurementsMode singleton;
     return singleton;
 }
 

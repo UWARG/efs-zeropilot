@@ -9,6 +9,7 @@
 #include "SendInstructionsToSafety.hpp"
 #include "IMU.hpp"
 #include "airspeed.hpp"
+#include "fetchSensorMeasurementsMode.hpp"
 
 /***********************************************************************************************************************
  * Definitions
@@ -62,10 +63,26 @@ class sensorFusionMode : public attitudeState
         sensorFusionMode() {}
         sensorFusionMode(const sensorFusionMode& other);
         sensorFusionMode& operator =(const sensorFusionMode& other);
+        static SFOutput_t _SFOutput;
+};
+
+class fetchSensorMeasurementsMode : public attitudeState
+{
+    public:
+        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
+        void execute(attitudeManager* attitudeMgr);
+        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
+        static attitudeState& getInstance();
+        static IMUData_t *GetIMUOutput(void) {return &imudata;}
+        static airspeedData_t *GetAirspeedOutput(void) {return &airspeeddata;}
+    private:
+        fetchSensorMeasurementsMode() {}
+        fetchSensorMeasurementsMode(const fetchSensorMeasurementsMode& other);
+        fetchSensorMeasurementsMode& operator =(const fetchSensorMeasurementsMode& other);
         IMU_CLASS ImuSens;
         AIRSPEED_CLASS AirspeedSens;
-        static SFOutput_t _SFOutput;
-
+        static IMUData_t imudata;
+        static airspeedData_t airspeeddata;
 };
 
 class PIDloopMode : public attitudeState
