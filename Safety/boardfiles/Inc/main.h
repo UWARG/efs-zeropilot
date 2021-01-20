@@ -1,8 +1,7 @@
 /**
   ******************************************************************************
-  * File Name          : stm32f0xx_hal_msp.c
-  * Description        : This file provides code for the MSP Initialization
-  *                      and de-Initialization codes.
+  * File Name          : main.hpp
+  * Description        : This file contains the common defines of the application
   ******************************************************************************
   ** This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -36,40 +35,73 @@
   *
   ******************************************************************************
   */
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __MAIN_H
+#define __MAIN_H
+  /* Includes ------------------------------------------------------------------*/
+
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f0xx_hal.h"
+/* USER CODE BEGIN Includes */
 
-extern void _Error_Handler(char *, int);
-/* USER CODE BEGIN 0 */
+/* USER CODE END Includes */
 
-/* USER CODE END 0 */
+/* Private define ------------------------------------------------------------*/
+
+#define REC_UART_TX_Pin GPIO_PIN_2
+#define REC_UART_TX_GPIO_Port GPIOA
+#define REC_UART_RX_Pin GPIO_PIN_3
+#define REC_UART_RX_GPIO_Port GPIOA
+#define BUZZER_Pin GPIO_PIN_1
+#define BUZZER_GPIO_Port GPIOB
+#define PPM_Pin GPIO_PIN_14
+#define PPM_GPIO_Port GPIOB
+#define PWM6_Pin GPIO_PIN_6
+#define PWM6_GPIO_Port GPIOC
+#define PWM10_Pin GPIO_PIN_7
+#define PWM10_GPIO_Port GPIOC
+#define PWM11_Pin GPIO_PIN_8
+#define PWM11_GPIO_Port GPIOC
+#define PWM12_Pin GPIO_PIN_9
+#define PWM12_GPIO_Port GPIOC
+#define PWM1_Pin GPIO_PIN_8
+#define PWM1_GPIO_Port GPIOA
+#define PWM2_Pin GPIO_PIN_9
+#define PWM2_GPIO_Port GPIOA
+#define PWM3_Pin GPIO_PIN_10
+#define PWM3_GPIO_Port GPIOA
+#define PWM4_Pin GPIO_PIN_11
+#define PWM4_GPIO_Port GPIOA
+#define LED1_Pin GPIO_PIN_10
+#define LED1_GPIO_Port GPIOC
+#define LED2_Pin GPIO_PIN_11
+#define LED2_GPIO_Port GPIOC
+#define LED3_Pin GPIO_PIN_12
+#define LED3_GPIO_Port GPIOC
+#define DBG_UART_TX_Pin GPIO_PIN_6
+#define DBG_UART_TX_GPIO_Port GPIOB
+#define DBG_UART_RX_Pin GPIO_PIN_7
+#define DBG_UART_RX_GPIO_Port GPIOB
+
+/* ########################## Assert Selection ############################## */
 /**
-  * Initializes the Global MSP.
+  * @brief Uncomment the line below to expanse the "assert_param" macro in the
+  *        HAL drivers code
   */
-void HAL_MspInit(void)
-{
-  /* USER CODE BEGIN MspInit 0 */
+/* #define USE_FULL_ASSERT    1U */
 
-  /* USER CODE END MspInit 0 */
+/* USER CODE BEGIN Private defines */
 
-  __HAL_RCC_SYSCFG_CLK_ENABLE();
+/* USER CODE END Private defines */
 
-  /* System interrupt init*/
-  /* SVC_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SVC_IRQn, 0, 0);
-  /* PendSV_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(PendSV_IRQn, 0, 0);
-  /* SysTick_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+#ifdef __cplusplus
+ extern "C" {
+#endif
+void _Error_Handler(char *, int);
 
-  /* USER CODE BEGIN MspInit 1 */
-
-  /* USER CODE END MspInit 1 */
+#define Error_Handler() _Error_Handler(__FILE__, __LINE__)
+#ifdef __cplusplus
 }
-
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
+#endif
 
 /**
   * @}
@@ -77,6 +109,7 @@ void HAL_MspInit(void)
 
 /**
   * @}
-  */
+*/
 
+#endif /* __MAIN_H */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
