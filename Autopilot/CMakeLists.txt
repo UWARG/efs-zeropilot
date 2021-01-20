@@ -52,7 +52,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
   endif(NOT NUCLEO)
 
 
-  add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${AUTOPILOT_MAIN} ${STARTUP_ASM})
+  add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${STARTUP_ASM})
 
   target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS arm_cortexM7lfdp_math)
 
