@@ -88,7 +88,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
           -iex "disconnect" -iex "quit")
 
 elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
-  
+
   add_definitions(-DUNIT_TESTING)
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fms-extensions -Wall -Wextra -g")
@@ -124,7 +124,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
   #instruct cmake to store all binaries in their own directory
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-  
+
   # Collect the main function that runs our unit tests. It will be common for all executables
   set(UNIT_TEST_MAIN ${CMAKE_CURRENT_SOURCE_DIR}/Test/testMain.cpp)
 
@@ -193,5 +193,70 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
   target_link_libraries(freeStandingModules ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
 
 #########
+
+
+elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
+
+  add_definitions(-DSIMULATION)
+
+  set(SIM_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../Simulink-Sim/Infinion)
+
+  # allow debugging if required
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+
+  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+
+  include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Common/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager
+
+    ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw
+    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/extern/include
+    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/rtw/c/src
+    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/rtw/c/src/ext_mode/common
+    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/simulink/include
+  )
+
+  add_custom_target(make-ActuatorCommand-dir ALL
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/ActuatorCommands")
+  add_custom_target(make-SensorOutput-dir ALL
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/SensorOutputs")
+
+
+  set(ATTITUDE_MANAGER_SIM_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/SimDriver/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/attitudeManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/attitudeStateClasses.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/OutputMixing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/SensorFusion.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/MadgwickAHRS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/PID.cpp
+  )
+
+  set(AUTOPILOT_INTERCEPT_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/Intercepts/GetFromPathManager_Intercept.cpp
+    )
+
+  set(ZERO_PILOT_HOOK_SOURCES
+  ${SIM_ROOT_DIR}/ZeroPilotSwHooks/SendToSafetyIntercept.cpp
+  ${SIM_ROOT_DIR}/ZeroPilotSwHooks/AirspeedSensorIntercept.cpp
+  ${SIM_ROOT_DIR}/ZeroPilotSwHooks/IMUSensorIntercept.cpp
+  )
+
+  set(SIMULINK_GENERATED_SOURCES
+  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw/Infinion.cpp
+  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw/Infinion_data.cpp
+  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw/rt_nonfinite.cpp
+  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw/rtGetNaN.cpp
+  ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw/rtGetInf.cpp
+  )
+
+  add_executable(sim ${ATTITUDE_MANAGER_SIM_SOURCES} ${AUTOPILOT_INTERCEPT_SOURCES} ${ZERO_PILOT_HOOK_SOURCES} ${SIMULINK_GENERATED_SOURCES})
+
+  # Link with the math library
+  target_link_libraries(sim m)
 
 endif()

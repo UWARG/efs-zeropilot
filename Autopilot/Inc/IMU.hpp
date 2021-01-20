@@ -25,11 +25,6 @@ struct IMUData_t {
 class IMU{
     public:
         /**
-         * Initializes IMU
-         * */
-        virtual void Init() = 0; 
-
-        /**
          * Triggers interrupt for new IMU measurement - stores raw data in variables and returns right away
          * */
         virtual void Begin_Measuring() = 0; 
@@ -41,6 +36,10 @@ class IMU{
          * */
         virtual void GetResult(IMUData_t &Data) = 0; //
 };
+
+/***********************************************************************************************************************
+ * Derived classes
+ **********************************************************************************************************************/
 
 //To be replaced with implementation of actual sensor
 class ICM20602: public IMU{
@@ -64,8 +63,22 @@ class ICM20602: public IMU{
 
 };
 
+
 #ifdef UNIT_TESTING
 #include "IMU_Mock.hpp"
+#endif
+
+#ifdef SIMULATION
+
+// This derived class hooks into the Simulink simulation rather than hardware
+class SimulatedIMU : public IMU
+{
+    public :
+        void Begin_Measuring(){};
+        void GetResult(IMUData_t &Data);
+    private:
+        float getNewestDataPoint(const char * fileName);
+};
 #endif
 
 #endif
