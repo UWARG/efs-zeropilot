@@ -1,7 +1,6 @@
 #include "safety_controller.hpp"
 #include "PWM.hpp"
 #include "stdlib.h"
-#include "stm32f0xx_hal_iwdg.h"
 //#include "Interchip.h"
 #include "interchip_S.hpp"
 
