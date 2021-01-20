@@ -1,3 +1,5 @@
+#if 0
+
 #pragma once
 
 #include <stdio.h>
@@ -33,4 +35,4 @@ void abort(const char *msg, const char *file, int line);
 
 
 
-
+#endif

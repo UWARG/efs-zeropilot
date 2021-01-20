@@ -16,30 +16,32 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
     -DARM_MATH_CM7
   )
 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+
+
+  get_filename_component(PARENT_DIR ../ ABSOLUTE)
+
   include_directories(
     Inc
-    ../Common/Inc
-    Libraries/Drivers/Inc
-    Libraries/CMSIS/Include
-    Libraries/CMSIS/Device/ST/STM32F7xx/Include
-    Lib
+    ${PARENT_DIR}/Common/Inc
+    boardfiles/Inc
+    boardfiles/Drivers/CMSIS/Include
+    boardfiles/Drivers/CMSIS/Device/ST/STM32F7xx/Include
     AttitudeManager
     PathManager/Inc
   )
 
   # Add ARM math directory for linker to find
   link_directories(
-    Libraries/CMSIS/Lib/GCC
+    boardfiles/lib
   )
 
   # Libraries
-  add_subdirectory(Libraries/STM32F7xx_HAL_Driver)
-  add_subdirectory(Libraries/FreeRTOS)
+  add_subdirectory(boardfiles/Drivers/STM32F7xx_HAL_Driver)
+  add_subdirectory(boardfiles/Middlewares/Third_Party/FreeRTOS)
 
-  file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/*.c Libraries/Drivers/Src/*.c)
-  file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/*.cpp Libraries/Drivers/Src/*.cpp PathManager/Src/*.cpp)
-  file(GLOB_RECURSE C_INC "Inc/*.h")
-  file(GLOB_RECURSE CXX_INC "Inc/*.hpp" PathManager/Inc/*.hpp)
+  file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/*.c boardfiles/Src/*.c)
+  file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/*.cpp PathManager/Src/*.cpp)
 
   if(NOT NUCLEO)
     set(STARTUP_ASM startup_stm32f765xx.s)
@@ -50,7 +52,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
   endif(NOT NUCLEO)
 
 
-  add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${C_INC} ${CXX_INC} ${STARTUP_ASM})
+  add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${STARTUP_ASM})
 
   target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS arm_cortexM7lfdp_math)
 
