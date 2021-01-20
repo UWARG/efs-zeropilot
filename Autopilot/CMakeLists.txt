@@ -152,6 +152,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/OutputMixing.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/SensorFusion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/MadgwickAHRS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/fetchSensorMeasurementsMode.cpp
   )
 
   set(ATTITUDE_MANAGER_MODULES_UNIT_TEST_SOURCES

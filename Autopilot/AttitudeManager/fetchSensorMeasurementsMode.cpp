@@ -5,8 +5,6 @@
  */ 
 
 #include "fetchSensorMeasurementsMode.hpp"
-#include "IMU.hpp"
-#include "airspeed.hpp"
 #include <math.h>
 
 SensorError_t SensorMeasurements_GetResult(IMU *imusns, airspeed *airspeedsns, IMUData_t *imudata, airspeedData_t *airspeeddata) {

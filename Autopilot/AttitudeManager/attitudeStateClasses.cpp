@@ -87,7 +87,7 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     SFOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
 
     // Gets roll, pitch, yaw, and airspeed commands from the path manager module
-    PMCommands *pathManagerOutput;
+    PMCommands *pathManagerOutput = nullptr;
     PMError_t pmError = PM_GetCommands(pathManagerOutput);
 
     _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->IMUroll, SFOutput->IMUrollrate);

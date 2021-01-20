@@ -4,6 +4,9 @@
  * Last edited: January, 2021
  */ 
 
+#include "IMU.hpp"
+#include "airspeed.hpp"
+
 #ifndef FETCH_SENSOR_MEASUREMENTS_HPP
 #define FETCH_SENSOR_MEASUREMENTS_HPP
 

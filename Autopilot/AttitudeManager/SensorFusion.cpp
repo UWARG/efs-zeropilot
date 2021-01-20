@@ -3,8 +3,6 @@
 * Author: Lucy Gong, Dhruv Rawat
 */
 #include "SensorFusion.hpp"
-#include "IMU.hpp"
-#include "airspeed.hpp"
 #include "MadgwickAHRS.h"
 #include <math.h>
 
@@ -23,6 +21,24 @@ SFError_t SF_GetResult(SFOutput_t *Output, IMUData_t *imudata, airspeedData_t *a
     float imu_RollRate = 0;
     float imu_PitchRate = 0;
     float imu_YawRate = 0;
+
+    //Abort if both sensors are busy or failed data collection
+    if(imudata->sensorStatus != 0 || airspeeddata->sensorStatus != 0)
+    {  
+
+        /************************************************************************************************
+         * THIS WILL PUT THE STATE MACHINE INTO FATAL FAILURE MODE... WE NEED TO DECIDE IF THIS IS WHAT
+         * WE WANT OR IF WE SHOULD RETHINK HOW WE WANT THIS MODULE TO RETURN A SENSOR ERROR! 
+         ************************************************************************************************/
+
+        SFError.errorCode = -1;
+        return SFError;
+    }
+
+    //Check if data is old
+    if(!imudata->isDataNew || !airspeeddata->isDataNew){
+        SFError.errorCode = 1;
+    }
 
     MadgwickAHRSupdate(imudata->gyrx, imudata->gyry, imudata->gyrz, imudata->accx, imudata->accy, imudata->accz, imudata->magx, imudata->magy, imudata->magz);
 
