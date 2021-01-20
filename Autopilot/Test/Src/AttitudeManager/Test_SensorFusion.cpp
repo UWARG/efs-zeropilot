@@ -61,7 +61,7 @@ TEST(SensorFusion, FailedBusyIMUDataReturnsNegative1) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, -1);
+	EXPECT_EQ(error.errorCode, -1);
 }
 
 TEST(SensorFusion, FailedBusyAirspeedDataReturnsNegative1 ) {
@@ -93,7 +93,7 @@ TEST(SensorFusion, FailedBusyAirspeedDataReturnsNegative1 ) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, -1);
+	EXPECT_EQ(error.errorCode, -1);
 }
 
 TEST(SensorFusion, OldDataReturns1) {
@@ -139,6 +139,6 @@ TEST(SensorFusion, OldDataReturns1) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 1);
+	EXPECT_EQ(error.errorCode, 1);
 }
 
