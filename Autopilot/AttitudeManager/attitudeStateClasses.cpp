@@ -62,7 +62,7 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
 
     _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->IMUroll, SFOutput->IMUrollrate);
     _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->IMUpitch, SFOutput->IMUpitchrate);
-    _PidOutput.yawPercent = _yawPid.execute(PMInstructions->yaw, SFOutput->IMUyaw, SFOutput->IMUyawrate);
+    _PidOutput.yawPercent = 0;  // yaw is not something we control simply with rudder. It is actually a coordinated turn thing controlled by PM. TODO
     _PidOutput.throttlePercent = _airspeedPid.execute(PMInstructions->airspeed, SFOutput->Airspeed);
 
     attitudeMgr->setState(OutputMixingMode::getInstance());
