@@ -102,8 +102,3 @@ void telemetery_manager()
         }
     }
 }
-
-int main()
-{
-
-}
