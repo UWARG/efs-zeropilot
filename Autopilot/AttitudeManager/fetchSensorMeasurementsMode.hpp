@@ -6,6 +6,7 @@
 
 #include "IMU.hpp"
 #include "airspeed.hpp"
+#include "AttitudeDatatypes.hpp"
 
 #ifndef FETCH_SENSOR_MEASUREMENTS_HPP
 #define FETCH_SENSOR_MEASUREMENTS_HPP
@@ -21,7 +22,7 @@ struct SensorError_t {
  * Takes in sensor objects and the output data structures. 
  * This is the only module that interacts with the sensor drivers
  */ 
-SensorError_t SensorMeasurements_GetResult(IMU *imusns, airspeed *airspeedsns, IMUData_t *imudata, airspeedData_t *airspeeddata);
+SensorError_t SensorMeasurements_GetResult(IMU *imusns, airspeed *airspeedsns, IMU_Data_t *imudata, Airspeed_Data_t *airspeeddata);
 
 #endif
 

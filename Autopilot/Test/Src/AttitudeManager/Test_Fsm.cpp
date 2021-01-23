@@ -8,6 +8,7 @@
 
 #include "attitudeManager.hpp"
 #include "attitudeStateClasses.hpp"
+#include "AttitudeDatatypes.hpp"
 
 #include "GetFromPathManager.hpp"
 #include "fetchSensorMeasurementsMode.hpp"
@@ -25,8 +26,8 @@ using ::testing::Test;
  **********************************************************************************************************************/
 
 FAKE_VALUE_FUNC(PMError_t, PM_GetCommands, PMCommands * );
-FAKE_VALUE_FUNC(SFError_t, SF_GetResult, SFOutput_t *, IMUData_t *, airspeedData_t *);
-FAKE_VALUE_FUNC(SensorError_t, SensorMeasurements_GetResult, IMU *, airspeed *, IMUData_t *, airspeedData_t *);
+FAKE_VALUE_FUNC(SFError_t, SF_GetResult, SFOutput_t *, IMU_Data_t *, Airspeed_Data_t *);
+FAKE_VALUE_FUNC(SensorError_t, SensorMeasurements_GetResult, IMU *, airspeed *, IMU_Data_t *, Airspeed_Data_t *);
 FAKE_VOID_FUNC(SendToSafety_Init);
 FAKE_VALUE_FUNC(OutputMixing_error_t, OutputMixing_Execute, PID_Output_t * , float * );
 FAKE_VALUE_FUNC(SendToSafety_error_t, SendToSafety_Execute, int, int);
@@ -384,7 +385,7 @@ TEST(AttitudeManagerFSM, IfSendToSafetySucceedsTransitionToFetchInstructions) {
 	/**********************ASSERTS**********************/
 
 	EXPECT_EQ(*(attMng.getCurrentState()), fetchInstructionsMode::getInstance());
-	EXPECT_EQ(attMng.getStatus(), IN_CYCLE);
+	EXPECT_EQ(attMng.getStatus(), COMPLETED_CYCLE);
 
 }
 
@@ -440,7 +441,7 @@ TEST(AttitudeManagerDataHandoff, CorrectDataIsFedFromOutputMixingToSendToSafety)
 	/**********************ASSERTS**********************/
 
 	EXPECT_EQ(0, memcmp(OutputMixing_Execute_fake.arg1_val, channelOut_custom, 4*sizeof(float)));
-	EXPECT_EQ(attMng.getStatus(), IN_CYCLE);
+	EXPECT_EQ(attMng.getStatus(), FAILURE_MODE);
 
 }
 

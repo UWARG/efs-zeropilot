@@ -1,6 +1,8 @@
 #pragma once
+
 #include "attitudeStateManager.hpp"
 #include "attitudeManager.hpp"
+#include "AttitudeDatatypes.hpp"
 
 #include "GetFromPathManager.hpp"
 #include "SensorFusion.hpp"
@@ -58,16 +60,16 @@ class fetchSensorMeasurementsMode : public attitudeState
         void execute(attitudeManager* attitudeMgr);
         void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
-        static IMUData_t *GetIMUOutput(void) {return &_imudata;}
-        static airspeedData_t *GetAirspeedOutput(void) {return &_airspeeddata;}
+        static IMU_Data_t *GetIMUOutput(void) {return &_imudata;}
+        static Airspeed_Data_t *GetAirspeedOutput(void) {return &_airspeeddata;}
     private:
         fetchSensorMeasurementsMode() {}
         fetchSensorMeasurementsMode(const fetchSensorMeasurementsMode& other);
         fetchSensorMeasurementsMode& operator =(const fetchSensorMeasurementsMode& other);
+        static IMU_Data_t _imudata;
+        static Airspeed_Data_t _airspeeddata;
         IMU_CLASS ImuSens;
         AIRSPEED_CLASS AirspeedSens;
-        static IMUData_t _imudata;
-        static airspeedData_t _airspeeddata;
 };
 
 class sensorFusionMode : public attitudeState
@@ -128,7 +130,6 @@ class sendToSafetyMode : public attitudeState
         static attitudeState& getInstance();
     private:
         sendToSafetyMode() {SendToSafety_Init();} // Calls C-style initialization function 
-        // sendToSafetyMode() {}
         sendToSafetyMode(const sendToSafetyMode& other);
         sendToSafetyMode& operator =(const sendToSafetyMode& other);
 };

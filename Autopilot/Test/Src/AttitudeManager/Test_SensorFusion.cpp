@@ -6,6 +6,8 @@
 #include <gtest/gtest.h>
 #include "fff.h"
 
+#include "AttitudeDatatypes.hpp"
+
 #include "airspeed_Mock.hpp"
 #include "IMU_Mock.hpp"
 #include "SensorFusion.hpp"
@@ -28,6 +30,8 @@ using ::testing::SetArgReferee;
  **********************************************************************************************************************/
 IMUData_t IMUTestData;
 airspeedData_t airspeedTestData;
+IMU_Data_t IMUAttitudeTestData;
+Airspeed_Data_t AirspeedAttitudeTestData;
 
 /***********************************************************************************************************************
  * Tests
@@ -46,6 +50,11 @@ TEST(SensorFusion, FailedBusyIMUDataReturnsNegative1) {
 	IMUTestData.isDataNew = 1;
 	airspeedTestData.isDataNew = 1;
 
+	IMUAttitudeTestData.sensorStatus = -1;
+	AirspeedAttitudeTestData.sensorStatus = 0;
+	IMUAttitudeTestData.isDataNew = 1;
+	AirspeedAttitudeTestData.isDataNew = 1;
+
 	SFError_t error;
 	SensorError_t fetchMeasurementsError;
 	SFOutput_t output;
@@ -60,9 +69,9 @@ TEST(SensorFusion, FailedBusyIMUDataReturnsNegative1) {
 
 	/********************STEPTHROUGH********************/
 	
-	fetchMeasurementsError = SensorMeasurements_GetResult(&imumock, &airspeedmock, &IMUTestData, &airspeedTestData);
+	fetchMeasurementsError = SensorMeasurements_GetResult(&imumock, &airspeedmock, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
-	error = SF_GetResult(&output, &IMUTestData, &airspeedTestData);
+	error = SF_GetResult(&output, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
 	/**********************ASSERTS**********************/
 
@@ -82,6 +91,11 @@ TEST(SensorFusion, FailedBusyAirspeedDataReturnsNegative1 ) {
 	IMUTestData.isDataNew = 1;
 	airspeedTestData.isDataNew = 1;
 
+	IMUAttitudeTestData.sensorStatus = 0;
+	AirspeedAttitudeTestData.sensorStatus = -1;
+	IMUAttitudeTestData.isDataNew = 1;
+	AirspeedAttitudeTestData.isDataNew = 1;
+
 	SFError_t error;
 	SFOutput_t output;
 	SensorError_t fetchMeasurementsError;
@@ -96,9 +110,9 @@ TEST(SensorFusion, FailedBusyAirspeedDataReturnsNegative1 ) {
 
 	/********************STEPTHROUGH********************/
 
-	fetchMeasurementsError = SensorMeasurements_GetResult(&imumock, &airspeedmock, &IMUTestData, &airspeedTestData);
+	fetchMeasurementsError = SensorMeasurements_GetResult(&imumock, &airspeedmock, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
-	error = SF_GetResult(&output, &IMUTestData, &airspeedTestData);
+	error = SF_GetResult(&output, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
 	/**********************ASSERTS**********************/
 
@@ -116,6 +130,11 @@ TEST(SensorFusion, OldDataReturns1) {
 	airspeedTestData.sensorStatus = 0;
 	IMUTestData.isDataNew = 0;
 	airspeedTestData.isDataNew = 1;
+
+	IMUAttitudeTestData.sensorStatus = 0;
+	AirspeedAttitudeTestData.sensorStatus = 0;
+	IMUAttitudeTestData.isDataNew = 0;
+	AirspeedAttitudeTestData.isDataNew = 1;
 
 	//Dummy values
 	IMUTestData.magx = NAN;
@@ -145,9 +164,9 @@ TEST(SensorFusion, OldDataReturns1) {
 
 	/********************STEPTHROUGH********************/
 
-	fetchMeasurementsError = SensorMeasurements_GetResult(&imumock, &airspeedmock, &IMUTestData, &airspeedTestData);
+	fetchMeasurementsError = SensorMeasurements_GetResult(&imumock, &airspeedmock, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
-	error = SF_GetResult(&output, &IMUTestData, &airspeedTestData);
+	error = SF_GetResult(&output, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
 	/**********************ASSERTS**********************/
 

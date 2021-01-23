@@ -1,9 +1,9 @@
 /**
  * Sensor Fusion - Converts raw sensor data into human readable formatted structs
- * Author: Lucy Gong
+ * Author: Lucy Gong, Dhruv Rawat
  */
-#include "IMU.hpp"
-#include "airspeed.hpp"
+
+#include "AttitudeDatatypes.hpp"
 
 #ifndef SENSORFUSION_HPP
 #define SENSORFUSION_HPP
@@ -26,6 +26,6 @@ struct SFError_t{
  * Method takes in the data from the imu and airspeed sensors along with a SFOutput_t reference.
  * This ensures SensorFusion does not have access to the sensor drivers
  */ 
-SFError_t SF_GetResult(SFOutput_t *Output, IMUData_t *imudata, airspeedData_t *airspeeddata);
+SFError_t SF_GetResult(SFOutput_t *Output, IMU_Data_t *imudata, Airspeed_Data_t *airspeeddata);
 
 #endif

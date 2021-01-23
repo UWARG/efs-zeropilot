@@ -6,7 +6,7 @@
 #include "MadgwickAHRS.h"
 #include <math.h>
 
-SFError_t SF_GetResult(SFOutput_t *Output, IMUData_t *imudata, airspeedData_t *airspeeddata) {
+SFError_t SF_GetResult(SFOutput_t *Output, IMU_Data_t *imudata, Airspeed_Data_t *airspeeddata) {
     
     //Error output
     SFError_t SFError;

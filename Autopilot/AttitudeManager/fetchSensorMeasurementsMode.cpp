@@ -7,14 +7,42 @@
 #include "fetchSensorMeasurementsMode.hpp"
 #include <math.h>
 
-SensorError_t SensorMeasurements_GetResult(IMU *imusns, airspeed *airspeedsns, IMUData_t *imudata, airspeedData_t *airspeeddata) {
+#include <iostream>
+
+SensorError_t SensorMeasurements_GetResult(IMU *imusns, airspeed *airspeedsns, IMU_Data_t *imudata, Airspeed_Data_t *airspeeddata) {
 
     SensorError_t error;
     error.errorCode = 0;
 
+    // Structures from sensor driver files
+    IMUData_t tempIMUdata;
+    airspeedData_t tempAirspeedData;
+
     //Retrieve raw IMU and Airspeed data
-    imusns->GetResult(*imudata);
-    airspeedsns->GetResult(*airspeeddata);
+    imusns->GetResult(tempIMUdata);
+    airspeedsns->GetResult(tempAirspeedData);
+
+    // Copies values over
+    imudata->gyrx = tempIMUdata.gyrx;
+    imudata->gyry = tempIMUdata.gyry;
+    imudata->gyrz = tempIMUdata.gyrz;
+
+    imudata->accx = tempIMUdata.accx;
+    imudata->accy = tempIMUdata.accy;
+    imudata->accz = tempIMUdata.accz;
+
+    imudata->magx = tempIMUdata.magx;
+    imudata->magy = tempIMUdata.magy;
+    imudata->magz = tempIMUdata.magz;
+
+    imudata->isDataNew = tempIMUdata.isDataNew;
+    imudata->sensorStatus = tempIMUdata.sensorStatus;
+    imudata->utcTime = tempIMUdata.utcTime;
+
+    airspeeddata->airspeed = tempAirspeedData.airspeed;
+    airspeeddata->sensorStatus = tempAirspeedData.sensorStatus;
+    airspeeddata->isDataNew = tempAirspeedData.isDataNew;
+    airspeeddata->utcTime = tempAirspeedData.utcTime;
 
     //Abort if both sensors are busy or failed data collection
     if(imudata->sensorStatus != 0 || airspeeddata->sensorStatus != 0)
