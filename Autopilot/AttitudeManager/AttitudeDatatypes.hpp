@@ -11,8 +11,14 @@ typedef struct
 
 }PID_Output_t;
 
-#define L_TAIL_OUT_CHANNEL 0 // Spike has ruddervators
-#define R_TAIL_OUT_CHANNEL 1
+#ifdef SPIKE
+    #define L_TAIL_OUT_CHANNEL 0 // Spike has ruddervators
+    #define R_TAIL_OUT_CHANNEL 1
+#else
+    #define ELEVATOR_OUT_CHANNEL 0
+    #define RUDDER_OUT_CHANNEL 1
+#endif
+
 #define AILERON_OUT_CHANNEL 2
 #define THROTTLE_OUT_CHANNEL 3
 

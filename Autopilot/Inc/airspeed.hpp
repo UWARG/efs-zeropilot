@@ -9,7 +9,7 @@
 *   Airspeed calculation should be done and returned in meters 
 *   per second
 *
-*    Author: Annie LePage
+*    Author: Annie LePage, Anthony Berbari
 **/
 
 
@@ -34,12 +34,6 @@ struct airspeedData_t
 class airspeed {
     public:
         /**
-         *  Initializes ADC in order to recieve sensor readings 
-         *  (pitot tube reading)
-         * */
-        virtual void Init() = 0; 
-
-        /**
          *  Triggers interrupt for new airspeed measurement - stores 
          *  raw data in variables and returns right away
          * */
@@ -57,14 +51,12 @@ class airspeed {
         virtual void GetResult(airspeedData_t &Data) = 0; 
 };
 
+/***********************************************************************************************************************
+ * Derived classes
+ **********************************************************************************************************************/
+
 class dummyairspeed: public airspeed{
     public:
-        /**
-         *  Initializes ADC in order to recieve sensor readings 
-         *  (pitot tube reading)
-         * */
-        void Init() {}; 
-
         /**
          *  Triggers interrupt for new airspeed measurement - stores 
          *  raw data in variables and returns right away
@@ -84,9 +76,18 @@ class dummyairspeed: public airspeed{
 
 };
 
-
 #ifdef UNIT_TESTING
 #include "airspeed_Mock.hpp"
+#endif
+
+#ifdef SIMULATION
+// This derived class hooks into the Simulink simulation rather than hardware
+class SimulatedAirspeed : public airspeed
+{
+    public :
+        void Begin_Measuring();
+        void GetResult(airspeedData_t &Data);
+};
 #endif
 
 #endif

@@ -1,10 +1,9 @@
 #include "PPM.hpp"
 #include "GPIO.hpp"
 #include "Clock.hpp"
+#include "tim.h"
 #include <stdint.h>
 #include "stm32f0xx_hal.h"
-
-TIM_HandleTypeDef htim14;
 
 //number of milliseconds expected between subsequent PPM packets
 uint32_t PPM_PACKET_TIMEOUT = 3;
@@ -12,7 +11,7 @@ uint32_t PPM_PACKET_TIMEOUT = 3;
 extern StatusCode get_status_code(HAL_StatusTypeDef status);
 
 //if modifying the below pin numbers, also modify the ISR routine down below to match
-static const GPIOPinNum PPM_PIN_NUM = 1;
+static const GPIOPinNum PPM_PIN_NUM = 14;
 static const GPIOPort PPM_PORT = GPIO_PORT_B;
 
 static const uint16_t TIMER_PRESCALER = 2; // since we're capturing 2000us max signal
@@ -48,7 +47,7 @@ PPMChannel::PPMChannel(uint8_t channels, uint32_t timeout) {
 	}
 
 	ppm_pin =
-		GPIOPin(PPM_PORT, PPM_PIN_NUM, GPIO_ALT_PP, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_FREQ_LOW, GPIO_AF0_TIM14);
+		GPIOPin(PPM_PORT, PPM_PIN_NUM, GPIO_ALT_PP, GPIO_STATE_LOW, GPIO_RES_NONE, GPIO_FREQ_LOW, GPIO_AF0_TIM15);
 }
 
 StatusCode PPMChannel::setLimits(uint8_t channel, uint32_t min, uint32_t max, uint32_t deadzone) {
@@ -119,46 +118,10 @@ StatusCode PPMChannel::setup() {
 	if (is_setup) {
 		return STATUS_CODE_INVALID_ARGS;
 	}
+	__HAL_RCC_TIM15_CLK_ENABLE();
 
-	__HAL_RCC_TIM14_CLK_ENABLE();
+  	MX_TIM15_Init();
 
-	StatusCode status = ppm_pin.setup();
-	if (status != STATUS_CODE_OK) return status;
-
-	//enable timer14 interrupts
-	HAL_NVIC_SetPriority(TIM14_IRQn, 1, 0);
-	HAL_NVIC_EnableIRQ(TIM14_IRQn);
-
-	TIM_IC_InitTypeDef sConfigIC = {0, 0, 0, 0};
-
-	htim14.Instance = TIM14;
-	htim14.Init.Prescaler = TIMER_PRESCALER;
-	htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim14.Init.Period = TIMER_PERIOD;
-	htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	htim14.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-
-	status = get_status_code(HAL_TIM_Base_Init(&htim14));
-	if (status != STATUS_CODE_OK) return status;
-
-	status = get_status_code(HAL_TIM_IC_Init(&htim14));
-	if (status != STATUS_CODE_OK) return status;
-
-	sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
-	sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
-	sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
-	sConfigIC.ICFilter = 0;
-
-	status = get_status_code(HAL_TIM_IC_ConfigChannel(&htim14, &sConfigIC, TIM_CHANNEL_1));
-	if (status != STATUS_CODE_OK) return status;
-
-	status = get_status_code(HAL_TIM_Base_Start_IT(&htim14));
-	if (status != STATUS_CODE_OK) return status;
-
-	status = get_status_code(HAL_TIM_IC_Start_IT(&htim14, TIM_CHANNEL_1));
-	if (status != STATUS_CODE_OK) return status;
-
-	is_setup = true;
 
 	return STATUS_CODE_OK;
 }
@@ -168,9 +131,9 @@ StatusCode PPMChannel::reset() {
 		return STATUS_CODE_INVALID_ARGS;
 	}
 
-	__HAL_RCC_TIM14_CLK_DISABLE();
+	__HAL_RCC_TIM15_CLK_DISABLE();
 	StatusCode status = ppm_pin.reset();
-	HAL_NVIC_DisableIRQ(TIM14_IRQn);
+	HAL_NVIC_DisableIRQ(TIM15_IRQn);
 
 	is_setup = false;
 
@@ -192,7 +155,7 @@ bool PPMChannel::is_disconnected(uint32_t sys_time) {
 
 //our interrupt callback for when we get a pulse capture
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
-	if (htim->Instance == TIM14) {
+	if (htim->Instance == TIM15) {
 		ppm_last_received_time = get_system_time();
 		auto time_diff = (uint16_t) HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 
@@ -208,7 +171,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-	if (htim->Instance == TIM14) { // only timer we care about
+	if (htim->Instance == TIM15) { // only timer we care about
 		ppm_index = 0;
 	}
 }
