@@ -46,7 +46,8 @@ void Interchip_SetPWM(int16_t data[]) {
 }
 
 
-uint16_t Interchip_GetSafetyLevel(void) { return dataRX->safety_level; }
+uint16_t Interchip_GetAutonomousLevel(void) { return dataRX->autonomous_level; }
+
 void Interchip_SetAutonomousLevel(uint16_t data) {
   osMutexWait(Interchip_MutexHandle, 0);
   dataTX->autonomous_level = data;

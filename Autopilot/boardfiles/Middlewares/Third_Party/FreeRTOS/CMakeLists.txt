@@ -1,0 +1,14 @@
+# CMakeLists for FreeRTOS library
+cmake_minimum_required(VERSION 3.2.0)
+project(FreeRTOS C)
+
+file(GLOB_RECURSE FREERTOS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.c" "${CMAKE_CURRENT_SOURCE_DIR}/Source/CMSIS_RTOS/*.c")
+file(GLOB_RECURSE FREERTOS_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.h")
+
+add_library(${PROJECT_NAME} STATIC ${FREERTOS_SOURCES} ${FREERTOS_HEADERS})
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/portable/GCC/ARM_CM7/r0p1
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/CMSIS_RTOS
+)
