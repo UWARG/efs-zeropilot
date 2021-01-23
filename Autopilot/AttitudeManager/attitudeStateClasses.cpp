@@ -35,33 +35,10 @@ attitudeState& fetchInstructionsMode::getInstance()
     return singleton;
 }
 
-void sensorFusionMode::execute(attitudeManager* attitudeMgr)
-{   
-    IMUData_t *imudata = fetchSensorMeasurementsMode::GetIMUOutput();
-    airspeedData_t *airspeeddata = fetchSensorMeasurementsMode::GetAirspeedOutput();
-
-    SFError_t ErrorStruct = SF_GetResult(&_SFOutput, imudata, airspeeddata);
-
-    if (ErrorStruct.errorCode == 0)
-    {
-        attitudeMgr->setState(PIDloopMode::getInstance());
-    }
-    else
-    {
-        attitudeMgr->setState(FatalFailureMode::getInstance());
-    }
-}
-
-attitudeState& sensorFusionMode::getInstance()
-{
-    static sensorFusionMode singleton;
-    return singleton;
-}
-
 void fetchSensorMeasurementsMode::execute(attitudeManager* attitudeMgr) 
 {
     // Initializes the sensor data structures 
-    SensorError_t ErrorStruct = SensorMeasurements_GetResult(&ImuSens, &AirspeedSens, &imudata, &airspeeddata); 
+    SensorError_t ErrorStruct = SensorMeasurements_GetResult(&ImuSens, &AirspeedSens, &_imudata, &_airspeeddata); 
 
     if (ErrorStruct.errorCode == 0)
     {
@@ -80,6 +57,29 @@ attitudeState& fetchSensorMeasurementsMode::getInstance()
     return singleton;
 }
 
+void sensorFusionMode::execute(attitudeManager* attitudeMgr)
+{   
+    IMUData_t *dataimu = fetchSensorMeasurementsMode::GetIMUOutput();
+    airspeedData_t *dataairspeed = fetchSensorMeasurementsMode::GetAirspeedOutput();
+
+    SFError_t ErrorStruct = SF_GetResult(&_SFOutput, dataimu, dataairspeed);
+
+    if (ErrorStruct.errorCode == 0)
+    {
+        attitudeMgr->setState(PIDloopMode::getInstance());
+    }
+    else
+    {
+        attitudeMgr->setState(FatalFailureMode::getInstance());
+    }
+}
+
+attitudeState& sensorFusionMode::getInstance()
+{
+    static sensorFusionMode singleton;
+    return singleton;
+}
+
 void PIDloopMode::execute(attitudeManager* attitudeMgr)
 {
 
@@ -95,7 +95,14 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     _PidOutput.yawPercent = pathManagerOutput->yaw;
     _PidOutput.throttlePercent = _airspeedPid.execute(PMInstructions->airspeed, SFOutput->Airspeed);
 
-    attitudeMgr->setState(OutputMixingMode::getInstance());
+    if (pmError.errorCode == 0) 
+    {
+        attitudeMgr->setState(OutputMixingMode::getInstance());
+    }
+    else 
+    {
+        attitudeMgr->setState(FatalFailureMode::getInstance());
+    }
 }
 
 attitudeState& PIDloopMode::getInstance()

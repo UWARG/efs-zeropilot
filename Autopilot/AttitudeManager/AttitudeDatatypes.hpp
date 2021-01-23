@@ -9,7 +9,7 @@ typedef struct
 	float yawPercent;
 	float throttlePercent;
 
-}PID_Output_t;
+} PID_Output_t;
 
 #define L_TAIL_OUT_CHANNEL 0 // Spike has ruddervators
 #define R_TAIL_OUT_CHANNEL 1
@@ -17,3 +17,4 @@ typedef struct
 #define THROTTLE_OUT_CHANNEL 3
 
 #endif
+
