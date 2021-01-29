@@ -29,7 +29,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
     boardfiles/Drivers/CMSIS/Device/ST/STM32F7xx/Include
     AttitudeManager
     PathManager/Inc
-    C:\Users\nixon\OneDrive\Documents\MTE121_fall2020\WARG
+    TelemetryManager
   )
 
   # Add ARM math directory for linker to find
@@ -188,7 +188,6 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
   set(TELEMETRY_MANAGER_FSM_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/TelemetryManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/TelemetryStateClasses.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/PID.cpp
   )
 
   set(TELEMETRY_MANAGER_FSM_UNIT_TEST_SOURCES
