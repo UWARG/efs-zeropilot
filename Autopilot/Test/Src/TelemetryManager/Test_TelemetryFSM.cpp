@@ -1,4 +1,3 @@
-#include "fff.h"
 #include <gtest/gtest.h>
 
 #include "telemetryManager.hpp"
