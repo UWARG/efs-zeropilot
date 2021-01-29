@@ -29,6 +29,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
     boardfiles/Drivers/CMSIS/Device/ST/STM32F7xx/Include
     AttitudeManager
     PathManager/Inc
+    C:\Users\nixon\OneDrive\Documents\MTE121_fall2020\WARG
   )
 
   # Add ARM math directory for linker to find
@@ -111,6 +112,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager
   )
 
   # Let cmake know where to find all the find<Package>.cmake files
@@ -178,6 +180,23 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
   add_executable(pathManagerModules ${PATH_MANAGER_MODULES_SOURCES} ${PATH_MANAGER_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
   target_link_libraries(pathManagerModules ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
+
+#########
+
+######### Telemetry manager fsm
+
+  set(TELEMETRY_MANAGER_FSM_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/TelemetryManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/TelemetryStateClasses.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/PID.cpp
+  )
+
+  set(TELEMETRY_MANAGER_FSM_UNIT_TEST_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/TelemetryManager/Test_TelemetryFSM.cpp
+  )
+
+  add_executable(telemetryManagerFSM ${TELEMETRY_MANAGER_FSM_SOURCES} ${TELEMETRY_MANAGER_FSM_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
+  target_link_libraries(telemetryManagerFSM ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
 
 #########
 
