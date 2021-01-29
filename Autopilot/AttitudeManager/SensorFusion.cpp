@@ -40,6 +40,19 @@ SFError_t SF_GetResult(SFOutput_t *Output, IMU_Data_t *imudata, Airspeed_Data_t 
         SFError.errorCode = 1;
     }
 
+    // Checks if magnetometer values are not a number (NAN) and converts them to zero if they are (ensures Madgwick does not break)
+    // NOTE TO FUTURE DEVELOPERS: At the time of making, our IMU did not have a magnetometer (so for now we set the values to NAN). 
+    // If your IMU does have one, you can remove this
+    if (isnan(imudata->magx)) {
+        imudata->magx = 0.0f;
+    }
+    if (isnan(imudata->magy)) {
+        imudata->magy = 0.0f;
+    }
+    if (isnan(imudata->magz)) {
+        imudata->magz = 0.0f;
+    }
+
     MadgwickAHRSupdate(imudata->gyrx, imudata->gyry, imudata->gyrz, imudata->accx, imudata->accy, imudata->accz, imudata->magx, imudata->magy, imudata->magz);
 
     //Convert quaternion output to angles (in deg)

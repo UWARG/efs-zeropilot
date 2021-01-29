@@ -19,7 +19,7 @@ struct SensorError_t {
 };
 
 /**
- * Takes in sensor objects and the output data structures. 
+ * Takes in sensor objects and the output data structures as parameters. 
  * This is the only module that interacts with the sensor drivers
  */ 
 SensorError_t SensorMeasurements_GetResult(IMU *imusns, airspeed *airspeedsns, IMU_Data_t *imudata, Airspeed_Data_t *airspeeddata);

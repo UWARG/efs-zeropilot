@@ -1,6 +1,6 @@
 /*
 * A skeleton for testing the sensor fusion algorithm
-* Author: Anthony Berbari, Dhruv Rawat
+* Author: Lucy Gong, Dhruv Rawat
 */
 
 #include <gtest/gtest.h>

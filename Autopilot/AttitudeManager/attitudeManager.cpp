@@ -1,6 +1,5 @@
 #include "attitudeManager.hpp"
 #include "attitudeStateClasses.hpp"
-#include "SendInstructionsToSafety.hpp"
 
 attitudeManager::attitudeManager()
 {

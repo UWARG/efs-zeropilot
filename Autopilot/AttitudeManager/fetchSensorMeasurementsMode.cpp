@@ -7,14 +7,20 @@
 #include "fetchSensorMeasurementsMode.hpp"
 #include <math.h>
 
-#include <iostream>
-
 SensorError_t SensorMeasurements_GetResult(IMU *imusns, airspeed *airspeedsns, IMU_Data_t *imudata, Airspeed_Data_t *airspeeddata) {
 
     SensorError_t error;
     error.errorCode = 0;
 
     // Structures from sensor driver files
+    /* 
+        Why am I making these? 
+
+        When cleaning up the Attitude Manager, one of the goals was to ensure that only a select few modules have access to the senor driver files (IMU.hpp, etc.)
+        To accomplish this, new structs to store the sensor data were created and declared in AttitudeDatatypes.hpp. These structs ensure that moduels (ex. Sensor Fusion)
+        that need access to sensor data do not need to inclued the sensor driver header files. Unfortunately, the sensor drivers only accept the structs declared in the sensor
+        driver header files, so we need to declare these temporary data structures to get the sensor data. 
+    */
     IMUData_t tempIMUdata;
     airspeedData_t tempAirspeedData;
 
@@ -22,7 +28,7 @@ SensorError_t SensorMeasurements_GetResult(IMU *imusns, airspeed *airspeedsns, I
     imusns->GetResult(tempIMUdata);
     airspeedsns->GetResult(tempAirspeedData);
 
-    // Copies values over
+    // Copies values over to the attitude manager's sensor data structs 
     imudata->gyrx = tempIMUdata.gyrx;
     imudata->gyry = tempIMUdata.gyry;
     imudata->gyrz = tempIMUdata.gyrz;
@@ -60,19 +66,6 @@ SensorError_t SensorMeasurements_GetResult(IMU *imusns, airspeed *airspeedsns, I
     //Check if data is old
     if(!imudata->isDataNew || !airspeeddata->isDataNew){
         error.errorCode = 1;
-    }
-
-    // Checks if magnetometer values are not a number (NAN) and converts them to zero if they are (ensures Madgwick does not break)
-    // NOTE TO FUTURE DEVELOPERS: At the time of making, our IMU did not have a magnetometer (so for now we set the values to NAN). 
-    // If your IMU does have one, you can remove this
-    if (isnan(imudata->magx)) {
-        imudata->magx = 0.0f;
-    }
-    if (isnan(imudata->magy)) {
-        imudata->magy = 0.0f;
-    }
-    if (isnan(imudata->magz)) {
-        imudata->magz = 0.0f;
     }
 
     return error;
