@@ -4,9 +4,6 @@
  * Code
  **********************************************************************************************************************/
 
-
-#ifndef SIMULATION
-
 // dummy implementation until real one is required.
 PMError_t PM_GetCommands(PMCommands *Commands)
 {
@@ -17,7 +14,3 @@ PMError_t PM_GetCommands(PMCommands *Commands)
 
 	return errorStruct;
 }
-
-#else
-
-#endif

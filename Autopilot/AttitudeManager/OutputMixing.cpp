@@ -4,10 +4,17 @@
  * Definitions
  **********************************************************************************************************************/
 
-#define ADVERSE_YAW_MIX 0.5f // This value was taken from picPilot, it might need tuning.
+// tails supported by this module
+#define CONVENTIONAL_TAIL 0
+#define INV_V_TAIL 1
 
-#define RUDDER_PROPORTION 0.75f // has to do with the angle of the inverse V tail, 0.75 means spike's tail is at 45 degrees.
-#define ELEVATOR_PROPORTION 0.75f
+#ifdef SPIKE
+	#define TAIL_TYPE INV_V_TAIL
+	static const float RUDDER_PROPORTION = 0.75f; // has to do with the angle of the inverse V tail, 0.75 means spike's tail is at 45 degrees.
+	static const float ELEVATOR_PROPORTION 0.75f;
+#else
+	#define TAIL_TYPE CONVENTIONAL_TAIL
+#endif
 
 /***********************************************************************************************************************
  * Prototypes
@@ -25,17 +32,16 @@ static void constrainOutput(float *channelOut);
 OutputMixing_error_t OutputMixing_Execute(PID_Output_t *PidOutput, float *channelOut)
 {
 
-#if TAIL_TYPE != INV_V_TAIL
-	#error "Requested tailtype not supported !"
-#endif
-
 	OutputMixing_error_t error;
 	error.errorCode = checkInputValidity(PidOutput);
 
-    PidOutput->yawPercent += PidOutput->rollPercent * ADVERSE_YAW_MIX; // mix roll rate into rudder to counter adverse yaw
-
+#if TAIL_TYPE == INV_V_TAIL
     channelOut[L_TAIL_OUT_CHANNEL] =  (PidOutput->yawPercent * RUDDER_PROPORTION) - (PidOutput->pitchPercent * ELEVATOR_PROPORTION); //Tail Output Left
     channelOut[R_TAIL_OUT_CHANNEL] =  (PidOutput->yawPercent * RUDDER_PROPORTION) + (PidOutput->pitchPercent * ELEVATOR_PROPORTION); //Tail Output Right
+#else
+    channelOut[ELEVATOR_OUT_CHANNEL] =  PidOutput->pitchPercent;
+    channelOut[RUDDER_OUT_CHANNEL] =  PidOutput->yawPercent;
+#endif
 
     channelOut[AILERON_OUT_CHANNEL] = PidOutput->rollPercent;
     channelOut[THROTTLE_OUT_CHANNEL] = PidOutput->throttlePercent;
