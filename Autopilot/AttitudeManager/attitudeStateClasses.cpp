@@ -8,6 +8,8 @@ float OutputMixingMode::_channelOut[4];
 PMCommands fetchInstructionsMode::_PMInstructions;
 SFOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t PIDloopMode::_PidOutput;
+IMU_Data_t fetchSensorMeasurementsMode::_imudata;
+Airspeed_Data_t fetchSensorMeasurementsMode::_airspeeddata;
 
 /***********************************************************************************************************************
  * Code
@@ -20,7 +22,8 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 
     if (ErrorStruct.errorCode == 0)
     {
-        attitudeMgr->setState(sensorFusionMode::getInstance());
+        // Before calling sensor fusion, we must first get the new sensor data
+        attitudeMgr->setState(fetchSensorMeasurementsMode::getInstance()); 
     }
     else
     {
@@ -34,9 +37,34 @@ attitudeState& fetchInstructionsMode::getInstance()
     return singleton;
 }
 
-void sensorFusionMode::execute(attitudeManager* attitudeMgr)
+void fetchSensorMeasurementsMode::execute(attitudeManager* attitudeMgr) 
 {
-    SFError_t ErrorStruct = SF_GetResult(&_SFOutput, &ImuSens, &AirspeedSens);
+    // Initializes the sensor data structures 
+    SensorError_t ErrorStruct = SensorMeasurements_GetResult(&ImuSens, &AirspeedSens, &_imudata, &_airspeeddata); 
+
+    if (ErrorStruct.errorCode == 0)
+    {
+        // Sets state to sensor fusion
+        attitudeMgr->setState(sensorFusionMode::getInstance()); 
+    }
+    else 
+    {
+        attitudeMgr->setState(FatalFailureMode::getInstance());
+    }
+}
+
+attitudeState& fetchSensorMeasurementsMode::getInstance()
+{
+    static fetchSensorMeasurementsMode singleton;
+    return singleton;
+}
+
+void sensorFusionMode::execute(attitudeManager* attitudeMgr)
+{   
+    IMU_Data_t *dataimu = fetchSensorMeasurementsMode::GetIMUOutput();
+    Airspeed_Data_t *dataairspeed = fetchSensorMeasurementsMode::GetAirspeedOutput();
+
+    SFError_t ErrorStruct = SF_GetResult(&_SFOutput, dataimu, dataairspeed);
 
     if (ErrorStruct.errorCode == 0)
     {
@@ -60,12 +88,23 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     PMCommands *PMInstructions = fetchInstructionsMode::GetPMInstructions();
     SFOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
 
+    // Gets roll, pitch, yaw, and airspeed commands from the path manager module
+    PMCommands pathManagerOutput;
+    PMError_t pmError = PM_GetCommands(&pathManagerOutput);
+
     _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->IMUroll, SFOutput->IMUrollrate);
     _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->IMUpitch, SFOutput->IMUpitchrate);
-    _PidOutput.yawPercent = 0;  // yaw is not something we control simply with rudder. It is actually a coordinated turn thing controlled by PM. TODO
+    _PidOutput.yawPercent = pathManagerOutput.yaw;
     _PidOutput.throttlePercent = _airspeedPid.execute(PMInstructions->airspeed, SFOutput->Airspeed);
 
-    attitudeMgr->setState(OutputMixingMode::getInstance());
+    if (pmError.errorCode == 0) 
+    {
+        attitudeMgr->setState(OutputMixingMode::getInstance());
+    }
+    else 
+    {
+        attitudeMgr->setState(FatalFailureMode::getInstance());
+    }
 }
 
 attitudeState& PIDloopMode::getInstance()
