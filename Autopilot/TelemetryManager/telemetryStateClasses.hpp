@@ -16,7 +16,7 @@ class initialMode: public telemetryState
         initialMode& operator =(const initialMode& other);
 };
 
-class groundDataPathMode: public telemetryState
+class obtainDataMode: public telemetryState
 {
     public:
         void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
@@ -25,12 +25,12 @@ class groundDataPathMode: public telemetryState
         static telemetryState& getInstance();
 
     private:
-        groundDataPathMode(){}
-        groundDataPathMode(const groundDataPathMode& other);
-        groundDataPathMode& operator =(const groundDataPathMode& other);
+        obtainDataMode(){}
+        obtainDataMode(const obtainDataMode& other);
+        obtainDataMode& operator =(const obtainDataMode& other);
 };
 
-class errorReportMode: public telemetryState
+class decodeDataMode: public telemetryState
 {
     public:
         void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
@@ -39,12 +39,12 @@ class errorReportMode: public telemetryState
         static telemetryState& getInstance();
 
     private:
-        errorReportMode(){}
-        errorReportMode(const errorReportMode& other);
-        errorReportMode& operator =(const errorReportMode& other);
+        decodeDataMode(){}
+        decodeDataMode(const decodeDataMode& other);
+        decodeDataMode& operator =(const decodeDataMode& other);
 };
 
-class regularReportMode: public telemetryState
+class passToPathMode: public telemetryState
 {
     public:
         void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
@@ -53,7 +53,91 @@ class regularReportMode: public telemetryState
         static telemetryState& getInstance();
 
     private:
-        regularReportMode(){}
-        regularReportMode(const regularReportMode& other);
-        regularReportMode& operator =(const regularReportMode& other);
+        passToPathMode(){}
+        passToPathMode(const passToPathMode& other);
+        passToPathMode& operator =(const passToPathMode& other);
+};
+
+class readFromPathMode: public telemetryState
+{
+    public:
+        void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+        void execute(telemetryManager* telemetryMgr);
+        void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+        static telemetryState& getInstance();
+
+    private:
+        readFromPathMode(){}
+        readFromPathMode(const readFromPathMode& other);
+        readFromPathMode& operator =(const readFromPathMode& other);
+};
+
+class analyzeDataMode: public telemetryState
+{
+    public:
+        void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+        void execute(telemetryManager* telemetryMgr);
+        void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+        static telemetryState& getInstance();
+
+    private:
+        analyzeDataMode(){}
+        analyzeDataMode(const analyzeDataMode& other);
+        analyzeDataMode& operator =(const analyzeDataMode& other);
+};
+
+class reportMode: public telemetryState
+{
+    public:
+        void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+        void execute(telemetryManager* telemetryMgr);
+        void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+        static telemetryState& getInstance();
+
+    private:
+        reportMode(){}
+        reportMode(const reportMode& other);
+        reportMode& operator =(const reportMode& other);
+};
+
+class encodeDataMode: public telemetryState
+{
+    public:
+        void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+        void execute(telemetryManager* telemetryMgr);
+        void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+        static telemetryState& getInstance();
+
+    private:
+        encodeDataMode(){}
+        encodeDataMode(const encodeDataMode& other);
+        encodeDataMode& operator =(const encodeDataMode& other);
+};
+
+class sendDataMode: public telemetryState
+{
+    public:
+        void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+        void execute(telemetryManager* telemetryMgr);
+        void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+        static telemetryState& getInstance();
+
+    private:
+        sendDataMode(){}
+        sendDataMode(const sendDataMode& other);
+        sendDataMode& operator =(const sendDataMode& other);
+};
+
+class failureMode: public telemetryState
+{
+    public:
+        void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+        void execute(telemetryManager* telemetryMgr);
+        void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+        static telemetryState& getInstance();
+
+    private:
+        failureMode(){}
+        failureMode(const failureMode& other);
+        failureMode& operator =(const failureMode& other);
 };

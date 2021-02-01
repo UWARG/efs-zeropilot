@@ -42,7 +42,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
   add_subdirectory(boardfiles/Middlewares/Third_Party/FreeRTOS)
 
   file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/*.c boardfiles/Src/*.c)
-  file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/*.cpp PathManager/Src/*.cpp)
+  file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/*.cpp PathManager/Src/*.cpp TelemetryManager/*.cpp)
 
   if(NOT NUCLEO)
     set(STARTUP_ASM startup_stm32f765xx.s)
