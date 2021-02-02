@@ -187,15 +187,15 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 ######### Telemetry manager fsm
 
   set(TELEMETRY_MANAGER_FSM_SOURCES
-    
-    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/TelemetryStateClasses.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/telemetryManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/telemetryStateClasses.cpp
   )
 
   set(TELEMETRY_MANAGER_FSM_UNIT_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/TelemetryManager/Test_TelemetryFSM.cpp
   )
 
-  add_executable(telemetryManagerFSM ${TELEMETRY_MANAGER_FSM_SOURCES} ${TELEMETRY_MANAGER_FSM_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN} ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/TelemetryManager.cpp)
+  add_executable(telemetryManagerFSM ${TELEMETRY_MANAGER_FSM_SOURCES} ${TELEMETRY_MANAGER_FSM_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
   target_link_libraries(telemetryManagerFSM ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
 
 #########
