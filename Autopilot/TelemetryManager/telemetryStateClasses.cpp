@@ -189,7 +189,7 @@ void sendDataMode::execute(telemetryManager* telemetryMgr)
     }
     else
     {
-        if(telemetryMgr -> regularReport)
+        if(telemetryMgr -> regularReport) //determines if the FSM should reinitialize
         {
             telemetryMgr -> setState(obtainDataMode::getInstance());
         }
