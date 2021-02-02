@@ -1,3 +1,7 @@
+/*
+* Author: Nixon Chan
+*/
+
 #include "telemetryManager.hpp"
 #include "telemetryStateClasses.hpp"
 

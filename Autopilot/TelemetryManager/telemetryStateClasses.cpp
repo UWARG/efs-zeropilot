@@ -1,5 +1,8 @@
+/*
+* Author: Nixon Chan
+*/
+
 #include "telemetryStateClasses.hpp"
-#include <time.h>
 
 void initialMode::execute(telemetryManager* telemetryMgr)
 {

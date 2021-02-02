@@ -1,3 +1,7 @@
+/*
+* Author: Nixon Chan
+*/
+
 #pragma once
 #include "telemetryStateManager.hpp"
 

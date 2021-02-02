@@ -1,3 +1,7 @@
+/*
+* Author: Nixon Chan
+*/
+
 #include <gtest/gtest.h>
 
 #include "telemetryManager.hpp"

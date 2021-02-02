@@ -1,3 +1,7 @@
+/*
+* Author: Nixon Chan
+*/
+
 #ifndef TELEMETRYSTATEMANAGER_HPP
 #define TELEMETRYSTATEMANAGER_HPP
 
