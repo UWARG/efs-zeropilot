@@ -52,27 +52,25 @@ int Mavlink_decoder(int channel, uint8_t incomingByte, mavlink_message_t &msg, m
         {
             case MAVLINK_MSG_ID_GLOBAL_POSITION_INT: // ID for GLOBAL_POSITION_INT
                 {
-                // Get all fields in payload (into global_position)
-                mavlink_global_position_int_t global_position;
-                mavlink_msg_global_position_int_decode(&msg, &global_position); //void
+                    // Get all fields in payload (into global_position)
+                    mavlink_global_position_int_t global_position;
+                    mavlink_msg_global_position_int_decode(&msg, &global_position); //void
 
-                //TODO add GPS valid check
+                    //TODO add GPS valid check
 
-                if (telemetryData == NULL || *telemetryData == NULL )
-                {
-                    return MAVLINK_DECODING_NULL_PTR;
-                }
-                memcpy(*telemetryData, (uint8_t*) &global_position, sizeof(mavlink_global_position_int_t))
-                // insert GPS check
+                    if (telemetryData == NULL || *telemetryData == NULL )
+                    {
+                        return MAVLINK_DECODING_NULL_PTR;
+                    }
+                    memcpy(*telemetryData, (uint8_t*) &global_position, sizeof(mavlink_global_position_int_t));
+                    // insert GPS data check
 
-
-                
                 }
                 break;
             case MAVLINK_MSG_ID_GPS_STATUS:
                 {
-                // Get just one field from payload
-                uint8_t visible_sats = mavlink_msg_gps_status_get_satellites_visible(&msg);
+                    // Get just one field from payload
+                    uint8_t visible_sats = mavlink_msg_gps_status_get_satellites_visible(&msg);
                 }
                 break;
             default:
