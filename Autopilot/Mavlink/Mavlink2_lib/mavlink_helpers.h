@@ -55,7 +55,8 @@ MAVLINK_HELPER mavlink_message_t* mavlink_get_channel_buffer(uint8_t chan)
     and out). Only use if the channel will only contain messages types listed in
     the headers.
 */
-//#define MAVLINK_CHECK_MESSAGE_LENGTH
+//#define MAVLINK_CHECK_MESSAGE_LENGTH 
+//TODO enable this
 
 /**
  * @brief Reset the status of a channel.
