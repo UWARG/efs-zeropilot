@@ -42,6 +42,7 @@ uint8_t sampleByte = 32;
  *   printf("Received message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
  * }
  **/
+
 int Mavlink_decoder(int channel, uint8_t incomingByte, mavlink_message_t &msg, mavlink_status_t &status, uint8_t **telemetryData) //need to add decoded message here
 {
 
@@ -63,9 +64,28 @@ int Mavlink_decoder(int channel, uint8_t incomingByte, mavlink_message_t &msg, m
                         return MAVLINK_DECODING_NULL_PTR;
                     }
                     memcpy(*telemetryData, (uint8_t*) &global_position, sizeof(mavlink_global_position_int_t));
-                    // insert GPS data check
 
+                    // these are only for a demonstration of how to access the data from global_position, use this to check if GPS is valid
+                    uint32_t timestamp_ms = global_position.time_boot_ms; /*< [ms] Timestamp (time since system boot).*/
+                    int32_t latitude = global_position.lat; /*< [degE7] Latitude, expressed*/
+                    int32_t longitude = global_position.lon; /*< [degE7] Longitude, expressed*/
+                    int32_t altitude = global_position.alt; /*< [mm] Altitude (MSL). Note that virtually all GPS modules provide both WGS84 and MSL.*/
+                    int32_t relative_altitude = global_position.relative_alt; /*< [mm] Altitude above ground*/
+                    int16_t Vx = global_position.vx; /*< [cm/s] Ground X Speed (Latitude, positive north)*/
+                    int16_t Vy = global_position.vy; /*< [cm/s] Ground Y Speed (Longitude, positive east)*/
+                    int16_t Vz = global_position.vz; /*< [cm/s] Ground Z Speed (Altitude, positive down)*/
+                    uint16_t Hdg = global_position.hdg; /*< [cdeg] Vehicle heading (yaw angle), 0.0..359.99 degrees. If unknown, set to: UINT16_MAX*/
+
+                    if (false) // insert GPS data check here, such as valid data range
+                    {
+                        return MAVLINK_DECODING_FAIL;
+                    }
+                    else
+                    {
+                        return MAVLINK_DECODING_OKAY;
+                    }
                 }
+
                 break;
             case MAVLINK_MSG_ID_GPS_STATUS:
                 {
@@ -90,6 +110,3 @@ int main(void)
 }
 // use mavlink_msg_command_int_decode()/mavlink_msg_command_long_decode() for command decodings
 // use MAVLINK_CHECK_MESSAGE_LENGTH to check for invalid messages
-
-// example
-// https://mavlink.io/en/mavgen_c/example_c_uart.html
