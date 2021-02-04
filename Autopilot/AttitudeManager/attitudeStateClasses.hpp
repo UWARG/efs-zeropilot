@@ -1,6 +1,8 @@
 #pragma once
+
 #include "attitudeStateManager.hpp"
 #include "attitudeManager.hpp"
+#include "AttitudeDatatypes.hpp"
 
 #include "GetFromPathManager.hpp"
 #include "SensorFusion.hpp"
@@ -9,6 +11,7 @@
 #include "SendInstructionsToSafety.hpp"
 #include "IMU.hpp"
 #include "airspeed.hpp"
+#include "fetchSensorMeasurementsMode.hpp"
 
 /***********************************************************************************************************************
  * Definitions
@@ -50,6 +53,25 @@ class fetchInstructionsMode : public attitudeState
         static PMCommands _PMInstructions;
 };
 
+class fetchSensorMeasurementsMode : public attitudeState
+{
+    public:
+        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
+        void execute(attitudeManager* attitudeMgr);
+        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
+        static attitudeState& getInstance();
+        static IMU_Data_t *GetIMUOutput(void) {return &_imudata;}
+        static Airspeed_Data_t *GetAirspeedOutput(void) {return &_airspeeddata;}
+    private:
+        fetchSensorMeasurementsMode() {}
+        fetchSensorMeasurementsMode(const fetchSensorMeasurementsMode& other);
+        fetchSensorMeasurementsMode& operator =(const fetchSensorMeasurementsMode& other);
+        static IMU_Data_t _imudata;
+        static Airspeed_Data_t _airspeeddata;
+        IMU_CLASS ImuSens;
+        AIRSPEED_CLASS AirspeedSens;
+};
+
 class sensorFusionMode : public attitudeState
 {
     public:
@@ -62,10 +84,7 @@ class sensorFusionMode : public attitudeState
         sensorFusionMode() {}
         sensorFusionMode(const sensorFusionMode& other);
         sensorFusionMode& operator =(const sensorFusionMode& other);
-        IMU_CLASS ImuSens;
-        AIRSPEED_CLASS AirspeedSens;
         static SFOutput_t _SFOutput;
-
 };
 
 class PIDloopMode : public attitudeState
@@ -110,7 +129,7 @@ class sendToSafetyMode : public attitudeState
         void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
     private:
-        sendToSafetyMode() {}
+        sendToSafetyMode() {SendToSafety_Init();} // Calls C-style initialization function 
         sendToSafetyMode(const sendToSafetyMode& other);
         sendToSafetyMode& operator =(const sendToSafetyMode& other);
 };
