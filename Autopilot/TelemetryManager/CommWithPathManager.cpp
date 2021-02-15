@@ -15,18 +15,18 @@ void CommWithPMInit()
     PMcommandsMailQ = osMailCreate(osMailQ(commandsMailQ), NULL);
 }
 
-void SendCommandsForPM(CommandsForPM *commands)
+void SendCommandsForPM(TelemToPMData *commands)
 {
     //Remove previous command from mail queue if it exists
     osEvent event = osMailGet(PMcommandsMailQ, 0);
     if(event.status == osEventMail)
     {
-        osMailFree(PMcommandsMailQ, static_cast<CommandsForPM *>(event.value.p));
+        osMailFree(PMcommandsMailQ, static_cast<TelemToPMData *>(event.value.p));
     }
 
     //Allocate mail slot
     CommandsForPM *commandsOut;
-    commandsOut = static_cast<CommandsForPM *>(osMailAlloc(PMcommandsMailQ, osWaitForever));
+    commandsOut = static_cast<TelemToPMData *>(osMailAlloc(PMcommandsMailQ, osWaitForever));
     
     //Fill mail slot with data
     *commandsOut = *commands;
@@ -35,7 +35,7 @@ void SendCommandsForPM(CommandsForPM *commands)
     osMailPut(PMcommandsMailQ, commandsOut);
 }
 
-bool GetTelemData(TelemData *data)
+bool GetTelemData(TeleToPMData *data)
 {
     //Try to get data from mail queue
     osEvent event;
@@ -43,7 +43,7 @@ bool GetTelemData(TelemData *data)
     event = osMailGet(telemDataMailQ, 0);
     if(event.status == osEventMail)
     {
-        dataIn = static_cast<TelemData *>(event.value.p);
+        dataIn = static_cast<TelemToPMData *>(event.value.p);
         
         //Keep the data and remove it from the queue
         *data = *dataIn;
