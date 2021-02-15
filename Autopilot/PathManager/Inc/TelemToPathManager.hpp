@@ -14,16 +14,16 @@
 void CommWithPMInit();
 
 /**
- * Send attitude/airspeed data to the path manager.
+ * Send telemetry data to the path manager.
  * @param[in]   data   Pointer to struct with data.
  */
-void SendPathData(AttitudeData *data);
+void SendPathData(TelemToPMData *data);
 
 /**
  * Retrieve commands from the path manager.
  * @param[out]   commands   Pointer to struct to recieve commands.
  * @return True if commands were recieved.
  */
-bool GetCommands(CommandsForPM *commands);
+bool GetCommands(TelemToPMData *commands);
 
 #endif

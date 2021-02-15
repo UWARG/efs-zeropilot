@@ -12,7 +12,7 @@ extern "C"
 
 void CommWithPMInit()
 {
-    attitudeDataMailQ = osMailCreate(osMailQ(attitudeDataMailQ), NULL);
+    attitudeDataMailQ = osMailCreate(osMailQ(telemDataMailQ), NULL);
 }
 
 void SendPathData(PathData *data)

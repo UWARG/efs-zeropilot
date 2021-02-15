@@ -36,12 +36,12 @@ extern "C"
 const char MAIL_Q_SIZE = 1;
 
 //Set up a mail queue for sending commands to the path manager
-extern osMailQDef(PMcommandsMailQ, MAIL_Q_SIZE, CommandsForPM);
+extern osMailQDef(PMcommandsMailQ, MAIL_Q_SIZE, TelemToPMData);
 extern osMailQId PMcommandsMailQ;
 
 
 //Set up a mail queue for sending data to telemetry
-extern osMailQDef(telemDataMailQ, MAIL_Q_SIZE, TelemData);
+extern osMailQDef(telemDataMailQ, MAIL_Q_SIZE, DataForTelem);
 extern osMailQId telemDataMailQ;
 
 #endif
