@@ -1,6 +1,8 @@
 // Author: Jingting Liu
 #include "Mavlink2_lib/common/mavlink.h"
 #include "Decoder.hpp"
+#include "Encoder.hpp"
+
 //#include <mavlink_helpers.h>
 
 mavlink_system_t mavlink_system = {
@@ -14,48 +16,27 @@ mavlink_system_t mavlink_system = {
 // return 1 is the packet successfully decoded, 0 if not
 
 
-mavlink_status_t status;
+
 mavlink_message_t msg;
 int channel = MAVLINK_COMM_0; //0, assume only one MAVlink stream exists
 
 bool IsByteAvailable = true;
 uint8_t sampleByte = 32;
 
-/**
- * This decoder is consists of two parts, parser and decoder.
- * The parser handles mavlink messages one byte at a time. 
- * Once the complete packet could be successfully decoded, the decoder would translate the message into telemetry data.
- * 
- * An example of how this function should be called is demonstrated below:
- * 
- * #include <mavlink.h>
- *
- * mavlink_status_t status;
- * mavlink_message_t msg;
- * int channel = MAVLINK_COMM_0; //0, assume only one MAVlink stream exists
- *
- * //the following part should exist in the state machine
- * while(serial.bytesAvailable > 0) // should make the xbee send one byte at a time from the serial port
- * {
- *   uint8_t byte = serial.getNextByte(); //this is just a space filler arduino function
- *   decoderStatus = Mavlink_decoder(channel, byte ,&msg, &status)
- *   printf("Received message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
- * }
- **/
 
-int Mavlink_decoder(int channel, uint8_t incomingByte, mavlink_message_t &msg, mavlink_status_t &status, uint8_t **telemetryData) //need to add decoded message here
+mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, mavlink_message_t *msg, uint8_t **telemetryData) //need to add decoded message here
 {
-
-    if (mavlink_parse_char(channel, incomingByte, &msg, &status))
+    mavlink_status_t status; //TODO make use of this to get detailed status for parsing
+    if (mavlink_parse_char(channel, incomingByte, msg, &status))
     {
         // complete message receieved, decoding starts
-        switch(msg.msgid)
+        switch(msg->msgid)
         {
             case MAVLINK_MSG_ID_GLOBAL_POSITION_INT: // ID for GLOBAL_POSITION_INT
                 {
                     // Get all fields in payload (into global_position)
                     mavlink_global_position_int_t global_position;
-                    mavlink_msg_global_position_int_decode(&msg, &global_position); //void
+                    mavlink_msg_global_position_int_decode(msg, &global_position); //void
 
                     //TODO add GPS valid check
 
@@ -90,7 +71,7 @@ int Mavlink_decoder(int channel, uint8_t incomingByte, mavlink_message_t &msg, m
             case MAVLINK_MSG_ID_GPS_STATUS:
                 {
                     // Get just one field from payload
-                    uint8_t visible_sats = mavlink_msg_gps_status_get_satellites_visible(&msg);
+                    uint8_t visible_sats = mavlink_msg_gps_status_get_satellites_visible(msg);
                 }
                 break;
             default:
@@ -104,9 +85,65 @@ int Mavlink_decoder(int channel, uint8_t incomingByte, mavlink_message_t &msg, m
     }
     
 }
-int main(void)
+
+
+int main(void) // TODO: this needs to be removed once integrated
 {
+    // encoding starts
+
+    mavlink_message_t *encoded_msg;
+    mavlink_global_position_int_t global_position = 
+    {
+        1, // timestamp
+        1, // latitude
+        1, // longitude
+        1, // altitude
+        1, // altitude above ground
+        1, // x speed, latitude positive north
+        1, // y speed, longitude, positive east
+        1, // z speed, positive down
+        1 // hdg
+    };
+
+    uint16_t message_len = Mavlink_encoder(MESSAGE_ID_GPS, &encoded_msg, (const uint64_t*) &global_position);
+
+    // decoding starts
+
+    uint8_t *telemetryData;
+    mavlink_decoding_status_t decoderStatus = MAVLINK_DECODING_INCOMPLETE;
+    unsigned char* ptr_in_byte = (unsigned char *) encoded_msg; // prepare to read the message one byte at a time
+    mavlink_message_t received_encoded_msg;
+
+    for( int i = 0; i < message_len; i++) // assume message_len is in bytes
+    {
+        uint8_t current_byte = ptr_in_byte[i]; //to get the encoded message one byte at a time, in real application this would each byte received from xbee
+        decoderStatus = Mavlink_decoder(MAVLINK_COMM_0, current_byte, &received_encoded_msg, &telemetryData);
+    }
+
+    mavlink_global_position_int_t global_position_revieved;
+    if (decoderStatus == MAVLINK_DECODING_OKAY)
+    {
+        printf("decoding complete");
+        memcpy(&global_position_revieved, (mavlink_global_position_int_t*) telemetryData, sizeof(mavlink_global_position_int_t));
+        int32_t altitude = global_position.alt;
+        printf("altitude is: %d", altitude);
+    }
+
+    else
+    {
+        printf("decoding unsuccessful, error message: %d",decoderStatus);
+    }
+    
 
 }
 // use mavlink_msg_command_int_decode()/mavlink_msg_command_long_decode() for command decodings
 // use MAVLINK_CHECK_MESSAGE_LENGTH to check for invalid messages
+// unit test: https://uwarg-docs.atlassian.net/wiki/spaces/TUT/pages/1058078728/test+driven+development
+
+//https://stackoverflow.com/questions/484357/trying-to-copy-struct-members-to-byte-array-in-c
+// https://stackoverflow.com/questions/8680220/how-to-get-the-value-of-individual-bytes-of-a-variable
+
+//The minimum packet length is 12 bytes for acknowledgment packets without payload.
+//The maximum packet length is 280 bytes for a signed message that uses the whole payload.
+
+// mavlink encoded message divided in bytes https://mavlink.io/en/guide/serialization.html#payload
