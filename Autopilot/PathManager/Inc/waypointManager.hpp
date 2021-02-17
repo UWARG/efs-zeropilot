@@ -237,6 +237,11 @@ private:
     int turnDirection; // 1 for CW, 2 for CCW
     float turnRadius;
 
+    // When we are heading home, we want the plane to keep a level flight until further instructions are given to the plane. 
+    // Before that happens, we want the plane to maintain its altitude so it does not crash into the ground. 
+    // Ever time get_next_directions() is called, this variable will be updated so when the plane is asked to head home, it can maintain this altitude!
+    int headingHomeAltitude;
+
     //Helper Methods
     void follow_hold_pattern(float* position, float heading);
     void follow_waypoints(_PathData * currentWaypoint, float* position, float heading);                               // Determines which of the methods below to call :))

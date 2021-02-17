@@ -532,7 +532,7 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
     // Stores answers for four tests
     _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
     ans1->desiredHeading = 215;        
-    ans1->desiredAltitude = 45;
+    ans1->desiredAltitude = 15;
     ans1->distanceToNextWaypoint = 13755;
     ans1->radius = 0;
     ans1->turnDirection = 0;
@@ -543,7 +543,7 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
 
     _WaypointManager_Data_Out * ans2 = new _WaypointManager_Data_Out;
     ans2->desiredHeading = 310;       
-    ans2->desiredAltitude = 45;
+    ans2->desiredAltitude = 15;
     ans2->distanceToNextWaypoint = 17368;
     ans2->radius = 0;
     ans2->turnDirection = 0;
@@ -596,7 +596,7 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
     }
 
     // Creates home object
-    _PathData * homeBase = waypointManagerInstance->initialize_waypoint(-80.537331184, 43.467998128, 45, HOLD_WAYPOINT);
+    _PathData * homeBase = waypointManagerInstance->initialize_waypoint(-80.537331184, 43.467998128, 0, HOLD_WAYPOINT);
 
     _WaypointStatus initialize_check = waypointManagerInstance->initialize_flight_path(initialPaths, numPaths, homeBase); // Creates flight path
 

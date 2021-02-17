@@ -15,6 +15,7 @@
 #define EARTH_RADIUS 6378.137
 #define PI 3.14159265358979323846 // Was giving me problems with M_PI, so I resorted to defining it myself
 #define MAX_PATH_APPROACH_ANGLE PI/2
+#define MINIMUM_SAFE_CRUISING_ALTITUDE 15 // Used for when the going_home() method is called
 
 //Basic Mathematical Conversions
 #define deg2rad(angle_in_degrees) ((angle_in_degrees) * PI/180.0)
@@ -54,6 +55,7 @@ WaypointManager::WaypointManager(float relLat, float relLong) {
     turnDesiredAltitude = 0;
     turnDirection = 0; // 1 for CW, 2 for CCW
     turnRadius = 0.0;
+    headingHomeAltitude = MINIMUM_SAFE_CRUISING_ALTITUDE;
 
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         waypointBufferStatus[i] = FREE;
@@ -262,6 +264,7 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
     float position[3]; 
     // Gets current heading
     float currentHeading = (float) currentStatus.heading;
+    headingHomeAltitude = currentStatus.altitude; // Stores the current altitude of the plane so when "going_home()" is called, the plane can keep level flight
 
     // Holding is given higher priority to heading home
     if (inHold) { // If plane is currently circling and waiting for commands
@@ -361,7 +364,7 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
 _WaypointStatus WaypointManager::start_circling(_WaypointManager_Data_In currentStatus, float radius, int direction, int altitude, bool cancelTurning) {
     if (!cancelTurning) {
         // If parameters are not valid. Minimum altitude of 10 metres
-        if (radius <= 0 || (direction != -1 && direction != 1) || altitude < 10) { // SHOULD I JUST SET THIS TO DEFAULT VALUES INSTEAD??????
+        if (radius <= 0 || (direction != -1 && direction != 1) || altitude < 10) {
             return INVALID_PARAMETERS; 
         }
 
@@ -429,6 +432,13 @@ _HeadHomeStatus WaypointManager::head_home(bool startHeadingHome) {
     if (startHeadingHome) {
         clear_path_nodes(); // Clears path nodes so state machine can input new flight path
         goingHome = true;
+        
+        // We need to decide what the cruising altitude for the plane should be when heading home.
+        // Note that the plane will not have instructions until the flight path is re-instantiated, so we want this altitude to be safe!
+        if (headingHomeAltitude < MINIMUM_SAFE_CRUISING_ALTITUDE) {
+            headingHomeAltitude = MINIMUM_SAFE_CRUISING_ALTITUDE;
+        }
+        homeBase->altitude = headingHomeAltitude; // Sets the altitude of the homeBase waypoint to our current altitude to ensure the plane does not crash
         return HOME_TRUE;
     } else {
         goingHome = false;
