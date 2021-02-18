@@ -7,7 +7,6 @@
 #include "AutoSteer.hpp"
 #include "waypointManager.hpp"
 
-
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
@@ -68,7 +67,7 @@ class sensorFusion : public pathManagerState
         sensorFusion& operator =(const sensorFusion& other);
 };
 
-class waypointMgmt : public pathManagerState
+class cruisingState : public pathManagerState
 {
     public:
         void enter(pathManager* pathMgr) {(void) pathMgr;}
@@ -78,9 +77,11 @@ class waypointMgmt : public pathManagerState
         static _PathData *GetWaypointData(void) {return &_waypointdata;}
         static _WaypointManager_Data_Out *GetOutputData(void) {return &_outputdata;}
     private:
-        waypointMgmt() {}
-        waypointMgmt(const waypointMgmt& other);
-        waypointMgmt& operator =(const waypointMgmt& other);
+        cruisingState() {}
+        cruisingState(const cruisingState& other);
+        cruisingState& operator =(const cruisingState& other);
+        WaypointManager waypointmgr(0,0); 
+        int waypointIDArray[PATH_BUFFER_SIZE]; 
         _PathData _waypointdata; 
         _WaypointManager_Data_Out _outputdata; 
 };
@@ -100,19 +101,6 @@ class coordinateTurnElevation : public pathManagerState
         coordinateTurnElevation& operator =(const coordinateTurnElevation& other);
         CoordinatedTurnAttitudeManagerCommands_t _rollandrudder;
         AltitudeAirspeedCommands_t _pitchandairspeed; 
-};
-
-class sendToSafetyMode : public pathManagerState
-{
-    public:
-        void enter(pathManager* pathMgr) {(void) pathMgr;}
-        void execute(pathManager* pathMgr);
-        void exit(pathManager* pathMgr) {(void) pathMgr;}
-        static pathManagerState& getInstance();
-    private:
-        sendToSafetyMode() {SendToSafety_Init();}
-        sendToSafetyMode(const sendToSafetyMode& other);
-        sendToSafetyMode& operator =(const sendToSafetyMode& other);
 };
 
 class FatalFailureMode : public pathManagerState
