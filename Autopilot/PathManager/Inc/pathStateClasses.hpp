@@ -19,9 +19,9 @@ class commsWithAttitude : public pathManagerState
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
     private:
-        sendToAttitude() {}
-        sendToAttitude(const sendToAttitude& other);
-        sendToAttitude& operator =(const sendToAttitude& other);
+        commsWithAttitude() {}
+        commsWithAttitude(const commsWithAttitude& other);
+        commsWithAttitude& operator =(const commsWithAttitude& other);
 };
 
 class getFromTelemetry : public pathManagerState
@@ -80,10 +80,10 @@ class cruisingState : public pathManagerState
         cruisingState() {}
         cruisingState(const cruisingState& other);
         cruisingState& operator =(const cruisingState& other);
-        WaypointManager waypointmgr(0,0); 
+        //WaypointManager(0,0) {} initializing instance of WaypointManager class
         int waypointIDArray[PATH_BUFFER_SIZE]; 
-        _PathData _waypointdata; 
-        _WaypointManager_Data_Out _outputdata; 
+        static _PathData _waypointdata; 
+        static _WaypointManager_Data_Out _outputdata; 
 };
 
 class coordinateTurnElevation : public pathManagerState
@@ -99,8 +99,8 @@ class coordinateTurnElevation : public pathManagerState
         coordinateTurnElevation() {}
         coordinateTurnElevation(const coordinateTurnElevation& other);
         coordinateTurnElevation& operator =(const coordinateTurnElevation& other);
-        CoordinatedTurnAttitudeManagerCommands_t _rollandrudder;
-        AltitudeAirspeedCommands_t _pitchandairspeed; 
+        static CoordinatedTurnAttitudeManagerCommands_t _rollandrudder;
+        static AltitudeAirspeedCommands_t _pitchandairspeed; 
 };
 
 class FatalFailureMode : public pathManagerState

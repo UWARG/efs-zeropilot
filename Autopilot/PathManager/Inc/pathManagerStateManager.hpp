@@ -15,7 +15,7 @@ class pathManagerState
     public:
         virtual void enter(pathManager* pathMgr) = 0;
         virtual void execute(pathManager* pathMgr) = 0;
-        virtual void exit(attitudeManager* pathMgr) = 0;
+        virtual void exit(pathManager* pathMgr) = 0;
 
         bool operator==(const pathManagerState& rhs) const {return (this == &rhs);} 
 
