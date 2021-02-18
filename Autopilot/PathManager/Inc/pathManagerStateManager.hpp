@@ -8,7 +8,7 @@
 
 #include "pathManager.hpp"
 
-class pathManager; //WHY HAVE THIS HERE?!?!? !!QUESTION!!
+class pathManager;
 
 class pathManagerState
 {
@@ -17,7 +17,7 @@ class pathManagerState
         virtual void execute(pathManager* pathMgr) = 0;
         virtual void exit(attitudeManager* pathMgr) = 0;
 
-        bool operator==(const pathManagerState& rhs) const {return (this == &rhs);} //WHAT IS THIS?? !!QUESTION!!
+        bool operator==(const pathManagerState& rhs) const {return (this == &rhs);} 
 
         virtual ~pathManagerState() {}
 
