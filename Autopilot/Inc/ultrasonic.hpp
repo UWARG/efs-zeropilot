@@ -8,12 +8,13 @@
 
  #include <stdint.h>
 
+
+const int SOUND_SPEED = 343; // In meters per second, used to calculate distance based on time taken to send and receive ping
+
 typedef struct {
     float distance;
     bool isDataNew; // Holds whether the sensor data has been updated or not
-    uint8_t status; // -1 for trig not sent and echo not received, 0 for trig sent, echo not received, and 1 for echo received
-    float time; // represents the time taken between trig being sent and echo being received
-    const int SOUND_SPEED = 343; // In meters per second, used to calculate distance based on time taken to send and receive ping
+    enum status {FAILING=-1, SENT=0, RECEIVED=1}; // -1 for trig not sent and echo not received, 0 for trig sent, echo not received, and 1 for echo received
  } ultrasonicData_t;
 
 
