@@ -1,5 +1,6 @@
 #include "stm32f7xx_hal.h"
 #include "Interchip.h"
+#include <stdint.h>
 
 #define INTERCHIP_TRANSMIT_DELAY 5
 

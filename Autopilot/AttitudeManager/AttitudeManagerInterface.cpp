@@ -1,4 +1,4 @@
-#include "AttitudeManagerInterface.hpp"
+#include "AttitudeManagerInterface.h"
 #include "attitudeManager.hpp"
 
 static attitudeManager attMng;

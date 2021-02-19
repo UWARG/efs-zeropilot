@@ -56,6 +56,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "AttitudeManagerInterface.h"
 
 /* USER CODE END Includes */
 
@@ -78,7 +79,7 @@
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
-osThreadId defaultTaskHandle;
+osThreadId attitudeManagerHandle;
 osThreadId InterchipHandle;
 osThreadId AttitudeHandle;
 
@@ -87,7 +88,7 @@ osThreadId AttitudeHandle;
 
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void const * argument);
+void attitudeManagerExecute(void const * argument);
 extern void Interchip_Run(void const * argument);
 extern void Attitude_Run(void const * argument);
 
@@ -136,9 +137,9 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* definition and creation of attitudeManager */
+  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 128);
+  attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of Interchip */
   osThreadDef(Interchip, Interchip_Run, osPriorityNormal, 0, 128);
@@ -154,22 +155,20 @@ void MX_FREERTOS_Init(void) {
 
 }
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_attitudeManagerExecute */
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the attitudeManager thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+/* USER CODE END Header_attitudeManagerExecute */
+void attitudeManagerExecute(void const * argument)
 {
-  /* USER CODE BEGIN StartDefaultTask */
+  /* USER CODE BEGIN attitudeManagerExecute */
   /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END StartDefaultTask */
+  AttitudeManagerInterfaceExecute();
+  osDelay(1);
+  /* USER CODE END attitudeManagerExecute */
 }
 
 /* Private application code --------------------------------------------------*/
