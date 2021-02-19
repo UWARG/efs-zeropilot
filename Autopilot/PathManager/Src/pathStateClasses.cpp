@@ -109,6 +109,11 @@ pathManagerState& coordinateTurnElevation::getInstance()
     return singleton;
 }
 
+void FatalFailureMode::execute(pathManager* pathMgr)
+{
+    pathMgr->setState(FatalFailureMode::getInstance());
+}
+
 pathManagerState& FatalFailureMode::getInstance()
 {
     static FatalFailureMode singleton;
