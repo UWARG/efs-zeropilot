@@ -2,10 +2,10 @@
 #include "landingManager.hpp"
 #include <cmath>
 
-const int SET_THROTTLE_OFF = -1000;
-const double DISTANCE_OF_LANDING = 10; //in meters
-const int METERS_PER_DEG_LAT = 111320;
-const int ANGLE_OF_LANDING = 5; //in degrees
+const static int SET_THROTTLE_OFF = -1000;
+const static double DISTANCE_OF_LANDING = 10; //in meters
+const static int METERS_PER_DEG_LAT = 111320;
+const static int ANGLE_OF_LANDING = 5; //in degrees
 
 double LandingManager::changingAltitude(_WaypointManager_Data_In * input, _PathData * aimingPoint, _PathData * intersectionPoint, _PathData * stoppingPoint)
 {
