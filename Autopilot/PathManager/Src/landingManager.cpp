@@ -1,6 +1,6 @@
 #include "waypointManager.hpp"
 #include "landingManager.hpp"
-#include <cmath>
+#include <math.h>
 
 const static int SET_THROTTLE_OFF = -1000;
 const static double DISTANCE_OF_LANDING = 10; //in meters
