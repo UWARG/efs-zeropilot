@@ -103,7 +103,7 @@ class coordinateTurnElevation : public pathManagerState
         static AltitudeAirspeedCommands_t _pitchandairspeed; 
 };
 
-class FatalFailureMode : public pathManagerState
+class fatalFailureMode : public pathManagerState
 {
     public:
         void enter(pathManager* pathMgr) {(void) pathMgr;}
@@ -111,9 +111,9 @@ class FatalFailureMode : public pathManagerState
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
     private:
-        FatalFailureMode() {}
-        FatalFailureMode(const FatalFailureMode& other);
-        FatalFailureMode& operator =(const FatalFailureMode& other);
+        fatalFailureMode() {}
+        fatalFailureMode(const fatalFailureMode& other);
+        fatalFailureMode& operator =(const fatalFailureMode& other);
 };
 
 

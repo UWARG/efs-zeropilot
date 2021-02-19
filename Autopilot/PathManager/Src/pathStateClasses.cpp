@@ -19,7 +19,7 @@ void getFromTelemetry::execute(pathManager* pathMgr)
     //communicate with telemetry
     if(isError)
     {
-        pathMgr -> setState(FatalFailureMode::getInstance());
+        pathMgr -> setState(fatalFailureMode::getInstance());
     }
     else
     {
@@ -38,7 +38,7 @@ void getSensorData::execute(pathManager* pathMgr)
     //obtain sensor data
     if(isError)
     {
-        pathMgr -> setState(FatalFailureMode::getInstance());
+        pathMgr -> setState(fatalFailureMode::getInstance());
     }
     else
     {
@@ -57,7 +57,7 @@ void sensorFusion::execute(pathManager* pathMgr)
     //fuse sensor data
     if(isError)
     {
-        pathMgr -> setState(FatalFailureMode::getInstance());
+        pathMgr -> setState(fatalFailureMode::getInstance());
     }
     else
     {
@@ -76,7 +76,7 @@ void cruisingState::execute(pathManager* pathMgr)
     //waypoint manager stuff
     if(isError)
     {
-        pathMgr -> setState(FatalFailureMode::getInstance());
+        pathMgr -> setState(fatalFailureMode::getInstance());
     }
     else
     {
@@ -95,7 +95,7 @@ void coordinateTurnElevation::execute(pathManager* pathMgr)
     //get elevation and turning data
     if(isError)
     {
-        pathMgr -> setState(FatalFailureMode::getInstance());
+        pathMgr -> setState(fatalFailureMode::getInstance());
     }
     else
     {
@@ -109,14 +109,14 @@ pathManagerState& coordinateTurnElevation::getInstance()
     return singleton;
 }
 
-void FatalFailureMode::execute(pathManager* pathMgr)
+void fatalFailureMode::execute(pathManager* pathMgr)
 {
-    pathMgr->setState(FatalFailureMode::getInstance());
+    pathMgr->setState(fatalFailureMode::getInstance());
 }
 
-pathManagerState& FatalFailureMode::getInstance()
+pathManagerState& fatalFailureMode::getInstance()
 {
-    static FatalFailureMode singleton;
+    static fatalFailureMode singleton;
     return singleton;
 }
 
