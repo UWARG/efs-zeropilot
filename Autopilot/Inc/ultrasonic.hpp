@@ -32,4 +32,21 @@ class ultrasonic {
         virtual void getData(ultrasonicData_t * Data);
 }
 
-#endif
+class MB1013 : public ultrasonic {
+    public:
+        MB1013(const MB1013*) = delete; // Explicitly declaring the copy constructor, deleting the object as soon as it's made so only one copy can exist
+        static MB1013 * GetInstance();
+        void Init();
+        void beginMeasuring();
+        void getData(ultrasonicData_t * Data);
+
+    private:
+        MB1013();
+        static MB1013* staticInstance;
+        float readFromMB1013();
+        float getTime();
+        float getDistance();
+        float timeMeasured = 0;
+        float distance = 0;
+        uint32_t getCurrentTime();
+}
