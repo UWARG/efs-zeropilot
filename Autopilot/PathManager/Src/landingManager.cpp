@@ -7,6 +7,8 @@ const static double DISTANCE_OF_LANDING = 10; //in meters
 const static int METERS_PER_DEG_LAT = 111320;
 const static int ANGLE_OF_LANDING = 5; //in degrees
 
+const static double PI = 3.14159265358979323846;
+
 double LandingManager::changingAltitude(_WaypointManager_Data_In * input, _PathData * aimingPoint, _PathData * intersectionPoint, _PathData * stoppingPoint)
 {
     //arrays to hold the important points
@@ -111,19 +113,19 @@ double LandingManager::alignHeading(_PathData * aimingPoint, _PathData * interse
 
     if(dVector[0] >= 0 && dVector[1] > 0) //quadrant 1
     {
-        heading = atan(dVector[0] / dVector[1]) * 180 / M_PI;
+        heading = atan(dVector[0] / dVector[1]) * 180 / PI;
     }
     else if(dVector[0] < 0 && dVector[1] > 0) //quadrant 2
     {
-        heading = atan(dVector[0] / dVector[1]) * 180 / M_PI + 360;
+        heading = atan(dVector[0] / dVector[1]) * 180 / PI + 360;
     }
     else if(dVector[0] <= 0 && dVector[1] < 0) //quadrant 3
     {
-        heading = atan(dVector[0] / dVector[1]) * 180 / M_PI + 180;
+        heading = atan(dVector[0] / dVector[1]) * 180 / PI + 180;
     }
     else if(dVector[0] > 0 && dVector[1] < 0) //quadrant 4
     {
-        heading = atan(dVector[0] / dVector[1]) * 180 / M_PI + 180;
+        heading = atan(dVector[0] / dVector[1]) * 180 / PI + 180;
     }
     else if(dVector[1] == 0)
     {
@@ -158,7 +160,7 @@ _LandingPath LandingManager::createSlopeWaypoints(_WaypointManager_Data_In * inp
     path.aimingPoint.altitude = stoppingAltitude;
     
     //determining x and y of aiming point
-    double radianDirection = directionLanding * 180 / M_PI;
+    double radianDirection = directionLanding * 180 / PI;
 
     //finding the x and y components of the rolling distance vector
     double stoppingDistX = sin(radianDirection) * DISTANCE_OF_LANDING;
@@ -181,7 +183,7 @@ _LandingPath LandingManager::createSlopeWaypoints(_WaypointManager_Data_In * inp
     path.intersectionPoint.altitude = input->altitude;
 
     //determining the horizontal distance of intersection
-    float horizDist = (input->altitude) / (ANGLE_OF_LANDING * M_PI / 180); //altitude in meters?
+    float horizDist = (input->altitude) / (ANGLE_OF_LANDING * PI / 180); //altitude in meters?
 
     //finding the x and y components of the horizDist vector
     double slopeDistX = sin(radianDirection) * horizDist;
