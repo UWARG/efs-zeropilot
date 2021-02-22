@@ -1,5 +1,6 @@
 #include "waypointManager.hpp"
 #include "landingManager.hpp"
+#include "vectorClass.hpp"
 #include <math.h>
 
 const static int SET_THROTTLE_OFF = -1000;
@@ -12,71 +13,34 @@ const static double PI = 3.14159265358979323846;
 
 double LandingManager::changingAltitude(_WaypointManager_Data_In * input, _PathData * aimingPoint, _PathData * intersectionPoint, _PathData * stoppingPoint)
 {
-    //arrays to hold the important points
-    float aPoint[3]; //aiming point
-    float iPoint[3]; //intersection point
-    float sPoint[3]; //stopping point
-    float cPoint[3]; //current point
-    float projectedPoint[3];
-
-    //loading important points
-    aPoint[0] = aimingPoint->longitude;
-    aPoint[1] = aimingPoint->latitude;
-    aPoint[2] = aimingPoint->altitude; 
-
-    iPoint[0] = intersectionPoint->longitude;
-    iPoint[1] = intersectionPoint->latitude;
-    iPoint[2] = intersectionPoint->altitude;
-
-    sPoint[0] = stoppingPoint->longitude;
-    sPoint[1] = stoppingPoint->latitude;
-    sPoint[2] = stoppingPoint->altitude;
-
-    cPoint[0] = input->longitude;
-    cPoint[1] = input->latitude;
-    cPoint[2] = input->altitude;
+    //vector declaration
+    Vector3D aPoint(aimingPoint->longitude, aimingPoint->latitude, aimingPoint->altitude); //aiming point
+    Vector3D iPoint(intersectionPoint->longitude, intersectionPoint->latitude, intersectionPoint->altitude); //intersection point
+    Vector3D sPoint(stoppingPoint->longitude, stoppingPoint->latitude, stoppingPoint->altitude); //stopping point
+    Vector3D cPoint; //current point
+    Vector3D projectedPoint;
 
     //calculating the vectors
-    float vectorAI[3];
-    float vectorAS[3];
-    float vectorAC[3];
-    float normal[3];
-
-    //A to I
-    vectorAI[0] = iPoint[0] - aPoint[0];
-    vectorAI[1] = iPoint[1] - aPoint[1];
-    vectorAI[2] = iPoint[2] - aPoint[2];
-
-    //A to S
-    vectorAS[0] = sPoint[0] - aPoint[0];
-    vectorAS[1] = sPoint[1] - aPoint[1];
-    vectorAS[2] = sPoint[2] - aPoint[2];
-
-    //A to C
-    vectorAC[0] = cPoint[0] - aPoint[0];
-    vectorAC[1] = cPoint[1] - aPoint[1];
-    vectorAC[2] = cPoint[2] - aPoint[2];
+    Vector3D vectorAI(aPoint.x - iPoint.x, aPoint.y - iPoint.y, aPoint.z - iPoint.z);
+    Vector3D vectorAS(aPoint.x - sPoint.x, aPoint.y - sPoint.y, aPoint.z - sPoint.z);
+    Vector3D vectorAC(aPoint.x - cPoint.x, aPoint.y - cPoint.y, aPoint.z - cPoint.z);
+    Vector3D normal;
     
     //normal of the plane created by aiming, stopping, and intersection point
-    normal[0] = vectorAI[1]*vectorAS[2] - vectorAI[2]*vectorAS[1];
-    normal[1] = vectorAI[2]*vectorAS[0] - vectorAI[0]*vectorAS[2]; //flipped negative
-    normal[2] = vectorAI[0]*vectorAS[1] - vectorAI[1]*vectorAS[0];
+    normal = vectorAI.crossProduct(vectorAS);
 
     //projecting vectorAC to the normal
     //equation is the dot product of normal and vectorAC, divided by the norm of the normal squared, multiplied by the normal vector
-    float projectionACToNormal[3];
+    Vector3D projectionACToNormal;
 
-    projectionACToNormal[0] = (normal[0]*vectorAC[0] + normal[1]*vectorAC[1] + normal[2]*vectorAC[2]) / (pow(normal[0],2) + pow(normal[1],2)+ pow(normal[2],2)) * normal[0];
-    projectionACToNormal[1] = (normal[0]*vectorAC[0] + normal[1]*vectorAC[1] + normal[2]*vectorAC[2]) / (pow(normal[0],2) + pow(normal[1],2)+ pow(normal[2],2)) * normal[1];
-    projectionACToNormal[2] = (normal[0]*vectorAC[0] + normal[1]*vectorAC[1] + normal[2]*vectorAC[2]) / (pow(normal[0],2) + pow(normal[1],2)+ pow(normal[2],2)) * normal[2];
+    projectionACToNormal = normal * (normal.dotProduct(vectorAC) / pow(normal.norm(),2));
 
     //project point onto plane (cpoint minus the projection)
-    projectedPoint[0] = cPoint[0] - projectionACToNormal[0];
-    projectedPoint[1] = cPoint[1] - projectionACToNormal[1];
-    projectedPoint[2] = cPoint[2] - projectionACToNormal[2];
+
+    projectedPoint = cPoint - projectionACToNormal;
 
     //determine the equation of the line of the slope and sub in projected values (symmetric form)
-    double altitude = (((projectedPoint[0] - aPoint[0]) / vectorAS[0]) + aPoint[2]) * vectorAS[2];
+    double altitude = (((projectedPoint.x - aPoint.x) / vectorAS.x) + aPoint.z) * vectorAS.z;
 
     return altitude;
 }
