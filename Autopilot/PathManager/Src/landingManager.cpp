@@ -6,7 +6,8 @@ const static int SET_THROTTLE_OFF = -1000;
 const static double DISTANCE_OF_LANDING = 10; //in meters
 const static int METERS_PER_DEG_LAT = 111320;
 const static int ANGLE_OF_LANDING = 5; //in degrees
-
+const static int STALL_SPEED_NO_PACKAGE = 20; //in km/h
+const static int STALL_SPEED_WITH_PACKAGE = 30; //in km/h
 const static double PI = 3.14159265358979323846;
 
 double LandingManager::changingAltitude(_WaypointManager_Data_In * input, _PathData * aimingPoint, _PathData * intersectionPoint, _PathData * stoppingPoint)
@@ -41,17 +42,17 @@ double LandingManager::changingAltitude(_WaypointManager_Data_In * input, _PathD
     float vectorAC[3];
     float normal[3];
 
-    //aiming point to intersection point
+    //A to I
     vectorAI[0] = iPoint[0] - aPoint[0];
     vectorAI[1] = iPoint[1] - aPoint[1];
     vectorAI[2] = iPoint[2] - aPoint[2];
 
-    //aiming point to stopping point
+    //A to S
     vectorAS[0] = sPoint[0] - aPoint[0];
     vectorAS[1] = sPoint[1] - aPoint[1];
     vectorAS[2] = sPoint[2] - aPoint[2];
 
-    //aiming point to current point
+    //A to C
     vectorAC[0] = cPoint[0] - aPoint[0];
     vectorAC[1] = cPoint[1] - aPoint[1];
     vectorAC[2] = cPoint[2] - aPoint[2];
@@ -79,72 +80,37 @@ double LandingManager::changingAltitude(_WaypointManager_Data_In * input, _PathD
 
     return altitude;
 }
-/*
-double LandingManager::horizontalAdjustment(_WaypointManager_Data_In input, _PathData * aimingPoint, _PathData * intersectionPoint)
-{
-    //determine path and location
-    //using follow waypoints algorithm, output the desired horizontal track
-}
-*/
+
 double LandingManager::throttleOff(void)
 {
-    //return an altitude so that the throttle turns off
-    //I'm not sure if this is a good way to control throttle within the path manager
-    //Any suggestions?
-    return SET_THROTTLE_OFF;
+    //return 0 for now, this function needs to be fixed
+    return 0;
 }
 
-double LandingManager::alignHeading(_PathData * aimingPoint, _PathData * intersectionPoint)
+double approachSpeed(double windSpeed, bool ifPackage)
 {
-    float aPoint[2];
-    float iPoint[2];
-    float dVector[2];
-    double heading;
-
-    aPoint[0] = aimingPoint->longitude;
-    aPoint[1] = aimingPoint->latitude;
-
-    iPoint[0] = intersectionPoint->longitude;
-    iPoint[1] = intersectionPoint->latitude;
-
-    //determine heading and direction of landing from the aiming point and the landing point
-    dVector[0] = aPoint[0] - iPoint[0];
-    dVector[1] = aPoint[1] - iPoint[1];
-
-    if(dVector[0] >= 0 && dVector[1] > 0) //quadrant 1
+    //approach speed calculation for both package and no package scenarios
+    if(ifPackage)
     {
-        heading = atan(dVector[0] / dVector[1]) * 180 / PI;
+        return STALL_SPEED_WITH_PACKAGE * 1.3 + windSpeed;
     }
-    else if(dVector[0] < 0 && dVector[1] > 0) //quadrant 2
+    else 
     {
-        heading = atan(dVector[0] / dVector[1]) * 180 / PI + 360;
+        return STALL_SPEED_NO_PACKAGE * 1.3 + windSpeed;
     }
-    else if(dVector[0] <= 0 && dVector[1] < 0) //quadrant 3
-    {
-        heading = atan(dVector[0] / dVector[1]) * 180 / PI + 180;
-    }
-    else if(dVector[0] > 0 && dVector[1] < 0) //quadrant 4
-    {
-        heading = atan(dVector[0] / dVector[1]) * 180 / PI + 180;
-    }
-    else if(dVector[1] == 0)
-    {
-        if(dVector[0] > 0)
-        {
-            heading = 90;
-        }
-        else if (dVector[0] < 0)
-        {
-            heading = 270;
-        }
-        else
-        {
-            heading = 0; //error, the points have the same coordinates, just head north
-        }
-    }
+}
 
-    //return desired heading
-    return heading;
+double slowFlightSpeed(bool ifPackage)
+{
+    //slow flight speed calculation for both package and no package scenarios
+    if(ifPackage)
+    {
+        return STALL_SPEED_WITH_PACKAGE + 5;
+    }
+    else 
+    {
+        return STALL_SPEED_NO_PACKAGE + 5;
+    }
 }
 
 _LandingPath LandingManager::createSlopeWaypoints(_WaypointManager_Data_In * input, float stoppingLatitude, float stoppingLongitude, float stoppingAltitude, double directionLanding)
@@ -183,7 +149,7 @@ _LandingPath LandingManager::createSlopeWaypoints(_WaypointManager_Data_In * inp
     path.intersectionPoint.altitude = input->altitude;
 
     //determining the horizontal distance of intersection
-    float horizDist = (input->altitude) / (ANGLE_OF_LANDING * PI / 180); //altitude in meters?
+    float horizDist = (input->altitude) / (ANGLE_OF_LANDING * PI / 180); //altitude in meters
 
     //finding the x and y components of the horizDist vector
     double slopeDistX = sin(radianDirection) * horizDist;

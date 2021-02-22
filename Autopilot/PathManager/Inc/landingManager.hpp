@@ -18,23 +18,19 @@ class LandingManager : public WaypointManager{
         double changingAltitude(_WaypointManager_Data_In * input, _PathData * aimingPoint, _PathData * intersectionPoint, _PathData * stoppingPoint);
 
         /*
-            This function takes the current horizontal position of the plane and outputs a desired TRACK
-            Looks at the plane in horizontal 2d, compares the position of the plane relative to the glide path
-            ***
-            THIS FUNCTION MAY NOT BE NEEDED AS THE WAYPOINT MANAGER CAN PERFORM HORIZONTAL CALCULATIONS, WHILE THE ALTITUDE CAN BE MANAGED BY THE ABOVE FUNCTION
-            ***
-        double horizontalAdjustment(_WaypointManager_Data_In input, _PathData * aimingPoint, _PathData * intersectionPoint);
-        */
-        /*
             This function sets the desired altitude so that the throttle turns off
         */
         double throttleOff(void);
 
-        /* 
-            This function outputs the desired HEADING used in the decrab state
-            calculates the heading from the aiming point and intersection point
+        /*
+            This function takes in the current magnitude of windspeed, and returns an approach speed the aircraft should follow
         */
-        double alignHeading(_PathData * aimingPoint, _PathData * intersectionPoint);
+        double approachSpeed(double windSpeed, bool ifPackage);
+
+        /* 
+            This function takes the stall speed and multiplies it by a constant to return a slow flight speed
+        */
+        double slowFlightSpeed(bool ifPackage);
 
         /*
             This function takes the coordinates of the landing spots and direction of landing
