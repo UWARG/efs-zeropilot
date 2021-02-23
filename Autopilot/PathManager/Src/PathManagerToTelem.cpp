@@ -1,16 +1,16 @@
 /**
- * Implements methods for communication with the path manager.
+ * Implements methods for sending path manager data to telemetry.
  * Author: Anthony Bertnyk, Messed with for telemetry use by Gordon Fountain
  */
 
-#include "TelemToPathManager.hpp"
+#include "PathManagerToTelem.hpp"
 
 extern "C"
 {
 #include "cmsis_os.h"
 }
 
-void CommWithPMInit()
+void CommWithTelemInit()
 {
     attitudeDataMailQ = osMailCreate(osMailQ(telemDataMailQ), NULL);
 }

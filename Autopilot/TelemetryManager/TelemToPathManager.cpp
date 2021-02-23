@@ -1,9 +1,9 @@
 /**
- * Implements methods for communication with the path manager.
+ * Implements methods for sending commands to the path manager from telemetry.
  * Author: Anthony Bertnyk, messed with by Gordon Fountain to co-opt for Telemetry
  */
 
-#include "CommWithPathManager.hpp"
+#include "TelemToPathManager.hpp"
 
 extern "C"
 {
@@ -35,7 +35,7 @@ void SendCommandsForPM(TelemToPMData *commands)
     osMailPut(PMcommandsMailQ, commandsOut);
 }
 
-bool GetTelemData(TeleToPMData *data)
+bool GetTelemData(TelemToPMData *data)
 {
     //Try to get data from mail queue
     osEvent event;
