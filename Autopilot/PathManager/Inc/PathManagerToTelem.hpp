@@ -1,20 +1,20 @@
 /**
- * Communicates with the path manager to send useful data and receive commands.
+ * Send useful data to telemetry from path manager.
  * Author: Anthony Bertnyk, Messed with by Gordon Fountain <-- Blame this guy if it breaks
  */
 
-#ifndef TELEM_TO_PATH_MANAGER_HPP
-#define TELEM_TO_PATH_MANAGER_HPP
+#ifndef PATH_MANAGER_TO_TELEM_HPP
+#define PATH_MANAGER_TO_TELEM_HPP
 
 #include "TelemPathInterface.hpp"
 
 /**
- * Initiate communication with the path manager.
+ * Initiate communication with telemetry.
  */
-void CommWithPMInit();
+void CommWithTelemInit();
 
 /**
- * Send telemetry data to the path manager.
+ * Send path manager data to telemetry.
  * @param[in]   data   Pointer to struct with data.
  */
 void SendPathData(TelemToPMData *data);
