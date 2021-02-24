@@ -25,7 +25,7 @@ void SendCommandsForPM(TelemToPMData *commands)
     }
 
     //Allocate mail slot
-    CommandsForPM *commandsOut;
+    TelemToPMData *commandsOut;
     commandsOut = static_cast<TelemToPMData *>(osMailAlloc(PMcommandsMailQ, osWaitForever));
     
     //Fill mail slot with data
@@ -39,7 +39,7 @@ bool GetTelemData(TelemToPMData *data)
 {
     //Try to get data from mail queue
     osEvent event;
-    TelemData * dataIn;
+    TelemToPMData * dataIn;
     event = osMailGet(telemDataMailQ, 0);
     if(event.status == osEventMail)
     {
