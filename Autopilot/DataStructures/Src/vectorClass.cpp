@@ -1,3 +1,7 @@
+/* 
+    Author: Nixon Chan
+*/
+
 #include <math.h>
 #include "vectorClass.hpp"
 
