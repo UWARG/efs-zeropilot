@@ -1,3 +1,6 @@
+#ifndef VECTOR_CLASS_HPP
+#define VECTOR_CLASS_HPP
+
 class Vector3D
 {
     private:
@@ -37,3 +40,5 @@ class Vector3D
         double norm();
 
 };
+
+#endif

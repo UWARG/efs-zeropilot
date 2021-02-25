@@ -90,6 +90,30 @@ pathManagerState& cruisingState::getInstance()
     return singleton;
 }
 
+void landingTransitionState::execute(pathManager* pathMgr)
+{
+    //transition state
+    //data is going to be passed in from CV
+    //perform calculations and determine waypoints
+    //if statement to exit out of holding pattern
+    //send data to coordinated turns to execute
+
+    if(isError)
+    {
+        pathMgr -> setState(fatalFailureMode::getInstance());
+    }
+    else
+    {
+        pathMgr -> setState(coordinateTurnElevation::getInstance());
+    }
+}
+
+pathManagerState& cruisingState::getInstance()
+{
+    static cruisingState singleton;
+    return singleton;
+}
+
 void coordinateTurnElevation::execute(pathManager* pathMgr)
 {
     //get elevation and turning data

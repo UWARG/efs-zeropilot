@@ -1,5 +1,6 @@
 #pragma once
 #include "pathManagerStateManager.hpp"
+#include "landingManager.hpp"
 
 class pathManagerState;
 
@@ -14,9 +15,18 @@ class pathManager
         inline pathManagerState* getCurrentState() const {return currentState;}
         void execute();
         void setState(pathManagerState& newState);
+
+        //used to set landing enum
+        void setLandingStage(_LandingStage desiredStage){currentLandingStage = desiredStage;}
+        _LandingStage getLandingStage() {return currentLandingStage;}
+
         _Path_Manager_Cycle_Status getStatus() {return status;}
     private:
         pathManagerState* currentState;
+
+        //used to determine stage of landing
+        _LandingStage currentLandingStage;
+        
         _Path_Manager_Cycle_Status status;
 };
 
