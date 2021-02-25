@@ -19,17 +19,17 @@ Vector3D::~Vector3D()
 {
 }
 
-double Vector3D::getX()
+double Vector3D::getX() const
 {
     return x;
 }
 
-double Vector3D::getY() 
+double Vector3D::getY() const
 {
     return y;
 }
 
-double Vector3D::getZ()
+double Vector3D::getZ() const
 {
     return z;
 }
@@ -49,7 +49,7 @@ void Vector3D::setZ(double input)
     z = input;
 }
 
-Vector3D& Vector3D::operator=(const Vector3D &vector2)
+Vector3D Vector3D::operator=(const Vector3D &vector2)
 {
     (*this).x = vector2.x;
     (*this).y = vector2.y;

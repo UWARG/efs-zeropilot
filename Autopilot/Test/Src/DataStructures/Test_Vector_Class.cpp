@@ -17,56 +17,56 @@ TEST(VectorClassTest, DefaultConstructor){
 
 TEST(VectorClassTest, DefinedConstructor){
     /***SETUP***/
-    Vector3D vector(1,1,1);
+    Vector3D vector(1,2,3);
     /***ASSERTS***/
     EXPECT_EQ(vector.getX(), 1);
-    EXPECT_EQ(vector.getY(), 1);
-    EXPECT_EQ(vector.getZ(), 1);
+    EXPECT_EQ(vector.getY(), 2);
+    EXPECT_EQ(vector.getZ(), 3);
 }
 
 TEST(VectorClassTest, SettersAndGetters){
     /***SETUP***/
     Vector3D vector;
-    vector.setX(5);
-    vector.setY(5);
-    vector.setZ(5);
+    vector.setX(1);
+    vector.setY(2);
+    vector.setZ(3);
     /***ASSERTS***/
-    EXPECT_EQ(vector.getX(), 5);
-    EXPECT_EQ(vector.getY(), 5);
-    EXPECT_EQ(vector.getZ(), 5);
+    EXPECT_EQ(vector.getX(), 1);
+    EXPECT_EQ(vector.getY(), 2);
+    EXPECT_EQ(vector.getZ(), 3);
 }
 
 TEST(VectorClassTest, AssignmentOperator){
     /***SETUP***/
     Vector3D vector(1,1,1);
-    Vector3D vector2(2,2,2);
+    Vector3D vector2(3,4,5);
     vector = vector2;
     /***ASSERTS***/
-    EXPECT_EQ(vector.getX(), 2);
-    EXPECT_EQ(vector.getY(), 2);
-    EXPECT_EQ(vector.getZ(), 2);
+    EXPECT_EQ(vector.getX(), 3);
+    EXPECT_EQ(vector.getY(), 4);
+    EXPECT_EQ(vector.getZ(), 5);
 }
 
 TEST(VectorClassTest, AdditionOperator){
     /***SETUP***/
     Vector3D vector(1,1,1);
-    Vector3D vector2(2,2,2);
+    Vector3D vector2(1,2,3);
     Vector3D result = vector + vector2;
     /***ASSERTS***/
-    EXPECT_EQ(result.getX(), 3);
+    EXPECT_EQ(result.getX(), 2);
     EXPECT_EQ(result.getY(), 3);
-    EXPECT_EQ(result.getZ(), 3);
+    EXPECT_EQ(result.getZ(), 4);
 }
 
 TEST(VectorClassTest, SubtractionOperator){
     /***SETUP***/
     Vector3D vector(1,1,1);
-    Vector3D vector2(2,2,2);
+    Vector3D vector2(2,3,4);
     Vector3D result = vector - vector2;
     /***ASSERTS***/
     EXPECT_EQ(result.getX(), -1);
-    EXPECT_EQ(result.getY(), -1);
-    EXPECT_EQ(result.getZ(), -1);
+    EXPECT_EQ(result.getY(), -2);
+    EXPECT_EQ(result.getZ(), -3);
 }
 
 TEST(VectorClassTest, MultiplicationOperator){

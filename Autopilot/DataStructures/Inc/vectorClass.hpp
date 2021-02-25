@@ -13,11 +13,11 @@ class Vector3D
         
         ~Vector3D();
 
-        double getX();
+        double getX() const;
 
-        double getY();
+        double getY() const;
         
-        double getZ();
+        double getZ() const;
 
         void setX(double input);
         
@@ -25,7 +25,7 @@ class Vector3D
 
         void setZ(double input);
 
-        Vector3D& operator=(const Vector3D &vector);
+        Vector3D operator=(const Vector3D &vector);
        
         Vector3D operator+(const Vector3D &vector2);
 
