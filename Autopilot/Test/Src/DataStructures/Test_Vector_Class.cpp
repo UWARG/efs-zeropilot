@@ -71,24 +71,24 @@ TEST(VectorClassTest, SubtractionOperator){
 
 TEST(VectorClassTest, MultiplicationOperator){
     /***SETUP***/
-    Vector3D vector(1,1,1);
+    Vector3D vector(1,2,3);
     double constant = 10;
     Vector3D result = vector * constant;
     /***ASSERTS***/
     EXPECT_EQ(result.getX(), 10);
-    EXPECT_EQ(result.getY(), 10);
-    EXPECT_EQ(result.getZ(), 10);
+    EXPECT_EQ(result.getY(), 20);
+    EXPECT_EQ(result.getZ(), 30);
 }
 
 TEST(VectorClassTest, CrossProduct){
     /***SETUP***/
     Vector3D vector(1,1,1);
-    Vector3D vector2(2,2,2);
+    Vector3D vector2(1,2,3);
     Vector3D result = vector.crossProduct(vector2);
     /***ASSERTS***/
-    EXPECT_EQ(result.getX(), 0);
-    EXPECT_EQ(result.getY(), 0);
-    EXPECT_EQ(result.getZ(), 0);
+    EXPECT_EQ(result.getX(), 1);
+    EXPECT_EQ(result.getY(), -2);
+    EXPECT_EQ(result.getZ(), 1);
 }
 
 TEST(VectorClassTest, DotProduct){
