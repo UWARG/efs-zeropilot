@@ -1,3 +1,7 @@
+/*
+    Author: Nixon Chan
+*/
+
 #ifndef VECTOR_CLASS_HPP
 #define VECTOR_CLASS_HPP
 
