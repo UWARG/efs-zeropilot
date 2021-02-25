@@ -86,24 +86,6 @@ class cruisingState : public pathManagerState
         static _WaypointManager_Data_Out _outputdata; 
 };
 
-class landingTransitionState : public pathManagerState
-{
-    public:
-        void enter(pathManager* pathMgr) {(void) pathMgr;}
-        void execute(pathManager* pathMgr);
-        void exit(pathManager* pathMgr) {(void) pathMgr;}
-        static pathManagerState& getInstance();
-        static _PathData *GetWaypointData(void) {return &_waypointdata;}
-        static _WaypointManager_Data_Out *GetOutputData(void) {return &_outputdata;}
-    private:
-        landingTransitionState() {}
-        landingTransitionState(const landingTransitionState& other);
-        landingTransitionState& operator =(const landingTransitionState& other);
-        int waypointIDArray[PATH_BUFFER_SIZE]; 
-        static _PathData _waypointdata; 
-        static _WaypointManager_Data_Out _outputdata; 
-};
-
 class coordinateTurnElevation : public pathManagerState
 {
     public:
