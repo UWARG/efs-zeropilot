@@ -6,6 +6,7 @@
 #include "gps.hpp"
 #include "AutoSteer.hpp"
 #include "waypointManager.hpp"
+#include "pathDataTypes.hpp"
 
 /***********************************************************************************************************************
  * Code
@@ -18,11 +19,12 @@ class commsWithAttitude : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
+        static Telemetry_PIGO_t* GetTelemetryIncomingData(void) {return &_incomingData;}
     private:
         commsWithAttitude() {}
         commsWithAttitude(const commsWithAttitude& other);
         commsWithAttitude& operator =(const commsWithAttitude& other);
-        // Create a struct to store the values sent in by telemetry
+        static Telemetry_PIGO_t _incomingData; // Stores the commands sent by telemetry for easy access by other states in the pathmanager
 };
 
 class getFromTelemetry : public pathManagerState
@@ -45,8 +47,8 @@ class getSensorData : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-        static AltimeterData_t *GetAltimeterOutput(void) {return &_altimeterdata;}
-        static GpsData_t *GetGPSOutput(void) {return &_gpsdata;}
+        static AltimeterData_t* GetAltimeterOutput(void) {return &_altimeterdata;}
+        static GpsData_t* GetGPSOutput(void) {return &_gpsdata;}
     private:
         getSensorData() {}
         getSensorData(const getSensorData& other);
@@ -75,7 +77,7 @@ class cruisingState : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-        static _WaypointManager_Data_Out *GetOutputData(void) {return &_outputdata;}
+        static _WaypointManager_Data_Out* GetOutputData(void) {return &_outputdata;}
     private:
         cruisingState() {}
         cruisingState(const cruisingState& other);
@@ -94,8 +96,8 @@ class coordinateTurnElevation : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-        static CoordinatedTurnAttitudeManagerCommands_t *GetRollAndRudder(void) {return &_rollandrudder;}
-        static AltitudeAirspeedCommands_t *GetPitchAndAirspeed(void) {return &_pitchandairspeed;}
+        static CoordinatedTurnAttitudeManagerCommands_t* GetRollAndRudder(void) {return &_rollandrudder;}
+        static AltitudeAirspeedCommands_t* GetPitchAndAirspeed(void) {return &_pitchandairspeed;}
     private:
         coordinateTurnElevation() {}
         coordinateTurnElevation(const coordinateTurnElevation& other);

@@ -15,7 +15,7 @@ bool isError;
 void commsWithAttitude::execute(pathManager* pathMgr)
 {
     //initial mode
-    pathMgr -> setState(getFromTelemetry::getInstance());
+    pathMgr->setState(getFromTelemetry::getInstance());
 }
 
 pathManagerState& commsWithAttitude::getInstance()
@@ -27,13 +27,20 @@ pathManagerState& commsWithAttitude::getInstance()
 void getFromTelemetry::execute(pathManager* pathMgr)
 {
     //communicate with telemetry
+
+    // Get data from telemetry
+
+    // Do any processing required
+
+    // Store data inside of the Telemetry_PIGO_t struct that is a parameter of this child class
+
     if(isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(getSensorData::getInstance());
+        pathMgr->setState(getSensorData::getInstance());
     }
 }
 
@@ -48,11 +55,11 @@ void getSensorData::execute(pathManager* pathMgr)
     //obtain sensor data
     if(isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(sensorFusion::getInstance());
+        pathMgr->setState(sensorFusion::getInstance());
     }
 }
 
@@ -67,11 +74,11 @@ void sensorFusion::execute(pathManager* pathMgr)
     //fuse sensor data
     if(isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(cruisingState::getInstance());
+        pathMgr->setState(cruisingState::getInstance());
     }
 }
 
@@ -85,17 +92,19 @@ void cruisingState::execute(pathManager* pathMgr)
 {
     // waypoint manager stuff
 
-    // Get struct from telemetry state with all of the commands. Filter through commands and pick the ones you want
+    // Get struct from telemetry state with all of the commands. Filter through commands and get the values that you care about
     
     // Do waypoint stuff (call functions from hash table [talk with Anthony later])
 
+    // Update the id array that is a parameter of this child class
+
     if(isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(coordinateTurnElevation::getInstance());
+        pathMgr->setState(coordinateTurnElevation::getInstance());
     }
 }
 
@@ -110,11 +119,11 @@ void coordinateTurnElevation::execute(pathManager* pathMgr)
     //get elevation and turning data
     if(isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(commsWithAttitude::getInstance());
+        pathMgr->setState(commsWithAttitude::getInstance());
     }
 }
 
