@@ -1,7 +1,6 @@
 // Author: Jingting Liu
 #include "Mavlink2_lib/common/mavlink.h"
-#include "Decoder.hpp"
-#include "Encoder.hpp"
+#include "MavlinkFunctions.hpp"
 
 //#include <mavlink_helpers.h>
 
@@ -78,14 +77,29 @@ mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, mav
                 break;
         }   
     }
-    else
-    {
-        return MAVLINK_DECODING_INCOMPLETE;
-        //the same return with parsing crc mismatch and bad signature (according to the mavlink_parse_char function)
-    }
-    
+    //the same return with parsing crc mismatch and bad signature (according to the mavlink_parse_char function)
+    return MAVLINK_DECODING_INCOMPLETE;
 }
 
+uint16_t Mavlink_encoder(Message_IDs_t type, mavlink_message_t ** msg, const uint64_t *struct_ptr)
+{
+    uint8_t system_id = 1;
+    uint8_t component_id = 1;
+
+    switch(type)
+    {
+        case MESSAGE_ID_GPS:
+        {
+            //return mavlink_msg_global_position_int_encode(system_id, component_id, *msg, &global_position);
+            return mavlink_msg_global_position_int_encode(system_id, component_id, *msg, (mavlink_global_position_int_t*) struct_ptr);
+        
+        }
+        break;
+
+        default:
+            break;
+    }
+}
 
 int main(void) // TODO: this needs to be removed once integrated
 {
@@ -133,9 +147,13 @@ int main(void) // TODO: this needs to be removed once integrated
     {
         printf("decoding unsuccessful, error message: %d",decoderStatus);
     }
-    
+    return 0;
 
 }
+
+
+
+
 // use mavlink_msg_command_int_decode()/mavlink_msg_command_long_decode() for command decodings
 // use MAVLINK_CHECK_MESSAGE_LENGTH to check for invalid messages
 // unit test: https://uwarg-docs.atlassian.net/wiki/spaces/TUT/pages/1058078728/test+driven+development
@@ -147,3 +165,4 @@ int main(void) // TODO: this needs to be removed once integrated
 //The maximum packet length is 280 bytes for a signed message that uses the whole payload.
 
 // mavlink encoded message divided in bytes https://mavlink.io/en/guide/serialization.html#payload
+

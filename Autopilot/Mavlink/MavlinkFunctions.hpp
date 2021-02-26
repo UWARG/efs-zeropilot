@@ -1,7 +1,7 @@
 // Author: Jingting Liu
 
-#ifndef DECODER_HPP
-#define DECODER_HPP
+#ifndef MAVLINKFUNCTIONS_HPP
+#define MAVLINKFUNCTIONS_HPP
 
 #include "Mavlink2_lib/common/mavlink.h"
 
@@ -12,6 +12,11 @@ typedef enum {
     MAVLINK_DECODING_NULL_PTR=3,
 } mavlink_decoding_status_t;
 
+typedef enum {
+    MESSAGE_ID_GPS,
+} Message_IDs_t;
+
+//-------------------------- Prototypes ---------------------------------------------------------------
 
 /**
  * This decoder is consists of two parts, parser and decoder.
@@ -37,4 +42,17 @@ typedef enum {
  **/
 mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, mavlink_message_t *msg, uint8_t **telemetryData) ;
 
-#endif
+
+/**
+ * @brief Encode an selected struct
+ *
+ * @param type The type of telemetry data
+ * @param msg The MAVLink message to compress the data into
+ * @param struct_ptr C-struct to read the message contents from
+ * 
+ * @return the length of the finalized message: msg->len + header_len + signature_len
+ */
+uint16_t Mavlink_encoder(Message_IDs_t type, mavlink_message_t ** msg, const uint64_t *struct_ptr);
+
+
+#endif //MAVLINKFUNCTIONS_HPP
