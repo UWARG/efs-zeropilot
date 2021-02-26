@@ -22,6 +22,7 @@ class commsWithAttitude : public pathManagerState
         commsWithAttitude() {}
         commsWithAttitude(const commsWithAttitude& other);
         commsWithAttitude& operator =(const commsWithAttitude& other);
+        // Create a struct to store the values sent in by telemetry
 };
 
 class getFromTelemetry : public pathManagerState

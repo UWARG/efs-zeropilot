@@ -16,6 +16,10 @@
 #define PI 3.14159265358979323846 // Was giving me problems with M_PI, so I resorted to defining it myself
 #define MAX_PATH_APPROACH_ANGLE PI/2
 
+// Reference Coordinates
+#define REFERENCE_LONGITUDE -80.537331184
+#define REFERENCE_LATITUDE 43.467998128
+
 //Basic Mathematical Conversions
 #define deg2rad(angle_in_degrees) ((angle_in_degrees) * PI/180.0)
 #define rad2deg(angle_in_radians) ((angle_in_radians) * 180.0/PI)
@@ -24,8 +28,39 @@
 /*** INITIALIZATION ***/
 
 WaypointManager::WaypointManager() {
-    relativeLongitude = 0;
-    relativeLatitude = 0;
+    // Initializes important array and id navigation constants
+    currentIndex = 0;
+    nextAssignedId = 0;
+    numWaypoints = 0;
+    nextFilledIndex = 0;
+
+    // Sets relative long and lat
+    relativeLongitude = REFERENCE_LONGITUDE;
+    relativeLatitude = REFERENCE_LATITUDE;
+
+    homeBase = nullptr; // Sets the pointer to null
+
+    // Sets boolean variables
+    inHold = false;
+    goingHome = false;
+    dataIsNew = false;
+    orbitPathStatus = PATH_FOLLOW;
+    errorStatus = WAYPOINT_SUCCESS;
+
+    // Initialize all other parameters (defaults)
+    desiredHeading = 0;
+    desiredAltitude = 0;
+    distanceToNextWaypoint = 0.0;
+    errorCode = WAYPOINT_SUCCESS;
+    dataIsNew = false;
+    outputType = PATH_FOLLOW;
+    turnDesiredAltitude = 0;
+    turnDirection = 0; // 1 for CW, 2 for CCW
+    turnRadius = 0.0;
+
+    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
+        waypointBufferStatus[i] = FREE;
+    }
 }
 
 WaypointManager::WaypointManager(float relLat, float relLong) {

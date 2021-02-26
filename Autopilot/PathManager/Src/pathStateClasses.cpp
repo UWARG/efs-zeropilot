@@ -83,7 +83,12 @@ pathManagerState& sensorFusion::getInstance()
 
 void cruisingState::execute(pathManager* pathMgr)
 {
-    //waypoint manager stuff
+    // waypoint manager stuff
+
+    // Get struct from telemetry state with all of the commands. Filter through commands and pick the ones you want
+    
+    // Do waypoint stuff (call functions from hash table [talk with Anthony later])
+
     if(isError)
     {
         pathMgr -> setState(fatalFailureMode::getInstance());
