@@ -23,6 +23,10 @@
 
 /*** INITIALIZATION ***/
 
+WaypointManager::WaypointManager() {
+    relativeLongitude = 0;
+    relativeLatitude = 0;
+}
 
 WaypointManager::WaypointManager(float relLat, float relLong) {
     // Initializes important array and id navigation constants

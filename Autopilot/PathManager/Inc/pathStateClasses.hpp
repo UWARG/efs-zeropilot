@@ -74,15 +74,15 @@ class cruisingState : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-        static _PathData *GetWaypointData(void) {return &_waypointdata;}
         static _WaypointManager_Data_Out *GetOutputData(void) {return &_outputdata;}
     private:
         cruisingState() {}
         cruisingState(const cruisingState& other);
         cruisingState& operator =(const cruisingState& other);
-        //WaypointManager(0,0) {} initializing instance of WaypointManager class
-        int waypointIDArray[PATH_BUFFER_SIZE]; 
-        static _PathData _waypointdata; 
+
+        WaypointManager cruisingStateManager;
+        int waypointIDArray[PATH_BUFFER_SIZE]; // Stores ids of the waypoints in the flight path in the order that they are executed
+        static _WaypointManager_Data_In _inputdata;
         static _WaypointManager_Data_Out _outputdata; 
 };
 

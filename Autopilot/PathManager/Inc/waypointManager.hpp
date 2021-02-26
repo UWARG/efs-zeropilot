@@ -76,6 +76,7 @@ public:
     * @param[in] float relLat -> This is the relative latitude of the point that will be used as (0,0) when converting lat-long coordinates to cartesian coordiantes. 
     * @param[in] float relLong -> This is the relative longitude of the point that will be used as (0,0) when converting lat-long coordinates to cartesian coordiantes.
     */
+    WaypointManager();
     WaypointManager(float relLat, float relLong); // Call this to get an instance of the class
     ~WaypointManager();
 
