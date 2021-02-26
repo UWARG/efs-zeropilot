@@ -40,6 +40,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
   # Libraries
   add_subdirectory(boardfiles/Drivers/STM32F7xx_HAL_Driver)
   add_subdirectory(boardfiles/Middlewares/Third_Party/FreeRTOS)
+  add_subdirectory(DataStructures)
 
   file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/Src/*.c boardfiles/Src/*.c)
   file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp PathManager/Src/*.cpp TelemetryManager/Src/*.cpp)
