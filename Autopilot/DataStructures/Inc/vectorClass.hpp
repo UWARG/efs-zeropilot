@@ -2,8 +2,8 @@
     Author: Nixon Chan
 */
 
-#ifndef VECTOR_CLASS_HPP
-#define VECTOR_CLASS_HPP
+#ifndef VECTORCLASS_HPP
+#define VECTORCLASS_HPP
 
 class Vector3D
 {
