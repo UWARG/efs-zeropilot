@@ -3,7 +3,7 @@
 */
 
 #include <cmath>
-#include "vectorClass.hpp"
+#include "vectorClass.h"
 
 Vector3D::Vector3D()
 {
