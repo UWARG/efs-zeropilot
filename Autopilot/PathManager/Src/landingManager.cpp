@@ -1,6 +1,6 @@
 #include "waypointManager.hpp"
 #include "landingManager.hpp"
-#include "DataStructures"
+#include "DataStructures.a"
 #include <math.h>
 
 const static int SET_THROTTLE_OFF = -1000;
