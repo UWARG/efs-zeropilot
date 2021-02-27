@@ -40,6 +40,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
   # Libraries
   add_subdirectory(boardfiles/Drivers/STM32F7xx_HAL_Driver)
   add_subdirectory(boardfiles/Middlewares/Third_Party/FreeRTOS)
+  add_subdirectory(DataStructures)
 
   file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/Src/*.c boardfiles/Src/*.c)
   file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp PathManager/Src/*.cpp TelemetryManager/Src/*.cpp)
@@ -113,6 +114,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Inc
   )
 
   # Let cmake know where to find all the find<Package>.cmake files
@@ -217,6 +219,21 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
   add_executable(telemetryManagerFSM ${TELEMETRY_MANAGER_FSM_SOURCES} ${TELEMETRY_MANAGER_FSM_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
   target_link_libraries(telemetryManagerFSM ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
+
+#########
+
+######### Vector Class
+
+  set(VECTOR_CLASS_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Src/vectorClass.cpp
+  )
+
+  set(VECTOR_CLASS_UNIT_TEST_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/DataStructures/Test_Vector_Class.cpp
+  )
+
+  add_executable(vectorClassTest ${VECTOR_CLASS_SOURCES} ${VECTOR_CLASS_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
+  target_link_libraries(vectorClassTest ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
 
 #########
 
