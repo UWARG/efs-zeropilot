@@ -21,9 +21,9 @@ double LandingManager::changingAltitude(_WaypointManager_Data_In * input, _PathD
     Vector3D projectedPoint;
 
     //calculating the vectors
-    Vector3D vectorAI(aPoint.getX() - iPoint.getX(), aPoint.getY() - iPoint.getY(), aPoint.getZ() - iPoint.getZ());
-    Vector3D vectorAS(aPoint.getX() - sPoint.getX(), aPoint.getY() - sPoint.getY(), aPoint.getZ() - sPoint.getZ());
-    Vector3D vectorAC(aPoint.getX() - cPoint.getX(), aPoint.getY() - cPoint.getY(), aPoint.getZ() - cPoint.getZ());
+    Vector3D vectorAI(aPoint.x - iPoint.x, aPoint.y - iPoint.y, aPoint.z - iPoint.z);
+    Vector3D vectorAS(aPoint.x - sPoint.x, aPoint.y - sPoint.y, aPoint.z - sPoint.z);
+    Vector3D vectorAC(aPoint.x - cPoint.x, aPoint.y - cPoint.y, aPoint.z - cPoint.z);
     Vector3D normal;
     
     //normal of the plane created by aiming, stopping, and intersection point
@@ -40,7 +40,7 @@ double LandingManager::changingAltitude(_WaypointManager_Data_In * input, _PathD
     projectedPoint = cPoint - projectionACToNormal;
 
     //determine the equation of the line of the slope and sub in projected values (symmetric form)
-    double altitude = (((projectedPoint.getX() - aPoint.getX()) / vectorAS.getX()) + aPoint.getZ()) * vectorAS.getZ();
+    double altitude = (((projectedPoint.x - aPoint.x) / vectorAS.x) + aPoint.z) * vectorAS.z;
 
     return altitude;
 }
