@@ -90,9 +90,9 @@ pathManagerState& sensorFusion::getInstance()
 
 void cruisingState::execute(pathManager* pathMgr)
 {
-    // waypoint manager stuff
-
     // Get struct from telemetry state with all of the commands. Filter through commands and get the values that you care about
+    Telemetry_PIGO_t * telemetryData = getFromTelemetry::GetTelemetryIncomingData();
+
     
     // Do waypoint stuff (call functions from hash table [talk with Anthony later])
 

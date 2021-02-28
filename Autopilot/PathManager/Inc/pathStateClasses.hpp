@@ -19,12 +19,10 @@ class commsWithAttitude : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-        static Telemetry_PIGO_t* GetTelemetryIncomingData(void) {return &_incomingData;}
     private:
         commsWithAttitude() {}
         commsWithAttitude(const commsWithAttitude& other);
         commsWithAttitude& operator =(const commsWithAttitude& other);
-        static Telemetry_PIGO_t _incomingData; // Stores the commands sent by telemetry for easy access by other states in the pathmanager
 };
 
 class getFromTelemetry : public pathManagerState
@@ -34,10 +32,12 @@ class getFromTelemetry : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
+        static Telemetry_PIGO_t* GetTelemetryIncomingData(void) {return &_incomingData;}
     private:
         getFromTelemetry() {}
         getFromTelemetry(const getFromTelemetry& other);
         getFromTelemetry& operator =(const getFromTelemetry& other);
+        static Telemetry_PIGO_t _incomingData; // Stores the commands sent by telemetry for easy access by other states in the pathmanager
 };
 
 class getSensorData : public pathManagerState
