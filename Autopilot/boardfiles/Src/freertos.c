@@ -57,6 +57,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "AttitudeManagerInterface.h"
+#include "PathManagerInterface.h"
+#include "telemetryManagerInterface.h"
 
 /* USER CODE END Includes */
 
@@ -82,6 +84,8 @@
 osThreadId attitudeManagerHandle;
 osThreadId InterchipHandle;
 osThreadId AttitudeHandle;
+osThreadId pathManagerHandle;
+osThreadId telemetryRunHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -91,6 +95,8 @@ osThreadId AttitudeHandle;
 void attitudeManagerExecute(void const * argument);
 extern void Interchip_Run(void const * argument);
 extern void Attitude_Run(void const * argument);
+void pathManagerExecute(void const * argument);
+void StartTelemetryRun(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -149,6 +155,14 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(Attitude, Attitude_Run, osPriorityNormal, 0, 128);
   AttitudeHandle = osThreadCreate(osThread(Attitude), NULL);
 
+  /* definition and creation of pathManager */
+  osThreadDef(pathManager, pathManagerExecute, osPriorityBelowNormal, 0, 128);
+  pathManagerHandle = osThreadCreate(osThread(pathManager), NULL);
+
+  /* definition and creation of telemetryRun */
+  osThreadDef(telemetryRun, StartTelemetryRun, osPriorityBelowNormal, 0, 128);
+  telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -169,6 +183,38 @@ void attitudeManagerExecute(void const * argument)
   AttitudeManagerInterfaceExecute();
   osDelay(1);
   /* USER CODE END attitudeManagerExecute */
+}
+
+/* USER CODE BEGIN Header_pathManagerExecute */
+/**
+* @brief Function implementing the pathManager thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_pathManagerExecute */
+void pathManagerExecute(void const * argument)
+{
+  /* USER CODE BEGIN pathManagerExecute */
+  /* Infinite loop */
+  PathManagerInterfaceExecute();
+  osDelay(1);
+  /* USER CODE END pathManagerExecute */
+}
+
+/* USER CODE BEGIN Header_StartTelemetryRun */
+/**
+* @brief Function implementing the telemetryRun thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTelemetryRun */
+void StartTelemetryRun(void const * argument)
+{
+  /* USER CODE BEGIN StartTelemetryRun */
+  /* Infinite loop */
+  TelemetryManagerInterfaceExecute();
+  osDelay(1);
+  /* USER CODE END StartTelemetryRun */
 }
 
 /* Private application code --------------------------------------------------*/
