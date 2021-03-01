@@ -106,10 +106,9 @@ void landingTransitionStage::execute(pathManager* pathMgr)
         //follow the landing waypoints
     }
 
-    if() //the plane is finished turning or close to 
-    {
-        //set enum to slope state
-    }
+    //the plane is finished turning or close to 
+    
+    //set enum to slope state
     
     if(isError)
     {
