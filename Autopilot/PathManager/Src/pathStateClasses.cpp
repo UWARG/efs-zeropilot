@@ -17,6 +17,7 @@ pathManagerState& commsWithAttitude::getInstance()
 void getFromTelemetry::execute(pathManager* pathMgr)
 {
     //communicate with telemetry
+    //retrieve LANDING DATA
     if(isError)
     {
         pathMgr -> setState(fatalFailureMode::getInstance());
@@ -61,6 +62,7 @@ void sensorFusion::execute(pathManager* pathMgr)
     }
     else
     {
+        //if the enums for landing state, set to each landing state
         pathMgr -> setState(cruisingState::getInstance());
     }
 }
@@ -87,6 +89,41 @@ void cruisingState::execute(pathManager* pathMgr)
 pathManagerState& cruisingState::getInstance()
 {
     static cruisingState singleton;
+    return singleton;
+}
+
+void landingTransitionStage::execute(pathManager* pathMgr)
+{
+    if(!LandingManager::madeLandingPoints)
+    {
+        //make landing points from landing data
+        //call the start circling and pass in true to cancel turning
+        //set made madelandingPoints to true
+        //follow the landing waypoints
+    }
+    else
+    {
+        //follow the landing waypoints
+    }
+
+    if() //the plane is finished turning or close to 
+    {
+        //set enum to slope state
+    }
+    
+    if(isError)
+    {
+        pathMgr -> setState(fatalFailureMode::getInstance());
+    }
+    else
+    {
+        pathMgr -> setState(coordinateTurnElevation::getInstance());
+    }
+}
+
+pathManagerState& landingTransitionStage::getInstance()
+{
+    static landingTransitionStage singleton;
     return singleton;
 }
 
