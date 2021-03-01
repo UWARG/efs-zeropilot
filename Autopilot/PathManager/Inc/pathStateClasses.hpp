@@ -6,6 +6,7 @@
 #include "gps.hpp"
 #include "AutoSteer.hpp"
 #include "waypointManager.hpp"
+#include "landingManager.hpp"
 
 /***********************************************************************************************************************
  * Code
@@ -31,10 +32,12 @@ class getFromTelemetry : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
+        static _LandingInitialData GetLandingInitialData(void){return landingData;}
     private:
         getFromTelemetry() {}
         getFromTelemetry(const getFromTelemetry& other);
         getFromTelemetry& operator =(const getFromTelemetry& other);
+        static _LandingInitialData landingData;
 };
 
 class getSensorData : public pathManagerState
@@ -84,6 +87,19 @@ class cruisingState : public pathManagerState
         int waypointIDArray[PATH_BUFFER_SIZE]; 
         static _PathData _waypointdata; 
         static _WaypointManager_Data_Out _outputdata; 
+};
+
+class landingTransitionStage : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+    private:
+        landingTransitionStage() {}
+        landingTransitionStage(const landingTransitionStage& other);
+        landingTransitionStage& operator =(const landingTransitionStage& other);
 };
 
 class coordinateTurnElevation : public pathManagerState

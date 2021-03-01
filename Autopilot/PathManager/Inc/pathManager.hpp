@@ -15,9 +15,15 @@ class pathManager
         void execute();
         void setState(pathManagerState& newState);
         _Path_Manager_Cycle_Status getStatus() {return status;}
+
+        _LandingStage getLandingStage(){return stage;}
+        void setLandingStage(_LandingStage changingStage) {stage = changingStage;}
     private:
         pathManagerState* currentState;
         _Path_Manager_Cycle_Status status;
+
+        //used to determine the stage of the landing sequence
+        _LandingStage stage;
 };
 
 
