@@ -1,7 +1,7 @@
 #include "waypointManager.hpp"
 #include "landingManager.hpp"
 #include <math.h>
-#include <DataStructures CXX/vectorClass.hpp>
+#include "vectorClass.hpp"
 
 const static int SET_THROTTLE_OFF = -1000;
 const static double DISTANCE_OF_LANDING = 10; //in meters
