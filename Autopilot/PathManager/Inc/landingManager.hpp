@@ -1,4 +1,4 @@
-git #include "waypointManager.hpp"
+#include "waypointManager.hpp"
 
 struct _LandingPath
 {
@@ -20,7 +20,6 @@ enum _LandingStage{NOT_LANDING = 0, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN}
 class LandingManager : public WaypointManager{
     
     public:
-        static bool madeLandingPoints = false;
         /*
             This function takes the horizontal position of the aircraft and determines the desired altitude
             Projects the position to the vertical plane relative to the aimingPoint, intersectionPoint, and stoppingPoint
