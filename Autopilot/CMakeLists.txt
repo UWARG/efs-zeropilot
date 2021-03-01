@@ -56,7 +56,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
 
   add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${STARTUP_ASM})
 
-  target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS arm_cortexM7lfdp_math)
+  target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS DataStructures arm_cortexM7lfdp_math)
 
   # Add project-specific linker flags (.ld script, .map file)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${LINKER_SCRIPT} -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map,--cref")
