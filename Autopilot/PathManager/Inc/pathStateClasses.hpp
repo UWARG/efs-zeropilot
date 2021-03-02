@@ -1,5 +1,6 @@
 #pragma once
 
+#include "crusingStateInterface.hpp"
 #include "pathManagerStateManager.hpp"
 #include "pathManager.hpp"
 #include "altimeter.hpp"
@@ -87,6 +88,8 @@ class cruisingState : public pathManagerState
         int waypointIDArray[PATH_BUFFER_SIZE]; // Stores ids of the waypoints in the flight path in the order that they are executed
         static _WaypointManager_Data_In _inputdata;
         static _WaypointManager_Data_Out _outputdata; 
+        bool inHold = false;
+        bool goingHome = false;
 };
 
 class coordinateTurnElevation : public pathManagerState

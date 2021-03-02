@@ -42,7 +42,7 @@ TEST (PathManagerFSM, CommsWithAttitudeTransitionToGetFromTelemetry) {
 
 	/**********************ASSERTS**********************/
 
-    EXPECT_EQ(*(pathMan.getCurrentState()), getFromTelemetry::getInstance());
+    EXPECT_EQ(*(pathMan.getCurrentState()), commsWithTelemetry::getInstance());
 }
 
 TEST (PathManagerFSM, GetFromTelemetryTransitionToGetSensorData) {
@@ -53,7 +53,7 @@ TEST (PathManagerFSM, GetFromTelemetryTransitionToGetSensorData) {
 	/********************DEPENDENCIES*******************/
 	/********************STEPTHROUGH********************/
 
-    pathMan.setState(getFromTelemetry::getInstance());
+    pathMan.setState(commsWithTelemetry::getInstance());
     pathMan.execute();
 
 	/**********************ASSERTS**********************/
