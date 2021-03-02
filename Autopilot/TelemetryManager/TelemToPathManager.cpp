@@ -12,27 +12,27 @@ extern "C"
 
 void CommWithPMInit()
 {
-    PMcommandsMailQ = osMailCreate(osMailQ(commandsMailQ), NULL);
+    commandsMailQ = osMailCreate(osMailQ(commandsMailQ), NULL);
 }
 
 void SendCommandsForPM(TelemToPMData *commands)
 {
     //Remove previous command from mail queue if it exists
-    osEvent event = osMailGet(PMcommandsMailQ, 0);
+    osEvent event = osMailGet(commandsMailQ, 0);
     if(event.status == osEventMail)
     {
-        osMailFree(PMcommandsMailQ, static_cast<TelemToPMData *>(event.value.p));
+        osMailFree(commandsMailQ, static_cast<TelemToPMData *>(event.value.p));
     }
 
     //Allocate mail slot
     TelemToPMData *commandsOut;
-    commandsOut = static_cast<TelemToPMData *>(osMailAlloc(PMcommandsMailQ, osWaitForever));
+    commandsOut = static_cast<TelemToPMData *>(osMailAlloc(commandsMailQ, osWaitForever));
     
     //Fill mail slot with data
     *commandsOut = *commands;
 
     //Post mail slot to mail queue
-    osMailPut(PMcommandsMailQ, commandsOut);
+    osMailPut(commandsMailQ, commandsOut);
 }
 
 bool GetTelemData(TelemToPMData *data)
