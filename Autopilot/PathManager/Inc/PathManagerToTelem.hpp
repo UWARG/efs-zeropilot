@@ -17,7 +17,7 @@ void CommWithTelemInit();
  * Send path manager data to telemetry.
  * @param[in]   data   Pointer to struct with data.
  */
-void SendPathData(TelemToPMData *data);
+void SendPathData(DataForTelem *data);
 
 /**
  * Retrieve commands from the path manager.
