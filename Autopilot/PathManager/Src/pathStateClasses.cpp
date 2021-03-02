@@ -15,7 +15,7 @@ bool isError;
 void commsWithAttitude::execute(pathManager* pathMgr)
 {
     //initial mode
-    pathMgr->setState(getFromTelemetry::getInstance());
+    pathMgr->setState(commsWithTelemetry::getInstance());
 }
 
 pathManagerState& commsWithAttitude::getInstance()
@@ -24,13 +24,13 @@ pathManagerState& commsWithAttitude::getInstance()
     return singleton;
 }
 
-void getFromTelemetry::execute(pathManager* pathMgr)
+void commsWithTelemetry::execute(pathManager* pathMgr)
 {
-    //communicate with telemetry
+    //send data to telemetry
 
     // Get data from telemetry
 
-    // Do any processing required
+    // Do any processing required (update struct that contains telemetry data and process it)
 
     // Store data inside of the Telemetry_PIGO_t struct that is a parameter of this child class
 
@@ -44,9 +44,9 @@ void getFromTelemetry::execute(pathManager* pathMgr)
     }
 }
 
-pathManagerState& getFromTelemetry::getInstance()
+pathManagerState& commsWithTelemetry::getInstance()
 {
-    static getFromTelemetry singleton;
+    static commsWithTelemetry singleton;
     return singleton;
 }
 
@@ -91,7 +91,7 @@ pathManagerState& sensorFusion::getInstance()
 void cruisingState::execute(pathManager* pathMgr)
 {
     // Get struct from telemetry state with all of the commands. Filter through commands and get the values that you care about
-    Telemetry_PIGO_t * telemetryData = getFromTelemetry::GetTelemetryIncomingData();
+    Telemetry_PIGO_t * telemetryData = commsWithTelemetry::GetTelemetryIncomingData();
 
     
     // Do waypoint stuff (call functions from hash table [talk with Anthony later])
