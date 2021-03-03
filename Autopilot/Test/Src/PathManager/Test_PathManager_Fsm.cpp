@@ -1,5 +1,5 @@
 /*
-* Author: Nixon Chan
+* Author: Dhruv Rawat
 */
 
 #include <gtest/gtest.h>
@@ -7,6 +7,7 @@
 #include "pathManager.hpp"
 #include "pathStateClasses.hpp"
 #include "waypointManager.hpp"
+#include "cruisingState.hpp"
 
 
 using namespace std; 
@@ -29,7 +30,7 @@ TEST (PathManagerFSM, InitialStateIsCommsWithAttitude) {
 TESTING TRANSITION BETWEEN NORMAL STATES
 ****************************************/
 
-TEST (PathManagerFSM, CommsWithAttitudeTransitionToGetFromTelemetry) {
+TEST (PathManagerFSM, CommsWithAttitudeTransitionToCommsWithTelemetry) {
     /***********************SETUP***********************/
 
 	pathManager pathMan;
@@ -45,7 +46,7 @@ TEST (PathManagerFSM, CommsWithAttitudeTransitionToGetFromTelemetry) {
     EXPECT_EQ(*(pathMan.getCurrentState()), commsWithTelemetry::getInstance());
 }
 
-TEST (PathManagerFSM, GetFromTelemetryTransitionToGetSensorData) {
+TEST (PathManagerFSM, CommsWithTelemetryTransitionToGetSensorData) {
     /***********************SETUP***********************/
 
 	pathManager pathMan;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "crusingStateInterface.hpp"
 #include "pathManagerStateManager.hpp"
+#include "cruisingState.hpp"
 #include "pathManager.hpp"
 #include "altimeter.hpp"
 #include "gps.hpp"
@@ -79,6 +79,7 @@ class cruisingState : public pathManagerState
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
         static _WaypointManager_Data_Out* GetOutputData(void) {return &_outputdata;}
+        static _CruisingState_Telemetry_Return* GetErrorCodes(void) {return &_returnToGround;}
     private:
         cruisingState() {}
         cruisingState(const cruisingState& other);
@@ -88,6 +89,7 @@ class cruisingState : public pathManagerState
         int waypointIDArray[PATH_BUFFER_SIZE]; // Stores ids of the waypoints in the flight path in the order that they are executed
         static _WaypointManager_Data_In _inputdata;
         static _WaypointManager_Data_Out _outputdata; 
+        static _CruisingState_Telemetry_Return _returnToGround;
         bool inHold = false;
         bool goingHome = false;
 };

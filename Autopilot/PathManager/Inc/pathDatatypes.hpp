@@ -7,7 +7,7 @@ struct Telemetry_Waypoint_Data_t {
     long double longitude;
     int altitude;
     float turnRadius;
-    int outputType; // 0 = Path follow, 1 = Orbit, 2 = Hold
+    int waypointType; // 0 = Path follow, 1 = Orbit, 2 = Hold
 };
 
 struct Telemetry_PIGO_t {
@@ -17,7 +17,7 @@ struct Telemetry_PIGO_t {
     
     char waypointModifyFlightPathCommand; // 0 = nothing, 1 = initialize flight path, 2 = append, 3 = insert, 4 = update, 5 = delete, 6 = nuke
     bool initializingHomeBase; // 0 = no, 1 = yes
-    char waypointNextDirectionsCommand; // 0 = nothing, 1 = start holding, 2 = head home
+    char waypointNextDirectionsCommand; // 0 = nothing, 1 = start/end holding, 2 = head home
     int holdingAltitude;
     int holdingTurnRadius;
     char holdingTurnDirection; // 0 = CW, 1 = CCW
@@ -31,6 +31,11 @@ struct Telemetry_PIGO_t {
     Telemetry_Waypoint_Data_t homebase;
 };
 
-
+struct _CruisingState_Telemetry_Return {
+    char editingFlightPathErrorCode; // 0 = success, 1 = error, 2 = incorrect telemetry command
+    char pathFollowingErrorCode; // 0 = success, 1 = error, 2 = home base not initialized, 3 = incorrect telemetry command
+    int currentWaypointId; 
+    int currentWaypointIndex;
+};
 
 #endif
