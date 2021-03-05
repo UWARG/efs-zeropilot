@@ -14,6 +14,7 @@ struct _CruisingState_Telemetry_Return {
     char pathFollowingErrorCode; // 0 = success, 1 = error, 2 = home base not initialized, 3 = incorrect telemetry command
     int currentWaypointId; 
     int currentWaypointIndex;
+    bool homeBaseInitialized;
 };
 
 // The following functions are used to interact with the Waypoint Manager module
