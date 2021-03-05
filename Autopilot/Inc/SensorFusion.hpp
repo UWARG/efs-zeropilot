@@ -5,27 +5,26 @@
 
 #include "AttitudeDatatypes.hpp"
 #include "fetchSensorMeasurementsMode.hpp"
+#include "arm_math.h"
 
 #ifndef SENSORFUSION_HPP
 #define SENSORFUSION_HPP
-
-typedef struct {
+struct SFOutput_t {
     float IMUroll, IMUpitch, IMUyaw; //in rad (for now)
     float IMUrollrate, IMUpitchrate, IMUyawrate; //in rad/s (for now)
-
     float Airspeed; //in m/s (for now)
-} SFAttitudeOutput_t;
+};
 
 typedef struct {
     float altitude;
-} SFElevationOutput_t;
-
-typedef struct {
     long double latitude; 
     long double longitude;
-    float groundSpeed; // in m/s
-    int16_t heading; // in degrees. Should be between 0-360 at all times, but using integer just in case
 } SFPositionOutput_t;
+
+typedef struct {
+    arm_matrix_instance_f32 prevX;
+    arm_matrix_instance_f32 prevP;
+} SFIterationData_t;
 
 // -1 = FAILED
 // 0 = SUCCESS
@@ -35,30 +34,23 @@ struct SFError_t{
 };
 
 //The SF_Get functions ensure SensorFusion does not have access to the sensor drivers
-
 /**
  * Get attitude data by fusing data from IMU and airspeed sensors.
  * @param[out]  Output  Reference to an output struct for attitude data.
  * @param[in]   imudata
  * @param[in]   airspeeddata
  */ 
-SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMU_Data_t *imudata, Airspeed_Data_t *airspeeddata);
-
-/**
- * Get altitude data by fusing data from altimeter and GPS. 
- * (Altitude is synonymous with elevation)
- * @param[out]  Output  Reference to an output struct for elevation data.
- * @param[in]   altimeterdata
- * @param[in]   gpsdata
- */
-SFError_t SF_GetElevation(SFElevationOutput_t *Output, AltimeterData_t *altimeterdata, GpsData_t *gpsdata);
+SFError_t SF_GetResult(SFOutput_t *Output, IMU_Data_t *imudata, Airspeed_Data_t *airspeeddata);
 
 /**
  * Get position data by fusing data from IMU and GPS.
- * @param[out]  Output  Reference to an output struct for position data.
- * @param[in]   imudata
- * @param[in]   gpsdata
+ * @param[out]    Output  Reference to an output struct for position data.
+ * @param[in]     altimeterdata
+ * @param[in]     gpsdata
+ * @param[in]     imudata
+ * @param[in,out] iterdata Iterative data from previous call which becomes input for next call.
+ * @param[in]     dt  Time since last call.
  */
-SFError_t SF_GetPosition(SFPositionOutput_t *Output, IMU_Data_t *imudata, GpsData_t *gpsdata);
+SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterdata, GpsData_t *gpsdata, IMU_Data_t *imudata, SFIterationData_t *iterdata, float dt);
 
 #endif
