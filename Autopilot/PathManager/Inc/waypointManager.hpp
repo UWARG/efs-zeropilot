@@ -39,7 +39,6 @@ enum _HeadHomeStatus {HOME_TRUE = 0, HOME_FALSE, HOME_UNDEFINED_PARAMETER};
 /**
 * Structure stores information about the waypoints along our path to the destination and back.
 */
-
 struct _PathData {
     int waypointId;                   // Id of the waypoint
     _PathData * next;                 // Next waypoint
@@ -190,6 +189,11 @@ public:
      * @return id of the waypoint at the current index
      */ 
     int get_id_of_current_index();
+
+    /**
+     * @return if the homebase parameter is initialized
+     */ 
+    bool is_home_base_initialized();
 
     /**
      * @return returns the _PathData pointer of the home base 

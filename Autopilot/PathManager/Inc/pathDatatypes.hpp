@@ -11,7 +11,6 @@ struct Telemetry_Waypoint_Data_t {
 };
 
 struct Telemetry_PIGO_t {
-
     /* Parameters for the waypoint manager (crusingState) */
     char numWaypoints;
     
@@ -29,13 +28,13 @@ struct Telemetry_PIGO_t {
 
     Telemetry_Waypoint_Data_t * waypoints[100]; // Somehow need to get PATH_BUFFER_SIZE here...
     Telemetry_Waypoint_Data_t homebase;
-};
 
-struct _CruisingState_Telemetry_Return {
-    char editingFlightPathErrorCode; // 0 = success, 1 = error, 2 = incorrect telemetry command
-    char pathFollowingErrorCode; // 0 = success, 1 = error, 2 = home base not initialized, 3 = incorrect telemetry command
-    int currentWaypointId; 
-    int currentWaypointIndex;
+    // Nixon's stuff
+    bool packageOnBoard;
+    float windDirectionHeading;
+    float stoppingDirectionHeading;
+    // Struct for stopping point gps coordinates
+
 };
 
 #endif

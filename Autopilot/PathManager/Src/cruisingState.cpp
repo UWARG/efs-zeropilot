@@ -1,3 +1,7 @@
+/*
+* Defines the functions that interact with the Waypoint Manager
+* Author: Dhruv Rawat
+*/
 
 #include "cruisingState.hpp"
 
@@ -36,13 +40,13 @@
 */
 
 
-int editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingStateManager) {
+int editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingStateManager, int * idArray) {
     _WaypointOutputType waypointType = PATH_FOLLOW;
     _WaypointStatus editingStatus = WAYPOINT_SUCCESS;
 
     /* Editing the flight path */
 
-    if (telemetryData->numWaypoints == 1 && (telemetryData->waypointModifyFlightPathCommand >= 2 && telemetryData->waypointModifyFlightPathCommand <= 5)) { // Inserting, Appending, Updating, or Deleting a waypoint
+    if (telemetryData->numWaypoints == 1 && (telemetryData->waypointModifyFlightPathCommand >= 2 && telemetryData->waypointModifyFlightPathCommand <= 4)) { // Inserting, Appending, or Updating a waypoint
         
         // Set the output type of the new waypoint. Need if statements because of the enum parameter of the initialize_waypoint() method
         if (telemetryData->waypoints[0]->waypointType == 0) {
@@ -63,14 +67,38 @@ int editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingSt
         
         // Update flight path by passing in the appropriate parameters to update_path_nodes()
         if (telemetryData->waypointModifyFlightPathCommand == 2) { // Append
+
             editingStatus = cruisingStateManager.update_path_nodes(modifyWaypoint, APPEND_WAYPOINT, 0, 0, 0);
+            
+            if (editingStatus == WAYPOINT_SUCCESS) { // Update ID array if edit was successful
+                appendNewElement(idArray, modifyWaypoint->waypointId); // Update the idArray
+            }
+
         } else if (telemetryData->waypointModifyFlightPathCommand == 3) { // Insert
+
             editingStatus = cruisingStateManager.update_path_nodes(modifyWaypoint, INSERT_WAYPOINT, 0, telemetryData->prevId, telemetryData->nextId);
+            
+            if (editingStatus == WAYPOINT_SUCCESS) { // Update ID array if edit was successful
+                insertNewElement(idArray, telemetryData->prevId, modifyWaypoint->waypointId); // Update the idArray
+            }
+
         } else if (telemetryData->waypointModifyFlightPathCommand == 4) { // Update
+            
             editingStatus = cruisingStateManager.update_path_nodes(modifyWaypoint, UPDATE_WAYPOINT, telemetryData->modifyId, 0, 0);
-        } else { // Delete
-            editingStatus = cruisingStateManager.update_path_nodes(modifyWaypoint, DELETE_WAYPOINT, telemetryData->modifyId, 0, 0);
+            
+            if (editingStatus == WAYPOINT_SUCCESS) { // Update ID array if edit was successful
+                updateElement(idArray, telemetryData->modifyId, modifyWaypoint->waypointId); // Update the idArray
+            }
+
+        } 
+    } else if (telemetryData->numWaypoints == 0 && telemetryData->waypointModifyFlightPathCommand == 5) { // Deleting a waypoint
+        
+        editingStatus = cruisingStateManager.update_path_nodes(nullptr, DELETE_WAYPOINT, telemetryData->modifyId, 0, 0);
+        
+        if (editingStatus == WAYPOINT_SUCCESS) { // Update ID array if edit was successful
+            removeElement(idArray, telemetryData->modifyId); // Update the idArray
         }
+
     } else if (telemetryData->numWaypoints > 1 && telemetryData->waypointModifyFlightPathCommand == 1) { // Initialize flight path array
 
         _PathData * newFlightPath[PATH_BUFFER_SIZE];
@@ -91,9 +119,12 @@ int editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingSt
             } else {
                 newFlightPath[i] = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[i]->longitude, telemetryData->waypoints[i]->latitude, telemetryData->waypoints[i]->altitude, waypointType, telemetryData->waypoints[i]->turnRadius); 
             }
+
+            appendNewElement(idArray, newFlightPath[i]->waypointId); // Append elements to the idArray while we go :))
         }
 
         cruisingStateManager.clear_path_nodes(); // Nukes current flight path (ensures there are no memory leaks)
+        clearArray(idArray);
 
         if (telemetryData->initializingHomeBase) { // If we are initializing the home base object too
             cruisingStateManager.clear_home_base(); // Remove current home base
@@ -107,8 +138,15 @@ int editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingSt
         } else { // Only initializing the flight path
             editingStatus = cruisingStateManager.initialize_flight_path(newFlightPath, telemetryData->numWaypoints);
         }
+
+        // If initializing the flight path was not successful, then we will clear our idArray to prevent future confusion
+        if (editingStatus != WAYPOINT_SUCCESS) {
+            clearArray(idArray);
+        }
+
     } else if (telemetryData->numWaypoints == 0 && telemetryData->waypointModifyFlightPathCommand == 6) {  // Nuke flight path
         cruisingStateManager.clear_path_nodes();
+        clearArray(idArray);
     } else if (telemetryData->numWaypoints != 0) { // Incorrect commands from telemetry
         // Set important values to their defaults. This will ensure that if the telemetry struct is not change, our plane will behave as expected
         telemetryData->waypointModifyFlightPathCommand = 0; 
@@ -134,7 +172,6 @@ int editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingSt
 int pathFollow(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingStateManager, _WaypointManager_Data_In input, _WaypointManager_Data_Out * output, bool& goingHome, bool& inHold) {
     _WaypointStatus pathFollowingStatus = WAYPOINT_SUCCESS;
     _HeadHomeStatus goingHomeStatus = HOME_TRUE;
-
 
     if (telemetryData->waypointNextDirectionsCommand == 0) { // Regular path following
         pathFollowingStatus = cruisingStateManager.get_next_directions(input, output);
@@ -177,11 +214,81 @@ int pathFollow(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingStateM
 void setReturnValues(_CruisingState_Telemetry_Return * _returnToGround, WaypointManager& cruisingStateManager, int editErrorCode, int pathErrorCode) {
     _returnToGround->currentWaypointId = cruisingStateManager.get_id_of_current_index();
     _returnToGround->currentWaypointIndex = cruisingStateManager.get_current_index();
+    _returnToGround->homeBaseInitialized = cruisingStateManager.is_home_base_initialized();
 
     _returnToGround->editingFlightPathErrorCode = editErrorCode;
     _returnToGround->pathFollowingErrorCode = pathErrorCode;
 }
 
+void appendNewElement(int * idArray, int newId) {
+    int counter = 0;
+    bool appended = false;
 
+    // Goes through array until empty index is found or we reach end of array
+    while (!appended && counter < PATH_BUFFER_SIZE) {
+        if (idArray[counter] == 0) { // If an element has a value of 0, it is empty
+            idArray[counter] = newId;
+            appended = true;
+        }
+        counter++;
+    }
+}
+
+int indexOfDesiredId(int * idArray, int id) {
+    int counter = 0;
+
+    // Goes through array until desired index is found or we reach end of array
+    while (counter < PATH_BUFFER_SIZE) {
+        if (idArray[counter] == id) { 
+            return counter;
+        }
+        counter++;
+    }
+
+    return -1;
+}
+
+void insertNewElement(int * idArray, int prevId, int newId) {
+    int index = indexOfDesiredId(idArray, prevId);
+
+    if (index != -1) {
+        for (int i = PATH_BUFFER_SIZE - 1; i > index + 1; i--) {
+            idArray[i] = idArray[i-1];
+        }
+
+        idArray[index + 1] = newId;
+    }
+}
+
+void removeElement(int * idArray, int id) {
+    int index = indexOfDesiredId(idArray, id);
+
+    if (index != -1) {
+           for (int i = index; i < PATH_BUFFER_SIZE - 1; i++) {
+               idArray[i] = idArray[i+1];
+           }
+           idArray[PATH_BUFFER_SIZE - 1] = 0;
+    }
+}
+
+void updateElement(int * idArray, int oldId, int newId) {
+    int counter = 0;
+    bool updated = false;
+
+    // Goes through array until desired index is found or we reach end of array
+    while (!updated && counter < PATH_BUFFER_SIZE) {
+        if (idArray[counter] == oldId) { 
+            idArray[counter] = newId;
+            updated = true;
+        }
+        counter++;
+    }
+}
+
+void clearArray(int * idArray) {
+    for (int i = 0; i < PATH_BUFFER_SIZE; i++) {
+        idArray[i] = 0;
+    }
+}
 
 

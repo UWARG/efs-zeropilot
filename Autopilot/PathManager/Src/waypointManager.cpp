@@ -30,7 +30,7 @@
 WaypointManager::WaypointManager() {
     // Initializes important array and id navigation constants
     currentIndex = 0;
-    nextAssignedId = 0;
+    nextAssignedId = 1;
     numWaypoints = 0;
     nextFilledIndex = 0;
 
@@ -66,7 +66,7 @@ WaypointManager::WaypointManager() {
 WaypointManager::WaypointManager(float relLat, float relLong) {
     // Initializes important array and id navigation constants
     currentIndex = 0;
-    nextAssignedId = 0;
+    nextAssignedId = 1;
     numWaypoints = 0;
     nextFilledIndex = 0;
 
@@ -800,7 +800,6 @@ void WaypointManager::clear_path_nodes() {
     // Resets buffer status variables
     numWaypoints = 0;
     nextFilledIndex = 0;
-    nextAssignedId = 0;
     currentIndex = 0;
 }
 
@@ -993,6 +992,14 @@ int WaypointManager::get_current_index() {
 
 int WaypointManager::get_id_of_current_index() {
     return waypointBuffer[currentIndex]->waypointId;
+}
+
+bool WaypointManager::is_home_base_initialized() {
+    if (homeBase) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 // For valgrind tests

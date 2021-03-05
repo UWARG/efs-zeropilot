@@ -7,6 +7,8 @@
 bool isError; 
 Telemetry_PIGO_t commsWithTelemetry::_incomingData;
 _CruisingState_Telemetry_Return cruisingState::_returnToGround;
+_WaypointManager_Data_In cruisingState::_inputdata;
+_WaypointManager_Data_Out cruisingState::_outputdata; 
 
 /***********************************************************************************************************************
  * Code
@@ -93,11 +95,9 @@ void cruisingState::execute(pathManager* pathMgr)
 
     Telemetry_PIGO_t * telemetryData = commsWithTelemetry::GetTelemetryIncomingData(); // Get struct from telemetry state with all of the commands and values.
 
-    int editError = editFlightPath(telemetryData, cruisingStateManager); // Edit flight path if applicable
+    int editError = editFlightPath(telemetryData, cruisingStateManager, waypointIDArray); // Edit flight path if applicable
 
     // Set input data for getting next direction/altitude
-    _WaypointManager_Data_Out output;
-    _WaypointManager_Data_In input;
     
     /*
     
@@ -105,7 +105,7 @@ void cruisingState::execute(pathManager* pathMgr)
 
     */
 
-    int pathError = pathFollow(telemetryData, cruisingStateManager, input, &output, goingHome, inHold); // Get next direction or modify flight behaviour pattern
+    int pathError = pathFollow(telemetryData, cruisingStateManager, _inputdata, &_outputdata, goingHome, inHold); // Get next direction or modify flight behaviour pattern
 
     setReturnValues(&_returnToGround, cruisingStateManager, editError, pathError); // Set error codes
 
