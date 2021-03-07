@@ -125,6 +125,7 @@ pathManagerState& cruisingState::getInstance()
     return singleton;
 }
 
+
 void coordinateTurnElevation::execute(pathManager* pathMgr)
 {
     
