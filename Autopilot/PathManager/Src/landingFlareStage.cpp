@@ -3,21 +3,22 @@
 
 void landingFlareStage::execute(pathManager* pathMgr)
 {
-    if(sensorFusion::input.altitude<=(DECRAB_ALTITUDE+getFromTelemetry::telemetryInput.stoppingAltitude)) //altitude is below 70 cm
+    if(sensorFusion::input.altitude <= (DECRAB_ALTITUDE + getFromTelemetry::telemetryInput.stoppingAltitude)) //altitude is below 70 cm
     {
         pathMgr->stage = DECRAB;
     }
     else
     {
-        //should maintain heading 
+        //maintaining horizontal position
         landingTransitionStage::waypointStatus = landingTransitionStage::landingPath.get_next_directions(getFromTelemetry::telemetryInput, &cruisingState::_outputdata);
         //throttleOff()
+        //maintaing speed for flare attitude
         cruisingState::_outputdata.desiredSpeed = LandingManager::slowFlightSpeed(getFromTelemetry::telemetryInput.windSpeed, getFromTelemetry::telemetryInput.ifPackage);
     }   
 
     if(landingTransitionStage::waypointStatus == INVALID_PARAMETERS)
     {
-        pathMgr->isError = true;
+        pathMgr -> isError = true;
     }
     
 

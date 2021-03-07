@@ -3,9 +3,9 @@
 void landingTouchdownStage::execute(pathManager* pathMgr)
 {
     //throttleOff()
+    //aligning heading
     cruisingState::_outputdata.desiredHeading = getFromTelemetry::telemetryInput.landingDirection;
-    cruisingState::_outputdata.desiredAltitude = LandingManager:throttleOff();
-    if(pathMgr->isError)
+    if(pathMgr -> isError)
     {
         pathMgr -> setState(fatalFailureMode::getInstance());
     }
