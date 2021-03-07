@@ -4,6 +4,8 @@ project(Autopilot C CXX ASM)
 #checks wether we are building for the microcontroller or to run the PC based unit tests
 if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
 
+  add_definitions(-DTARGET_BUILD)
+
   set(ELF_NAME ${PROJECT_NAME}.elf)
 
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -111,6 +113,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/../Common/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
@@ -271,6 +274,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/OutputMixing.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/SensorFusion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MadgwickAHRS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/fetchSensorMeasurementsMode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/PID.cpp
   )
 
