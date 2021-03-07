@@ -2,34 +2,38 @@
 
 void landingTransitionStage::execute(pathManager* pathMgr)
 {
-    if(!pathMgr->madeLandingPoints)
+    if(!pathMgr -> madeLandingPoints)
     {
-        //make landing points from landing data
-        //requires data structure that dhruv wants to use (waiting for data in)
+        //requires data structure that dhruv wants to use 
         path = LandingManager::createSlopeWaypoints(getFromTelemetry::telemetryInput);
-        pathArray[0] = &path.intersectionPoint;
-        pathArray[1] = &path.aimingPoint;
-        pathArray[2] = &path.stoppingPoint;
-        //creating the intersection point, requires initialization of waypoint manager (data in required) (current location needs to be passed in from sensorfusion?)
-        waypointStatus = landingPath.initialize_flight_path(pathArray, 3, );
+
+        //creating waypoints 
+        pathArray[0] = landingPath.initialize_waypoint(path.intersectionPoint.longitude, path.intersectionPoint.latitude, path.intersectionPoint.altitude, PATH_FOLLOW);
+        pathArray[1] = landingPath.initialize_waypoint(path.aimingPoint.longitude, path.aimingPoint.latitude, path.aimingPoint.altitude, PATH_FOLLOW);
+        pathArray[2] = landingPath.initialize_waypoint(path.stoppingPoint.longitude, path.stoppingPoint.latitude, path.stoppingPoint.altitude, PATH_FOLLOW);
+       
+        //initializing flight path, QUESTION!!! what should I do with currentPosition parameter? its a PathData struct, but it requires info from sensorfusion
+        waypointStatus = landingPath.initialize_flight_path(pathArray, 3,      );
+        
         //set made madelandingPoints to true
         pathMgr->madeLandingPoints = true;
-        //follow the landing waypoints (requires data in)
-        waypointStatus = landingPath.get_next_directions(getFromTelemetry::telemetryInput, &cruisingState::_outputdata);
-    }
-    else
-    {
-        //follow the landing waypoints(requires data in)
-        waypointStatus = landingPath.get_next_directions(getFromTelemetry::telemetryInput, &cruisingState::_outputdata);
     }
 
+    //follow the landing waypoints
+    waypointStatus = landingPath.get_next_directions(getFromTelemetry::telemetryInput, &cruisingState::_outputdata);
+
+    //calculating the difference in heading to detect if finished turning (2 differences in heading possible)
     differenceInHeading1 = getFromTelemetry::telemetryInput.landingDirection - sensorFusion::input.track;
     differenceInHeading2 = sensorFusion::input.track - getFromTelemetry::telemetryInput.landingDirection;
-    if(differenceInHeading1<0){differenceInHeading1+=360;}
-    if(differenceInHeading2<0){differenceInHeading2+=360;}
+
+    //making sure both headings are positive
+    if(differenceInHeading1 < 0){differenceInHeading1 += 360;}
+    if(differenceInHeading2 < 0){differenceInHeading2 += 360;}
+
+    //if the smaller heading is less than 5 degrees, set stage to slope
     if(differenceInHeading1<differenceInHeading2)
     {
-        if(fabs(differenceInHeading1)<=5)
+        if(fabs(differenceInHeading1) <= 5)
         {
             //set enum to slope state
             pathMgr->stage = SLOPE;
@@ -37,7 +41,7 @@ void landingTransitionStage::execute(pathManager* pathMgr)
     }
     else
     {
-        if(fabs(differenceInHeading2)<=5)
+        if(fabs(differenceInHeading2) <= 5)
         {
             //set enum to slope state
             pathMgr->stage = SLOPE;
