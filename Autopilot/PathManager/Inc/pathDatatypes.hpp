@@ -40,6 +40,16 @@ struct Telemetry_PIGO_t {
 
     Telemetry_Waypoint_Data_t waypoints[100]; // Somehow need to get PATH_BUFFER_SIZE here...
     Telemetry_Waypoint_Data_t homebase;
+
+    // landing and takeoff 
+    double latitude;
+    double longitude;
+    double altitude;
+    float directionLanding;
+    bool beginLanding;
+    bool beginTakeoff;
+    // Struct for stopping point gps coordinates
+
 };
 
 #endif
