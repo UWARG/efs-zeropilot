@@ -5,7 +5,6 @@
  * Static Member Variable Declarations
  **********************************************************************************************************************/
 
-static bool isError; 
 Telemetry_PIGO_t commsWithTelemetry::_incomingData;
 _CruisingState_Telemetry_Return cruisingState::_returnToGround;
 _WaypointManager_Data_In cruisingState::_inputdata;
@@ -48,21 +47,18 @@ pathManagerState& commsWithAttitude::getInstance()
 
 void commsWithTelemetry::execute(pathManager* pathMgr)
 {
-    //send data to telemetry
-
     // Get data from telemetry
 
     // Do any processing required (update struct that contains telemetry data and process it)
 
     // Store data inside of the Telemetry_PIGO_t struct that is a parameter of this child class
-
-    if(isError)
+    if(pathMgr->isError)
     {
-        pathMgr->setState(fatalFailureMode::getInstance());
+        pathMgr -> setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr->setState(sensorFusion::getInstance());
+        pathMgr -> setState(sensorFusion::getInstance());
     }
 }
 
@@ -77,13 +73,41 @@ void sensorFusion::execute(pathManager* pathMgr)
     SFError_t error = SF_GetResult(&_sfOutputData); // Gets current Sensor fusion output struct
     _imudata = SF_GetRawIMU();
 
-    if(isError)
+    if(pathMgr->isError)
     {
         pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr->setState(cruisingState::getInstance());
+        //if the enums for landing state, set to each landing state
+        if(pathMgr->stage == TRANSITION)
+        {
+            pathMgr->setState(landingTransitionStage::getInstance());
+        }
+        else if(pathMgr->stage == SLOPE)
+        {
+            pathMgr->setState(landingSlopeStage::getInstance());
+        }
+        else if(pathMgr->stage == FLARE)
+        {
+            pathMgr->setState(landingFlareStage::getInstance());
+        }
+        else if(pathMgr->stage == DECRAB)
+        {
+            pathMgr->setState(landingDecrabStage::getInstance());
+        }
+        else if(pathMgr->stage == TOUCHDOWN)
+        {
+            pathMgr->setState(landingTouchdownStage::getInstance());
+        }
+        else if(pathMgr->stage == NOT_LANDING)
+        {
+            pathMgr->setState(cruisingState::getInstance());
+        }
+        else
+        {
+            pathMgr->setState(cruisingState::getInstance());
+        }
     }
 }
 
@@ -110,7 +134,7 @@ void cruisingState::execute(pathManager* pathMgr)
     _GetNextDirectionsErrorCode pathError = pathFollow(telemetryData, cruisingStateManager, _inputdata, &_outputdata, goingHome, inHold); // Get next direction or modify flight behaviour pattern
     setReturnValues(&_returnToGround, cruisingStateManager, editError, pathError); // Set error codes
 
-    if(isError)
+    if(pathMgr->isError)
     {
         pathMgr->setState(fatalFailureMode::getInstance());
     }
@@ -149,8 +173,8 @@ void coordinateTurnElevation::execute(pathManager* pathMgr)
     // Call module functions
     AutoSteer_ComputeCoordinatedTurn(&turnInput, &_rollandrudder);
     AutoSteer_ComputeAltitudeAndAirspeed(&altAirspeedInput, &_pitchandairspeed);
-
-    if(isError)
+    
+    if(pathMgr->isError)
     {
         pathMgr->setState(fatalFailureMode::getInstance());
     }
