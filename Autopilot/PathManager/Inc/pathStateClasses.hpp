@@ -7,6 +7,7 @@
 #include "AutoSteer.hpp"
 #include "waypointManager.hpp"
 #include "landingManager.hpp"
+#include "pathDatatypes.hpp"
 
 /***********************************************************************************************************************
  * Code
