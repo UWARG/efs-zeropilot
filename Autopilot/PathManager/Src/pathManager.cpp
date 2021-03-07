@@ -5,6 +5,10 @@ pathManager::pathManager()
 {
     currentState = &commsWithAttitude::getInstance(); 
     status = COMPLETED_CYCLE;
+    stage = NOT_LANDING;
+    madeLandingPoints = false;
+    isError = false;
+    isPackage = false;
 }
 
 void pathManager::setState(pathManagerState& newState)
