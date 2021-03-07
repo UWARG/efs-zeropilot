@@ -7,13 +7,14 @@
 #include "waypointManager.hpp"
 #include "pathDatatypes.hpp"
 #include "CommWithAttitudeManager.hpp"
-
+#include "landingManager.hpp"
 #include "SensorFusion.hpp"
 #include "AttitudePathInterface.hpp"
 
 /***********************************************************************************************************************
  * Definitions
  **********************************************************************************************************************/
+
 
 /***********************************************************************************************************************
  * Code
@@ -93,7 +94,87 @@ class cruisingState : public pathManagerState
         static _WaypointManager_Data_Out _outputdata; 
         static _CruisingState_Telemetry_Return _returnToGround;
         bool inHold = false;
-        bool goingHome = false;
+        bool goingHome = false;         
+};
+
+class landingTransitionStage : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+
+        WaypointManager landingPath; 
+        int waypointIDArray[PATH_BUFFER_SIZE];
+        static _LandingPath path; //used to load in path
+        static _PathData * pathArray[3]; //used to translate loaded in path to something the waypoint manager can take as a parameter
+        static _WaypointStatus waypointStatus; //used to catch errors
+        static _PathData _waypointdata; 
+        static double differenceInHeading1;
+        static double differenceInHeading2;
+
+    private:
+        landingTransitionStage() {}
+        landingTransitionStage(const landingTransitionStage& other);
+        landingTransitionStage& operator =(const landingTransitionStage& other);
+
+};
+
+class landingSlopeStage : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+
+    private:
+        landingSlopeStage() {}
+        landingSlopeStage(const landingSlopeStage& other);
+        landingSlopeStage& operator =(const landingSlopeStage& other);
+};
+
+class landingFlareStage : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+
+    private:
+        landingFlareStage() {}
+        landingFlareStage(const landingFlareStage& other);
+        landingFlareStage& operator =(const landingFlareStage& other);
+};
+
+class landingDecrabStage : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+
+    private:
+        landingDecrabStage() {}
+        landingDecrabStage(const landingDecrabStage& other);
+        landingDecrabStage& operator =(const landingDecrabStage& other);
+};
+
+class landingTouchdownStage : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+
+    private:
+        landingTouchdownStage() {}
+        landingTouchdownStage(const landingTouchdownStage& other);
+        landingTouchdownStage& operator =(const landingTouchdownStage& other);
 };
 
 class coordinateTurnElevation : public pathManagerState
