@@ -8,9 +8,8 @@
 
 //Commands for path manager to send to attitude manager.
 typedef struct CommandsForAM{
-	float roll,pitch;	// commanded orientation (radians)
-	float rudderPercent;
-	float throttlePercent;
+	float roll,pitch,yaw;	// commanded orientation (radians)
+	float airspeed;			// commanded airspeed (m/s)
 } CommandsForAM;
 
 //Data for attitude manager to send to path manager.
