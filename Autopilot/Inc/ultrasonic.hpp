@@ -8,9 +8,6 @@
 
  #include <stdint.h>
 
-
-const int SOUND_SPEED = 343; // In meters per second, used to calculate distance based on time taken to send and receive ping
-
 typedef struct {
     float distance;
     bool isDataNew; // Holds whether the sensor data has been updated or not
