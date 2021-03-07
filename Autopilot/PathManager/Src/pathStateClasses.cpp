@@ -1,7 +1,5 @@
 #include "pathStateClasses.hpp"
 
-bool isError; 
-
 void commsWithAttitude::execute(pathManager* pathMgr)
 {
     //initial mode
@@ -17,7 +15,8 @@ pathManagerState& commsWithAttitude::getInstance()
 void getFromTelemetry::execute(pathManager* pathMgr)
 {
     //communicate with telemetry
-    if(isError)
+    //retrieve LANDING DATA
+    if(pathMgr->isError)
     {
         pathMgr -> setState(fatalFailureMode::getInstance());
     }
@@ -36,7 +35,7 @@ pathManagerState& getFromTelemetry::getInstance()
 void getSensorData::execute(pathManager* pathMgr)
 {
     //obtain sensor data
-    if(isError)
+    if(pathMgr->isError)
     {
         pathMgr -> setState(fatalFailureMode::getInstance());
     }
@@ -55,13 +54,41 @@ pathManagerState& getSensorData::getInstance()
 void sensorFusion::execute(pathManager* pathMgr)
 {
     //fuse sensor data
-    if(isError)
+    if(pathMgr->isError)
     {
         pathMgr -> setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(cruisingState::getInstance());
+        //if the enums for landing state, set to each landing state
+        if(pathMgr->stage == TRANSITION)
+        {
+            pathMgr->setState(landingTransitionStage::getInstance());
+        }
+        else if(pathMgr->stage == SLOPE)
+        {
+            pathMgr->setState(landingSlopeStage::getInstance());
+        }
+        else if(pathMgr->stage == FLARE)
+        {
+            pathMgr->setState(landingFlareStage::getInstance());
+        }
+        else if(pathMgr->stage == DECRAB)
+        {
+            pathMgr->setState(landingDecrabStage::getInstance());
+        }
+        else if(pathMgr->stage == TOUCHDOWN)
+        {
+            pathMgr->setState(landingTouchdownStage::getInstance());
+        }
+        else if(pathMgr->stage == NOT_LANDING)
+        {
+            pathMgr->setState(cruisingState::getInstance());
+        }
+        else
+        {
+            pathMgr->setState(cruisingState::getInstance());
+        }
     }
 }
 
@@ -74,7 +101,7 @@ pathManagerState& sensorFusion::getInstance()
 void cruisingState::execute(pathManager* pathMgr)
 {
     //waypoint manager stuff
-    if(isError)
+    if(pathMgr->isError)
     {
         pathMgr -> setState(fatalFailureMode::getInstance());
     }
@@ -90,10 +117,11 @@ pathManagerState& cruisingState::getInstance()
     return singleton;
 }
 
+
 void coordinateTurnElevation::execute(pathManager* pathMgr)
 {
     //get elevation and turning data
-    if(isError)
+    if(pathMgr->isError)
     {
         pathMgr -> setState(fatalFailureMode::getInstance());
     }
