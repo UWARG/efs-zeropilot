@@ -26,8 +26,6 @@ class pathManager
     private:
         pathManagerState* currentState;
         _Path_Manager_Cycle_Status status;
-
-
 };
 
 
