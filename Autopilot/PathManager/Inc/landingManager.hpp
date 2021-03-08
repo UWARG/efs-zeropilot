@@ -1,7 +1,6 @@
 #pragma once
 #include "waypointManager.hpp"
 
-const static int SET_THROTTLE_OFF = -1000;
 const static double DISTANCE_OF_LANDING = 10; //in meters
 const static int METERS_PER_DEG_LAT = 111320;
 const static int ANGLE_OF_LANDING = 5; //in degrees
