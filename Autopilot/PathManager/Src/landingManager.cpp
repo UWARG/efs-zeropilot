@@ -3,16 +3,6 @@
 #include <math.h>
 #include "vectorClass.hpp"
 
-const static int SET_THROTTLE_OFF = -1000;
-const static double DISTANCE_OF_LANDING = 10; //in meters
-const static int METERS_PER_DEG_LAT = 111320;
-const static int ANGLE_OF_LANDING = 5; //in degrees
-const static int STALL_SPEED_NO_PACKAGE = 20; //in km/h
-const static int STALL_SPEED_WITH_PACKAGE = 30; //in km/h
-const static double PI = 3.14159265358979323846;
-const static int FLARE_ALTITUDE = 2; //in meters
-const static double DECRAB_ALTITUDE = 0.7; //in meters
-
 double LandingManager::changingAltitude(Telemetry_PIGO_t input, _PathData aimingPoint, _PathData intersectionPoint, _PathData stoppingPoint)
 {
     //vector declaration
