@@ -27,7 +27,7 @@ class ultrasonic {
         // Used to update the values in the struct from the values received from the beginMeasuring() function
         // Resets the status of the ultrasonic sensor
         virtual void getData(ultrasonicData_t * Data);
-}
+};
 
 class MB1013 : public ultrasonic {
     public:
@@ -40,10 +40,7 @@ class MB1013 : public ultrasonic {
     private:
         MB1013();
         static MB1013* staticInstance;
-        float readFromMB1013();
-        float getTime();
         float getDistance();
-        float timeMeasured = 0;
         float distance = 0;
         uint32_t getCurrentTime();
-}
+};
