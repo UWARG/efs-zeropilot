@@ -1,15 +1,15 @@
 #pragma once
 #include "waypointManager.hpp"
 
-const static double DISTANCE_OF_LANDING = 10; //in meters
-const static int METERS_PER_DEG_LAT = 111320;
-const static int ANGLE_OF_LANDING = 5; //in degrees
-const static int STALL_SPEED_NO_PACKAGE = 20; //in km/h
-const static int STALL_SPEED_WITH_PACKAGE = 30; //in km/h
-const static double PI = 3.14159265358979323846;
-const static int FLARE_ALTITUDE = 2; //in meters
-const static double DECRAB_ALTITUDE = 0.7; //in meters
-const static double TOUCHDOWN_ALTITUDE = 0.05; //in meters
+constexpr static double DISTANCE_OF_LANDING {10}; //in meters
+constexpr static int METERS_PER_DEG_LAT {111320};
+constexpr static int ANGLE_OF_LANDING {5}; //in degrees
+constexpr static int STALL_SPEED_NO_PACKAGE {20}; //in km/h
+constexpr static int STALL_SPEED_WITH_PACKAGE {30}; //in km/h
+constexpr static double PI {3.14159265358979323846};
+constexpr static int FLARE_ALTITUDE {2}; //in meters
+constexpr static double DECRAB_ALTITUDE {0.7}; //in meters
+constexpr static double TOUCHDOWN_ALTITUDE {0.05}; //in meters
 
 struct _LandingPath
 {
