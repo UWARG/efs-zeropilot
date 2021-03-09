@@ -79,6 +79,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
+static const int PERIOD_ATTITUDEMANAGER_MS = 20;
+static const int PERIOD_PATHMANAGER_MS = 10; //TO CONFIRM
+static const int PERIOD_TELEMETRY_MS = 10; //TO CONFIRM
 
 /* USER CODE END Variables */
 osThreadId attitudeManagerHandle;
@@ -180,8 +183,9 @@ void attitudeManagerExecute(void const * argument)
 {
   /* USER CODE BEGIN attitudeManagerExecute */
   /* Infinite loop */
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+  vTaskDelayUntil(&xLastWakeTime, PERIOD_ATTITUDEMANAGER_MS);
   AttitudeManagerInterfaceExecute();
-  osDelay(1);
   /* USER CODE END attitudeManagerExecute */
 }
 
@@ -196,8 +200,9 @@ void pathManagerExecute(void const * argument)
 {
   /* USER CODE BEGIN pathManagerExecute */
   /* Infinite loop */
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+  vTaskDelayUntil(&xLastWakeTime, PERIOD_PATHMANAGER_MS);
   PathManagerInterfaceExecute();
-  osDelay(1);
   /* USER CODE END pathManagerExecute */
 }
 
@@ -212,8 +217,9 @@ void StartTelemetryRun(void const * argument)
 {
   /* USER CODE BEGIN StartTelemetryRun */
   /* Infinite loop */
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+  vTaskDelayUntil(&xLastWakeTime, PERIOD_TELEMETRY_MS);
   TelemetryManagerInterfaceExecute();
-  osDelay(1);
   /* USER CODE END StartTelemetryRun */
 }
 
