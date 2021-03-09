@@ -80,33 +80,27 @@ void sensorFusion::execute(pathManager* pathMgr)
     else
     {
         //if the enums for landing state, set to each landing state
-        if(pathMgr->stage == TRANSITION)
-        {
-            pathMgr->setState(landingTransitionStage::getInstance());
-        }
-        else if(pathMgr->stage == SLOPE)
-        {
-            pathMgr->setState(landingSlopeStage::getInstance());
-        }
-        else if(pathMgr->stage == FLARE)
-        {
-            pathMgr->setState(landingFlareStage::getInstance());
-        }
-        else if(pathMgr->stage == DECRAB)
-        {
-            pathMgr->setState(landingDecrabStage::getInstance());
-        }
-        else if(pathMgr->stage == TOUCHDOWN)
-        {
-            pathMgr->setState(landingTouchdownStage::getInstance());
-        }
-        else if(pathMgr->stage == NOT_LANDING)
-        {
-            pathMgr->setState(cruisingState::getInstance());
-        }
-        else
-        {
-            pathMgr->setState(cruisingState::getInstance());
+        switch(pathMgr->stage){
+            case TRANSITION:
+                pathMgr->setState(landingTransitionStage::getInstance());
+                break;
+            case SLOPE:
+                pathMgr->setState(landingSlopeStage::getInstance());
+                break;
+            case FLARE:
+                pathMgr->setState(landingFlareStage::getInstance());
+                break;
+            case DECRAB:
+                pathMgr->setState(landingDecrabStage::getInstance());
+                break;
+            case TOUCHDOWN:
+                pathMgr->setState(landingTouchdownStage::getInstance());
+                break;
+            case NOT_LANDING:
+                pathMgr->setState(cruisingState::getInstance());
+                break;
+            default:
+                pathMgr->setState(cruisingState::getInstance());
         }
     }
 }
