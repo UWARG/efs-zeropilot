@@ -80,13 +80,18 @@ class cruisingState : public pathManagerState
         static pathManagerState& getInstance();
         static _WaypointManager_Data_Out* GetOutputData(void) {return &_outputdata;}
         static _CruisingState_Telemetry_Return* GetErrorCodes(void) {return &_returnToGround;}
+
+        #ifdef UNIT_TESTING
+            WaypointManager* GetWaypointManager(void) {return &cruisingStateManager;}
+            static int* GetWaypointIdArray(void) {return waypointIDArray;}
+        #endif
     private:
         cruisingState() {}
         cruisingState(const cruisingState& other);
         cruisingState& operator =(const cruisingState& other);
 
         WaypointManager cruisingStateManager;
-        int waypointIDArray[PATH_BUFFER_SIZE]; // Stores ids of the waypoints in the flight path in the order that they are executed
+        static int waypointIDArray[PATH_BUFFER_SIZE]; // Stores ids of the waypoints in the flight path in the order that they are executed
         static _WaypointManager_Data_In _inputdata;
         static _WaypointManager_Data_Out _outputdata; 
         static _CruisingState_Telemetry_Return _returnToGround;

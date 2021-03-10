@@ -5,6 +5,9 @@
 
 #include "cruisingState.hpp"
 
+#include <iostream>
+using namespace std;
+
  /*
     Integer codes from the telemetryData object:
 
@@ -48,6 +51,8 @@ int editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingSt
 
     if (telemetryData->numWaypoints == 1 && (telemetryData->waypointModifyFlightPathCommand >= 2 && telemetryData->waypointModifyFlightPathCommand <= 4)) { // Inserting, Appending, or Updating a waypoint
         
+        cout << "Editing flight path (Not deleting)" << endl;
+
         // Set the output type of the new waypoint. Need if statements because of the enum parameter of the initialize_waypoint() method
         if (telemetryData->waypoints[0]->waypointType == 0) {
             waypointType = PATH_FOLLOW;
@@ -67,23 +72,23 @@ int editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingSt
         
         // Update flight path by passing in the appropriate parameters to update_path_nodes()
         if (telemetryData->waypointModifyFlightPathCommand == 2) { // Append
-
+            cout << "Editing flight path: Append" << endl;
             editingStatus = cruisingStateManager.update_path_nodes(modifyWaypoint, APPEND_WAYPOINT, 0, 0, 0);
-            
+            // cout << "Editing Status: " << editingStatus << endl;
             if (editingStatus == WAYPOINT_SUCCESS) { // Update ID array if edit was successful
                 appendNewElement(idArray, modifyWaypoint->waypointId); // Update the idArray
             }
 
         } else if (telemetryData->waypointModifyFlightPathCommand == 3) { // Insert
-
+            cout << "Editing flight path: Insert" << endl;
             editingStatus = cruisingStateManager.update_path_nodes(modifyWaypoint, INSERT_WAYPOINT, 0, telemetryData->prevId, telemetryData->nextId);
-            
+
             if (editingStatus == WAYPOINT_SUCCESS) { // Update ID array if edit was successful
                 insertNewElement(idArray, telemetryData->prevId, modifyWaypoint->waypointId); // Update the idArray
             }
 
         } else if (telemetryData->waypointModifyFlightPathCommand == 4) { // Update
-            
+            cout << "Editing flight path: Update" << endl;
             editingStatus = cruisingStateManager.update_path_nodes(modifyWaypoint, UPDATE_WAYPOINT, telemetryData->modifyId, 0, 0);
             
             if (editingStatus == WAYPOINT_SUCCESS) { // Update ID array if edit was successful
@@ -92,7 +97,7 @@ int editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingSt
 
         } 
     } else if (telemetryData->numWaypoints == 0 && telemetryData->waypointModifyFlightPathCommand == 5) { // Deleting a waypoint
-        
+        cout << "Editing flight path: Delete" << endl;
         editingStatus = cruisingStateManager.update_path_nodes(nullptr, DELETE_WAYPOINT, telemetryData->modifyId, 0, 0);
         
         if (editingStatus == WAYPOINT_SUCCESS) { // Update ID array if edit was successful
@@ -100,7 +105,7 @@ int editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingSt
         }
 
     } else if (telemetryData->numWaypoints > 1 && telemetryData->waypointModifyFlightPathCommand == 1) { // Initialize flight path array
-
+        cout << "Initialize flight path" << endl;
         _PathData * newFlightPath[PATH_BUFFER_SIZE];
 
         for(int i = 0; i < telemetryData->numWaypoints && i < PATH_BUFFER_SIZE; i++) {
@@ -120,14 +125,18 @@ int editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingSt
                 newFlightPath[i] = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[i]->longitude, telemetryData->waypoints[i]->latitude, telemetryData->waypoints[i]->altitude, waypointType, telemetryData->waypoints[i]->turnRadius); 
             }
 
+            // cout << idArray[i] << " ";
             appendNewElement(idArray, newFlightPath[i]->waypointId); // Append elements to the idArray while we go :))
+            // cout << idArray[i] << endl;
         }
 
         cruisingStateManager.clear_path_nodes(); // Nukes current flight path (ensures there are no memory leaks)
         clearArray(idArray);
 
         if (telemetryData->initializingHomeBase) { // If we are initializing the home base object too
+            cout << "Homebase stuff" << endl;
             cruisingStateManager.clear_home_base(); // Remove current home base
+            cout << "Cleared home base" << endl;
 
             waypointType = HOLD_WAYPOINT; // Set the output type of the new waypoint. Need if statements because of the enum parameter of the initialize_waypoint() method
 
@@ -136,6 +145,7 @@ int editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingSt
     
             editingStatus = cruisingStateManager.initialize_flight_path(newFlightPath, telemetryData->numWaypoints, newHomeBase);
         } else { // Only initializing the flight path
+            cout << "Regular initialization (no home base)" << endl;
             editingStatus = cruisingStateManager.initialize_flight_path(newFlightPath, telemetryData->numWaypoints);
         }
 
@@ -145,9 +155,11 @@ int editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingSt
         }
 
     } else if (telemetryData->numWaypoints == 0 && telemetryData->waypointModifyFlightPathCommand == 6) {  // Nuke flight path
+        cout << "Nuke flight path" << endl;
         cruisingStateManager.clear_path_nodes();
         clearArray(idArray);
     } else if (telemetryData->numWaypoints != 0) { // Incorrect commands from telemetry
+        cout << "Bad command " << endl;
         // Set important values to their defaults. This will ensure that if the telemetry struct is not change, our plane will behave as expected
         telemetryData->waypointModifyFlightPathCommand = 0; 
         telemetryData->numWaypoints = 0; 
@@ -174,8 +186,11 @@ int pathFollow(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingStateM
     _HeadHomeStatus goingHomeStatus = HOME_TRUE;
 
     if (telemetryData->waypointNextDirectionsCommand == 0) { // Regular path following
+        cout << "Flight Path: regular" << endl;
         pathFollowingStatus = cruisingStateManager.get_next_directions(input, output);
     } else if (telemetryData->waypointNextDirectionsCommand == 1) { // Holding pattern
+        cout << "Flight Path: circling/holding" << endl;
+
         // Sees if the plane is currently circling. If it is, then we will cancel circling. Else, start turning
         if (inHold) {
             inHold = false;
@@ -185,6 +200,8 @@ int pathFollow(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingStateM
 
         pathFollowingStatus = cruisingStateManager.start_circling(input, telemetryData->holdingTurnRadius, telemetryData->holdingTurnDirection, telemetryData->holdingAltitude, inHold);
     } else if (telemetryData->waypointNextDirectionsCommand == 2) { // Heading home
+        cout << "Flight Path: going home" << endl;
+
         // Sees if the plane is currently going home. If it is, then we will cancel. Else, start going home
         if (goingHome) {
             goingHome = false;
@@ -194,6 +211,7 @@ int pathFollow(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingStateM
 
         goingHomeStatus = cruisingStateManager.head_home(goingHome);
     } else { // Incorrect commands from telemetry
+        cout << "Flight Path: incorrect command" << endl;
         telemetryData->waypointNextDirectionsCommand = 0; // Set important values to their defaults. This will ensure that if the telemetry struct is not change, our plane will behave as expected
 
         return 2;

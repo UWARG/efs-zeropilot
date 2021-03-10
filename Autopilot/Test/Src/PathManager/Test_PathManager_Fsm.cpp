@@ -13,7 +13,6 @@
 using namespace std; 
 using ::testing::Test;
 
-
 TEST (PathManagerFSM, InitialStateIsCommsWithAttitude) {
     /***********************SETUP***********************/
 
@@ -109,6 +108,7 @@ TEST (PathManagerFSM, CruisingStateTransitionToCoordinatedTurnElevation) {
 
     EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
 }
+
 TEST (PathManagerFSM, CoordinatedTurnElevationTransitionToCommsWithAttitude) {
     /***********************SETUP***********************/
 

@@ -218,7 +218,7 @@ private:
     //Home base
     _PathData * homeBase;
 
-    // For calculating desired heading
+    // For calculating desired heading. This affects the sensitivity of the given desired headings
     float k_gain[2] = {0.01, 1.0f};
 
     // Relative lat and long for coordinate calcilation

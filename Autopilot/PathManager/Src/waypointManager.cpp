@@ -61,8 +61,14 @@ WaypointManager::WaypointManager() {
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         waypointBufferStatus[i] = FREE;
     }
+
+    // Sets empty elements to null to prevent segmentation faults
+    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
+        waypointBuffer[i] = nullptr;
+    }
 }
 
+/*
 WaypointManager::WaypointManager(float relLat, float relLong) {
     // Initializes important array and id navigation constants
     currentIndex = 0;
@@ -98,8 +104,10 @@ WaypointManager::WaypointManager(float relLat, float relLong) {
         waypointBufferStatus[i] = FREE;
     }
 }
+*/
 
 _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData * currentLocation) {
+    
     errorStatus = WAYPOINT_SUCCESS; 
 
     // The waypointBuffer array must be empty before we initialize the flight path
@@ -400,7 +408,7 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
 _WaypointStatus WaypointManager::start_circling(_WaypointManager_Data_In currentStatus, float radius, int direction, int altitude, bool cancelTurning) {
     if (!cancelTurning) {
         // If parameters are not valid. Minimum altitude of 10 metres
-        if (radius <= 0 || (direction != -1 && direction != 1) || altitude < 10) { // SHOULD I JUST SET THIS TO DEFAULT VALUES INSTEAD??????
+        if (radius <= 0 || (direction != 0 && direction != 1) || altitude < 10) { // SHOULD I JUST SET THIS TO DEFAULT VALUES INSTEAD??????
             return INVALID_PARAMETERS; 
         }
 
@@ -409,7 +417,12 @@ _WaypointStatus WaypointManager::start_circling(_WaypointManager_Data_In current
         // Sets class parameters
         turnDesiredAltitude = altitude;
         turnRadius = radius;
-        turnDirection = direction;
+        if (0 == direction) {
+            turnDirection = -1;
+        } else {
+            turnDirection = 1;    
+        }
+        
 
         // Gets current heading
         float currentHeading = (float) currentStatus.heading;
@@ -804,7 +817,9 @@ void WaypointManager::clear_path_nodes() {
 }
 
 void WaypointManager::clear_home_base() {
-    destroy_waypoint(homeBase);
+    if (homeBase != nullptr) {
+        destroy_waypoint(homeBase);
+    }
 }
 
 void WaypointManager::destroy_waypoint(_PathData *waypoint) {
@@ -991,15 +1006,11 @@ int WaypointManager::get_current_index() {
 }
 
 int WaypointManager::get_id_of_current_index() {
-    return waypointBuffer[currentIndex]->waypointId;
+    return waypointBuffer[currentIndex] ? waypointBuffer[currentIndex]->waypointId : 0;
 }
 
 bool WaypointManager::is_home_base_initialized() {
-    if (homeBase) {
-        return true;
-    } else {
-        return false;
-    }
+    return homeBase ? true : false;
 }
 
 // For valgrind tests
