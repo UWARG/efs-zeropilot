@@ -71,15 +71,16 @@ double LandingManager::slowFlightSpeed(bool ifPackage)
 
 _LandingPath LandingManager::createSlopeWaypoints(Telemetry_PIGO_t input, double currentAltitude)
 {
+    //created comments for testing
     _LandingPath path;
-    path.stoppingPoint.latitude = input.latitude; //0
-    path.stoppingPoint.longitude = input.longitude; //0
-    path.stoppingPoint.altitude = input.altitude; //0
+    path.stoppingPoint.latitude = input.stoppingLatitude; //0
+    path.stoppingPoint.longitude = input.stoppingLongitude; //0
+    path.stoppingPoint.altitude = input.stoppingAltitude; //0
 
     //creating points from stopping point to aiming point 
     
     //setting Z of aiming point
-    path.aimingPoint.altitude = input.altitude; //0
+    path.aimingPoint.altitude = input.stoppingAltitude; //0
     
     //determining x and y of aiming point
     double radianDirection = input.stoppingDirectionHeading * PI / 180.0; //PI/4
@@ -89,15 +90,15 @@ _LandingPath LandingManager::createSlopeWaypoints(Telemetry_PIGO_t input, double
     double stoppingDistY = cos(radianDirection) * DISTANCE_OF_LANDING; //5root2
 
     //converting into x and y components in lat and lon
-    double metersPerDegLon = 40075000.0 * cos(input.latitude*PI/180)/360.0; //111251.6316
+    double metersPerDegLon = 40075000.0 * cos(input.stoppingLatitude*PI/180)/360.0; //111251.6316
     double stoppingDistLon = stoppingDistX / metersPerDegLon; //6.355922792e-5
     double stoppingDistLat = stoppingDistY / METERS_PER_DEG_LAT; //6.352019235e-5
 
  
 
     //subtracting the distances from stopping point to get aiming point
-    path.aimingPoint.longitude = input.longitude - stoppingDistLon;//1-6.355922792e-5
-    path.aimingPoint.latitude = input.latitude - stoppingDistLat; //2-6.352019235e-5
+    path.aimingPoint.longitude = input.stoppingLongitude - stoppingDistLon;//1-6.355922792e-5
+    path.aimingPoint.latitude = input.stoppingLatitude - stoppingDistLat; //2-6.352019235e-5
     
     //calculating the intersection point
 
@@ -116,7 +117,7 @@ _LandingPath LandingManager::createSlopeWaypoints(Telemetry_PIGO_t input, double
     double slopeDistLat = slopeDistY / METERS_PER_DEG_LAT;//7.042579472e-3
 
     //subtracting the distances from aiming point to get intersection point
-    path.intersectionPoint.longitude = path.aimingPoint.longitude - slopeDistLon; // 1-6.355922792e-5 - 7.046907407e-3 
+    path.intersectionPoint.longitude = path.aimingPoint.longitude - slopeDistLon; //1-6.355922792e-5 - 7.046907407e-3 
     path.intersectionPoint.latitude = path.aimingPoint.latitude - slopeDistLat; //2-6.352019235e-5 - 7.042579472e-3
 
 
