@@ -33,6 +33,9 @@ struct Telemetry_PIGO_t {
     bool packageOnBoard;
     float windDirectionHeading;
     float stoppingDirectionHeading;
+    float longitude;
+    float latitude;
+    float altitude;
     // Struct for stopping point gps coordinates
 
 };
