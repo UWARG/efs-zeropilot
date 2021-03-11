@@ -23,8 +23,8 @@ double LandingManager::changingAltitude(Telemetry_PIGO_t input, _PathData aiming
     Vector3D projectedPoint;
 
     //calculating the vectors
-    Vector3D vectorAI(aPoint.x - iPoint.x, aPoint.y - iPoint.y, aPoint.z - iPoint.z);
-    Vector3D vectorAS(aPoint.x - sPoint.x, aPoint.y - sPoint.y, aPoint.z - sPoint.z);
+    Vector3D vectorAI(iPoint.x - aPoint.x, iPoint.y - aPoint.y, iPoint.z - aPoint.z);
+    Vector3D vectorAS(sPoint.x - aPoint.x, sPoint.y - aPoint.y, sPoint.z - aPoint.z);
     Vector3D vectorAC(cPoint.x - aPoint.x, cPoint.y - aPoint.y, cPoint.z - aPoint.z);
     Vector3D normal;
     
