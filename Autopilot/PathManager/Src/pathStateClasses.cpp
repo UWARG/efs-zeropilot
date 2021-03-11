@@ -212,7 +212,6 @@ void landingTransitionStage::execute(pathManager* pathMgr)
     if(!pathMgr -> madeLandingPoints)
     {
         //requires data structure that dhruv wants to use 
-        landingPath = WaypointManager(0.0,0.0);
         path = LandingManager::createSlopeWaypoints(getFromTelemetry::telemetryInput, sensorFusion::sensorInput.altitude);
 
         //creating waypoints 
