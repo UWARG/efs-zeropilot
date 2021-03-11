@@ -1,11 +1,13 @@
 #pragma once
 #include "waypointManager.hpp"
+#include "pathDatatypes.hpp"
+#include "vectorClass.hpp"
 
 constexpr static double DISTANCE_OF_LANDING {10}; //in meters
-constexpr static int METERS_PER_DEG_LAT {111320};
-constexpr static int ANGLE_OF_LANDING {5}; //in degrees
-constexpr static int STALL_SPEED_NO_PACKAGE {20}; //in km/h
-constexpr static int STALL_SPEED_WITH_PACKAGE {30}; //in km/h
+constexpr static double METERS_PER_DEG_LAT {111320.0};
+constexpr static double ANGLE_OF_LANDING {5}; //in degrees
+constexpr static int STALL_SPEED_NO_PACKAGE {2}; //in m/s
+constexpr static int STALL_SPEED_WITH_PACKAGE {4}; //in m/s
 constexpr static double PI {3.14159265358979323846};
 constexpr static int FLARE_ALTITUDE {2}; //in meters
 constexpr static double DECRAB_ALTITUDE {0.7}; //in meters
@@ -57,7 +59,7 @@ class LandingManager : public WaypointManager{
             This function takes the coordinates of the landing spots and direction of landing
             Creates stopping points, aiming point, and intersection point
         */
-        static _LandingPath createSlopeWaypoints(Telemetry_PIGO_t input);
+        static _LandingPath createSlopeWaypoints(Telemetry_PIGO_t input, double currentAltitude);
 
 };
 
