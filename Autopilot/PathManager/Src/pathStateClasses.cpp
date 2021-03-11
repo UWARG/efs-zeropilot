@@ -154,13 +154,13 @@ void landingTransitionStage::execute(pathManager* pathMgr)
     if(!pathMgr -> madeLandingPoints)
     {
         //requires data structure that dhruv wants to use 
-        path = LandingManager::createSlopeWaypoints(getFromTelemetry::telemetryInput);
+        path = LandingManager::createSlopeWaypoints(getFromTelemetry::telemetryInput, sensorFusion::sensorInput.altitude);
 
         //creating waypoints 
         pathArray[0] = landingPath.initialize_waypoint(path.intersectionPoint.longitude, path.intersectionPoint.latitude, path.intersectionPoint.altitude, PATH_FOLLOW);
         pathArray[1] = landingPath.initialize_waypoint(path.aimingPoint.longitude, path.aimingPoint.latitude, path.aimingPoint.altitude, PATH_FOLLOW);
         pathArray[2] = landingPath.initialize_waypoint(path.stoppingPoint.longitude, path.stoppingPoint.latitude, path.stoppingPoint.altitude, PATH_FOLLOW);
-        currentLocation = landingPath.initialize_waypoint(); //fill in with sensor fusion data
+        currentLocation = landingPath.initialize_waypoint(sensorFusion::sensorInput.longitude, sensorFusion::sensorInput.latitude, sensorFusion::sensorInput.altitude, HOLD_WAYPOINT); //fill in with sensor fusion data
         //initializing flight path
         waypointStatus = landingPath.initialize_flight_path(pathArray, 3, currentLocation);
         
@@ -169,11 +169,11 @@ void landingTransitionStage::execute(pathManager* pathMgr)
     }
 
     //follow the landing waypoints
-    waypointStatus = landingPath.get_next_directions(getFromTelemetry::telemetryInput, &cruisingState::_outputdata);
+    waypointStatus = landingPath.get_next_directions(sensorFusion::sensorInput, &cruisingState::_outputdata);
 
     //calculating the difference in heading to detect if finished turning (2 differences in heading possible)
-    differenceInHeading1 = getFromTelemetry::telemetryInput.landingDirection - sensorFusion::input.track;
-    differenceInHeading2 = sensorFusion::input.track - getFromTelemetry::telemetryInput.landingDirection;
+    differenceInHeading1 = getFromTelemetry::telemetryInput.stoppingDirectionHeading - sensorFusion::sensorInput.track;
+    differenceInHeading2 = sensorFusion::sensorInput.track - getFromTelemetry::telemetryInput.stoppingDirectionHeading;
 
     //making sure both headings are positive
     if(differenceInHeading1 < 0){differenceInHeading1 += 360;}
@@ -215,7 +215,7 @@ pathManagerState& landingTransitionStage::getInstance()
 
 void landingSlopeStage::execute(pathManager* pathMgr)
 {
-    if(sensorFusion::input.altitude <= (FLARE_ALTITUDE+getFromTelemetry::telemetryInput.stoppingAltitude)) //if less than flare altitude
+    if(sensorFusion::sensorInput.altitude <= (FLARE_ALTITUDE+getFromTelemetry::telemetryInput.altitude)) //if less than flare altitude
     {
         pathMgr->stage = FLARE;
 
@@ -223,11 +223,11 @@ void landingSlopeStage::execute(pathManager* pathMgr)
     else
     {
         //aligning horizontal position using waypointManager get_next_directions
-        landingTransitionStage::waypointStatus = landingTransitionStage::landingPath.get_next_directions(getFromTelemetry::telemetryInput, &cruisingState::_outputdata);
+        landingTransitionStage::waypointStatus = landingTransitionStage::landingPath.get_next_directions(sensorFusion::sensorInput, &cruisingState::_outputdata);
         //retrieving desired altitude for slope state and setting it 
-        cruisingState::_outputdata.desiredAltitude = LandingManager::changingAltitude(getFromTelemetry::telemetryInput,landingTransitionStage::path.aimingPoint, landingTransitionStage::path.intersectionPoint, landingTransitionStage::path.stoppingPoint);
+        cruisingState::_outputdata.desiredAltitude = LandingManager::changingAltitude(sensorFusion::sensorInput,landingTransitionStage::path.aimingPoint, landingTransitionStage::path.intersectionPoint, landingTransitionStage::path.stoppingPoint);
         //retrieving desired speed for approach speed and setting it
-        cruisingState::_outputdata.desiredSpeed = LandingManager::approachSpeed(getFromTelemetry::telemetryInput.windSpeed, getFromTelemetry::telemetryInput.ifPackage);
+        cruisingState::_outputdata.desiredSpeed = LandingManager::approachSpeed(getFromTelemetry::telemetryInput.windSpeed, getFromTelemetry::telemetryInput.packageOnBoard);
     }
 
     if(landingTransitionStage::waypointStatus == INVALID_PARAMETERS)
@@ -253,17 +253,17 @@ pathManagerState& landingSlopeStage::getInstance()
 
 void landingFlareStage::execute(pathManager* pathMgr)
 {
-    if(sensorFusion::input.altitude <= (DECRAB_ALTITUDE + getFromTelemetry::telemetryInput.stoppingAltitude)) //altitude is below 70 cm
+    if(sensorFusion::sensorInput.altitude <= (DECRAB_ALTITUDE + getFromTelemetry::telemetryInput.altitude)) //altitude is below 70 cm
     {
         pathMgr->stage = DECRAB;
     }
     else
     {
         //maintaining horizontal position
-        landingTransitionStage::waypointStatus = landingTransitionStage::landingPath.get_next_directions(getFromTelemetry::telemetryInput, &cruisingState::_outputdata);
+        landingTransitionStage::waypointStatus = landingTransitionStage::landingPath.get_next_directions(sensorFusion::sensorInput, &cruisingState::_outputdata);
         //throttleOff()
         //maintaing speed for flare attitude
-        cruisingState::_outputdata.desiredSpeed = LandingManager::slowFlightSpeed(getFromTelemetry::telemetryInput.windSpeed, getFromTelemetry::telemetryInput.ifPackage);
+        cruisingState::_outputdata.desiredSpeed = LandingManager::slowFlightSpeed(getFromTelemetry::telemetryInput.packageOnBoard);
     }   
 
     if(landingTransitionStage::waypointStatus == INVALID_PARAMETERS)
@@ -290,7 +290,7 @@ pathManagerState& landingFlareStage::getInstance()
 
 void landingDecrabStage::execute(pathManager* pathMgr)
 {
-    if(sensorFusion::input.altitude <= (TOUCHDOWN_ALTITUDE + getFromTelemetry::telemetryInput.stoppingAltitude)) //altitude is 5 cm or less/ultrasonic sensor sensed 5cm or less
+    if(sensorFusion::sensorInput.altitude <= (TOUCHDOWN_ALTITUDE + getFromTelemetry::telemetryInput.altitude)) //altitude is 5 cm or less/ultrasonic sensor sensed 5cm or less
     {
         pathMgr->stage = TOUCHDOWN;
     }
@@ -299,7 +299,7 @@ void landingDecrabStage::execute(pathManager* pathMgr)
         //align heading with landing direction
         cruisingState::_outputdata.desiredHeading = getFromTelemetry::telemetryInput.stoppingDirectionHeading;
         //retrieving desired slow flight speed
-        cruisingState::_outputdata.desiredSpeed = LandingManager::slowFlightSpeed(getFromTelemetry::telemetryInput.windSpeed, getFromTelemetry::telemetryInput.ifPackage);
+        cruisingState::_outputdata.desiredSpeed = LandingManager::slowFlightSpeed(getFromTelemetry::telemetryInput.packageOnBoard);
         //throttleOff()
     }
 
@@ -327,7 +327,7 @@ void landingTouchdownStage::execute(pathManager* pathMgr)
 {
     //throttleOff()
     //aligning heading
-    cruisingState::_outputdata.desiredHeading = getFromTelemetry::telemetryInput.landingDirection;
+    cruisingState::_outputdata.desiredHeading = getFromTelemetry::telemetryInput.stoppingDirectionHeading;
     if(pathMgr -> isError)
     {
         pathMgr -> setState(fatalFailureMode::getInstance());
