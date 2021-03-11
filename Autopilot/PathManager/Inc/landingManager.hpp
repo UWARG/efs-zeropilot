@@ -36,7 +36,7 @@ class LandingManager : public WaypointManager{
             Projects the position to the vertical plane relative to the aimingPoint, intersectionPoint, and stoppingPoint
             Takes the one of the horizontal coordinates, plug it into the equation of the slope, get an altitude
         */
-        static double changingAltitude(Telemetry_PIGO_t input, _PathData aimingPoint, _PathData intersectionPoint, _PathData stoppingPoint);
+        static double changingAltitude(_WaypointManager_Data_In input, _PathData aimingPoint, _PathData intersectionPoint, _PathData stoppingPoint);
 
         /*
             This function sets the desired altitude so that the throttle turns off
