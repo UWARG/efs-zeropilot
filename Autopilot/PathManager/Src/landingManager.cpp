@@ -15,7 +15,7 @@ double LandingManager::changingAltitude(Telemetry_PIGO_t input, _PathData aiming
     //calculating the vectors
     Vector3D vectorAI(aPoint.x - iPoint.x, aPoint.y - iPoint.y, aPoint.z - iPoint.z);
     Vector3D vectorAS(aPoint.x - sPoint.x, aPoint.y - sPoint.y, aPoint.z - sPoint.z);
-    Vector3D vectorAC(aPoint.x - cPoint.x, aPoint.y - cPoint.y, aPoint.z - cPoint.z);
+    Vector3D vectorAC(cPoint.x - aPoint.x, cPoint.y - aPoint.y, cPoint.z - aPoint.z);
     Vector3D normal;
     
     //normal of the plane created by aiming, stopping, and intersection point
@@ -32,7 +32,7 @@ double LandingManager::changingAltitude(Telemetry_PIGO_t input, _PathData aiming
     projectedPoint = cPoint - projectionACToNormal;
 
     //determine the equation of the line of the slope and sub in projected values (symmetric form)
-    double altitude = (((projectedPoint.x - aPoint.x) / vectorAS.x) + aPoint.z) * vectorAS.z;
+    double altitude = (((projectedPoint.x - aPoint.x) / vectorAI.x) + aPoint.z) * vectorAI.z;
 
     return altitude;
 }
@@ -43,7 +43,7 @@ double LandingManager::throttleOff(void)
     return 0;
 }
 
-double approachSpeed(double windSpeed, bool ifPackage)
+double LandingManager::approachSpeed(double windSpeed, bool ifPackage)
 {
     //approach speed calculation for both package and no package scenarios
     if(ifPackage)
@@ -56,69 +56,69 @@ double approachSpeed(double windSpeed, bool ifPackage)
     }
 }
 
-double slowFlightSpeed(bool ifPackage)
+double LandingManager::slowFlightSpeed(bool ifPackage)
 {
     //slow flight speed calculation for both package and no package scenarios
     if(ifPackage)
     {
-        return STALL_SPEED_WITH_PACKAGE + 5;
+        return STALL_SPEED_WITH_PACKAGE + 2;
     }
     else 
     {
-        return STALL_SPEED_NO_PACKAGE + 5;
+        return STALL_SPEED_NO_PACKAGE + 2;
     }
 }
 
-_LandingPath LandingManager::createSlopeWaypoints(Telemetry_PIGO_t input)
+_LandingPath LandingManager::createSlopeWaypoints(Telemetry_PIGO_t input, double currentAltitude)
 {
     _LandingPath path;
-    path.stoppingPoint.latitude = input.stoppingLatitude;
-    path.stoppingPoint.longitude = input.stoppingLongitude;
-    path.stoppingPoint.altitude = input.stoppingAltitude;
+    path.stoppingPoint.latitude = input.latitude; //0
+    path.stoppingPoint.longitude = input.longitude; //0
+    path.stoppingPoint.altitude = input.altitude; //0
 
     //creating points from stopping point to aiming point 
     
     //setting Z of aiming point
-    path.aimingPoint.altitude = input.stoppingAltitude;
+    path.aimingPoint.altitude = input.altitude; //0
     
     //determining x and y of aiming point
-    double radianDirection = input.directionLanding * 180 / PI;
+    double radianDirection = input.stoppingDirectionHeading * PI / 180.0; //PI/4
 
     //finding the x and y components of the rolling distance vector
-    double stoppingDistX = sin(radianDirection) * DISTANCE_OF_LANDING;
-    double stoppingDistY = cos(radianDirection) * DISTANCE_OF_LANDING;
+    double stoppingDistX = sin(radianDirection) * DISTANCE_OF_LANDING; //5root2
+    double stoppingDistY = cos(radianDirection) * DISTANCE_OF_LANDING; //5root2
 
     //converting into x and y components in lat and lon
-    float stoppingDistLat = stoppingDistY / METERS_PER_DEG_LAT;
+    double metersPerDegLon = 40075000.0 * cos(input.latitude*PI/180)/360.0; //111251.6316
+    double stoppingDistLon = stoppingDistX / metersPerDegLon; //6.355922792e-5
+    double stoppingDistLat = stoppingDistY / METERS_PER_DEG_LAT; //6.352019235e-5
 
-    float metersPerDegLon = 40075000 * cos(input.stoppingLatitude)/360;
-
-    float stoppingDistLon = stoppingDistX / metersPerDegLon;
+ 
 
     //subtracting the distances from stopping point to get aiming point
-    path.aimingPoint.latitude = input.stoppingLatitude - stoppingDistLat;
-    path.aimingPoint.longitude = input.stoppingLongitude - stoppingDistLon;
-
+    path.aimingPoint.longitude = input.longitude - stoppingDistLon;//1-6.355922792e-5
+    path.aimingPoint.latitude = input.latitude - stoppingDistLat; //2-6.352019235e-5
+    
     //calculating the intersection point
 
     //determining altitude of intersection
-    path.intersectionPoint.altitude = input.altitude;
+    path.intersectionPoint.altitude = currentAltitude; //100
 
     //determining the horizontal distance of intersection
-    float horizDist = (input.altitude) / (ANGLE_OF_LANDING * PI / 180); //altitude in meters
+    double horizDist = (currentAltitude - path.aimingPoint.altitude) / tan(ANGLE_OF_LANDING * PI / 180.0); //altitude in meters //1108.715073
 
     //finding the x and y components of the horizDist vector
-    double slopeDistX = sin(radianDirection) * horizDist;
-    double slopeDistY = cos(radianDirection) * horizDist;
+    double slopeDistX = sin(radianDirection) * horizDist; //783.9799468
+    double slopeDistY = cos(radianDirection) * horizDist; //783.9799468
 
-    //converting x and y components
-    float slopeDistLat = slopeDistY / METERS_PER_DEG_LAT;
-
-    float slopeDistLon = slopeDistX / metersPerDegLon; //same conversion factor used here because we are flying at a relatively small scale. Lat adjustments will affect it very minimally
+    //converting x and y components 
+    double slopeDistLon = slopeDistX / metersPerDegLon;//7.046907407e-3 //same conversion factor used here because we are flying at a relatively small scale. Lat adjustments will affect it very minimally
+    double slopeDistLat = slopeDistY / METERS_PER_DEG_LAT;//7.042579472e-3
 
     //subtracting the distances from aiming point to get intersection point
-    path.intersectionPoint.latitude = path.aimingPoint.latitude - slopeDistLat;
-    path.intersectionPoint.longitude = path.aimingPoint.longitude - slopeDistLon;
+    path.intersectionPoint.longitude = path.aimingPoint.longitude - slopeDistLon; // 1-6.355922792e-5 - 7.046907407e-3 
+    path.intersectionPoint.latitude = path.aimingPoint.latitude - slopeDistLat; //2-6.352019235e-5 - 7.042579472e-3
+
 
     return path;
 }
