@@ -18,15 +18,15 @@ TEST(LandingFunctions, Test_changingAltitude){
 
     aimingPoint.longitude = 0;
     aimingPoint.latitude = 0;
-    aimingPoint.altitude = 0;
+    aimingPoint.altitude = 1;
 
     stoppingPoint.longitude = -1;
     stoppingPoint.latitude = -1;
-    stoppingPoint.altitude = 0;
+    stoppingPoint.altitude = 1;
 
     intersectionPoint.longitude = 1;
     intersectionPoint.latitude = 1;
-    intersectionPoint.altitude = 1;
+    intersectionPoint.altitude = 2;
 
     input.longitude = 1;
     input.latitude = 0;
@@ -35,7 +35,7 @@ TEST(LandingFunctions, Test_changingAltitude){
     
     double desiredAltitude = LandingManager::changingAltitude(input, aimingPoint, intersectionPoint, stoppingPoint);
     /***ASSERTS***/
-    EXPECT_NEAR(desiredAltitude, 0.5, 0.000001); //6 decimal places for altitude
+    EXPECT_NEAR(desiredAltitude, 1.5, 0.000001); //6 decimal places for altitude
 }
 
 TEST(LandingFunctions, Test_approachSpeed_packageTrue){ 
