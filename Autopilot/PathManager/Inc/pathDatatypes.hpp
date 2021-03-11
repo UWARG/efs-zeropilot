@@ -31,7 +31,7 @@ struct Telemetry_PIGO_t {
 
     // Nixon's stuff
     bool packageOnBoard;
-    float windDirectionHeading;
+    float windSpeed;
     float stoppingDirectionHeading;
     float longitude;
     float latitude;
