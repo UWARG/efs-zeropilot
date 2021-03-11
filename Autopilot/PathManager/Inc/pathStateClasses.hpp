@@ -101,6 +101,7 @@ class landingTransitionStage : public pathManagerState
         int waypointIDArray[PATH_BUFFER_SIZE];
         static _LandingPath path; //used to load in path
         static _PathData * pathArray[3]; //used to translate loaded in path to something the waypoint manager can take as a parameter
+        static _PathData * currentLocation;
         static _WaypointStatus waypointStatus; //used to catch errors
         static _PathData _waypointdata; 
         static double differenceInHeading1;

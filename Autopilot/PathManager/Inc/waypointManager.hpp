@@ -65,6 +65,7 @@ struct _WaypointManager_Data_Out{
     bool isDataNew;                     // Notifies PID modules if the data in this structure is new
     uint32_t timeOfData;                // The time that the data in this structure was collected
     _WaypointOutputType out_type;       // Output type (determines which parameters are defined)
+    double desiredSpeed;
 };
 
 class WaypointManager {
