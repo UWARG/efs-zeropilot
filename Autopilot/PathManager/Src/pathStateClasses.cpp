@@ -249,7 +249,7 @@ pathManagerState& landingTransitionStage::getInstance()
 
 void landingSlopeStage::execute(pathManager* pathMgr)
 {
-    if(sensorFusion::sensorInput.altitude <= (FLARE_ALTITUDE+getFromTelemetry::telemetryInput.altitude)) //if less than flare altitude
+    if(sensorFusion::sensorInput.altitude <= (FLARE_ALTITUDE+getFromTelemetry::telemetryInput.stoppingAltitude)) //if less than flare altitude
     {
         pathMgr->stage = FLARE;
 
@@ -287,7 +287,7 @@ pathManagerState& landingSlopeStage::getInstance()
 
 void landingFlareStage::execute(pathManager* pathMgr)
 {
-    if(sensorFusion::sensorInput.altitude <= (DECRAB_ALTITUDE + getFromTelemetry::telemetryInput.altitude)) //altitude is below 70 cm
+    if(sensorFusion::sensorInput.altitude <= (DECRAB_ALTITUDE + getFromTelemetry::telemetryInput.stoppingAltitude)) //altitude is below 70 cm
     {
         pathMgr->stage = DECRAB;
     }
@@ -324,7 +324,7 @@ pathManagerState& landingFlareStage::getInstance()
 
 void landingDecrabStage::execute(pathManager* pathMgr)
 {
-    if(sensorFusion::sensorInput.altitude <= (TOUCHDOWN_ALTITUDE + getFromTelemetry::telemetryInput.altitude)) //altitude is 5 cm or less/ultrasonic sensor sensed 5cm or less
+    if(sensorFusion::sensorInput.altitude <= (TOUCHDOWN_ALTITUDE + getFromTelemetry::telemetryInput.stoppingAltitude)) //altitude is 5 cm or less/ultrasonic sensor sensed 5cm or less
     {
         pathMgr->stage = TOUCHDOWN;
     }
