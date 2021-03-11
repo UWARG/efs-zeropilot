@@ -3,7 +3,7 @@
 #include <math.h>
 #include "vectorClass.hpp"
 
-double LandingManager::changingAltitude(Telemetry_PIGO_t input, _PathData aimingPoint, _PathData intersectionPoint, _PathData stoppingPoint)
+double LandingManager::changingAltitude(_WaypointManager_Data_In input, _PathData aimingPoint, _PathData intersectionPoint, _PathData stoppingPoint)
 {
     //vector declaration
     Vector3D aPoint(aimingPoint.longitude, aimingPoint.latitude, aimingPoint.altitude); //aiming point
