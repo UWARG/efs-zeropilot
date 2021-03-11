@@ -1,5 +1,7 @@
 #pragma once
 #include "waypointManager.hpp"
+#include "pathDatatypes.hpp"
+#include "vectorClass.hpp"
 
 const static int SET_THROTTLE_OFF = -1000;
 const static double DISTANCE_OF_LANDING = 10; //in meters
@@ -58,7 +60,7 @@ class LandingManager : public WaypointManager{
             This function takes the coordinates of the landing spots and direction of landing
             Creates stopping points, aiming point, and intersection point
         */
-        static _LandingPath createSlopeWaypoints(Telemetry_PIGO_t input);
+        static _LandingPath createSlopeWaypoints(Telemetry_PIGO_t input, double currentAltitude);
 
 };
 
