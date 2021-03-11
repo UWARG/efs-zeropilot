@@ -194,9 +194,9 @@ void landingTransitionStage::execute(pathManager* pathMgr)
         pathArray[0] = landingPath.initialize_waypoint(path.intersectionPoint.longitude, path.intersectionPoint.latitude, path.intersectionPoint.altitude, PATH_FOLLOW);
         pathArray[1] = landingPath.initialize_waypoint(path.aimingPoint.longitude, path.aimingPoint.latitude, path.aimingPoint.altitude, PATH_FOLLOW);
         pathArray[2] = landingPath.initialize_waypoint(path.stoppingPoint.longitude, path.stoppingPoint.latitude, path.stoppingPoint.altitude, PATH_FOLLOW);
-       
+        currentLocation = landingPath.initialize_waypoint(); //fill in with sensor fusion data
         //initializing flight path
-        waypointStatus = landingPath.initialize_flight_path(pathArray, 3,      );
+        waypointStatus = landingPath.initialize_flight_path(pathArray, 3, currentLocation);
         
         //set made madelandingPoints to true
         pathMgr->madeLandingPoints = true;
