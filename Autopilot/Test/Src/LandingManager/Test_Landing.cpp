@@ -14,7 +14,7 @@ TEST(LandingFunctions, Test_changingAltitude){
     _PathData aimingPoint;
     _PathData intersectionPoint;
     _PathData stoppingPoint;
-    Telemetry_PIGO_t input;
+    _WaypointManager_Data_In input;
 
     aimingPoint.longitude = 0;
     aimingPoint.latitude = 0;
