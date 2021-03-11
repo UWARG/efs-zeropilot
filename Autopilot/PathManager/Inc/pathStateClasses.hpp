@@ -77,6 +77,7 @@ class resetVariables : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
+        static _WaypointManager_Data_In sensorInput;
     private:
         resetVariables() {}
         resetVariables(const resetVariables& other);
