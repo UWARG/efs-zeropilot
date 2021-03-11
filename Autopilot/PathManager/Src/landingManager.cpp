@@ -81,6 +81,7 @@ double slowFlightSpeed(bool ifPackage)
 
 _LandingPath LandingManager::createSlopeWaypoints(Telemetry_PIGO_t input)
 {
+    //created comments for testing
     _LandingPath path;
     path.stoppingPoint.latitude = input.stoppingLatitude;
     path.stoppingPoint.longitude = input.stoppingLongitude;
