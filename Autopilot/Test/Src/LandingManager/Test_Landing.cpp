@@ -79,9 +79,9 @@ TEST(LandingFunctions, Test_slowFlightSpeed_packageFalse){
 TEST(LandingFunctions, Test_createSlopeWaypoints){ 
     /***SETUP***/
     Telemetry_PIGO_t input;
-    input.longitude = 1;
-    input.latitude = 2;
-    input.altitude = 3;
+    input.stoppingLongitude = 1;
+    input.stoppingLatitude = 2;
+    input.stoppingAltitude = 3;
     input.stoppingDirectionHeading = 45;
     double currentAltitude = 100;
     _LandingPath path;
