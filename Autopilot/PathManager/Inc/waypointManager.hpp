@@ -19,6 +19,7 @@ struct _WaypointManager_Data_In {
     long double longitude;
     int altitude;
     uint16_t heading;
+    double track;
 };
 
 // Stores error codes for the waypoint manager
