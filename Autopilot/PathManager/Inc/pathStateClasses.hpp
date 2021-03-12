@@ -106,7 +106,7 @@ class landingTransitionStage : public pathManagerState
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
 
-        WaypointManager landingPath; 
+        static WaypointManager landingPath;
         int waypointIDArray[PATH_BUFFER_SIZE];
         static _LandingPath path; //used to load in path
         static _PathData * pathArray[3]; //used to translate loaded in path to something the waypoint manager can take as a parameter
