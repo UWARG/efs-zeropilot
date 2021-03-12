@@ -24,7 +24,7 @@ void getFromTelemetry::execute(pathManager* pathMgr)
     else
     {
         pathMgr -> setState(getSensorData::getInstance());
-    
+    }
 }
 
 pathManagerState& getFromTelemetry::getInstance()
