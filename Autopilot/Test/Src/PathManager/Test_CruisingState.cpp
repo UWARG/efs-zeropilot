@@ -17,15 +17,15 @@ using ::testing::Test;
 
     Cases we want to test:
 
-        - Incorrect telemetry commands      (DONE)
+        - Incorrect telemetry commands     
         
         // Editing
-        - Initialzing the flight path           (DONE)
+        - Initialzing the flight path      
         - Nuking the flight path
-        - Appending (also test failing)      (DONE)
-        - Inserting (also test failing)      (DONE)
-        - Updating (also test failing)
-        - Deleting (also test failing)
+        - Appending (also test failing)    
+        - Inserting (also test failing)    
+        - Updating (also test failing)     
+        - Deleting (also test failing)   
 
         // Flight
         - Get next direction
@@ -63,7 +63,7 @@ static _OutputStatus compare_output_data(_WaypointManager_Data_Out *ans, _Waypoi
     if(ans->desiredAltitude == test->desiredAltitude && ans->desiredHeading == test->desiredHeading && ans->distanceToNextWaypoint == round(test->distanceToNextWaypoint) && ans->radius == test->radius && ans->turnDirection == test->turnDirection && ans->out_type == test->out_type) {
         return OUTPUT_CORRECT;
     } else {
-        // cout << "Comparing Output Data: Alt " << ans->desiredAltitude << " " << test->desiredAltitude << " | Heading " << ans->desiredHeading << " " << test->desiredHeading << " | Distance " << ans->distanceToNextWaypoint << " " << test->distanceToNextWaypoint << " | Radius " << ans->radius << " " << test->radius << " | Direction " << ans->turnDirection << " " << test->turnDirection << " | OutType " << ans->out_type << " " << test->out_type << endl;
+        cout << "Comparing Output Data: Alt " << ans->desiredAltitude << " " << test->desiredAltitude << " | Heading " << ans->desiredHeading << " " << test->desiredHeading << " | Distance " << ans->distanceToNextWaypoint << " " << test->distanceToNextWaypoint << " | Radius " << ans->radius << " " << test->radius << " | Direction " << ans->turnDirection << " " << test->turnDirection << " | OutType " << ans->out_type << " " << test->out_type << endl;
         return OUTPUT_INCORRECT;
     }
 }
@@ -97,7 +97,7 @@ static _ArrayStatus compare_arrays(_PathData ** ans, _PathData ** testArray, int
     }
 
     nextWaypoint = testArray[numElements - 1];
-    cout << "Checking backwards" << endl;
+    // cout << "Checking backwards" << endl;
 
     // Checks if previous are linked properly
     for(int i = numElements-1; i >= 0; i--) {
@@ -109,7 +109,7 @@ static _ArrayStatus compare_arrays(_PathData ** ans, _PathData ** testArray, int
         }
     }
 
-    cout << "Checking indexes" << endl;
+    // cout << "Checking indexes" << endl;
 
     // Checks if indexes are the same
     for(int i = 0; i < numElements; i++) {
@@ -1085,21 +1085,334 @@ TEST (CruisingState, DeleteWaypointFail) {
     EXPECT_EQ(flightPathStatusComparision, ARRAY_SUCCESS);
 }
 
+TEST (CruisingState, NextDirectionsRegularCorrect) {
+    /***********************SETUP***********************/
 
+    WaypointManager cruisingStateManager;
+
+    // Set up input telemetry data
+    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(-80.5479053969044, 43.47075830402289, 10, 0.0, 0);
+    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(-80.55044911526599, 43.469649460242174, 20, 0.0, 0);
+    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(-80.54172626568685, 43.46764349709017, 30, 0.0, 0);
+    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0);
+
+	TelemetryTestData.numWaypoints = 4;
+    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.initializingHomeBase = 0;
+    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.holdingAltitude = 0;
+    TelemetryTestData.holdingTurnRadius = 0;
+    TelemetryTestData.holdingTurnDirection = 0;
+    TelemetryTestData.nextId = 0;
+    TelemetryTestData.prevId = 0;
+    TelemetryTestData.modifyId = 10;
+    TelemetryTestData.homebase = *(createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0));    
+      
+    // Variables that will be modified as we go
+    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    bool goingHome = false, inHold = false; 
+
+    // Set up input data for waypoint manager:
+    TestInputData = {43.467998128, -80.537331184, 11, 100};  // latitude, longitude, altitude, heading
+
+    // Set up answer for output data
+    _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
+    ans1->desiredHeading = 294;         
+    ans1->desiredAltitude = 33;
+    ans1->distanceToNextWaypoint = 960;
+    ans1->radius = 0;
+    ans1->turnDirection = 0;
+    ans1->errorCode = WAYPOINT_SUCCESS;
+    ans1->isDataNew = true;
+    ans1->timeOfData = 0;
+    ans1->out_type = PATH_FOLLOW;
+
+	/********************DEPENDENCIES*******************/	
+	/********************STEPTHROUGH********************/
+
+    // Initialize waypoint manager for cruisingState
+    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+
+    TelemetryTestData.numWaypoints = 0;
+    TelemetryTestData.waypointModifyFlightPathCommand = 0; // Nothing
+    TelemetryTestData.waypointNextDirectionsCommand = 0; // Get next directions
+
+    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
+
+    editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
+    setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
+  
+    _OutputStatus returnedValuesSuccess = compare_output_data(ans1, &TestOutputData);
+
+	/**********************ASSERTS**********************/
+
+    EXPECT_EQ(TestReturnToGround.editingFlightPathErrorCode, 0);
+    EXPECT_EQ(TestReturnToGround.pathFollowingErrorCode, 0);
+    EXPECT_EQ(TestReturnToGround.currentWaypointId, 3);
+    EXPECT_EQ(TestReturnToGround.currentWaypointIndex, 2); // My dumbass when testing the waypoint manager made the currentWaypointIndex = 2 when calling this method
+    EXPECT_EQ(TestReturnToGround.homeBaseInitialized, false);
+
+    EXPECT_EQ(returnedValuesSuccess, OUTPUT_CORRECT);
+}
+
+TEST (CruisingState, NextDirectionsGoingHomeCorrect) {
+    /***********************SETUP***********************/
+
+    WaypointManager cruisingStateManager;
+
+    // Set up input telemetry data
+    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(-80.5479053969044, 43.47075830402289, 10, 0.0, 0);
+    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(-80.55044911526599, 43.469649460242174, 20, 0.0, 0);
+    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(-80.54172626568685, 43.46764349709017, 30, 0.0, 0);
+    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0);
+
+	TelemetryTestData.numWaypoints = 4;
+    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.initializingHomeBase = 1;
+    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.holdingAltitude = 0;
+    TelemetryTestData.holdingTurnRadius = 0;
+    TelemetryTestData.holdingTurnDirection = 0;
+    TelemetryTestData.nextId = 0;
+    TelemetryTestData.prevId = 0;
+    TelemetryTestData.modifyId = 10;
+    TelemetryTestData.homebase = *(createTelemetryWaypoint(-80.537331184, 43.467998128, 45, 0.0, 2));
+    
+    // Variables that will be modified as we go
+    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    bool goingHome = false, inHold = false; 
+
+    // Set up input data for waypoint manager:
+    TestInputData = {43.567998128, -80.437331184, 11, 100};  // latitude, longitude, altitude, heading
+
+    // Set up answer for output data
+    _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
+    ans1->desiredHeading = 215;        
+    ans1->desiredAltitude = 45;
+    ans1->distanceToNextWaypoint = 13755;
+    ans1->radius = 0;
+    ans1->turnDirection = 0;
+    ans1->errorCode = WAYPOINT_SUCCESS;
+    ans1->isDataNew = true;
+    ans1->timeOfData = 0;
+    ans1->out_type = PATH_FOLLOW;
+
+	/********************DEPENDENCIES*******************/	
+	/********************STEPTHROUGH********************/
+
+    // Initialize waypoint manager for cruisingState
+    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+
+    TelemetryTestData.numWaypoints = 0;
+    TelemetryTestData.waypointModifyFlightPathCommand = 0; // Nothing
+    TelemetryTestData.waypointNextDirectionsCommand = 2; // Head Home
+    TelemetryTestData.initializingHomeBase = 0; // Get next directions
+
+    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
+
+    editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);    
+    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Set going home to true
+    
+    TelemetryTestData.waypointNextDirectionsCommand = 0; // Regular path following
+    
+    pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Get next directions (output)
+
+    bool firstRunGoingHome = goingHome; // Store current going home value
+
+    TelemetryTestData.waypointNextDirectionsCommand = 2; // Head home
+
+    pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Set going home to false
+    setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
+  
+    _OutputStatus returnedValuesSuccess = compare_output_data(ans1, &TestOutputData);
+
+	/**********************ASSERTS**********************/
+
+    EXPECT_EQ(TestReturnToGround.editingFlightPathErrorCode, 0);
+    EXPECT_EQ(TestReturnToGround.pathFollowingErrorCode, 0);
+    // Fligh path should be cleared.
+    EXPECT_EQ(TestReturnToGround.currentWaypointId, 0);
+    EXPECT_EQ(TestReturnToGround.currentWaypointIndex, 0); 
+    EXPECT_EQ(TestReturnToGround.homeBaseInitialized, true);
+
+    EXPECT_EQ(firstRunGoingHome, true);
+    EXPECT_EQ(goingHome, false);
+
+    EXPECT_EQ(returnedValuesSuccess, OUTPUT_CORRECT);
+}
+
+TEST (CruisingState, GoingHomeHomeBaseUndefined) {
+    /***********************SETUP***********************/
+
+    WaypointManager cruisingStateManager;
+
+    // Set up input telemetry data
+    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(-80.5479053969044, 43.47075830402289, 10, 0.0, 0);
+    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(-80.55044911526599, 43.469649460242174, 20, 0.0, 0);
+    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(-80.54172626568685, 43.46764349709017, 30, 0.0, 0);
+    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0);
+
+	TelemetryTestData.numWaypoints = 4;
+    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.initializingHomeBase = 0;
+    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.holdingAltitude = 0;
+    TelemetryTestData.holdingTurnRadius = 0;
+    TelemetryTestData.holdingTurnDirection = 0;
+    TelemetryTestData.nextId = 0;
+    TelemetryTestData.prevId = 0;
+    TelemetryTestData.modifyId = 10;
+    TelemetryTestData.homebase = *(createTelemetryWaypoint(-80.537331184, 43.467998128, 45, 0.0, 2));
+    
+    // Variables that will be modified as we go
+    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    bool goingHome = false, inHold = false; 
+
+    // Set up input data for waypoint manager:
+    TestInputData = {43.567998128, -80.437331184, 11, 100};  // latitude, longitude, altitude, heading
+
+    // Set up answer for output data
+    _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
+    ans1->desiredHeading = 215;        
+    ans1->desiredAltitude = 45;
+    ans1->distanceToNextWaypoint = 13755;
+    ans1->radius = 0;
+    ans1->turnDirection = 0;
+    ans1->errorCode = WAYPOINT_SUCCESS;
+    ans1->isDataNew = true;
+    ans1->timeOfData = 0;
+    ans1->out_type = PATH_FOLLOW;
+
+	/********************DEPENDENCIES*******************/	
+	/********************STEPTHROUGH********************/
+
+    // Initialize waypoint manager for cruisingState
+    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+
+    TelemetryTestData.numWaypoints = 0;
+    TelemetryTestData.waypointModifyFlightPathCommand = 0; // Nothing
+    TelemetryTestData.waypointNextDirectionsCommand = 2; // Head Home
+    TelemetryTestData.initializingHomeBase = 0; // Get next directions
+
+    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
+
+    editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);    
+    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Set going home to true
+    setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
+
+	/**********************ASSERTS**********************/
+
+    EXPECT_EQ(TestReturnToGround.editingFlightPathErrorCode, 0);
+    EXPECT_EQ(TestReturnToGround.pathFollowingErrorCode, 3); // Should return special error code :))
+    // Fligh path should be cleared.
+    EXPECT_EQ(TestReturnToGround.currentWaypointId, 3);
+    EXPECT_EQ(TestReturnToGround.currentWaypointIndex, 2); 
+    EXPECT_EQ(TestReturnToGround.homeBaseInitialized, false);
+
+    EXPECT_EQ(goingHome, false);
+}
+
+TEST (CruisingState, NextDirectionsStartHoldingCorrect) {
+    /***********************SETUP***********************/
+
+    WaypointManager cruisingStateManager;
+
+    // Set up input telemetry data
+    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(-80.5479053969044, 43.47075830402289, 10, 0.0, 0);
+    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(-80.55044911526599, 43.469649460242174, 20, 0.0, 0);
+    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(-80.54172626568685, 43.46764349709017, 30, 0.0, 0);
+    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0);
+
+	TelemetryTestData.numWaypoints = 4;
+    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.initializingHomeBase = 1;
+    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.holdingAltitude = 78;
+    TelemetryTestData.holdingTurnRadius = 100;
+    TelemetryTestData.holdingTurnDirection = 0;
+    TelemetryTestData.nextId = 0;
+    TelemetryTestData.prevId = 0;
+    TelemetryTestData.modifyId = 10;
+    TelemetryTestData.homebase = *(createTelemetryWaypoint(-80.537331184, 43.467998128, 45, 0.0, 2));
+    
+    // Variables that will be modified as we go
+    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    bool goingHome = false, inHold = false; 
+
+    // Set up input data for waypoint manager:
+    _WaypointManager_Data_In setup1 = {43.467998128, -80.537331184, 100, 100};  // latitude, longitude, altitude, heading
+    TestInputData = {43.467998128, -80.537331184, 100, 100};  // latitude, longitude, altitude, heading
+
+    // Set up answer for output data
+    _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
+    ans1->desiredHeading = 100;        
+    ans1->desiredAltitude = 78;
+    ans1->distanceToNextWaypoint = 0;
+    ans1->radius = 100;
+    ans1->turnDirection = -1;
+    ans1->errorCode = WAYPOINT_SUCCESS;
+    ans1->isDataNew = true;
+    ans1->timeOfData = 0;
+    ans1->out_type = ORBIT_FOLLOW;
+
+	/********************DEPENDENCIES*******************/	
+	/********************STEPTHROUGH********************/
+
+    // Initialize waypoint manager for cruisingState
+    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+
+    TelemetryTestData.numWaypoints = 0;
+    TelemetryTestData.waypointModifyFlightPathCommand = 0; // Nothing
+    TelemetryTestData.waypointNextDirectionsCommand = 1; // Start circling
+    TelemetryTestData.initializingHomeBase = 0; // Get next directions
+
+    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
+
+    editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);  
+    // Send in set up input data  
+    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, setup1, &TestOutputData, goingHome, inHold); // Set going home to true
+    
+    TelemetryTestData.waypointNextDirectionsCommand = 0; // Regular path following
+    
+    pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Get next directions (output)
+
+    bool firstRunInHold = inHold; // Store current going home value
+
+    TelemetryTestData.waypointNextDirectionsCommand = 1; // Start circling
+
+    pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Set going home to false
+    setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
+  
+    _OutputStatus returnedValuesSuccess = compare_output_data(ans1, &TestOutputData);
+
+	/**********************ASSERTS**********************/
+
+    EXPECT_EQ(TestReturnToGround.editingFlightPathErrorCode, 0);
+    EXPECT_EQ(TestReturnToGround.pathFollowingErrorCode, 0);
+    EXPECT_EQ(TestReturnToGround.currentWaypointId, 3);
+    EXPECT_EQ(TestReturnToGround.currentWaypointIndex, 2); 
+    EXPECT_EQ(TestReturnToGround.homeBaseInitialized, true);
+
+    EXPECT_EQ(firstRunInHold, true);
+    EXPECT_EQ(inHold, false);
+
+    EXPECT_EQ(returnedValuesSuccess, OUTPUT_CORRECT);
+}
 
 /***********************SETUP***********************/
 
 
 
-	/********************DEPENDENCIES*******************/
+/********************DEPENDENCIES*******************/
 
 
 
-	/********************STEPTHROUGH********************/
-	
+/********************STEPTHROUGH********************/
 
 
-	/**********************ASSERTS**********************/
+
+/**********************ASSERTS**********************/
 
 
 

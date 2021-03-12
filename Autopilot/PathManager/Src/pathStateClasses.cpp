@@ -91,12 +91,6 @@ pathManagerState& sensorFusion::getInstance()
     return singleton;
 }
 
-/*
-REMOVE
-*/
-
-#include <iostream>
-
 void cruisingState::execute(pathManager* pathMgr)
 {
 
