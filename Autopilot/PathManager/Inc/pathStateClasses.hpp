@@ -207,3 +207,5 @@ class fatalFailureMode : public pathManagerState
         fatalFailureMode(const fatalFailureMode& other);
         fatalFailureMode& operator =(const fatalFailureMode& other);
 };
+
+
