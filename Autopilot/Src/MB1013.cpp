@@ -1,17 +1,18 @@
 #include "ultrasonic.h"
 #include "adc.h"
+#include <bits/stdint-uintn.h>
 #include <stddef.h>
 #include <cmath>
 
 #define ADC_RESOLUTION 4096 
-#define MILLIMETERS_TO_METERS = 1000;
+#define MILLIMETERS_TO_METERS = 1000
 
 MB1013::MB1013() {
     MX_ADC3_Init();
 
     HAL_StatusTypeDef status = HAL_ADC_Start(&hadc3);
     if (status != HAL_OK) {
-        status = -1;
+        status = FAILING;
     }
     
 }
@@ -25,7 +26,10 @@ MB1013* MB1013::GetInstance() {
     return staticInstance;
 }
 
-void MB1013::beginMeasuring() {}
+void MB1013::beginMeasuring() {
+    getDistance();
+    
+}
 
 float MB1013::getDistance() {
     uint16_t adcVal = HAL_ADC_GetValue(&hadc3);
@@ -36,4 +40,15 @@ float MB1013::getDistance() {
     float distanceInMeters = distanceInMillimeters*MILLIMETERS_TO_METERS;
 
     return distanceInMeters;
+}
+
+uint32_t MB1013:getCurrentTime() {
+    std::time_t result = std::time(0);
+    return static_cast<int>(result); // returns the time since the epoch
+}
+
+void MB1013::getData(ultrasonicData_t *Data) {
+    Data -> distance = getDistance();
+    Data -> utcTime = getCurrentTime();
+    Data -> isDataNew = true;
 }

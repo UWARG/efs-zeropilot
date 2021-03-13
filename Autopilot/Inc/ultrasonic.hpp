@@ -6,12 +6,14 @@
  #ifndef ULTRASONIC_HPP
  #define ULTRASONIC_HPP
 
- #include <stdint.h>
+ #include <bits/stdint-uintn.h>
+#include <stdint.h>
 
 typedef struct {
     float distance;
     bool isDataNew; // Holds whether the sensor data has been updated or not
-    enum status {FAILING=-1, SENT=0, RECEIVED=1}; // -1 for trig not sent and echo not received, 0 for trig sent, echo not received, and 1 for echo received
+    uint32_t utcTime; // The last time at which the result was called
+    enum status {FAILING=0, PASSING=1}; // -1 for trig not sent and echo not received, 0 for trig sent, echo not received, and 1 for echo received
  } ultrasonicData_t;
 
 
@@ -36,6 +38,7 @@ class MB1013 : public ultrasonic {
         void Init();
         void beginMeasuring();
         void getData(ultrasonicData_t * Data);
+        uint32_t getCurrentTime();
 
     private:
         MB1013();
