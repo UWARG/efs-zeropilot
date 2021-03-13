@@ -20,8 +20,8 @@
 
 typedef struct
 {
-    float currentHeading;    // degrees
-    float desiredHeading;    // degrees
+    float currentTrack;    // degrees
+    float desiredTrack;    // degrees
     float accY;              // Y axis accelerometer reading from the IMU.
 
 }CoordinatedTurnInput_t;

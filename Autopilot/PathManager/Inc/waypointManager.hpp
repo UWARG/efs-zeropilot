@@ -18,7 +18,7 @@ struct _WaypointManager_Data_In {
     long double latitude;
     long double longitude;
     int altitude;
-    uint16_t heading;
+    double track;
 };
 
 // Stores error codes for the waypoint manager
@@ -56,7 +56,7 @@ struct _PathData {
 * This data will be used by the PID and coordinated turn engine to determine the commands to be sent to the Attitude Manager.
 */
 struct _WaypointManager_Data_Out{
-    uint16_t desiredHeading;            // Desired heading to stay on path
+    uint16_t desiredTrack;            // Desired track to stay on path
     int desiredAltitude;                // Desired altitude at next waypoint
     long double distanceToNextWaypoint; // Distance to the next waypoint (helps with airspeed PID)
     float radius;                       // Radius of turn if required
@@ -104,7 +104,7 @@ public:
     /**
     * Updates the _WaypointManager_Data_Out structure with new values.
     *
-    * @param[in] _Waypoint_Data_In currentPosition -> contains the current coordinates, altitude, and heading
+    * @param[in] _Waypoint_Data_In currentPosition -> contains the current coordinates, altitude, heading, and track
     * @param[out] _WaypointManager_Data_Out &Data -> Memory address for a structure that holds the data for the state machine
     * 
     * @return status variable stating if any errors occured (0 means success)
@@ -213,7 +213,7 @@ private:
     //Home base
     _PathData * homeBase;
 
-    // For calculating desired heading
+    // For calculating desired track
     float k_gain[2] = {0.01, 1.0f};
 
     // Relative lat and long for coordinate calcilation
@@ -221,7 +221,7 @@ private:
     float relativeLatitude;
 
     //Data that will be transferred
-    uint16_t desiredHeading;
+    uint16_t desiredTrack;
     int desiredAltitude;
     long double distanceToNextWaypoint;
     _WaypointStatus errorCode;
@@ -238,17 +238,17 @@ private:
     float turnRadius;
 
     //Helper Methods
-    void follow_hold_pattern(float* position, float heading);
-    void follow_waypoints(_PathData * currentWaypoint, float* position, float heading);                               // Determines which of the methods below to call :))
-    void follow_line_segment(_PathData * currentWaypoint, float* position, float heading);                            // In the instance where the waypoint after the next is not defined, we continue on the path we are currently on
-    void follow_last_line_segment(_PathData * currentWaypoint, float* position, float heading);                       // In the instance where the next waypoint is not defined, follow previously defined path
-    void follow_orbit(float* position, float heading);                                                                // Makes the plane follow an orbit with defined radius and direction
-    void follow_straight_path(float* waypointDirection, float* targetWaypoint, float* position, float heading);       // Makes a plane follow a straight path (straight line following)
+    void follow_hold_pattern(float* position, float track);
+    void follow_waypoints(_PathData * currentWaypoint, float* position, float track);                               // Determines which of the methods below to call :))
+    void follow_line_segment(_PathData * currentWaypoint, float* position, float track);                            // In the instance where the waypoint after the next is not defined, we continue on the path we are currently on
+    void follow_last_line_segment(_PathData * currentWaypoint, float* position, float track);                       // In the instance where the next waypoint is not defined, follow previously defined path
+    void follow_orbit(float* position, float track);                                                                // Makes the plane follow an orbit with defined radius and direction
+    void follow_straight_path(float* waypointDirection, float* targetWaypoint, float* position, float track);       // Makes a plane follow a straight path (straight line following)
 
     void update_return_data(_WaypointManager_Data_Out *Data);       // Updates data in the output structure
 
     /**
-    * Takes GPS long and lat data and converts it into coordinates (better for calculating headings and stuff)
+    * Takes GPS long and lat data and converts it into coordinates (better for calculating tracks and stuff)
     *
     * @param[in] long double longitude -> GPS longitide
     * @param[in] long double latitude -> GPS latitude

@@ -80,10 +80,10 @@ static _WaypointSt compare_waypoint(_PathData * ans, _PathData * test) {
 }
 
 static _OutputStatus compare_output_data(_WaypointManager_Data_Out *ans, _WaypointManager_Data_Out *test) {
-    if(ans->desiredAltitude == test->desiredAltitude && ans->desiredHeading == test->desiredHeading && ans->distanceToNextWaypoint == round(test->distanceToNextWaypoint) && ans->radius == test->radius && ans->turnDirection == test->turnDirection && ans->out_type == test->out_type) {
+    if(ans->desiredAltitude == test->desiredAltitude && ans->desiredTrack == test->desiredTrack && ans->distanceToNextWaypoint == round(test->distanceToNextWaypoint) && ans->radius == test->radius && ans->turnDirection == test->turnDirection && ans->out_type == test->out_type) {
         return OUTPUT_CORRECT;
     } else {
-        // cout << "Comparing Output Data: Alt " << ans->desiredAltitude << " " << test->desiredAltitude << " | Heading " << ans->desiredHeading << " " << test->desiredHeading << " | Distance " << ans->distanceToNextWaypoint << " " << test->distanceToNextWaypoint << " | Radius " << ans->radius << " " << test->radius << " | Direction " << ans->turnDirection << " " << test->turnDirection << " | OutType " << ans->out_type << " " << test->out_type << endl;
+        // cout << "Comparing Output Data: Alt " << ans->desiredAltitude << " " << test->desiredAltitude << " | Track " << ans->desiredTrack << " " << test->desiredTrack << " | Distance " << ans->distanceToNextWaypoint << " " << test->distanceToNextWaypoint << " | Radius " << ans->radius << " " << test->radius << " | Direction " << ans->turnDirection << " " << test->turnDirection << " | OutType " << ans->out_type << " " << test->out_type << endl;
         return OUTPUT_INCORRECT;
     }
 }
@@ -180,10 +180,10 @@ TEST(Waypoint_Manager, InitializedFlightPathAndHomeBase) {
 }
 
 
-/************************ TESTING GETTING DESIRED HEADING/ALTITUDE/ETC ************************/
+/************************ TESTING GETTING DESIRED TRACK/ALTITUDE/ETC ************************/
 
 
-TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
+TEST(Waypoint_Manager, DesiredTrackForOrbit) {
     /***********************SETUP***********************/
 
     WaypointManager * waypointManagerInstance = new WaypointManager(43.467998128, -80.537331184); // Creates object
@@ -193,16 +193,16 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
     _WaypointManager_Data_Out * out2 = new _WaypointManager_Data_Out;
 
     // Creates two test values!
-    _WaypointManager_Data_In setup1 = {43.467998128, -80.537331184, 100, 100};  // latitude, longitude, altitude, heading
-    _WaypointManager_Data_In setup2 = {43.467998128, -80.537331184, 100, 30};  // latitude, longitude, altitude, heading
+    _WaypointManager_Data_In setup1 = {43.467998128, -80.537331184, 100, 100};  // latitude, longitude, altitude, track
+    _WaypointManager_Data_In setup2 = {43.467998128, -80.537331184, 100, 30};  // latitude, longitude, altitude, track
 
-    _WaypointManager_Data_In input1 = {43.467998128, -80.537331184, 100, 100};  // latitude, longitude, altitude, heading
-    _WaypointManager_Data_In input2 = {43.467998128, -80.537331184, 100, 30};  // latitude, longitude, altitude, heading
+    _WaypointManager_Data_In input1 = {43.467998128, -80.537331184, 100, 100};  // latitude, longitude, altitude, track
+    _WaypointManager_Data_In input2 = {43.467998128, -80.537331184, 100, 30};  // latitude, longitude, altitude, track
 
     // Stores answers for four tests
     float center_ans1[3] = {-80.54500000, 43.47138889, 78}; // longitude, latitude, altitude
     _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
-    ans1->desiredHeading = 100;        
+    ans1->desiredTrack = 100;        
     ans1->desiredAltitude = 78;
     ans1->distanceToNextWaypoint = 0;
     ans1->radius = 100;
@@ -214,7 +214,7 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
 
     float center_ans2[3] = {-80.54527778, 43.47250000, 110}; 
     _WaypointManager_Data_Out * ans2 = new _WaypointManager_Data_Out;
-    ans2->desiredHeading = 30;       
+    ans2->desiredTrack = 30;       
     ans2->desiredAltitude = 110;
     ans2->distanceToNextWaypoint = 0;
     ans2->radius = 30;
@@ -271,7 +271,7 @@ TEST(Waypoint_Manager, DesiredHeadingForOrbit) {
     EXPECT_EQ(test2_output, OUTPUT_CORRECT);
 }
 
-TEST(Waypoint_Manager, DesiredHeadingStraightPathFollow) {
+TEST(Waypoint_Manager, DesiredTrackStraightPathFollow) {
     WaypointManager * waypointManagerInstance = new WaypointManager(43.467998128, -80.537331184); // Creates object
 
     // Stores outputs from four tests
@@ -279,12 +279,12 @@ TEST(Waypoint_Manager, DesiredHeadingStraightPathFollow) {
     _WaypointManager_Data_Out * out2 = new _WaypointManager_Data_Out;
 
     // Creates two test values!    
-    _WaypointManager_Data_In input1 = {43.467998128, -80.537331184, 11, 100};  // latitude, longitude, altitude, heading
-    _WaypointManager_Data_In input2 = {43.469649460242174, -80.55044911526599, 34, 86};  // latitude, longitude, altitude, heading
+    _WaypointManager_Data_In input1 = {43.467998128, -80.537331184, 11, 100};  // latitude, longitude, altitude, track
+    _WaypointManager_Data_In input2 = {43.469649460242174, -80.55044911526599, 34, 86};  // latitude, longitude, altitude, track
 
     // Stores answers for tests
     _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
-    ans1->desiredHeading = 294;         
+    ans1->desiredTrack = 294;         
     ans1->desiredAltitude = 33;
     ans1->distanceToNextWaypoint = 960;
     ans1->radius = 0;
@@ -295,7 +295,7 @@ TEST(Waypoint_Manager, DesiredHeadingStraightPathFollow) {
     ans1->out_type = PATH_FOLLOW;
 
     _WaypointManager_Data_Out * ans2 = new _WaypointManager_Data_Out;
-    ans2->desiredHeading = 153;        
+    ans2->desiredTrack = 153;        
     ans2->desiredAltitude = 33;
     ans2->distanceToNextWaypoint = 625;
     ans2->radius = 0;
@@ -352,7 +352,7 @@ TEST(Waypoint_Manager, DesiredHeadingStraightPathFollow) {
     EXPECT_EQ(output_check_2, OUTPUT_CORRECT);
 }
 
-TEST(Waypoint_Manager, DesiredHeadingWhenNextToNextWaypointNotDefined) {
+TEST(Waypoint_Manager, DesiredTrackWhenNextToNextWaypointNotDefined) {
     /***********************SETUP***********************/
     WaypointManager * waypointManagerInstance = new WaypointManager(43.467998128, -80.537331184); // Creates object
 
@@ -361,12 +361,12 @@ TEST(Waypoint_Manager, DesiredHeadingWhenNextToNextWaypointNotDefined) {
     _WaypointManager_Data_Out * out2 = new _WaypointManager_Data_Out;
 
     // Creates two test values!    
-    _WaypointManager_Data_In input1 = {43.467998128, -80.537331184, 11, 100};  // latitude, longitude, altitude, heading
-    _WaypointManager_Data_In input2 = {43.469649460242174, -80.55044911526599, 34, 86};  // latitude, longitude, altitude, heading
+    _WaypointManager_Data_In input1 = {43.467998128, -80.537331184, 11, 100};  // latitude, longitude, altitude, track
+    _WaypointManager_Data_In input2 = {43.469649460242174, -80.55044911526599, 34, 86};  // latitude, longitude, altitude, track
 
     // Stores answers for tests
     _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
-    ans1->desiredHeading = 294;         
+    ans1->desiredTrack = 294;         
     ans1->desiredAltitude = 33;
     ans1->distanceToNextWaypoint = 960;
     ans1->radius = 0;
@@ -377,7 +377,7 @@ TEST(Waypoint_Manager, DesiredHeadingWhenNextToNextWaypointNotDefined) {
     ans1->out_type = PATH_FOLLOW;
 
     _WaypointManager_Data_Out * ans2 = new _WaypointManager_Data_Out;
-    ans2->desiredHeading = 153;        
+    ans2->desiredTrack = 153;        
     ans2->desiredAltitude = 33;
     ans2->distanceToNextWaypoint = 625;
     ans2->radius = 0;
@@ -434,7 +434,7 @@ TEST(Waypoint_Manager, DesiredHeadingWhenNextToNextWaypointNotDefined) {
     EXPECT_EQ(output_check_2, OUTPUT_CORRECT);
 }
 
-TEST(Waypoint_Manager, DesiredHeadingNextWaypointNotDefined) {
+TEST(Waypoint_Manager, DesiredTrackNextWaypointNotDefined) {
     /***********************SETUP***********************/
     WaypointManager * waypointManagerInstance = new WaypointManager(43.467998128, -80.537331184); // Creates object
 
@@ -443,12 +443,12 @@ TEST(Waypoint_Manager, DesiredHeadingNextWaypointNotDefined) {
     _WaypointManager_Data_Out * out2 = new _WaypointManager_Data_Out;
 
     // Creates two test values!    
-    _WaypointManager_Data_In input1 = {43.467998128, -80.537331184, 11, 100};  // latitude, longitude, altitude, heading
-    _WaypointManager_Data_In input2 = {43.469649460242174, -80.55044911526599, 34, 86};  // latitude, longitude, altitude, heading
+    _WaypointManager_Data_In input1 = {43.467998128, -80.537331184, 11, 100};  // latitude, longitude, altitude, track
+    _WaypointManager_Data_In input2 = {43.469649460242174, -80.55044911526599, 34, 86};  // latitude, longitude, altitude, track
 
     // Stores answers for tests
     _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
-    ans1->desiredHeading = 263;         
+    ans1->desiredTrack = 263;         
     ans1->desiredAltitude = 30;
     ans1->distanceToNextWaypoint = 358;
     ans1->radius = 0;
@@ -459,7 +459,7 @@ TEST(Waypoint_Manager, DesiredHeadingNextWaypointNotDefined) {
     ans1->out_type = PATH_FOLLOW;
 
     _WaypointManager_Data_Out * ans2 = new _WaypointManager_Data_Out;
-    ans2->desiredHeading = 107;        
+    ans2->desiredTrack = 107;        
     ans2->desiredAltitude = 30;
     ans2->distanceToNextWaypoint = 739;
     ans2->radius = 0;
@@ -515,7 +515,7 @@ TEST(Waypoint_Manager, DesiredHeadingNextWaypointNotDefined) {
     EXPECT_EQ(output_check_2, OUTPUT_CORRECT);
 }
 
-TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
+TEST(Waypoint_Manager, DesiredTrackWhenGoingHomeSetTrue) {
     /***********************SETUP***********************/
     WaypointManager * waypointManagerInstance = new WaypointManager(43.467998128, -80.537331184); // Creates object
 
@@ -525,13 +525,13 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
     _WaypointManager_Data_Out * out3 = new _WaypointManager_Data_Out;
     
     // Creates two test values!    
-    _WaypointManager_Data_In input1 = {43.567998128, -80.437331184, 11, 100};  // latitude, longitude, altitude, heading
-    _WaypointManager_Data_In input2 = {43.369649460242174, -80.37044911526599, 34, 86};  // latitude, longitude, altitude, heading
-    _WaypointManager_Data_In input3 = {43.469649460242174, -80.55044911526599, 34, 86};  // latitude, longitude, altitude, heading
+    _WaypointManager_Data_In input1 = {43.567998128, -80.437331184, 11, 100};  // latitude, longitude, altitude, track
+    _WaypointManager_Data_In input2 = {43.369649460242174, -80.37044911526599, 34, 86};  // latitude, longitude, altitude, track
+    _WaypointManager_Data_In input3 = {43.469649460242174, -80.55044911526599, 34, 86};  // latitude, longitude, altitude, track
 
     // Stores answers for four tests
     _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
-    ans1->desiredHeading = 215;        
+    ans1->desiredTrack = 215;        
     ans1->desiredAltitude = 45;
     ans1->distanceToNextWaypoint = 13755;
     ans1->radius = 0;
@@ -542,7 +542,7 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
     ans1->out_type = PATH_FOLLOW;
 
     _WaypointManager_Data_Out * ans2 = new _WaypointManager_Data_Out;
-    ans2->desiredHeading = 310;       
+    ans2->desiredTrack = 310;       
     ans2->desiredAltitude = 45;
     ans2->distanceToNextWaypoint = 17368;
     ans2->radius = 0;
@@ -553,7 +553,7 @@ TEST(Waypoint_Manager, DesiredHeadingWhenGoingHomeSetTrue) {
     ans2->out_type = PATH_FOLLOW;
 
     _WaypointManager_Data_Out * ans3 = new _WaypointManager_Data_Out;
-    ans3->desiredHeading = 153;        
+    ans3->desiredTrack = 153;        
     ans3->desiredAltitude = 33;
     ans3->distanceToNextWaypoint = 625;
     ans3->radius = 0;

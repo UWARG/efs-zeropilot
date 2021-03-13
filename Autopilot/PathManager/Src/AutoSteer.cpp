@@ -47,7 +47,7 @@ void AutoSteer_Init(void)
 void AutoSteer_ComputeCoordinatedTurn(CoordinatedTurnInput_t *Input, CoordinatedTurnAttitudeManagerCommands_t *AttManCommands)
 {
 
-    float bankAngle = bankPid.execute(Input->desiredHeading, Input->currentHeading);
+    float bankAngle = bankPid.execute(Input->desiredTrack, Input->currentTrack);
 
     float rudderSetPoint = GetRudderPercent(bankAngle);
 
