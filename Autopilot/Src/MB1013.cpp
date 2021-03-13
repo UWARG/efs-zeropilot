@@ -12,7 +12,7 @@ MB1013::MB1013() {
 
     HAL_StatusTypeDef status = HAL_ADC_Start(&hadc3);
     if (status != HAL_OK) {
-        status = FAILING;
+        // Houston, we have a problem
     }
     
 }
@@ -51,4 +51,5 @@ void MB1013::getData(ultrasonicData_t *Data) {
     Data -> distance = getDistance();
     Data -> utcTime = getCurrentTime();
     Data -> isDataNew = true;
+    Data -> status = PASSING;
 }
