@@ -9,7 +9,6 @@ Telemetry_PIGO_t commsWithTelemetry::_incomingData;
 _CruisingState_Telemetry_Return cruisingState::_returnToGround;
 _WaypointManager_Data_In cruisingState::_inputdata;
 _WaypointManager_Data_Out cruisingState::_outputdata; 
-int cruisingState::waypointIDArray[PATH_BUFFER_SIZE];
 
 /***********************************************************************************************************************
  * Code

@@ -122,6 +122,9 @@ int editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingSt
 
         // cout << "Initialize flight path" << endl;
 
+        cruisingStateManager.clear_path_nodes(); // Nukes current flight path (ensures there are no memory leaks)
+        clearArray(idArray);
+
         _PathData * newFlightPath[PATH_BUFFER_SIZE];
 
         for(int i = 0; i < telemetryData->numWaypoints && i < PATH_BUFFER_SIZE; i++) {
@@ -141,13 +144,10 @@ int editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingSt
                 newFlightPath[i] = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[i]->longitude, telemetryData->waypoints[i]->latitude, telemetryData->waypoints[i]->altitude, waypointType, telemetryData->waypoints[i]->turnRadius); 
             }
 
-            // cout << idArray[i] << " ";
+            // cout << newFlightPath[i]->waypointId << endl;
             appendNewElement(idArray, newFlightPath[i]->waypointId); // Append elements to the idArray while we go :))
             // cout << idArray[i] << endl;
         }
-
-        cruisingStateManager.clear_path_nodes(); // Nukes current flight path (ensures there are no memory leaks)
-        clearArray(idArray);
 
         if (telemetryData->initializingHomeBase) { // If we are initializing the home base object too
             // cout << "Homebase stuff" << endl;
@@ -284,6 +284,7 @@ void appendNewElement(int * idArray, int newId) {
             idArray[counter] = newId;
             appended = true;
         }
+
         counter++;
     }
 }

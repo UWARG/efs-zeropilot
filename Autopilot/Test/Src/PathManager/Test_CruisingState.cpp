@@ -187,6 +187,11 @@ TEST (CruisingState, IncorrectTelemetryCommandsReturnErrorCode) {
     int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
 
+    // Remove heap-allocated memory
+    cruisingStateManager.clear_path_nodes();
+    cruisingStateManager.clear_home_base();
+    delete TelemetryTestData.waypoints[0];
+
 	/**********************ASSERTS**********************/
 
     EXPECT_EQ(TestReturnToGround.editingFlightPathErrorCode, 2);
@@ -271,6 +276,12 @@ TEST (CruisingState, InitializeFlightPathSuccess) {
 
     _PathData * home = cruisingStateManager.get_home_base();
     _WaypointSt homeBaseComparision = compare_waypoint(testHomeBase, home);
+    
+    // Remove heap-allocated memory 
+    cruisingStateManager.clear_path_nodes();
+    delete testHomeBase;
+    delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3];
+    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
 
 	/**********************ASSERTS**********************/
 
@@ -280,7 +291,7 @@ TEST (CruisingState, InitializeFlightPathSuccess) {
     EXPECT_EQ(TestReturnToGround.currentWaypointIndex, 2); // My dumbass when testing the waypoint manager made the currentWaypointIndex = 2 when calling this method
     EXPECT_EQ(TestReturnToGround.homeBaseInitialized, true);
 
-    // EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
+    EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
     EXPECT_EQ(flightPathComparision, ARRAY_SUCCESS);
     EXPECT_EQ(flightPathStatusComparision, ARRAY_SUCCESS);
     EXPECT_EQ(homeBaseComparision, WAYPOINT_CORRECT);
@@ -346,6 +357,8 @@ TEST (CruisingState, NukeFlightPathSuccess) {
     _PathData ** flightPath = cruisingStateManager.get_waypoint_buffer();
     _ArrayStatus flightPathComparision = compare_arrays(testFlightPath, flightPath, 0);
     _ArrayStatus flightPathStatusComparision = compare_buffer_status(testStatus, cruisingStateManager);
+
+    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
 
 	/**********************ASSERTS**********************/
 
@@ -415,7 +428,7 @@ TEST (CruisingState, AppendWaypointSuccess) {
     }
     
     // Variables that will be modified as we go
-    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    int idArray[PATH_BUFFER_SIZE] = {0};
     bool goingHome = false, inHold = false; 
 
 	/********************DEPENDENCIES*******************/	
@@ -440,6 +453,11 @@ TEST (CruisingState, AppendWaypointSuccess) {
     _ArrayStatus flightPathComparision = compare_arrays(testFlightPath, flightPath, 5);
     _ArrayStatus flightPathStatusComparision = compare_buffer_status(testStatus, cruisingStateManager);
 
+    // Remove heap-allocated stuff
+    cruisingStateManager.clear_path_nodes();
+    delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3]; delete testFlightPath[4];
+    delete TelemetryTestData.waypoints[0];
+
 	/**********************ASSERTS**********************/
 
     EXPECT_EQ(TestReturnToGround.editingFlightPathErrorCode, 0);
@@ -448,7 +466,7 @@ TEST (CruisingState, AppendWaypointSuccess) {
     EXPECT_EQ(TestReturnToGround.currentWaypointIndex, 2); // My dumbass when testing the waypoint manager made the currentWaypointIndex = 2 when calling this method
     EXPECT_EQ(TestReturnToGround.homeBaseInitialized, false);
 
-    // EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
+    EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
     EXPECT_EQ(flightPathComparision, ARRAY_SUCCESS);
     EXPECT_EQ(flightPathStatusComparision, ARRAY_SUCCESS);
 }
@@ -482,7 +500,6 @@ TEST (CruisingState, AppendWaypointFail) {
     idTestArray[1] = 2;
     idTestArray[2] = 3;
     idTestArray[3] = 4;
-    idTestArray[4] = 5;
     
     // Set up flight path array (desired result)
 
@@ -531,6 +548,11 @@ TEST (CruisingState, AppendWaypointFail) {
     _ArrayStatus flightPathComparision = compare_arrays(testFlightPath, flightPath, 4);
     _ArrayStatus flightPathStatusComparision = compare_buffer_status(testStatus, cruisingStateManager);
 
+    // Remove heap-allocated stuff
+    cruisingStateManager.clear_path_nodes();
+    delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3];
+    delete TelemetryTestData.waypoints[0];
+
 	/**********************ASSERTS**********************/
 
     EXPECT_EQ(TestReturnToGround.editingFlightPathErrorCode, 1);
@@ -539,7 +561,7 @@ TEST (CruisingState, AppendWaypointFail) {
     EXPECT_EQ(TestReturnToGround.currentWaypointIndex, 2); 
     EXPECT_EQ(TestReturnToGround.homeBaseInitialized, false);
 
-    // EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
+    EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
     EXPECT_EQ(flightPathComparision, ARRAY_SUCCESS);
     EXPECT_EQ(flightPathStatusComparision, ARRAY_SUCCESS);
 }
@@ -624,6 +646,11 @@ TEST (CruisingState, InsertWaypointSuccess) {
     _ArrayStatus flightPathComparision = compare_arrays(testFlightPath, flightPath, 5);
     _ArrayStatus flightPathStatusComparision = compare_buffer_status(testStatus, cruisingStateManager);
 
+    // Remove heap-allocated stuff
+    cruisingStateManager.clear_path_nodes();
+    delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3]; delete testFlightPath[4];
+    delete TelemetryTestData.waypoints[0];
+
 	/**********************ASSERTS**********************/
 
     EXPECT_EQ(TestReturnToGround.editingFlightPathErrorCode, 0);
@@ -632,7 +659,7 @@ TEST (CruisingState, InsertWaypointSuccess) {
     EXPECT_EQ(TestReturnToGround.currentWaypointIndex, 2); // My dumbass when testing the waypoint manager made the currentWaypointIndex = 2 when calling this method
     EXPECT_EQ(TestReturnToGround.homeBaseInitialized, false);
 
-    // EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
+    EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
     EXPECT_EQ(flightPathComparision, ARRAY_SUCCESS);
     EXPECT_EQ(flightPathStatusComparision, ARRAY_SUCCESS);
 }
@@ -714,6 +741,11 @@ TEST (CruisingState, InsertWaypointFail) {
     _ArrayStatus flightPathComparision = compare_arrays(testFlightPath, flightPath, 4);
     _ArrayStatus flightPathStatusComparision = compare_buffer_status(testStatus, cruisingStateManager);
 
+    // Remove heap-allocated stuff
+    cruisingStateManager.clear_path_nodes();
+    delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3]; 
+    delete TelemetryTestData.waypoints[0];
+
 	/**********************ASSERTS**********************/
 
     EXPECT_EQ(TestReturnToGround.editingFlightPathErrorCode, 1);
@@ -722,7 +754,7 @@ TEST (CruisingState, InsertWaypointFail) {
     EXPECT_EQ(TestReturnToGround.currentWaypointIndex, 2); // My dumbass when testing the waypoint manager made the currentWaypointIndex = 2 when calling this method
     EXPECT_EQ(TestReturnToGround.homeBaseInitialized, false);
 
-    // EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
+    EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
     EXPECT_EQ(flightPathComparision, ARRAY_SUCCESS);
     EXPECT_EQ(flightPathStatusComparision, ARRAY_SUCCESS);
 }
@@ -805,6 +837,11 @@ TEST (CruisingState, UpdateWaypointSuccess) {
     _ArrayStatus flightPathComparision = compare_arrays(testFlightPath, flightPath, 4);
     _ArrayStatus flightPathStatusComparision = compare_buffer_status(testStatus, cruisingStateManager);
 
+    // Remove heap-allocated stuff
+    cruisingStateManager.clear_path_nodes();
+    delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3];
+    delete TelemetryTestData.waypoints[0];
+
 	/**********************ASSERTS**********************/
 
     EXPECT_EQ(TestReturnToGround.editingFlightPathErrorCode, 0);
@@ -813,7 +850,7 @@ TEST (CruisingState, UpdateWaypointSuccess) {
     EXPECT_EQ(TestReturnToGround.currentWaypointIndex, 2); // My dumbass when testing the waypoint manager made the currentWaypointIndex = 2 when calling this method
     EXPECT_EQ(TestReturnToGround.homeBaseInitialized, false);
 
-    // EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
+    EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
     EXPECT_EQ(flightPathComparision, ARRAY_SUCCESS);
     EXPECT_EQ(flightPathStatusComparision, ARRAY_SUCCESS);
 }
@@ -895,6 +932,11 @@ TEST (CruisingState, UpdateWaypointFail) {
     _ArrayStatus flightPathComparision = compare_arrays(testFlightPath, flightPath, 4);
     _ArrayStatus flightPathStatusComparision = compare_buffer_status(testStatus, cruisingStateManager);
 
+    // Remove heap-allocated stuff
+    cruisingStateManager.clear_path_nodes();
+    delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3];
+    delete TelemetryTestData.waypoints[0];
+
 	/**********************ASSERTS**********************/
 
     EXPECT_EQ(TestReturnToGround.editingFlightPathErrorCode, 1);
@@ -903,7 +945,7 @@ TEST (CruisingState, UpdateWaypointFail) {
     EXPECT_EQ(TestReturnToGround.currentWaypointIndex, 2); // My dumbass when testing the waypoint manager made the currentWaypointIndex = 2 when calling this method
     EXPECT_EQ(TestReturnToGround.homeBaseInitialized, false);
 
-    // EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
+    EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
     EXPECT_EQ(flightPathComparision, ARRAY_SUCCESS);
     EXPECT_EQ(flightPathStatusComparision, ARRAY_SUCCESS);
 }
@@ -945,6 +987,7 @@ TEST (CruisingState, DeleteWaypointSuccess) {
     testFlightPath[0] = testWaypointManager.initialize_waypoint(0.0, 0.0, 6, PATH_FOLLOW);
     testFlightPath[1] = testWaypointManager.initialize_waypoint(0.0, 0.0, 7, PATH_FOLLOW);
     testFlightPath[2] = testWaypointManager.initialize_waypoint(0.0, 0.0, 8, PATH_FOLLOW); // Deleting id = 3
+    delete testFlightPath[2]; // remove from heap before deleting
     testFlightPath[2] = testWaypointManager.initialize_waypoint(0.0, 0.0, 9, PATH_FOLLOW);
     testFlightPath[3] = testWaypointManager.initialize_waypoint(1.0, 0.0, 10, PATH_FOLLOW);
 
@@ -983,6 +1026,10 @@ TEST (CruisingState, DeleteWaypointSuccess) {
     _ArrayStatus flightPathComparision = compare_arrays(testFlightPath, flightPath, 3);
     _ArrayStatus flightPathStatusComparision = compare_buffer_status(testStatus, cruisingStateManager);
 
+    // Remove heap-allocated stuff
+    cruisingStateManager.clear_path_nodes();
+    delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3];
+
 	/**********************ASSERTS**********************/
 
     EXPECT_EQ(TestReturnToGround.editingFlightPathErrorCode, 0);
@@ -991,7 +1038,7 @@ TEST (CruisingState, DeleteWaypointSuccess) {
     EXPECT_EQ(TestReturnToGround.currentWaypointIndex, 2); // My dumbass when testing the waypoint manager made the currentWaypointIndex = 2 when calling this method
     EXPECT_EQ(TestReturnToGround.homeBaseInitialized, false);
 
-    // EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
+    EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
     EXPECT_EQ(flightPathComparision, ARRAY_SUCCESS);
     EXPECT_EQ(flightPathStatusComparision, ARRAY_SUCCESS);
 }
@@ -1072,6 +1119,10 @@ TEST (CruisingState, DeleteWaypointFail) {
     _ArrayStatus flightPathComparision = compare_arrays(testFlightPath, flightPath, 4);
     _ArrayStatus flightPathStatusComparision = compare_buffer_status(testStatus, cruisingStateManager);
 
+    // Remove heap-allocated stuff
+    cruisingStateManager.clear_path_nodes();
+    delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3];
+
 	/**********************ASSERTS**********************/
 
     EXPECT_EQ(TestReturnToGround.editingFlightPathErrorCode, 1);
@@ -1080,7 +1131,7 @@ TEST (CruisingState, DeleteWaypointFail) {
     EXPECT_EQ(TestReturnToGround.currentWaypointIndex, 2); // My dumbass when testing the waypoint manager made the currentWaypointIndex = 2 when calling this method
     EXPECT_EQ(TestReturnToGround.homeBaseInitialized, false);
 
-    // EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
+    EXPECT_EQ(idArrayComparision, ARRAY_SUCCESS); // Need to figure out how to pass arrays by reference
     EXPECT_EQ(flightPathComparision, ARRAY_SUCCESS);
     EXPECT_EQ(flightPathStatusComparision, ARRAY_SUCCESS);
 }
@@ -1137,13 +1188,16 @@ TEST (CruisingState, NextDirectionsRegularCorrect) {
     TelemetryTestData.waypointModifyFlightPathCommand = 0; // Nothing
     TelemetryTestData.waypointNextDirectionsCommand = 0; // Get next directions
 
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
-
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
     int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
   
     _OutputStatus returnedValuesSuccess = compare_output_data(ans1, &TestOutputData);
+
+    // Remove heap-allocated stuff
+    cruisingStateManager.clear_path_nodes();
+    delete ans1;
+    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
 
 	/**********************ASSERTS**********************/
 
@@ -1209,8 +1263,6 @@ TEST (CruisingState, NextDirectionsGoingHomeCorrect) {
     TelemetryTestData.waypointNextDirectionsCommand = 2; // Head Home
     TelemetryTestData.initializingHomeBase = 0; // Get next directions
 
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
-
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);    
     int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Set going home to true
     
@@ -1226,6 +1278,11 @@ TEST (CruisingState, NextDirectionsGoingHomeCorrect) {
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
   
     _OutputStatus returnedValuesSuccess = compare_output_data(ans1, &TestOutputData);
+
+    // Remove heap-allocated stuff
+    cruisingStateManager.clear_path_nodes();
+    delete ans1;
+    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
 
 	/**********************ASSERTS**********************/
 
@@ -1295,11 +1352,14 @@ TEST (CruisingState, GoingHomeHomeBaseUndefined) {
     TelemetryTestData.waypointNextDirectionsCommand = 2; // Head Home
     TelemetryTestData.initializingHomeBase = 0; // Get next directions
 
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
-
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);    
     int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Set going home to true
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
+
+    // Remove heap-allocated stuff
+    cruisingStateManager.clear_path_nodes();
+    delete ans1;
+    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
 
 	/**********************ASSERTS**********************/
 
@@ -1367,8 +1427,6 @@ TEST (CruisingState, NextDirectionsStartHoldingCorrect) {
     TelemetryTestData.waypointNextDirectionsCommand = 1; // Start circling
     TelemetryTestData.initializingHomeBase = 0; // Get next directions
 
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
-
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);  
     // Send in set up input data  
     int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, setup1, &TestOutputData, goingHome, inHold); // Set going home to true
@@ -1386,6 +1444,11 @@ TEST (CruisingState, NextDirectionsStartHoldingCorrect) {
   
     _OutputStatus returnedValuesSuccess = compare_output_data(ans1, &TestOutputData);
 
+    // Remove heap-allocated stuff
+    cruisingStateManager.clear_path_nodes();
+    delete ans1;
+    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
+
 	/**********************ASSERTS**********************/
 
     EXPECT_EQ(TestReturnToGround.editingFlightPathErrorCode, 0);
@@ -1399,21 +1462,3 @@ TEST (CruisingState, NextDirectionsStartHoldingCorrect) {
 
     EXPECT_EQ(returnedValuesSuccess, OUTPUT_CORRECT);
 }
-
-/***********************SETUP***********************/
-
-
-
-/********************DEPENDENCIES*******************/
-
-
-
-/********************STEPTHROUGH********************/
-
-
-
-/**********************ASSERTS**********************/
-
-
-
-

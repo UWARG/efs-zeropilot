@@ -815,11 +815,14 @@ void WaypointManager::clear_path_nodes() {
     nextFilledIndex = 0;
     currentIndex = 0;
 }
-
+#include <iostream>
 void WaypointManager::clear_home_base() {
     if (homeBase != nullptr) {
+        using namespace std;
         destroy_waypoint(homeBase);
     }
+
+    homeBase = nullptr; // For safety
 }
 
 void WaypointManager::destroy_waypoint(_PathData *waypoint) {
