@@ -84,20 +84,19 @@ SFError_t SF_GetResult(SFOutput_t *Output, IMU_Data_t *imudata, Airspeed_Data_t 
     return SFError;
 }
 
-SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterdata, GpsData_t *gpsdata, IMU_Data_t *imudata, float dt)
+SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterdata, GpsData_t *gpsdata, IMU_Data_t *imudata, SFIterationData_t *iterdata)
 {
-    /*
-    TODO:
-    Set up input/output.
-    Convert imu data to world space using attitude data.
-    Combine with SF_GetResult into single function?
-    Documentation.
-    */
 
     //Error output
     SFError_t SFError;
-
     SFError.errorCode = 0;
+
+    float freq = 512;
+    float dt = 1/freq;
+
+    //These should be defined using imudata and the current attitude
+    float vertAccel, latAccel, longAccel;
+
 
     /* Time Update */
 
@@ -107,7 +106,7 @@ SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterd
 
     arm_matrix_instance_f32 x;
 
-    arm_matrix_instance_f32 prevX;
+    arm_matrix_instance_f32 prevX = iterdata->prevX;
     
     arm_matrix_instance_f32 f;
     float32_t fData[DIM*DIM] =
@@ -126,6 +125,13 @@ SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterd
     float32_t ddt = pow(dt,2)/2;
 
     arm_matrix_instance_f32 u;
+    float32_t uData[U_DIM*1] =
+    {
+        vertAccel,
+        latAccel,
+        longAccel
+    };
+    arm_mat_init_f32(&u, U_DIM, 1, uData);
 
     arm_matrix_instance_f32 b;
     float32_t bData[DIM*U_DIM] =
@@ -137,7 +143,7 @@ SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterd
         0,   0,   ddt,
         0,   0,   dt
     };
-    arm_mat_init_f32(&f, DIM, U_DIM, bData);
+    arm_mat_init_f32(&b, DIM, U_DIM, bData);
 
     //Calculate estimate: x = f*prevX + b*u
     
@@ -152,6 +158,8 @@ SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterd
     //Defines for error covariance
 
     arm_matrix_instance_f32 p;
+
+    arm_matrix_instance_f32 prevP = iterdata->prevP;
     
     arm_matrix_instance_f32 q;
     float32_t qData[DIM*DIM] =
@@ -168,7 +176,7 @@ SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterd
     //Calculate error covariance: p = f*prevP*transpose(f) + q
 
     arm_matrix_instance_f32 fMultPrevP;
-    arm_mat_mult_f32(&f, &p, &fMultPrevP);
+    arm_mat_mult_f32(&f, &prevP, &fMultPrevP);
 
     arm_matrix_instance_f32 transF;
     arm_mat_trans_f32(&f, &transF);
@@ -192,7 +200,7 @@ SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterd
         0, 0, 1, 0, 0, 0,
         0, 0, 0, 0, 1, 0,
     };
-    arm_mat_init_f32(&h, DIM, DIM, hData);
+    arm_mat_init_f32(&h, NUM_MEASUREMENTS, DIM, hData);
 
     int16_t baroCovar = 1;
     int16_t gpsCovar;
@@ -237,6 +245,14 @@ SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterd
     //Defines for updating estimate
 
     arm_matrix_instance_f32 z;
+    float32_t zData[NUM_MEASUREMENTS*1] =
+    {
+        altimeterdata->altitude,
+        gpsdata->altitude,
+        gpsdata->latitude,
+        gpsdata->longitude
+    };
+    arm_mat_init_f32(&z, NUM_MEASUREMENTS, 1, zData);
 
     //Update estimate: newX = x + k*(z - h*x)
 
@@ -276,6 +292,16 @@ SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterd
 
     arm_matrix_instance_f32 newP;
     arm_mat_mult_f32(&IMinKMultH, &p, &newP);
+
+
+    /*Output*/
+
+    Output->altitude = x.pData[0];
+    Output->latitude = x.pData[2];
+    Output->longitude = x.pData[5];
+
+    iterdata->prevX = x;
+    iterdata->prevP = p;
 
     return SFError;
 }

@@ -9,11 +9,11 @@
 
 #ifndef SENSORFUSION_HPP
 #define SENSORFUSION_HPP
-struct SFOutput_t {
+typedef struct {
     float IMUroll, IMUpitch, IMUyaw; //in rad (for now)
     float IMUrollrate, IMUpitchrate, IMUyawrate; //in rad/s (for now)
     float Airspeed; //in m/s (for now)
-};
+} SFOutput_t ;
 
 typedef struct {
     float altitude;
@@ -49,8 +49,7 @@ SFError_t SF_GetResult(SFOutput_t *Output, IMU_Data_t *imudata, Airspeed_Data_t 
  * @param[in]     gpsdata
  * @param[in]     imudata
  * @param[in,out] iterdata Iterative data from previous call which becomes input for next call.
- * @param[in]     dt  Time since last call.
  */
-SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterdata, GpsData_t *gpsdata, IMU_Data_t *imudata, SFIterationData_t *iterdata, float dt);
+SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterdata, GpsData_t *gpsdata, IMU_Data_t *imudata, SFIterationData_t *iterdata);
 
 #endif
