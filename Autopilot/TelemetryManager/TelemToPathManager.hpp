@@ -24,6 +24,6 @@ void SendCommandsForPM(TelemToPMData *commands);
  * @param[out]   data   Pointer to struct to recieve data.
  * @return True if data was recieved.
  */
-bool GetTelemData(DataForTelem *data);
+bool GetTelemData(TelemToPMData *data);
 
 #endif
