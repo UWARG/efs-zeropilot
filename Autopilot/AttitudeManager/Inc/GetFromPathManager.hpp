@@ -7,8 +7,9 @@
 #define GET_FROM_PATH_MANAGER_HPP
 
 struct PMCommands{
-	float roll, pitch, yaw;	// commanded orientation (radians)
-	float airspeed;			// commanded airspeed m/s
+	float roll, pitch;	// commanded orientation (radians)
+	float rudderPercent;
+	float throttlePercent;
 };
 
 struct PMError_t{
