@@ -60,7 +60,10 @@ struct _PathData {
 * This data will be used by the PID and coordinated turn engine to determine the commands to be sent to the Attitude Manager.
 */
 struct _WaypointManager_Data_Out{
+    uint16_t desiredHeading;            // Desired heading to stay on path
     uint16_t desiredTrack;              // Desired track to stay on path
+    float desiredSpeed;
+    bool useHeading;                    // Used to determine if heading or track should be used
     int desiredAltitude;                // Desired altitude at next waypoint
     long double distanceToNextWaypoint; // Distance to the next waypoint (helps with airspeed PID)
     float radius;                       // Radius of turn if required
@@ -70,7 +73,6 @@ struct _WaypointManager_Data_Out{
     int desiredAirspeed;
     uint32_t timeOfData;                // The time that the data in this structure was collected
     _WaypointOutputType out_type;       // Output type (determines which parameters are defined)
-    double desiredSpeed;
 };
 
 class WaypointManager {
