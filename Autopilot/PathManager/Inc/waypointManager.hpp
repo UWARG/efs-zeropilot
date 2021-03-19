@@ -58,6 +58,9 @@ struct _PathData {
 */
 struct _WaypointManager_Data_Out{
     uint16_t desiredHeading;            // Desired heading to stay on path
+    float desiredTrack;
+    float desiredSpeed;
+    bool useHeading;                    // Used to determine if heading or track should be used
     int desiredAltitude;                // Desired altitude at next waypoint
     long double distanceToNextWaypoint; // Distance to the next waypoint (helps with airspeed PID)
     float radius;                       // Radius of turn if required
@@ -66,7 +69,6 @@ struct _WaypointManager_Data_Out{
     bool isDataNew;                     // Notifies PID modules if the data in this structure is new
     uint32_t timeOfData;                // The time that the data in this structure was collected
     _WaypointOutputType out_type;       // Output type (determines which parameters are defined)
-    double desiredSpeed;
 };
 
 class WaypointManager {
