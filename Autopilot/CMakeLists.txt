@@ -4,6 +4,8 @@ project(Autopilot C CXX ASM)
 #checks wether we are building for the microcontroller or to run the PC based unit tests
 if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
 
+  add_definitions(-DTARGET_BUILD)
+
   set(ELF_NAME ${PROJECT_NAME}.elf)
 
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -27,9 +29,9 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
     boardfiles/Inc
     boardfiles/Drivers/CMSIS/Include
     boardfiles/Drivers/CMSIS/Device/ST/STM32F7xx/Include
-    AttitudeManager
+    AttitudeManager/Inc
     PathManager/Inc
-    TelemetryManager
+    TelemetryManager/Inc
   )
 
   # Add ARM math directory for linker to find
@@ -40,9 +42,10 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
   # Libraries
   add_subdirectory(boardfiles/Drivers/STM32F7xx_HAL_Driver)
   add_subdirectory(boardfiles/Middlewares/Third_Party/FreeRTOS)
+  add_subdirectory(DataStructures)
 
-  file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/*.c boardfiles/Src/*.c)
-  file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/*.cpp PathManager/Src/*.cpp TelemetryManager/*.cpp)
+  file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/Src/*.c boardfiles/Src/*.c)
+  file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp PathManager/Src/*.cpp TelemetryManager/Src/*.cpp)
 
   if(NOT NUCLEO)
     set(STARTUP_ASM startup_stm32f765xx.s)
@@ -55,7 +58,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
 
   add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${STARTUP_ASM})
 
-  target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS arm_cortexM7lfdp_math)
+  target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS DataStructures arm_cortexM7lfdp_math)
 
   # Add project-specific linker flags (.ld script, .map file)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${LINKER_SCRIPT} -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map,--cref")
@@ -109,10 +112,12 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/Test/vendor/lib
     ${CMAKE_CURRENT_SOURCE_DIR}/../Common/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager
+    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Inc
   )
 
   # Let cmake know where to find all the find<Package>.cmake files
@@ -136,8 +141,8 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 ######### Attitude manager fsm
 
   set(ATTITUDE_MANAGER_FSM_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/attitudeManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/attitudeStateClasses.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/PID.cpp
   )
 
@@ -153,10 +158,10 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 ######### Attitude manager modules
 
   set(ATTITUDE_MANAGER_MODULES_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/OutputMixing.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/SensorFusion.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/MadgwickAHRS.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/fetchSensorMeasurementsMode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/OutputMixing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/SensorFusion.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MadgwickAHRS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/fetchSensorMeasurementsMode.cpp
   )
 
   set(ATTITUDE_MANAGER_MODULES_UNIT_TEST_SOURCES
@@ -187,8 +192,8 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 ######### Telemetry manager fsm
 
   set(TELEMETRY_MANAGER_FSM_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/telemetryManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/telemetryStateClasses.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Src/telemetryManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Src/telemetryStateClasses.cpp
   )
 
   set(TELEMETRY_MANAGER_FSM_UNIT_TEST_SOURCES
@@ -197,6 +202,21 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
   add_executable(telemetryManagerFSM ${TELEMETRY_MANAGER_FSM_SOURCES} ${TELEMETRY_MANAGER_FSM_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
   target_link_libraries(telemetryManagerFSM ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
+
+#########
+
+######### Vector Class
+
+  set(VECTOR_CLASS_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Src/vectorClass.cpp
+  )
+
+  set(VECTOR_CLASS_UNIT_TEST_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/DataStructures/Test_Vector_Class.cpp
+  )
+
+  add_executable(vectorClassTest ${VECTOR_CLASS_SOURCES} ${VECTOR_CLASS_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
+  target_link_libraries(vectorClassTest ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
 
 #########
 
@@ -232,7 +252,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
   include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../Common/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Inc
 
     ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw
     ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/extern/include
@@ -249,11 +269,12 @@ elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
 
   set(ATTITUDE_MANAGER_SIM_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/SimDriver/main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/attitudeManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/attitudeStateClasses.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/OutputMixing.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/SensorFusion.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/MadgwickAHRS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeStateClasses.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/OutputMixing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/SensorFusion.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MadgwickAHRS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/fetchSensorMeasurementsMode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/PID.cpp
   )
 
