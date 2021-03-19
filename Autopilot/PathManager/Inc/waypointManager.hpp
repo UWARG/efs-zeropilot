@@ -18,7 +18,6 @@ struct _WaypointManager_Data_In {
     long double latitude;
     long double longitude;
     int altitude;
-    uint16_t heading;
     double track;
 };
 
