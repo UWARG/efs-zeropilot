@@ -20,16 +20,20 @@
 
 typedef struct
 {
-    float currentTrack;    // degrees
-    float desiredTrack;    // degrees
+    float currentHeading;    // degrees
+    float desiredHeading;    // degrees
+    float currentTrack;
+    float desiredTrack;
     float accY;              // Y axis accelerometer reading from the IMU.
-
+    bool useHeading;
 }CoordinatedTurnInput_t;
 
 typedef struct
 {
     float currentAltitude;   // in meters
     float desiredAltitude;   // in meters
+    float currentAirspeed;
+    float desiredAirspeed;
 
 }AltitudeAirspeedInput_t;
 
@@ -43,7 +47,7 @@ typedef struct
 typedef struct
 {
     float requiredPitch;        // radians
-    float requiredAirspeed;     // in m/s
+    float requiredThrottlePercent;     // in percentage
 }AltitudeAirspeedCommands_t;
 
 

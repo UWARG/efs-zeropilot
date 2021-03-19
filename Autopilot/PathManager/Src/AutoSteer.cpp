@@ -27,6 +27,8 @@ static PIDController rudderPid{1, 0, 0, 0, -100, 100}; // PID gains need to be t
 
 static PIDController pitchPid{1, 0, 0, 0, -MAX_PITCH_ANGLE, MAX_PITCH_ANGLE}; // PID gains need to be tuned
 
+static PIDController altitudePid{1, 0, 0, 0, -100, 100}; //PID gains need to be tuned
+
 static const float RUDDER_SCALING_FACTOR = 0.8f; // should be experimentally determined
 
 /***********************************************************************************************************************
@@ -46,8 +48,15 @@ void AutoSteer_Init(void)
 
 void AutoSteer_ComputeCoordinatedTurn(CoordinatedTurnInput_t *Input, CoordinatedTurnAttitudeManagerCommands_t *AttManCommands)
 {
-
-    float bankAngle = bankPid.execute(Input->desiredTrack, Input->currentTrack);
+    float bankAngle;
+    if(Input->useHeading)
+    {
+        bankAngle = bankPid.execute(Input->desiredHeading, Input->currentHeading);
+    }
+    else
+    {
+        bankAngle = bankPid.execute(Input->desiredTrack, Input->currentTrack);
+    }
 
     float rudderSetPoint = GetRudderPercent(bankAngle);
 
@@ -62,10 +71,10 @@ void AutoSteer_ComputeCoordinatedTurn(CoordinatedTurnInput_t *Input, Coordinated
 
 void AutoSteer_ComputeAltitudeAndAirspeed(AltitudeAirspeedInput_t *Input, AltitudeAirspeedCommands_t *AttManCommands)
 {
-    float pitchAngle = pitchPid.execute(Input->desiredAltitude, Input->currentAltitude);
+    float pitchAngle = pitchPid.execute(Input->desiredAirspeed, Input->currentAirspeed);
 
     AttManCommands->requiredPitch = DEG_TO_RAD(pitchAngle);
-    AttManCommands->requiredAirspeed = CRUISING_SPEED;      // a simple constant to start with. As things get more complex, circumstances will demand variable airspeeds.
+    AttManCommands->requiredThrottlePercent = altitudePid.execute(Input->desiredAltitude, Input->currentAltitude);
 
 }
 
