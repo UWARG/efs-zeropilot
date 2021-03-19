@@ -22,6 +22,6 @@ struct SensorError_t {
  * Takes in sensor objects and the output data structures as parameters. 
  * This is the only module that interacts with the sensor drivers
  */ 
-SensorError_t SensorMeasurements_GetResult(Altimeter *altimetersns, Gps *gpssns, AltimeterData_t *altimeterdata, GpsData_t *gpsdata);
+SensorError_t SensorMeasurements_GetResult(Altimeter *altimetersns, Gps *gpssns, Altimeter_Data_t *altimeterdata, Gps_Data_t *gpsdata);
 
 #endif
