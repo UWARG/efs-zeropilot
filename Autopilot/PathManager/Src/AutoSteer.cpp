@@ -48,16 +48,7 @@ void AutoSteer_Init(void)
 
 void AutoSteer_ComputeCoordinatedTurn(CoordinatedTurnInput_t *Input, CoordinatedTurnAttitudeManagerCommands_t *AttManCommands)
 {
-    float bankAngle;
-    if(Input->useHeading)
-    {
-        bankAngle = bankPid.execute(Input->desiredHeading, Input->currentHeading);
-    }
-    else
-    {
-        bankAngle = bankPid.execute(Input->desiredTrack, Input->currentTrack);
-    }
-
+    float bankAngle = bankPid.execute(Input->desiredHeadingTrack, Input->currentHeadingTrack);
     float rudderSetPoint = GetRudderPercent(bankAngle);
 
     float rudderCorrection = -1.0f * rudderPid.execute(0.0f, Input->accY);  // when accY is 0, the turn is coordinated. The multiplication by -1 comes from the way the axis is defined on the accelerometer.
