@@ -7,7 +7,7 @@
 #include "getSensorData.hpp"
 #include <math.h>
 
-SensorError_t SensorMeasurements_GetResult(Altimeter *altimetersns, Gps *gpssns, AltimeterData_t *altimeterdata, GpsData_t *gpsdata) {
+SensorError_t SensorMeasurements_GetResult(Altimeter *altimetersns, Gps *gpssns, Altimeter_Data_t *altimeterdata, Gps_Data_t *gpsdata) {
 
     SensorError_t error;
     error.errorCode = 0;
