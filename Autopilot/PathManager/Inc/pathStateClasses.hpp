@@ -5,9 +5,9 @@
 #include "pathManager.hpp"
 #include "AutoSteer.hpp"
 #include "waypointManager.hpp"
+#include "landingTakeoffManager.hpp"
 #include "pathDatatypes.hpp"
 #include "CommWithAttitudeManager.hpp"
-#include "landingManager.hpp"
 #include "SensorFusion.hpp"
 #include "AttitudePathInterface.hpp"
 
@@ -69,6 +69,38 @@ class sensorFusion : public pathManagerState
         // If additional raw sensor data is needed, add the static struct here and implement
         // it like the IMU_Data_t struct above
 };
+
+class takeoffRollStage : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+        static WaypointManager takeoffPath;
+        static _PathData * pathArray[1];
+        static _PathData * currentLocation;
+        static _WaypointStatus waypointStatus;
+        static _PathData takeoffPoint;
+    private:
+        takeoffRollStage() {}
+        takeoffRollStage(const takeoffRollStage& other);
+        takeoffRollStage& operator =(const takeoffRollStage& other);
+};
+
+class takeoffClimbStage : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+    private:
+        takeoffClimbStage() {}
+        takeoffClimbStage(const takeoffClimbStage& other);
+        takeoffClimbStage& operator =(const takeoffClimbStage& other);
+};
+
 
 class cruisingState : public pathManagerState
 {
