@@ -1,5 +1,5 @@
 #include "waypointManager.hpp"
-#include "landingManager.hpp"
+#include "landingTakeoffManager.hpp"
 #include <math.h>
 #include "vectorClass.hpp"
 
@@ -123,3 +123,52 @@ _LandingPath LandingManager::createSlopeWaypoints(Telemetry_PIGO_t input, double
 
     return path;
 }
+
+double TakeoffManager::desiredRotationSpeed(double wind, bool ifPackage)
+{
+    if(ifPackage)
+    {
+        return ROTATION_SPEED_WITH_PACKAGE + wind;
+    }
+    else
+    {
+        return ROTATION_SPEED_NO_PACKAGE + wind;
+    }
+}
+
+double TakeoffManager::desiredClimbSpeed(double wind, bool ifPackage)
+{
+    if(ifPackage)
+    {
+        return CLIMB_SPEED_WITH_PACKAGE + wind;
+    }
+    else
+    {
+        return CLIMB_SPEED_NO_PACKAGE + wind;
+    }
+}
+
+_PathData TakeoffManager::createTakeoffWaypoint(double currentLatitude, double currentLongitude, double currentAltitude, double takeoffDirection)
+{
+    _PathData desiredWaypoint;
+    double radianDirection = takeoffDirection * PI / 180.0;
+
+    double takeoffDistX = sin(radianDirection) * DISTANCE_OF_TAKEOFF; 
+    double takeoffDistY = cos(radianDirection) * DISTANCE_OF_TAKEOFF;
+
+    double metersPerDegLon = 40075000.0 * cos(currentLatitude * PI/180)/360.0;
+    double takeoffDistLon = takeoffDistX / metersPerDegLon;
+    double takeoffDistLat = takeoffDistY / METERS_PER_DEG_LAT; 
+
+    desiredWaypoint.latitude = currentLatitude + takeoffDistLat;
+    desiredWaypoint.longitude = currentLongitude + takeoffDistLon;
+    desiredWaypoint.altitude = currentAltitude;
+
+    return desiredWaypoint;
+}
+
+
+
+
+
+
