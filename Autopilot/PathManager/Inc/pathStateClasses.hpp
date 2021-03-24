@@ -6,7 +6,7 @@
 #include "gps.hpp"
 #include "AutoSteer.hpp"
 #include "waypointManager.hpp"
-#include "landingManager.hpp"
+#include "landingTakeoffManager.hpp"
 #include "pathDatatypes.hpp"
 
 /***********************************************************************************************************************
@@ -71,6 +71,38 @@ class sensorFusion : public pathManagerState
         sensorFusion& operator =(const sensorFusion& other);
 };
 
+class takeoffRollStage : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+        static WaypointManager takeoffPath;
+        static _PathData * pathArray[1];
+        static _PathData * currentLocation;
+        static _WaypointStatus waypointStatus;
+        static _PathData takeoffPoint;
+    private:
+        takeoffRollStage() {}
+        takeoffRollStage(const takeoffRollStage& other);
+        takeoffRollStage& operator =(const takeoffRollStage& other);
+};
+
+class takeoffClimbStage : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+    private:
+        takeoffClimbStage() {}
+        takeoffClimbStage(const takeoffClimbStage& other);
+        takeoffClimbStage& operator =(const takeoffClimbStage& other);
+};
+
+
 class cruisingState : public pathManagerState
 {
     public:
@@ -99,7 +131,6 @@ class landingTransitionStage : public pathManagerState
         static pathManagerState& getInstance();
 
         static WaypointManager landingPath; //in future merge, parameters needs to be taken out *****
-        int waypointIDArray[PATH_BUFFER_SIZE];
         static _LandingPath path; //used to load in path
         static _PathData * pathArray[3]; //used to translate loaded in path to something the waypoint manager can take as a parameter
         static _PathData * currentLocation;

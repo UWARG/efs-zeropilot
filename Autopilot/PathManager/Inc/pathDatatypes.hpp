@@ -36,6 +36,7 @@ struct Telemetry_PIGO_t {
     float stoppingLongitude;
     float stoppingLatitude;
     float stoppingAltitude;
+    float takeoffDirectionHeading;
     // Struct for stopping point gps coordinates
 
 };

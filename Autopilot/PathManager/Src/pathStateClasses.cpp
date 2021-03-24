@@ -1,5 +1,5 @@
 #include "pathStateClasses.hpp"
-#include "landingManager.hpp"
+#include "landingTakeoffManager.hpp"
 
 void commsWithAttitude::execute(pathManager* pathMgr)
 {
@@ -78,8 +78,14 @@ void sensorFusion::execute(pathManager* pathMgr)
             case TOUCHDOWN:
                 pathMgr->setState(landingTouchdownStage::getInstance());
                 break;
-            case NOT_LANDING:
+            case CRUISING:
                 pathMgr->setState(cruisingState::getInstance());
+                break;
+            case ROLL:
+                pathMgr->setState(takeoffRollStage::getInstance());
+                break;
+            case CLIMB:
+                pathMgr->setState(takeoffClimbStage::getInstance());
                 break;
             default:
                 pathMgr->setState(cruisingState::getInstance());
@@ -344,4 +350,70 @@ pathManagerState& landingTouchdownStage::getInstance()
     static landingTouchdownStage singleton;
     return singleton;
 }
+
+
+/****************************************************************************************************
+
+TAKEOFF STATE FUNCTIONS
+
+****************************************************************************************************/
+
+void takeoffRollStage::execute(pathManager* pathMgr)
+{
+    //maxThrottle();
+    if(!pathMgr->madeTakeoffPoints)
+    {
+        takeoffPath = WaypointManager(0.0,0.0);
+        takeoffPoint = TakeoffManager::createTakeoffWaypoint(sensorFusion::sensorInput.latitude,sensorFusion::sensorInput.longitude, sensorFusion::sensorInput.altitude, getFromTelemetry::telemetryInput.takeoffDirectionHeading);
+        pathArray[0] = takeoffPath.initialize_waypoint(takeoffPoint.longitude, takeoffPoint.latitude, takeoffPoint.altitude, PATH_FOLLOW);
+        currentLocation = takeoffPath.initialize_waypoint(sensorFusion::sensorInput.longitude, sensorFusion::sensorInput.latitude, sensorFusion::sensorInput.altitude, HOLD_WAYPOINT);
+        waypointStatus = takeoffPath.initialize_flight_path(pathArray, 1, currentLocation);
+
+        pathMgr->madeTakeoffPoints = true;
+    }
+
+    if(sensorFusion::sensorInput.airspeed>(TakeoffManager::desiredRotationSpeed(getFromTelemetry::telemetryInput.windSpeed,pathMgr->isPackage)))
+    {
+        pathMgr->stage = CLIMB;
+    }
+}
+
+pathManagerState& takeoffRollStage::getInstance()
+{
+    static takeoffRollStage singleton;
+    return singleton;
+}
+
+void takeoffClimbStage::execute(pathManager* pathMgr)
+{
+    if(sensorFusion::sensorInput.altitude>(takeoffRollStage::takeoffPoint.altitude + EXIT_TAKEOFF_ALTITUDE))
+    {
+        pathMgr->stage = CRUISING;
+    }
+    else
+    {
+        //maxThrottle();
+        takeoffRollStage::waypointStatus = takeoffRollStage::takeoffPath.get_next_directions(sensorFusion::sensorInput, &cruisingState::_outputdata);
+        cruisingState::_outputdata.desiredSpeed = TakeoffManager::desiredClimbSpeed(getFromTelemetry::telemetryInput.windSpeed,pathMgr->isPackage);
+    }
+}
+
+pathManagerState& takeoffClimbStage::getInstance()
+{
+    static takeoffClimbStage singleton;
+    return singleton;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
