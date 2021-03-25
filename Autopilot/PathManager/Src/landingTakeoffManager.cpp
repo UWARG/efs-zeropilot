@@ -170,7 +170,7 @@ _PathData TakeoffManager::createTakeoffWaypoint(double currentLatitude, double c
 {
     _PathData desiredWaypoint;
     //retrieve radian direction of heading (starts from positive y axis)
-    double radianDirection = takeoffDirection * PI / 180.0;
+    double radianDirection = takeoffDirection * PI / 180.0; //0.785398163397
 
     //retrieve the horizontal and vertical components of takeoff distance
     double takeoffDistX = sin(radianDirection) * DISTANCE_OF_TAKEOFF; 
