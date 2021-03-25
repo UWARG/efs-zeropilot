@@ -23,6 +23,8 @@ struct _ManualControl
     bool throttleManual;
 };
 
+enum _FlightStage{ROLL=0, CLIMB, CRUISING, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN};
+
 /************************
     LANDING SECTION
 ************************/
