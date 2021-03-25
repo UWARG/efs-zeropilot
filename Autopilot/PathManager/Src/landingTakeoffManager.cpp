@@ -151,17 +151,27 @@ double TakeoffManager::desiredClimbSpeed(double wind, bool ifPackage)
 _PathData TakeoffManager::createTakeoffWaypoint(double currentLatitude, double currentLongitude, double currentAltitude, double takeoffDirection)
 {
     _PathData desiredWaypoint;
+    //retrieve radian direction of heading (starts from positive y axis)
     double radianDirection = takeoffDirection * PI / 180.0;
 
+    //retrieve the horizontal and vertical components of takeoff distance
     double takeoffDistX = sin(radianDirection) * DISTANCE_OF_TAKEOFF; 
     double takeoffDistY = cos(radianDirection) * DISTANCE_OF_TAKEOFF;
 
+    //convert horizontal and vertical components into latitude and longitude
     double metersPerDegLon = 40075000.0 * cos(currentLatitude * PI/180)/360.0;
     double takeoffDistLon = takeoffDistX / metersPerDegLon;
     double takeoffDistLat = takeoffDistY / METERS_PER_DEG_LAT; 
 
+    //add components onto the current location to determine takeoff point
     desiredWaypoint.latitude = currentLatitude + takeoffDistLat;
     desiredWaypoint.longitude = currentLongitude + takeoffDistLon;
+
+    /*
+    takeoff waypoint will have the same altitude as the current position, constant additional altitude 
+    could be added in the future, but it is not needed as vertical component is already controlled by
+    max throttle in the climb 
+    */
     desiredWaypoint.altitude = currentAltitude;
 
     return desiredWaypoint;
