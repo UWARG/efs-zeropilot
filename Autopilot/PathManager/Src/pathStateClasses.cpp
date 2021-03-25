@@ -443,10 +443,10 @@ void takeoffClimbStage::execute(pathManager* pathMgr)
         pathMgr->stage = CRUISING;
     }
     else
-    {
-        //maxThrottle();
+    {   
         takeoffRollStage::waypointStatus = takeoffRollStage::takeoffPath.get_next_directions(sensorFusion::sensorInput, &cruisingState::_outputdata);
         cruisingState::_outputdata.desiredSpeed = TakeoffManager::desiredClimbSpeed(getFromTelemetry::telemetryInput.windSpeed,pathMgr->isPackage);
+        //maxThrottle();
     }
 }
 
