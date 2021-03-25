@@ -152,20 +152,20 @@ _PathData TakeoffManager::createTakeoffWaypoint(double currentLatitude, double c
 {
     _PathData desiredWaypoint;
     //retrieve radian direction of heading (starts from positive y axis)
-    double radianDirection = takeoffDirection * PI / 180.0;
+    double radianDirection = takeoffDirection * PI / 180.0; //0.785398163397
 
     //retrieve the horizontal and vertical components of takeoff distance
-    double takeoffDistX = sin(radianDirection) * DISTANCE_OF_TAKEOFF; 
-    double takeoffDistY = cos(radianDirection) * DISTANCE_OF_TAKEOFF;
+    double takeoffDistX = sin(radianDirection) * DISTANCE_OF_TAKEOFF; //70.71067811862
+    double takeoffDistY = cos(radianDirection) * DISTANCE_OF_TAKEOFF; //70.71067811862
 
     //convert horizontal and vertical components into latitude and longitude
-    double metersPerDegLon = 40075000.0 * cos(currentLatitude * PI/180)/360.0;
-    double takeoffDistLon = takeoffDistX / metersPerDegLon;
-    double takeoffDistLat = takeoffDistY / METERS_PER_DEG_LAT; 
+    double metersPerDegLon = 40075000.0 * cos(currentLatitude * PI/180)/360.0; //111302.489953867719
+    double takeoffDistLon = takeoffDistX / metersPerDegLon; //0.0006353018
+    double takeoffDistLat = takeoffDistY / METERS_PER_DEG_LAT; //0.0006352019
 
     //add components onto the current location to determine takeoff point
-    desiredWaypoint.latitude = currentLatitude + takeoffDistLat;
-    desiredWaypoint.longitude = currentLongitude + takeoffDistLon;
+    desiredWaypoint.latitude = currentLatitude + takeoffDistLat;//1.0006353018
+    desiredWaypoint.longitude = currentLongitude + takeoffDistLon; //2.0006352019
 
     /*
     takeoff waypoint will have the same altitude as the current position, constant additional altitude 
