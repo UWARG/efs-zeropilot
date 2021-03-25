@@ -9,6 +9,8 @@
 enum _FlightStage{ROLL=0, CLIMB, CRUISING, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN};
 
 
+enum _FlightStage{ROLL=0, CLIMB, CRUISING, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN};
+
 /************************
     LANDING SECTION
 ************************/
@@ -24,17 +26,6 @@ constexpr static double DECRAB_ALTITUDE {0.7}; //in meters
 constexpr static double TOUCHDOWN_ALTITUDE {0.05}; //in meters
 constexpr static double LATITUDE_LONGITUDE_CONVERSION_CONSTANT {40075000.0};
 
-
-/************************
-    TAKEOFF CONSTANTS
-************************/
-
-constexpr static double EXIT_TAKEOFF_ALTITUDE {50}; //in meters, difference in altitude
-constexpr static double ROTATION_SPEED_NO_PACKAGE {4}; //in meters per second
-constexpr static double ROTATION_SPEED_WITH_PACKAGE {6}; //in meters per second
-constexpr static double CLIMB_SPEED_NO_PACKAGE {5}; // in meters per second
-constexpr static double CLIMB_SPEED_WITH_PACKAGE {7}; // in meters per second
-constexpr static double DISTANCE_OF_TAKEOFF {100}; // in meters, just used to approximate the horizontal location
 
 struct _LandingPath
 {
