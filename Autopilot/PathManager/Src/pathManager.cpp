@@ -5,7 +5,7 @@ pathManager::pathManager()
 {
     currentState = &commsWithAttitude::getInstance(); 
     status = COMPLETED_CYCLE;
-    stage = CRUISING;
+    stage = ROLL;
     madeLandingPoints = false;
     madeTakeoffPoints = false;
     isError = false;
