@@ -26,6 +26,8 @@ struct _ManualControl
 enum _FlightStage{ROLL=0, CLIMB, CRUISING, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN};
 
 
+enum _FlightStage{ROLL=0, CLIMB, CRUISING, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN};
+
 /************************
     LANDING SECTION
 ************************/
