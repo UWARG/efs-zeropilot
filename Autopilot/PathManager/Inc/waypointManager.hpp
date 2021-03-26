@@ -77,6 +77,8 @@ struct _WaypointManager_Data_Out{
     int desiredAirspeed;
     uint32_t timeOfData;                // The time that the data in this structure was collected
     _WaypointOutputType out_type;       // Output type (determines which parameters are defined)
+
+    _ManualControl controlDetails;
 };
 
 class WaypointManager {
