@@ -320,7 +320,11 @@ void landingFlareStage::execute(pathManager* pathMgr)
     {
         //maintaining horizontal position
         landingTransitionStage::waypointStatus = landingTransitionStage::landingPath.get_next_directions(sensorFusion::sensorInput, &cruisingState::_outputdata);
-        //throttleOff()
+        
+        //throttle off
+        cruisingState::_outputdata.controlDetails.throttleManual = true;
+        cruisingState::_outputdata.controlDetails.throttlePercent = 0;
+
         //maintaing speed for flare attitude
         cruisingState::_outputdata.desiredSpeed = LandingManager::slowFlightSpeed(getFromTelemetry::telemetryInput.packageOnBoard);
     }   
@@ -359,7 +363,10 @@ void landingDecrabStage::execute(pathManager* pathMgr)
         cruisingState::_outputdata.desiredHeading = getFromTelemetry::telemetryInput.stoppingDirectionHeading;
         //retrieving desired slow flight speed
         cruisingState::_outputdata.desiredSpeed = LandingManager::slowFlightSpeed(getFromTelemetry::telemetryInput.packageOnBoard);
-        //throttleOff()
+        
+        //throttle off
+        cruisingState::_outputdata.controlDetails.throttleManual = true;
+        cruisingState::_outputdata.controlDetails.throttlePercent = 0;
     }
 
     if(landingTransitionStage::waypointStatus == INVALID_PARAMETERS)
@@ -384,7 +391,10 @@ pathManagerState& landingDecrabStage::getInstance()
 
 void landingTouchdownStage::execute(pathManager* pathMgr)
 {
-    //throttleOff()
+    //throttle off
+    cruisingState::_outputdata.controlDetails.throttleManual = true;
+    cruisingState::_outputdata.controlDetails.throttlePercent = 0;
+
     //aligning heading
     cruisingState::_outputdata.desiredHeading = getFromTelemetry::telemetryInput.stoppingDirectionHeading;
     if(pathMgr -> isError)
@@ -412,7 +422,10 @@ TAKEOFF STATE FUNCTIONS
 
 void takeoffRollStage::execute(pathManager* pathMgr)
 {
-    //maxThrottle();
+    //max throttle
+    cruisingState::_outputdata.controlDetails.throttleManual = true;
+    cruisingState::_outputdata.controlDetails.throttlePercent = 100;
+
     if(!pathMgr->madeTakeoffPoints)
     {
         takeoffPath = WaypointManager(0.0,0.0);
@@ -446,7 +459,10 @@ void takeoffClimbStage::execute(pathManager* pathMgr)
     {   
         takeoffRollStage::waypointStatus = takeoffRollStage::takeoffPath.get_next_directions(sensorFusion::sensorInput, &cruisingState::_outputdata);
         cruisingState::_outputdata.desiredSpeed = TakeoffManager::desiredClimbSpeed(getFromTelemetry::telemetryInput.windSpeed,pathMgr->isPackage);
-        //maxThrottle();
+        
+        //maxThrottle()
+        cruisingState::_outputdata.controlDetails.throttleManual = true;
+        cruisingState::_outputdata.controlDetails.throttlePercent = 100;
     }
 }
 
