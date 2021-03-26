@@ -5,6 +5,21 @@
 
 enum _FlightStage{ROLL=0, CLIMB, CRUISING, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN};
 
+struct _ManualControl
+{
+    double rollPercent;
+    bool rollManual;
+
+    double rudderPercent;
+    bool rudderManual;
+
+    double elevatorPercent;
+    bool elevatorManual;
+
+    double throttlePercent;
+    bool throttleManual;
+};
+
 /************************
     LANDING SECTION
 ************************/
