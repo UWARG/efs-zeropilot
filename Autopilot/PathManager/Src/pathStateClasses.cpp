@@ -460,7 +460,7 @@ void takeoffClimbStage::execute(pathManager* pathMgr)
         takeoffRollStage::waypointStatus = takeoffRollStage::takeoffPath.get_next_directions(sensorFusion::sensorInput, &cruisingState::_outputdata);
         cruisingState::_outputdata.desiredSpeed = TakeoffManager::desiredClimbSpeed(getFromTelemetry::telemetryInput.windSpeed,pathMgr->isPackage);
         
-        //maxThrottle()
+        //maxThrottle
         cruisingState::_outputdata.controlDetails.throttleManual = true;
         cruisingState::_outputdata.controlDetails.throttlePercent = 100;
     }
