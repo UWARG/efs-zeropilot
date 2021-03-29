@@ -94,7 +94,7 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
 
     _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->IMUroll, SFOutput->IMUrollrate);
     _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->IMUpitch, SFOutput->IMUpitchrate);
-    _PidOutput.yawPercent = pathManagerOutput.rudderPercent;
+    _PidOutput.rudderPercent = pathManagerOutput.rudderPercent;
     _PidOutput.throttlePercent = pathManagerOutput.throttlePercent;
 
     if (pmError.errorCode == 0) 

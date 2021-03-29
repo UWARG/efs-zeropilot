@@ -6,7 +6,7 @@ typedef struct
 {
     float rollPercent;
     float pitchPercent;
-    float yawPercent;
+    float rudderPercent;
     float throttlePercent;
 
 } PID_Output_t;
