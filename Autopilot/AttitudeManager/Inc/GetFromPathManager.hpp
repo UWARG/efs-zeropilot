@@ -2,7 +2,7 @@
  * Gets the commanded orientation and airspeed from the path manager.
  * Author: Anthony Berbari
  */
-
+#include "landingTakeoffManager.hpp"
 #ifndef GET_FROM_PATH_MANAGER_HPP
 #define GET_FROM_PATH_MANAGER_HPP
 
@@ -10,6 +10,7 @@ struct PMCommands{
 	float roll, pitch;	// commanded orientation (radians)
 	float rudderPercent;
 	float throttlePercent;
+	_ManualControl manualData;
 };
 
 struct PMError_t{
