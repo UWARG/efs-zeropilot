@@ -53,6 +53,25 @@ struct _PathData {
     _WaypointOutputType waypointType; 
 };
 
+/*
+* Structure stores manual control information
+* If a certain variable needs to be controlled, set the percent to the desired value and its respective boolean to true
+*/
+
+struct _ManualControl{
+    double rollPercent;
+    bool rollManual;
+
+    double rudderPercent;
+    bool rudderManual;
+
+    double elevatorPercent;
+    bool elevatorManual;
+
+    double throttlePercent;
+    bool throttleManual;
+};
+
 /**
 * Structure contains the data that will be returned to the Path Manager state manager.
 * This data will be used by the PID and coordinated turn engine to determine the commands to be sent to the Attitude Manager.
