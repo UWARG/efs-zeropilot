@@ -1,11 +1,23 @@
 #include "pathStateClasses.hpp"
 
+/***********************************************************************************************************************
+ * Definitions
+ **********************************************************************************************************************/
+
 bool isError; 
+Telemetry_PIGO_t commsWithTelemetry::_incomingData;
+_CruisingState_Telemetry_Return cruisingState::_returnToGround;
+_WaypointManager_Data_In cruisingState::_inputdata;
+_WaypointManager_Data_Out cruisingState::_outputdata; 
+
+/***********************************************************************************************************************
+ * Code
+ **********************************************************************************************************************/
 
 void commsWithAttitude::execute(pathManager* pathMgr)
 {
     //initial mode
-    pathMgr -> setState(getFromTelemetry::getInstance());
+    pathMgr->setState(commsWithTelemetry::getInstance());
 }
 
 pathManagerState& commsWithAttitude::getInstance()
@@ -14,22 +26,29 @@ pathManagerState& commsWithAttitude::getInstance()
     return singleton;
 }
 
-void getFromTelemetry::execute(pathManager* pathMgr)
+void commsWithTelemetry::execute(pathManager* pathMgr)
 {
-    //communicate with telemetry
+    //send data to telemetry
+
+    // Get data from telemetry
+
+    // Do any processing required (update struct that contains telemetry data and process it)
+
+    // Store data inside of the Telemetry_PIGO_t struct that is a parameter of this child class
+
     if(isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(getSensorData::getInstance());
+        pathMgr->setState(getSensorData::getInstance());
     }
 }
 
-pathManagerState& getFromTelemetry::getInstance()
+pathManagerState& commsWithTelemetry::getInstance()
 {
-    static getFromTelemetry singleton;
+    static commsWithTelemetry singleton;
     return singleton;
 }
 
@@ -38,11 +57,11 @@ void getSensorData::execute(pathManager* pathMgr)
     //obtain sensor data
     if(isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(sensorFusion::getInstance());
+        pathMgr->setState(sensorFusion::getInstance());
     }
 }
 
@@ -57,11 +76,11 @@ void sensorFusion::execute(pathManager* pathMgr)
     //fuse sensor data
     if(isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(cruisingState::getInstance());
+        pathMgr->setState(cruisingState::getInstance());
     }
 }
 
@@ -73,14 +92,38 @@ pathManagerState& sensorFusion::getInstance()
 
 void cruisingState::execute(pathManager* pathMgr)
 {
-    //waypoint manager stuff
+
+    Telemetry_PIGO_t * telemetryData = commsWithTelemetry::GetTelemetryIncomingData(); // Get struct from telemetry state with all of the commands and values.
+    // std::cout << "Got Telemetry data" << std::endl; 
+
+
+    int editError = editFlightPath(telemetryData, cruisingStateManager, waypointIDArray); // Edit flight path if applicable
+
+    // std::cout << "Updated Flight Path" << std::endl; 
+
+    // Set input data for getting next direction/altitude
+    
+    /*
+    
+     Set input struct values (variables are not in it rn)
+
+    */
+
+    int pathError = pathFollow(telemetryData, cruisingStateManager, _inputdata, &_outputdata, goingHome, inHold); // Get next direction or modify flight behaviour pattern
+
+    // std::cout << "Got next directions" << std::endl; 
+
+    setReturnValues(&_returnToGround, cruisingStateManager, editError, pathError); // Set error codes
+
+    // std::cout << "Set return values" << std::endl; 
+
     if(isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(coordinateTurnElevation::getInstance());
+        pathMgr->setState(coordinateTurnElevation::getInstance());
     }
 }
 
@@ -95,11 +138,11 @@ void coordinateTurnElevation::execute(pathManager* pathMgr)
     //get elevation and turning data
     if(isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(commsWithAttitude::getInstance());
+        pathMgr->setState(commsWithAttitude::getInstance());
     }
 }
 

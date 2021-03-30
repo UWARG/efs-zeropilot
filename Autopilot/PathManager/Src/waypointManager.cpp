@@ -16,6 +16,10 @@
 #define PI 3.14159265358979323846 // Was giving me problems with M_PI, so I resorted to defining it myself
 #define MAX_PATH_APPROACH_ANGLE PI/2
 
+// Reference Coordinates
+#define REFERENCE_LONGITUDE -80.537331184
+#define REFERENCE_LATITUDE 43.467998128
+
 //Basic Mathematical Conversions
 #define deg2rad(angle_in_degrees) ((angle_in_degrees) * PI/180.0)
 #define rad2deg(angle_in_radians) ((angle_in_radians) * 180.0/PI)
@@ -23,11 +27,52 @@
 
 /*** INITIALIZATION ***/
 
+WaypointManager::WaypointManager() {
+    // Initializes important array and id navigation constants
+    currentIndex = 0;
+    nextAssignedId = 1;
+    numWaypoints = 0;
+    nextFilledIndex = 0;
 
+    // Sets relative long and lat
+    relativeLongitude = REFERENCE_LONGITUDE;
+    relativeLatitude = REFERENCE_LATITUDE;
+
+    homeBase = nullptr; // Sets the pointer to null
+
+    // Sets boolean variables
+    inHold = false;
+    goingHome = false;
+    dataIsNew = false;
+    orbitPathStatus = PATH_FOLLOW;
+    errorStatus = WAYPOINT_SUCCESS;
+
+    // Initialize all other parameters (defaults)
+    desiredHeading = 0;
+    desiredAltitude = 0;
+    distanceToNextWaypoint = 0.0;
+    errorCode = WAYPOINT_SUCCESS;
+    dataIsNew = false;
+    outputType = PATH_FOLLOW;
+    turnDesiredAltitude = 0;
+    turnDirection = 0; // 1 for CW, 2 for CCW
+    turnRadius = 0.0;
+
+    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
+        waypointBufferStatus[i] = FREE;
+    }
+
+    // Sets empty elements to null to prevent segmentation faults
+    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
+        waypointBuffer[i] = nullptr;
+    }
+}
+
+/*
 WaypointManager::WaypointManager(float relLat, float relLong) {
     // Initializes important array and id navigation constants
     currentIndex = 0;
-    nextAssignedId = 0;
+    nextAssignedId = 1;
     numWaypoints = 0;
     nextFilledIndex = 0;
 
@@ -59,8 +104,10 @@ WaypointManager::WaypointManager(float relLat, float relLong) {
         waypointBufferStatus[i] = FREE;
     }
 }
+*/
 
 _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData * currentLocation) {
+    
     errorStatus = WAYPOINT_SUCCESS; 
 
     // The waypointBuffer array must be empty before we initialize the flight path
@@ -361,7 +408,7 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
 _WaypointStatus WaypointManager::start_circling(_WaypointManager_Data_In currentStatus, float radius, int direction, int altitude, bool cancelTurning) {
     if (!cancelTurning) {
         // If parameters are not valid. Minimum altitude of 10 metres
-        if (radius <= 0 || (direction != -1 && direction != 1) || altitude < 10) { // SHOULD I JUST SET THIS TO DEFAULT VALUES INSTEAD??????
+        if (radius <= 0 || (direction != 0 && direction != 1) || altitude < 10) { // SHOULD I JUST SET THIS TO DEFAULT VALUES INSTEAD??????
             return INVALID_PARAMETERS; 
         }
 
@@ -370,7 +417,12 @@ _WaypointStatus WaypointManager::start_circling(_WaypointManager_Data_In current
         // Sets class parameters
         turnDesiredAltitude = altitude;
         turnRadius = radius;
-        turnDirection = direction;
+        if (0 == direction) {
+            turnDirection = -1;
+        } else {
+            turnDirection = 1;    
+        }
+        
 
         // Gets current track
         float currentTrack = (float) currentStatus.track;
@@ -761,12 +813,16 @@ void WaypointManager::clear_path_nodes() {
     // Resets buffer status variables
     numWaypoints = 0;
     nextFilledIndex = 0;
-    nextAssignedId = 0;
     currentIndex = 0;
 }
-
+#include <iostream>
 void WaypointManager::clear_home_base() {
-    destroy_waypoint(homeBase);
+    if (homeBase != nullptr) {
+        using namespace std;
+        destroy_waypoint(homeBase);
+    }
+
+    homeBase = nullptr; // For safety
 }
 
 void WaypointManager::destroy_waypoint(_PathData *waypoint) {
@@ -953,7 +1009,11 @@ int WaypointManager::get_current_index() {
 }
 
 int WaypointManager::get_id_of_current_index() {
-    return waypointBuffer[currentIndex]->waypointId;
+    return waypointBuffer[currentIndex] ? waypointBuffer[currentIndex]->waypointId : 0;
+}
+
+bool WaypointManager::is_home_base_initialized() {
+    return homeBase ? true : false;
 }
 
 // For valgrind tests

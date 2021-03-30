@@ -15,6 +15,7 @@ class pathManager
         void execute();
         void setState(pathManagerState& newState);
         _Path_Manager_Cycle_Status getStatus() {return status;}
+
     private:
         pathManagerState* currentState;
         _Path_Manager_Cycle_Status status;
