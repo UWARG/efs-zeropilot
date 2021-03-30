@@ -78,7 +78,6 @@ TEST(getSensorData, FailedBusyGpsDataReturnsNegative1) {
 	GpsPathTestData.dataIsNew = 1;
 
 	SensorError_t getSensorDataError;
-
 	/********************DEPENDENCIES*******************/
 
 	EXPECT_CALL(altimetermock, GetResult(_))
