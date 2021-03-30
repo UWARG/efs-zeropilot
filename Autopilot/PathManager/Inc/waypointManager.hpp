@@ -39,7 +39,6 @@ enum _HeadHomeStatus {HOME_TRUE = 0, HOME_FALSE, HOME_UNDEFINED_PARAMETER};
 /**
 * Structure stores information about the waypoints along our path to the destination and back.
 */
-
 struct _PathData {
     int waypointId;                   // Id of the waypoint
     _PathData * next;                 // Next waypoint
@@ -76,6 +75,7 @@ public:
     * @param[in] float relLat -> This is the relative latitude of the point that will be used as (0,0) when converting lat-long coordinates to cartesian coordiantes. 
     * @param[in] float relLong -> This is the relative longitude of the point that will be used as (0,0) when converting lat-long coordinates to cartesian coordiantes.
     */
+    WaypointManager(); // CALL THIS ONE
     WaypointManager(float relLat, float relLong); // Call this to get an instance of the class
     ~WaypointManager();
 
@@ -191,6 +191,11 @@ public:
     int get_id_of_current_index();
 
     /**
+     * @return if the homebase parameter is initialized
+     */ 
+    bool is_home_base_initialized();
+
+    /**
      * @return returns the _PathData pointer of the home base 
      */ 
     _PathData * get_home_base();
@@ -213,7 +218,7 @@ private:
     //Home base
     _PathData * homeBase;
 
-    // For calculating desired track
+    // For calculating desired heading. This affects the sensitivity of the given desired headings
     float k_gain[2] = {0.01, 1.0f};
 
     // Relative lat and long for coordinate calcilation
