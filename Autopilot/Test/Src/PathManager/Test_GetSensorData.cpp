@@ -20,8 +20,6 @@ GpsData_t GpsTestData;
 Altimeter_Data_t AltimeterPathTestData; 
 Gps_Data_t GpsPathTestData; 
 
-
-
 /***********************************************************************************************************************
  * Tests
  **********************************************************************************************************************/
@@ -45,6 +43,7 @@ TEST(getSensorData, FailedBusyAltimeterDataReturnsNegative1) {
 	GpsPathTestData.dataIsNew = 1;
 
 	SensorError_t getSensorDataError;
+	
 	/********************DEPENDENCIES*******************/
 
 	EXPECT_CALL(altimetermock, GetResult(_))
@@ -79,6 +78,7 @@ TEST(getSensorData, FailedBusyGpsDataReturnsNegative1) {
 	GpsPathTestData.dataIsNew = 1;
 
 	SensorError_t getSensorDataError;
+
 	/********************DEPENDENCIES*******************/
 
 	EXPECT_CALL(altimetermock, GetResult(_))
@@ -126,8 +126,6 @@ TEST(getSensorData, AltimeterOldDataReturns1) {
     GpsTestData.heading = 0; 
     GpsTestData.numSatellites = 0; 
 
-	SensorError_t getSensorDataError;
-
 	/********************DEPENDENCIES*******************/
 
 	EXPECT_CALL(altimetermock, GetResult(_))
@@ -137,7 +135,7 @@ TEST(getSensorData, AltimeterOldDataReturns1) {
 		.WillOnce(DoAll(SetArgReferee<0>(GpsTestData)));
 
 	/********************STEPTHROUGH********************/
-	getSensorDataError = SensorMeasurements_GetResult(&altimetermock, &gpsmock, &AltimeterPathTestData, &GpsPathTestData)
+	getSensorDataError = SensorMeasurements_GetResult(&altimetermock, &gpsmock, &AltimeterPathTestData, &GpsPathTestData);
 
 	/**********************ASSERTS**********************/
 	EXPECT_EQ(getSensorDataError.errorCode, 1);
@@ -176,8 +174,6 @@ TEST(getSensorData, GpsOldDataReturns1) {
     GpsTestData.heading = 0; 
     GpsTestData.numSatellites = 0; 
 
-	SensorError_t getSensorDataError;
-
 	/********************DEPENDENCIES*******************/
 
 	EXPECT_CALL(altimetermock, GetResult(_))
@@ -187,7 +183,7 @@ TEST(getSensorData, GpsOldDataReturns1) {
 		.WillOnce(DoAll(SetArgReferee<0>(GpsTestData)));
 
 	/********************STEPTHROUGH********************/
-	getSensorDataError = SensorMeasurements_GetResult(&altimetermock, &gpsmock, &AltimeterPathTestData, &GpsPathTestData)
+	getSensorDataError = SensorMeasurements_GetResult(&altimetermock, &gpsmock, &AltimeterPathTestData, &GpsPathTestData);
 
 	/**********************ASSERTS**********************/
 	EXPECT_EQ(getSensorDataError.errorCode, 1);
