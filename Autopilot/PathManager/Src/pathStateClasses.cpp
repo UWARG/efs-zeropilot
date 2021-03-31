@@ -201,6 +201,52 @@ pathManagerState& resetVariables::getInstance()
     return singleton;
 }
 
+void resetVariables::execute(pathManager* pathMgr)
+{   
+    //resetting the variables for passby
+    resetPassby(&cruisingState::_outputdata.controlDetails);
+
+    if(pathMgr->isError)
+    {
+        pathMgr -> setState(fatalFailureMode::getInstance());
+    }
+    //if the enums for landing state, set to each landing state
+    switch(pathMgr->stage){
+        case TRANSITION:
+            pathMgr->setState(landingTransitionStage::getInstance());
+            break;
+        case SLOPE:
+            pathMgr->setState(landingSlopeStage::getInstance());
+            break;
+        case FLARE:
+            pathMgr->setState(landingFlareStage::getInstance());
+            break;
+        case DECRAB:
+            pathMgr->setState(landingDecrabStage::getInstance());
+            break;
+        case TOUCHDOWN:
+            pathMgr->setState(landingTouchdownStage::getInstance());
+            break;
+        case CRUISING:
+            pathMgr->setState(cruisingState::getInstance());
+            break;
+        case ROLL:
+            pathMgr->setState(takeoffRollStage::getInstance());
+            break;
+        case CLIMB:
+            pathMgr->setState(takeoffClimbStage::getInstance());
+            break;
+        default:
+            pathMgr->setState(cruisingState::getInstance());
+    }
+}
+
+pathManagerState& resetVariables::getInstance()
+{
+    static resetVariables singleton;
+    return singleton;
+}
+
 void cruisingState::execute(pathManager* pathMgr)
 {
 

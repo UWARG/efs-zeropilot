@@ -96,6 +96,24 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
         _PidOutput.throttlePercent = pathManagerOutput.throttlePercent;
     }
 
+    //if manual control is needed, use loaded in percents instead!
+    if(pathManagerOutput.passbyData.pitchPassby)
+    {
+        _PidOutput.pitchPercent = pathManagerOutput.passbyData.pitchPercent;
+    } 
+    if(pathManagerOutput.passbyData.rollPassby)
+    {
+        _PidOutput.rollPercent = pathManagerOutput.passbyData.rollPercent;
+    } 
+    if(pathManagerOutput.passbyData.rudderPassby)
+    {
+        _PidOutput.rudderPercent = pathManagerOutput.passbyData.rudderPercent;
+    } 
+    if(pathManagerOutput.passbyData.throttlePassby)
+    {
+        _PidOutput.throttlePercent = pathManagerOutput.passbyData.throttlePercent;
+    } 
+
     if (pmError.errorCode == 0) 
     {
         attitudeMgr->setState(OutputMixingMode::getInstance());
