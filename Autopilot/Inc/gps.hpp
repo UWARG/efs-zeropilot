@@ -101,7 +101,15 @@ class NEOM8 : public Gps
 #include "gpsMock.hpp"
 #endif
 
-
+#ifdef SIMULATION
+// This derived class hooks into the Simulink simulation rather than hardware
+class SimulatedGps : public Gps
+{
+    public :
+        void Begin_Measuring();
+        void GetResult(GpsData_t *Data);
+};
+#endif
 
 #endif
 
