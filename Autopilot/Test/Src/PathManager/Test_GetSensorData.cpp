@@ -135,11 +135,7 @@ TEST(getSensorData, AltimeterOldDataReturns1) {
 		.WillOnce(DoAll(SetArgReferee<0>(GpsTestData)));
 
 	/********************STEPTHROUGH********************/
-<<<<<<< HEAD
 	getSensorDataError = Path_SensorMeasurements_GetResult(&altimetermock, &gpsmock, &AltimeterPathTestData, &GpsPathTestData);
-=======
-	getSensorDataError = SensorMeasurements_GetResult(&altimetermock, &gpsmock, &AltimeterPathTestData, &GpsPathTestData);
->>>>>>> Added PathManager/GetSensorData to the Cmake tests
 
 	/**********************ASSERTS**********************/
 	EXPECT_EQ(getSensorDataError.errorCode, 1);
