@@ -23,6 +23,24 @@ struct _WaypointManager_Data_In {
     double airspeed;
 };
 
+/*
+* Structure stores manual control information
+* If a certain variable needs to be controlled, set the percent to the desired value and its respective boolean to true
+*/
+struct _PassbyControl{
+    double rollPercent;
+    bool rollPassby;
+
+    double rudderPercent;
+    bool rudderPassby;
+
+    double pitchPercent;
+    bool pitchPassby;
+
+    double throttlePercent;
+    bool throttlePassby;
+};
+
 // Stores error codes for the waypoint manager
 enum _WaypointStatus {WAYPOINT_SUCCESS = 0, UNDEFINED_FAILURE, CURRENT_INDEX_INVALID, UNDEFINED_PARAMETER, INVALID_PARAMETERS, TOO_MANY_WAYPOINTS};
 
@@ -53,24 +71,6 @@ struct _PathData {
     _WaypointOutputType waypointType; 
 };
 
-/*
-* Structure stores manual control information
-* If a certain variable needs to be controlled, set the percent to the desired value and its respective boolean to true
-*/
-
-struct _ManualControl{
-    double rollPercent;
-    bool rollManual;
-
-    double rudderPercent;
-    bool rudderManual;
-
-    double elevatorPercent;
-    bool elevatorManual;
-
-    double throttlePercent;
-    bool throttleManual;
-};
 
 /**
 * Structure contains the data that will be returned to the Path Manager state manager.
@@ -90,7 +90,7 @@ struct _WaypointManager_Data_Out{
     uint32_t timeOfData;                // The time that the data in this structure was collected
     _WaypointOutputType out_type;       // Output type (determines which parameters are defined)
 
-    _ManualControl controlDetails;
+    _PassbyControl controlDetails;
 };
 
 class WaypointManager {
