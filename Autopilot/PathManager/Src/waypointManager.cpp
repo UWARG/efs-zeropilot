@@ -48,7 +48,7 @@ WaypointManager::WaypointManager() {
     errorStatus = WAYPOINT_SUCCESS;
 
     // Initialize all other parameters (defaults)
-    desiredHeading = 0;
+    desiredTrack = 0;
     desiredAltitude = 0;
     distanceToNextWaypoint = 0.0;
     errorCode = WAYPOINT_SUCCESS;
