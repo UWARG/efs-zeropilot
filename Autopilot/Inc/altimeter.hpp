@@ -58,11 +58,11 @@ class MS5637 : public Altimeter {
 
 #ifdef SIMULATION
 // This derived class hooks into the Simulink simulation rather than hardware
-class SimulatedAirspeed : public airspeed
+class SimulatedAltimeter : public Altimeter
 {
     public :
         void Begin_Measuring();
-        void GetResult(airspeedData_t &Data);
+        void GetResult(AltimeterData_t *Data);
 };
 #endif
 
