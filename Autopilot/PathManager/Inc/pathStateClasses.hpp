@@ -70,6 +70,20 @@ class sensorFusion : public pathManagerState
         // it like the IMU_Data_t struct above
 };
 
+class resetVariables : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+    private:
+        resetVariables() {}
+        resetVariables(const resetVariables& other);
+        resetVariables& operator =(const resetVariables& other);
+        void resetPassby(_PassbyControl* controlDetails){controlDetails->rollPassby = controlDetails->pitchPassby = controlDetails->throttlePassby = controlDetails->rudderPassby = false;}
+};
+
 class takeoffRollStage : public pathManagerState
 {
     public:

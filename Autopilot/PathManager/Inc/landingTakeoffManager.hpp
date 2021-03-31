@@ -1,4 +1,6 @@
 #pragma once
+
+
 #include "waypointManager.hpp"
 #include "pathDatatypes.hpp"
 #include "vectorClass.hpp"
