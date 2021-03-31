@@ -53,7 +53,7 @@ class NEOM8 : public Gps
 {
 	public:
 		NEOM8(const NEOM8*) = delete;
-		NEOM8* GetInstance();
+		static NEOM8* GetInstance();
 
 		/**
          * Triggers interrupt for new GPS measurement - stores raw data in variables and returns right away
