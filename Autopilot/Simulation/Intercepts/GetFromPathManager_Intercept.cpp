@@ -12,8 +12,8 @@ PMError_t PM_GetCommands(PMCommands *Commands)
 
     Commands->roll = 0;
     Commands->pitch = 0;
-    Commands->yaw = 0;
-    Commands->airspeed = 60;
+    Commands->rudderPercent = 0;
+    Commands->throttlePercent = 100;
     PMError_t errorStruct;
     errorStruct.errorCode = 0;
 
