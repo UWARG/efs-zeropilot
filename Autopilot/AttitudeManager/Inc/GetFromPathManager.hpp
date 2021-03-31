@@ -10,7 +10,7 @@ struct PMCommands{
 	float roll, pitch;	// commanded orientation (radians)
 	float rudderPercent;
 	float throttlePercent;
-	_ManualControl manualData;
+	_PassbyControl passbyData;
 };
 
 struct PMError_t{
