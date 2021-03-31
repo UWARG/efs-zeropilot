@@ -54,6 +54,9 @@ pathManagerState& commsWithTelemetry::getInstance()
 
 void getSensorData::execute(pathManager* pathMgr)
 {
+    // Initializes the sensor data structures 
+    SensorError_t errorStruct = SensorMeasurements_GetResult(&AltimeterSens, &GpsSens, &_altimeterdata, &_gpsdata); 
+    
     //obtain sensor data
     if(isError)
     {
@@ -94,28 +97,23 @@ void cruisingState::execute(pathManager* pathMgr)
 {
 
     Telemetry_PIGO_t * telemetryData = commsWithTelemetry::GetTelemetryIncomingData(); // Get struct from telemetry state with all of the commands and values.
-    // std::cout << "Got Telemetry data" << std::endl; 
-
 
     int editError = editFlightPath(telemetryData, cruisingStateManager, waypointIDArray); // Edit flight path if applicable
 
-    // std::cout << "Updated Flight Path" << std::endl; 
-
     // Set input data for getting next direction/altitude
-    
-    /*
-    
-     Set input struct values (variables are not in it rn)
+    Gps_Data_t * gpsData = getSensorData::GetGPSOutput();
+    // Get sensor fusion data
+    // SFPositionOutput_t * sfData = sensorFusion::GetSFPositionOutput();
 
-    */
+    _inputdata.heading = gpsData->heading;
+    // Set input data parameters
+    // _inputdata.longitude = sfData->longitude;
+    // _inputdata.latitude = sfData->latitude;
+    // _inputdata.altitude = sfData->altitude;
 
     int pathError = pathFollow(telemetryData, cruisingStateManager, _inputdata, &_outputdata, goingHome, inHold); // Get next direction or modify flight behaviour pattern
 
-    // std::cout << "Got next directions" << std::endl; 
-
     setReturnValues(&_returnToGround, cruisingStateManager, editError, pathError); // Set error codes
-
-    // std::cout << "Set return values" << std::endl; 
 
     if(isError)
     {
@@ -162,5 +160,8 @@ pathManagerState& fatalFailureMode::getInstance()
     static fatalFailureMode singleton;
     return singleton;
 }
+
+
+
 
 
