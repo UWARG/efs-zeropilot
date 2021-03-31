@@ -8,6 +8,28 @@
 #include "AutoSteer.hpp"
 #include "waypointManager.hpp"
 #include "pathDataTypes.hpp"
+#include "getSensordata.hpp"
+
+/***********************************************************************************************************************
+ * Definitions
+ **********************************************************************************************************************/
+
+#ifdef SIMULATION
+
+#define GPS_CLASS SimulatedGPS
+#define ALTIMETER_CLASS SimulatedAltimeter
+
+#elif defined(UNIT_TESTING)
+
+#define GPS_CLASS MockGPS
+#define ALTIMETER_CLASS MockAltimeter
+
+#else
+
+#define GPS_CLASS NEOM8  
+#define ALTIMETER_CLASS MS5637
+
+#endif
 
 /***********************************************************************************************************************
  * Code
@@ -48,14 +70,16 @@ class getSensorData : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-        static AltimeterData_t* GetAltimeterOutput(void) {return &_altimeterdata;}
-        static GpsData_t* GetGPSOutput(void) {return &_gpsdata;}
+        static Altimeter_Data_t* GetAltimeterOutput(void) {return &_altimeterdata;}
+        static Gps_Data_t* GetGPSOutput(void) {return &_gpsdata;}
     private:
         getSensorData() {}
         getSensorData(const getSensorData& other);
         getSensorData& operator =(const getSensorData& other);
-        static AltimeterData_t _altimeterdata; 
-        static GpsData_t _gpsdata; 
+        static Altimeter_Data_t _altimeterdata; 
+        static Gps_Data_t _gpsdata; 
+        GPS_CLASS GpsSens;
+        ALTIMETER_CLASS AltimeterSens;
 };
 
 class sensorFusion : public pathManagerState
@@ -128,6 +152,3 @@ class fatalFailureMode : public pathManagerState
         fatalFailureMode(const fatalFailureMode& other);
         fatalFailureMode& operator =(const fatalFailureMode& other);
 };
-
-
-
