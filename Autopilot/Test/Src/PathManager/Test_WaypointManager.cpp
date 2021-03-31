@@ -83,11 +83,7 @@ static _OutputStatus compare_output_data(_WaypointManager_Data_Out *ans, _Waypoi
     if(ans->desiredAltitude == test->desiredAltitude && ans->desiredTrack == test->desiredTrack && ans->distanceToNextWaypoint == round(test->distanceToNextWaypoint) && ans->radius == test->radius && ans->turnDirection == test->turnDirection && ans->out_type == test->out_type) {
         return OUTPUT_CORRECT;
     } else {
-<<<<<<< HEAD:Autopilot/Test/Src/PathManager/Test_WaypointManager.cpp
         // cout << "Comparing Output Data: Alt " << ans->desiredAltitude << " " << test->desiredAltitude << " | Track " << ans->desiredTrack << " " << test->desiredTrack << " | Distance " << ans->distanceToNextWaypoint << " " << test->distanceToNextWaypoint << " | Radius " << ans->radius << " " << test->radius << " | Direction " << ans->turnDirection << " " << test->turnDirection << " | OutType " << ans->out_type << " " << test->out_type << endl;
-=======
-        cout << "Comparing Output Data: Alt " << ans->desiredAltitude << " " << test->desiredAltitude << " | Heading " << ans->desiredHeading << " " << test->desiredHeading << " | Distance " << ans->distanceToNextWaypoint << " " << test->distanceToNextWaypoint << " | Radius " << ans->radius << " " << test->radius << " | Direction " << ans->turnDirection << " " << test->turnDirection << " | OutType " << ans->out_type << " " << test->out_type << endl;
->>>>>>> d24c241e70e1fdc8bbb08c1b5b4626813e85755b:Autopilot/Test/Src/PathManager/Test_WaypointManager.cpp
         return OUTPUT_INCORRECT;
     }
 }
