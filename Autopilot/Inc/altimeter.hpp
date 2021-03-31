@@ -52,4 +52,18 @@ class MS5637 : public Altimeter {
 
 };
 
+#ifdef UNIT_TESTING
+#include "airspeed_Mock.hpp"
+#endif
+
+#ifdef SIMULATION
+// This derived class hooks into the Simulink simulation rather than hardware
+class SimulatedAirspeed : public airspeed
+{
+    public :
+        void Begin_Measuring();
+        void GetResult(airspeedData_t &Data);
+};
+#endif
+
 #endif
