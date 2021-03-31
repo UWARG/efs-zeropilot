@@ -11,13 +11,11 @@ add_definitions(
 )
 
 include_directories(
-        Inc
-        ../Common/Inc
-        Libraries/CMSIS/Include
-        Libraries/CMSIS/Device/ST/STM32F0xx/Include
-        Libraries/Drivers/Inc
-        Libraries/Drivers/Inc/stm32f0
-        Lib
+    boardfiles/Inc
+    boardfiles/Drivers/STM32F0xx_HAL_Driver/Inc
+    boardfiles/Drivers/CMSIS/Device/ST/STM32F0xx/Include
+    boardfiles/Drivers/CMSIS/Include
+    Inc
 )
 
 # Libraries
@@ -25,8 +23,13 @@ add_subdirectory(Libraries/STM32F0xx_HAL_Driver)
 
 # Tests
 #add_subdirectory(Tests)
-file(GLOB_RECURSE C_SOURCES  "../Common/Src/*.c" "../Common/Src/stm32/*.c" "Src/*.c" , "Libraries/Drivers/Src/stm32f0/*.c")
-file(GLOB_RECURSE CXX_SOURCES  "../Common/Src/*.cpp" "../Common/Src/stm32/*.cpp" "Src/*.cpp" , "Libraries/Drivers/Src/stm32f0/*.cpp")
+file(GLOB_RECURSE C_SOURCES  "boardfiles/Drivers/STM32F0xx_HAL_Driver/Src*.c" "boardfiles/Src/*.c")
+file(GLOB_RECURSE CXX_SOURCES "boardfiles/Src/*.cpp" "Src/*.cpp")
+
+
+if( EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/boardfiles/Src/main.c")
+  message( FATAL_ERROR "Hey Bub, you screwed up, but it's all good. You see, CubeMx generates a main.c rather than a main.cpp, so before generation, you need to change the extension of boardfiles/Src/main.cpp to boardfiles/Src/main.c, allowing cubeMX to update your main file. Then, after generation, rename the file to boardfiles/Src/main.cpp." )
+endif()
 
 set(STARTUP_ASM startup_stm32f030xc.s)
 set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F030RCTx_FLASH.ld)

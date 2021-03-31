@@ -31,8 +31,13 @@ void Interchip_Run(void const *argument) {
 
 // Public Functions to get and set data
 
-int16_t *Interchip_GetPWM(void) { return dataRX->PWM; }
-void Interchip_SetPWM(int16_t *data) {
+int16_t *Interchip_GetPWM(void) 
+{ 
+  return dataRX->PWM; 
+}
+
+
+void Interchip_SetPWM(int16_t data[]) {
   osMutexWait(Interchip_MutexHandle, 0);
   for (uint8_t i = 0; i < 12; i++) {
     dataTX->PWM[i] = data[i];
@@ -41,7 +46,8 @@ void Interchip_SetPWM(int16_t *data) {
 }
 
 
-uint16_t Interchip_GetSafetyLevel(void) { return dataRX->safety_level; }
+uint16_t Interchip_GetAutonomousLevel(void) { return dataRX->autonomous_level; }
+
 void Interchip_SetAutonomousLevel(uint16_t data) {
   osMutexWait(Interchip_MutexHandle, 0);
   dataTX->autonomous_level = data;

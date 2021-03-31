@@ -1,15 +1,19 @@
 /*
-*
 * A skeleton for testing the sensor fusion algorithm
-*
+* Author: Lucy Gong, Dhruv Rawat
 */
 
 #include <gtest/gtest.h>
 #include "fff.h"
 
+#include "AttitudeDatatypes.hpp"
+
 #include "airspeed_Mock.hpp"
 #include "IMU_Mock.hpp"
 #include "SensorFusion.hpp"
+#include "fetchSensorMeasurementsMode.hpp"
+
+#include <math.h>
 
 
 using namespace std;
@@ -26,6 +30,8 @@ using ::testing::SetArgReferee;
  **********************************************************************************************************************/
 IMUData_t IMUTestData;
 airspeedData_t airspeedTestData;
+IMU_Data_t IMUAttitudeTestData;
+Airspeed_Data_t AirspeedAttitudeTestData;
 
 /***********************************************************************************************************************
  * Tests
@@ -44,7 +50,13 @@ TEST(SensorFusion, FailedBusyIMUDataReturnsNegative1) {
 	IMUTestData.isDataNew = 1;
 	airspeedTestData.isDataNew = 1;
 
+	IMUAttitudeTestData.sensorStatus = -1;
+	AirspeedAttitudeTestData.sensorStatus = 0;
+	IMUAttitudeTestData.isDataNew = 1;
+	AirspeedAttitudeTestData.isDataNew = 1;
+
 	SFError_t error;
+	SensorError_t fetchMeasurementsError;
 	SFOutput_t output;
 
 	/********************DEPENDENCIES*******************/
@@ -56,12 +68,15 @@ TEST(SensorFusion, FailedBusyIMUDataReturnsNegative1) {
 		.WillOnce(DoAll(SetArgReferee<0>(airspeedTestData)));
 
 	/********************STEPTHROUGH********************/
+	
+	fetchMeasurementsError = SensorMeasurements_GetResult(&imumock, &airspeedmock, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
-	error = SF_GetResult(&output, &imumock, &airspeedmock);
+	error = SF_GetResult(&output, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, -1);
+	EXPECT_EQ(fetchMeasurementsError.errorCode, -1);
+	EXPECT_EQ(error.errorCode, -1);
 }
 
 TEST(SensorFusion, FailedBusyAirspeedDataReturnsNegative1 ) {
@@ -76,8 +91,14 @@ TEST(SensorFusion, FailedBusyAirspeedDataReturnsNegative1 ) {
 	IMUTestData.isDataNew = 1;
 	airspeedTestData.isDataNew = 1;
 
+	IMUAttitudeTestData.sensorStatus = 0;
+	AirspeedAttitudeTestData.sensorStatus = -1;
+	IMUAttitudeTestData.isDataNew = 1;
+	AirspeedAttitudeTestData.isDataNew = 1;
+
 	SFError_t error;
 	SFOutput_t output;
+	SensorError_t fetchMeasurementsError;
 
 	/********************DEPENDENCIES*******************/
 
@@ -89,11 +110,14 @@ TEST(SensorFusion, FailedBusyAirspeedDataReturnsNegative1 ) {
 
 	/********************STEPTHROUGH********************/
 
-	error = SF_GetResult(&output, &imumock, &airspeedmock);
+	fetchMeasurementsError = SensorMeasurements_GetResult(&imumock, &airspeedmock, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
+
+	error = SF_GetResult(&output, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, -1);
+	EXPECT_EQ(fetchMeasurementsError.errorCode, -1);
+	EXPECT_EQ(error.errorCode, -1);
 }
 
 TEST(SensorFusion, OldDataReturns1) {
@@ -107,10 +131,15 @@ TEST(SensorFusion, OldDataReturns1) {
 	IMUTestData.isDataNew = 0;
 	airspeedTestData.isDataNew = 1;
 
+	IMUAttitudeTestData.sensorStatus = 0;
+	AirspeedAttitudeTestData.sensorStatus = 0;
+	IMUAttitudeTestData.isDataNew = 0;
+	AirspeedAttitudeTestData.isDataNew = 1;
+
 	//Dummy values
-	IMUTestData.magx = 0;
+	IMUTestData.magx = NAN;
 	IMUTestData.magy = 0;
-	IMUTestData.magz = 0;
+	IMUTestData.magz = NAN; // Make some of these NAN to see if code can handle this case
 	IMUTestData.accx = 0;
 	IMUTestData.accy = 0;
 	IMUTestData.accz = 0;
@@ -118,10 +147,10 @@ TEST(SensorFusion, OldDataReturns1) {
 	IMUTestData.gyry = 0;
 	IMUTestData.gyrz = 0;
 
-
 	//Dummy values
 	airspeedTestData.airspeed = 0;
 
+	SensorError_t fetchMeasurementsError;
 	SFError_t error;
 	SFOutput_t output;
 
@@ -135,10 +164,13 @@ TEST(SensorFusion, OldDataReturns1) {
 
 	/********************STEPTHROUGH********************/
 
-	error = SF_GetResult(&output, &imumock, &airspeedmock);
+	fetchMeasurementsError = SensorMeasurements_GetResult(&imumock, &airspeedmock, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
+
+	error = SF_GetResult(&output, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 1);
+	EXPECT_EQ(fetchMeasurementsError.errorCode, 1);
+	EXPECT_EQ(error.errorCode, 1);
 }
 

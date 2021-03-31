@@ -1,3 +1,7 @@
+
+
+#if 0
+
 #include "Profiler.h"
 #include "Clock.hpp"
 #include <stdint.h>
@@ -48,3 +52,5 @@ int print_profile_stats(const char *label, char *buffer, Profiler *p) {
 				   (uint32_t) p->min_diff,
 				   p->num_profiles);
 }
+
+#endif

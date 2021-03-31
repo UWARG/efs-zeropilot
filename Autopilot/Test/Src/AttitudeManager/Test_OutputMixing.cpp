@@ -17,7 +17,7 @@ TEST(AttitudeManager_OutputMixing, UnderNegative100RollReturnsError1) {
 	PID_Output_t NegativePid;
 	NegativePid.rollPercent = -101.0f;
 	NegativePid.pitchPercent = 10.0f;
-	NegativePid.yawPercent = 10.0f;
+	NegativePid.rudderPercent = 10.0f;
 	NegativePid.throttlePercent = 10.0f;
 
 	OutputMixing_error_t error;
@@ -32,7 +32,7 @@ TEST(AttitudeManager_OutputMixing, UnderNegative100RollReturnsError1) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 1);
+	EXPECT_EQ(error.errorCode, 1);
 }
 
 TEST(AttitudeManager_OutputMixing, UnderNegative100PitchReturnsError1) {
@@ -42,7 +42,7 @@ TEST(AttitudeManager_OutputMixing, UnderNegative100PitchReturnsError1) {
 	PID_Output_t NegativePid;
 	NegativePid.rollPercent = 10.0f;
 	NegativePid.pitchPercent = -101.0f;
-	NegativePid.yawPercent = 10.0f;
+	NegativePid.rudderPercent = 10.0f;
 	NegativePid.throttlePercent = 10.0f;
 
 	OutputMixing_error_t error;
@@ -57,7 +57,7 @@ TEST(AttitudeManager_OutputMixing, UnderNegative100PitchReturnsError1) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 1);
+	EXPECT_EQ(error.errorCode, 1);
 }
 
 TEST(AttitudeManager_OutputMixing, UnderNegative100YawReturnsError1) {
@@ -67,7 +67,7 @@ TEST(AttitudeManager_OutputMixing, UnderNegative100YawReturnsError1) {
 	PID_Output_t NegativePid;
 	NegativePid.rollPercent = 10.0f;
 	NegativePid.pitchPercent = 10.0f;
-	NegativePid.yawPercent = -101.0f;
+	NegativePid.rudderPercent = -101.0f;
 	NegativePid.throttlePercent = 10.0f;
 
 	OutputMixing_error_t error;
@@ -82,7 +82,7 @@ TEST(AttitudeManager_OutputMixing, UnderNegative100YawReturnsError1) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 1);
+	EXPECT_EQ(error.errorCode, 1);
 }
 
 TEST(AttitudeManager_OutputMixing, NegativeThrottleReturnsError1) {
@@ -92,7 +92,7 @@ TEST(AttitudeManager_OutputMixing, NegativeThrottleReturnsError1) {
 	PID_Output_t NegativePid;
 	NegativePid.rollPercent = 10.0f;
 	NegativePid.pitchPercent = 10.0f;
-	NegativePid.yawPercent = 10.0f;
+	NegativePid.rudderPercent = 10.0f;
 	NegativePid.throttlePercent = -5.0f;
 
 	OutputMixing_error_t error;
@@ -107,7 +107,7 @@ TEST(AttitudeManager_OutputMixing, NegativeThrottleReturnsError1) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 1);
+	EXPECT_EQ(error.errorCode, 1);
 }
 
 TEST(AttitudeManager_OutputMixing, Over100RollReturnsError2) {
@@ -117,7 +117,7 @@ TEST(AttitudeManager_OutputMixing, Over100RollReturnsError2) {
 	PID_Output_t Over100Pid;
 	Over100Pid.rollPercent = 101.0f;
 	Over100Pid.pitchPercent = 10.0f;
-	Over100Pid.yawPercent = 10.0f;
+	Over100Pid.rudderPercent = 10.0f;
 	Over100Pid.throttlePercent = 10.0f;
 
 	OutputMixing_error_t error;
@@ -132,7 +132,7 @@ TEST(AttitudeManager_OutputMixing, Over100RollReturnsError2) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 2);
+	EXPECT_EQ(error.errorCode, 2);
 }
 
 TEST(AttitudeManager_OutputMixing, Over100PitchReturnsError2) {
@@ -142,7 +142,7 @@ TEST(AttitudeManager_OutputMixing, Over100PitchReturnsError2) {
 	PID_Output_t Over100Pid;
 	Over100Pid.rollPercent = 10.0f;
 	Over100Pid.pitchPercent = 101.0f;
-	Over100Pid.yawPercent = 10.0f;
+	Over100Pid.rudderPercent = 10.0f;
 	Over100Pid.throttlePercent = 10.0f;
 
 	OutputMixing_error_t error;
@@ -157,7 +157,7 @@ TEST(AttitudeManager_OutputMixing, Over100PitchReturnsError2) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 2);
+	EXPECT_EQ(error.errorCode, 2);
 }
 
 TEST(AttitudeManager_OutputMixing, Over100YawReturnsError2) {
@@ -167,7 +167,7 @@ TEST(AttitudeManager_OutputMixing, Over100YawReturnsError2) {
 	PID_Output_t Over100Pid;
 	Over100Pid.rollPercent = 10.0f;
 	Over100Pid.pitchPercent = 10.0f;
-	Over100Pid.yawPercent = 101.0f;
+	Over100Pid.rudderPercent = 101.0f;
 	Over100Pid.throttlePercent = 10.0f;
 
 	OutputMixing_error_t error;
@@ -182,7 +182,7 @@ TEST(AttitudeManager_OutputMixing, Over100YawReturnsError2) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 2);
+	EXPECT_EQ(error.errorCode, 2);
 }
 
 TEST(AttitudeManager_OutputMixing, Over100ThrottleReturnsError2) {
@@ -192,7 +192,7 @@ TEST(AttitudeManager_OutputMixing, Over100ThrottleReturnsError2) {
 	PID_Output_t Over100Pid;
 	Over100Pid.rollPercent = 10.0f;
 	Over100Pid.pitchPercent = 10.0f;
-	Over100Pid.yawPercent = 10.0f;
+	Over100Pid.rudderPercent = 10.0f;
 	Over100Pid.throttlePercent = 101.0f;
 
 	OutputMixing_error_t error;
@@ -207,7 +207,7 @@ TEST(AttitudeManager_OutputMixing, Over100ThrottleReturnsError2) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 2);
+	EXPECT_EQ(error.errorCode, 2);
 }
 
 TEST(AttitudeManager_OutputMixing, AllInputValidReturnsError0) {
@@ -217,7 +217,7 @@ TEST(AttitudeManager_OutputMixing, AllInputValidReturnsError0) {
 	PID_Output_t Over100Pid;
 	Over100Pid.rollPercent = -10.0f;
 	Over100Pid.pitchPercent = 10.0f;
-	Over100Pid.yawPercent = 0.0f;
+	Over100Pid.rudderPercent = 0.0f;
 	Over100Pid.throttlePercent = 10.0f;
 
 	OutputMixing_error_t error;
@@ -232,7 +232,7 @@ TEST(AttitudeManager_OutputMixing, AllInputValidReturnsError0) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 0);
+	EXPECT_EQ(error.errorCode, 0);
 }
 
 TEST(AttitudeManager_OutputMixing, CannotReturnOutOfRangeValuesWhenGivenValidInput) {
@@ -242,7 +242,7 @@ TEST(AttitudeManager_OutputMixing, CannotReturnOutOfRangeValuesWhenGivenValidInp
 	PID_Output_t MaxVals;
 	MaxVals.rollPercent = 100.0f;
 	MaxVals.pitchPercent = 100.0f;
-	MaxVals.yawPercent = 100.0f;
+	MaxVals.rudderPercent = 100.0f;
 	MaxVals.throttlePercent = 100.0f;
 
 	OutputMixing_error_t error;
@@ -257,11 +257,11 @@ TEST(AttitudeManager_OutputMixing, CannotReturnOutOfRangeValuesWhenGivenValidInp
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(error.errorCode, 0);
+	EXPECT_EQ(error.errorCode, 0);
 
-	ASSERT_TRUE( (mixedOutput[L_TAIL_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[L_TAIL_OUT_CHANNEL] >= -100.0f ) );
-	ASSERT_TRUE( (mixedOutput[R_TAIL_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[R_TAIL_OUT_CHANNEL] >= -100.0f ) );
-	ASSERT_TRUE( (mixedOutput[AILERON_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[AILERON_OUT_CHANNEL] >= -100.0f ) );
-	ASSERT_TRUE( (mixedOutput[THROTTLE_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[THROTTLE_OUT_CHANNEL] >= 0.0f ) );
 
+	EXPECT_TRUE( (mixedOutput[ELEVATOR_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[ELEVATOR_OUT_CHANNEL] >= -100.0f ) );
+	EXPECT_TRUE( (mixedOutput[RUDDER_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[RUDDER_OUT_CHANNEL] >= -100.0f ) );
+	EXPECT_TRUE( (mixedOutput[AILERON_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[AILERON_OUT_CHANNEL] >= -100.0f ) );
+	EXPECT_TRUE( (mixedOutput[THROTTLE_OUT_CHANNEL] <= 100.0f ) && (mixedOutput[THROTTLE_OUT_CHANNEL] >= 0.0f ) );
 }

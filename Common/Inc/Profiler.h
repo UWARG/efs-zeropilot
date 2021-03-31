@@ -1,3 +1,5 @@
+#if 0
+
 /**
  * Utilities that'll let you profile your firmware and drivers
  *
@@ -46,4 +48,6 @@ int print_profile_stats(const char *label, char *buffer, Profiler *p);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

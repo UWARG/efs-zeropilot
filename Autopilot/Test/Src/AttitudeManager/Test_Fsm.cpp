@@ -1,6 +1,6 @@
 /*
 * This file contains all the tests that relate to ensuring the transitions between states of the attitude manager FSM are correct.
-* Author: Anthony Berbari
+* Author: Anthony Berbari, Dhruv Rawat
 */
 
 #include "fff.h"
@@ -8,8 +8,10 @@
 
 #include "attitudeManager.hpp"
 #include "attitudeStateClasses.hpp"
+#include "AttitudeDatatypes.hpp"
 
 #include "GetFromPathManager.hpp"
+#include "fetchSensorMeasurementsMode.hpp"
 #include "SensorFusion.hpp"
 #include "OutputMixing.hpp"
 #include "SendInstructionsToSafety.hpp"
@@ -24,9 +26,11 @@ using ::testing::Test;
  **********************************************************************************************************************/
 
 FAKE_VALUE_FUNC(PMError_t, PM_GetCommands, PMCommands * );
-FAKE_VALUE_FUNC(SFError_t, SF_GetResult, SFOutput_t *, IMU *, airspeed *);
+FAKE_VALUE_FUNC(SFError_t, SF_GetResult, SFOutput_t *, IMU_Data_t *, Airspeed_Data_t *);
+FAKE_VALUE_FUNC(SensorError_t, SensorMeasurements_GetResult, IMU *, airspeed *, IMU_Data_t *, Airspeed_Data_t *);
+FAKE_VOID_FUNC(SendToSafety_Init);
 FAKE_VALUE_FUNC(OutputMixing_error_t, OutputMixing_Execute, PID_Output_t * , float * );
-FAKE_VALUE_FUNC(SendToSafety_error_t, SendToSafety_Execute, float * );
+FAKE_VALUE_FUNC(SendToSafety_error_t, SendToSafety_Execute, int, int);
 
 /***********************************************************************************************************************
  * Definitions
@@ -46,6 +50,8 @@ class AttitudeManagerFSM : public ::testing::Test
 		{
 			RESET_FAKE(PM_GetCommands);
 			RESET_FAKE(SF_GetResult);
+			RESET_FAKE(SensorMeasurements_GetResult);
+			RESET_FAKE(SendToSafety_Init);
 			RESET_FAKE(OutputMixing_Execute);
 			RESET_FAKE(SendToSafety_Execute);
 		}
@@ -65,6 +71,8 @@ class AttitudeManagerDataHandoff : public ::testing::Test
 		{
 			RESET_FAKE(PM_GetCommands);
 			RESET_FAKE(SF_GetResult);
+			RESET_FAKE(SensorMeasurements_GetResult);
+			RESET_FAKE(SendToSafety_Init);
 			RESET_FAKE(OutputMixing_Execute);
 			RESET_FAKE(SendToSafety_Execute);
 		}
@@ -109,11 +117,12 @@ TEST(AttitudeManagerFSM, InitialStateIsFetchInstructions) {
 	/********************STEPTHROUGH********************/
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), fetchInstructionsMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), fetchInstructionsMode::getInstance());
+	EXPECT_EQ(attMng.getStatus(), COMPLETED_CYCLE);
 
 }
 
-TEST(AttitudeManagerFSM, IfFetchInstructionsSucceedsTransitionToSensorFusion) {
+TEST(AttitudeManagerFSM, IfFetchInstructionsSucceedsTransitionToFetchSensorMeasurements) {
 
    	/***********************SETUP***********************/
 
@@ -133,7 +142,8 @@ TEST(AttitudeManagerFSM, IfFetchInstructionsSucceedsTransitionToSensorFusion) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), sensorFusionMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), fetchSensorMeasurementsMode::getInstance());
+	EXPECT_EQ(attMng.getStatus(), IN_CYCLE);
 
 }
 
@@ -157,7 +167,58 @@ TEST(AttitudeManagerFSM, IfFetchInstructionsFailsTransitionToFatalFailure) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
+	EXPECT_EQ(attMng.getStatus(), FAILURE_MODE);
+
+}
+
+TEST(AttitudeManagerFSM, IfFetchSensorMeasurementsSuccessTransitionToSensorFusion) {
+
+   	/***********************SETUP***********************/
+
+	attitudeManager attMng;
+
+	SensorError_t error;
+	error.errorCode = 0;
+
+	/********************DEPENDENCIES*******************/
+
+	SensorMeasurements_GetResult_fake.return_val = error;
+
+	/********************STEPTHROUGH********************/
+
+	attMng.setState(fetchSensorMeasurementsMode::getInstance());
+	attMng.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(attMng.getCurrentState()), sensorFusionMode::getInstance());
+	EXPECT_EQ(attMng.getStatus(), IN_CYCLE);
+
+}
+
+TEST(AttitudeManagerFSM, IfFetchSensorMeasurementsFailsTransitionToFailure) {
+
+   	/***********************SETUP***********************/
+
+	attitudeManager attMng;
+
+	SensorError_t error;
+	error.errorCode = 1;
+
+	/********************DEPENDENCIES*******************/
+
+	SensorMeasurements_GetResult_fake.return_val = error;
+
+	/********************STEPTHROUGH********************/
+
+	attMng.setState(fetchSensorMeasurementsMode::getInstance());
+	attMng.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
+	EXPECT_EQ(attMng.getStatus(), FAILURE_MODE);
 
 }
 
@@ -180,7 +241,8 @@ TEST(AttitudeManagerFSM, IfSensorFusionSucceedsTransitionToPID) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), PIDloopMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), PIDloopMode::getInstance());
+	EXPECT_EQ(attMng.getStatus(), IN_CYCLE);
 }
 
 TEST(AttitudeManagerFSM, IfSensorFusionFailsTransitionToFailed) {
@@ -202,17 +264,23 @@ TEST(AttitudeManagerFSM, IfSensorFusionFailsTransitionToFailed) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
+	EXPECT_EQ(attMng.getStatus(), FAILURE_MODE);
 }
 
 
-TEST(AttitudeManagerFSM, TransitionFromPIDToOutputMixing) {
+TEST(AttitudeManagerFSM, IfPIDLoopModeSuccessTransitionToOutputMixing) {
 
    	/***********************SETUP***********************/
 
 	attitudeManager attMng;
+	PMError_t error;
+	error.errorCode = 0;
 
 	/********************DEPENDENCIES*******************/
+
+	PM_GetCommands_fake.return_val = error;
+
 	/********************STEPTHROUGH********************/
 
 	attMng.setState(PIDloopMode::getInstance());
@@ -220,7 +288,33 @@ TEST(AttitudeManagerFSM, TransitionFromPIDToOutputMixing) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), OutputMixingMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), OutputMixingMode::getInstance());
+	EXPECT_EQ(attMng.getStatus(), IN_CYCLE);
+
+}
+
+TEST(AttitudeManagerFSM, IfPIDLoopModeFailsTransitionToFailed) {
+
+   	/***********************SETUP***********************/
+
+	attitudeManager attMng;
+	PMError_t error;
+	error.errorCode = -1;
+
+	/********************DEPENDENCIES*******************/
+
+	PM_GetCommands_fake.return_val = error;
+
+	/********************STEPTHROUGH********************/
+
+	attMng.setState(PIDloopMode::getInstance());
+	attMng.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
+	EXPECT_EQ(attMng.getStatus(), FAILURE_MODE);
+
 }
 
 TEST(AttitudeManagerFSM, IfOutputMixingSucceedsTransitionToSendToSafety) {
@@ -242,7 +336,9 @@ TEST(AttitudeManagerFSM, IfOutputMixingSucceedsTransitionToSendToSafety) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), sendToSafetyMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), sendToSafetyMode::getInstance());
+	EXPECT_EQ(attMng.getStatus(), IN_CYCLE);
+
 }
 
 TEST(AttitudeManagerFSM, IfOutputMixingFailsTransitionToFailed) {
@@ -264,7 +360,9 @@ TEST(AttitudeManagerFSM, IfOutputMixingFailsTransitionToFailed) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
+	EXPECT_EQ(attMng.getStatus(), FAILURE_MODE);
+
 }
 
 TEST(AttitudeManagerFSM, IfSendToSafetySucceedsTransitionToFetchInstructions) {
@@ -286,7 +384,9 @@ TEST(AttitudeManagerFSM, IfSendToSafetySucceedsTransitionToFetchInstructions) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), fetchInstructionsMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), fetchInstructionsMode::getInstance());
+	EXPECT_EQ(attMng.getStatus(), COMPLETED_CYCLE);
+
 }
 
 TEST(AttitudeManagerFSM, IfSendToSafetyFailsTransitionToFailed) {
@@ -308,7 +408,9 @@ TEST(AttitudeManagerFSM, IfSendToSafetyFailsTransitionToFailed) {
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
+	EXPECT_EQ(attMng.getStatus(), FAILURE_MODE);
+
 }
 
 /***********************************************************************************************************************
@@ -338,6 +440,8 @@ TEST(AttitudeManagerDataHandoff, CorrectDataIsFedFromOutputMixingToSendToSafety)
 
 	/**********************ASSERTS**********************/
 
-	ASSERT_EQ(0, memcmp(OutputMixing_Execute_fake.arg1_val, channelOut_custom, 4*sizeof(float)));
+	EXPECT_EQ(0, memcmp(OutputMixing_Execute_fake.arg1_val, channelOut_custom, 4*sizeof(float)));
+	EXPECT_EQ(attMng.getStatus(), FAILURE_MODE);
+
 }
 

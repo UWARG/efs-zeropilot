@@ -80,4 +80,5 @@ mx.scratch
 # CMake
 cmake-build-*/
 
-
+# Simulation
+**/SimulationBuild/**

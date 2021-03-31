@@ -1,3 +1,6 @@
+//This is not a bad file to have around, it's just that it needs to be rewritten to actually work.
+#if 0
+
 #include "Debug.hpp"
 #include "UART.hpp"
 #include "Status.hpp"
@@ -94,3 +97,5 @@ void abort(const char *msg, const char *file, int line) {
 	print_msg(buffer, (size_t) len);
 	while (1);
 }
+
+#endif
