@@ -51,7 +51,7 @@ enum _WaypointSt {WAYPOINT_CORRECT = 0, WAYPOINT_INCORRECT};
 static _ArrayStatus compare_id_arrays (int * toCheck, int * ans) {
     for (int i = 0; i < PATH_BUFFER_SIZE; i++) {
         if (toCheck[i] != ans[i]) {
-            cout << i << " | " << toCheck[i] << " ; ans: " << ans[i] << endl;
+            // cout << i << " | " << toCheck[i] << " ; ans: " << ans[i] << endl;
             return ARRAY_DIFFERENT;
         }
     }
@@ -60,10 +60,10 @@ static _ArrayStatus compare_id_arrays (int * toCheck, int * ans) {
 }
 
 static _OutputStatus compare_output_data(_WaypointManager_Data_Out *ans, _WaypointManager_Data_Out *test) {
-    if(ans->desiredAltitude == test->desiredAltitude && ans->desiredHeading == test->desiredHeading && ans->distanceToNextWaypoint == round(test->distanceToNextWaypoint) && ans->radius == test->radius && ans->turnDirection == test->turnDirection && ans->out_type == test->out_type) {
+    if(ans->desiredAltitude == test->desiredAltitude && ans->desiredTrack == test->desiredTrack && ans->distanceToNextWaypoint == round(test->distanceToNextWaypoint) && ans->radius == test->radius && ans->turnDirection == test->turnDirection && ans->out_type == test->out_type) {
         return OUTPUT_CORRECT;
     } else {
-        cout << "Comparing Output Data: Alt " << ans->desiredAltitude << " " << test->desiredAltitude << " | Heading " << ans->desiredHeading << " " << test->desiredHeading << " | Distance " << ans->distanceToNextWaypoint << " " << test->distanceToNextWaypoint << " | Radius " << ans->radius << " " << test->radius << " | Direction " << ans->turnDirection << " " << test->turnDirection << " | OutType " << ans->out_type << " " << test->out_type << endl;
+        // cout << "Comparing Output Data: Alt " << ans->desiredAltitude << " " << test->desiredAltitude << " | Heading " << ans->desiredTrack << " " << test->desiredTrack << " | Distance " << ans->distanceToNextWaypoint << " " << test->distanceToNextWaypoint << " | Radius " << ans->radius << " " << test->radius << " | Direction " << ans->turnDirection << " " << test->turnDirection << " | OutType " << ans->out_type << " " << test->out_type << endl;
         return OUTPUT_INCORRECT;
     }
 }
@@ -83,39 +83,39 @@ static _ArrayStatus compare_arrays(_PathData ** ans, _PathData ** testArray, int
 
     // Checks if nexts are linked properly
     for(int i = 0; i < numElements; i++) {
-        // cout << i << " ";
-        // cout << ans[i]->turnRadius << " ";
-        // cout << nextWaypoint->turnRadius << endl;
+        // // cout << i << " ";
+        // // cout << ans[i]->turnRadius << " ";
+        // // cout << nextWaypoint->turnRadius << endl;
         if(ans[i]->waypointId == nextWaypoint->waypointId && ans[i]->longitude == nextWaypoint->longitude && ans[i]->latitude == nextWaypoint->latitude && ans[i]->altitude == nextWaypoint->altitude && ans[i]->waypointType == nextWaypoint->waypointType && ans[i]->turnRadius == nextWaypoint->turnRadius) {
-            // cout << "Here 1 ";
+            // // cout << "Here 1 ";
             nextWaypoint = nextWaypoint->next;
-            // cout << "Here 2 " << (bool) nextWaypoint << endl;
+            // // cout << "Here 2 " << (bool) nextWaypoint << endl;
         } else {
-            cout << "Next Check Index: " << i << " | " << ans[i]->waypointId << " " << nextWaypoint->waypointId << " | " << ans[i]->longitude << " " << nextWaypoint->longitude << " | " << ans[i]->latitude << " " << nextWaypoint->latitude << " | " << ans[i]->altitude << " " << nextWaypoint->altitude << " | " << ans[i]->waypointType << " " << nextWaypoint->waypointType << " | " << ans[i]->turnRadius << " " << nextWaypoint->turnRadius << endl;
+            // cout << "Next Check Index: " << i << " | " << ans[i]->waypointId << " " << nextWaypoint->waypointId << " | " << ans[i]->longitude << " " << nextWaypoint->longitude << " | " << ans[i]->latitude << " " << nextWaypoint->latitude << " | " << ans[i]->altitude << " " << nextWaypoint->altitude << " | " << ans[i]->waypointType << " " << nextWaypoint->waypointType << " | " << ans[i]->turnRadius << " " << nextWaypoint->turnRadius << endl;
             return ARRAY_DIFFERENT;
         }
     }
 
     nextWaypoint = testArray[numElements - 1];
-    // cout << "Checking backwards" << endl;
+    // // cout << "Checking backwards" << endl;
 
     // Checks if previous are linked properly
     for(int i = numElements-1; i >= 0; i--) {
         if(ans[i]->waypointId == nextWaypoint->waypointId && ans[i]->longitude == nextWaypoint->longitude && ans[i]->latitude == nextWaypoint->latitude && ans[i]->altitude == nextWaypoint->altitude && ans[i]->waypointType == nextWaypoint->waypointType && ans[i]->turnRadius == nextWaypoint->turnRadius) {
             nextWaypoint = nextWaypoint->previous;
         } else {
-            // cout << "Previous Check Index: " << i << " | " << ans[i]->waypointId << " " << nextWaypoint->waypointId << " | " << ans[i]->longitude << " " << nextWaypoint->longitude << " | " << ans[i]->latitude << " " << nextWaypoint->latitude << " | " << ans[i]->altitude << " " << nextWaypoint->altitude << " | " << ans[i]->waypointType << " " << nextWaypoint->waypointType << " | " << ans[i]->turnRadius << " " << nextWaypoint->turnRadius << endl;
+            // // cout << "Previous Check Index: " << i << " | " << ans[i]->waypointId << " " << nextWaypoint->waypointId << " | " << ans[i]->longitude << " " << nextWaypoint->longitude << " | " << ans[i]->latitude << " " << nextWaypoint->latitude << " | " << ans[i]->altitude << " " << nextWaypoint->altitude << " | " << ans[i]->waypointType << " " << nextWaypoint->waypointType << " | " << ans[i]->turnRadius << " " << nextWaypoint->turnRadius << endl;
             return ARRAY_DIFFERENT;
         }
     }
 
-    // cout << "Checking indexes" << endl;
+    // // cout << "Checking indexes" << endl;
 
     // Checks if indexes are the same
     for(int i = 0; i < numElements; i++) {
         nextWaypoint = testArray[i];
         if(ans[i]->waypointId != nextWaypoint->waypointId && ans[i]->longitude != nextWaypoint->longitude && ans[i]->latitude != nextWaypoint->latitude && ans[i]->altitude != nextWaypoint->altitude && ans[i]->waypointType != nextWaypoint->waypointType && ans[i]->turnRadius != nextWaypoint->turnRadius) {
-            // cout << "Array Equality Check Index: " << i << " | " << ans[i]->waypointId << " " << nextWaypoint->waypointId << " | " << ans[i]->longitude << " " << nextWaypoint->longitude << " | " << ans[i]->latitude << " " << nextWaypoint->latitude << " | " << ans[i]->altitude << " " << nextWaypoint->altitude << " | " << ans[i]->waypointType << " " << nextWaypoint->waypointType << " | " << ans[i]->turnRadius << " " << nextWaypoint->turnRadius << endl;
+            // // cout << "Array Equality Check Index: " << i << " | " << ans[i]->waypointId << " " << nextWaypoint->waypointId << " | " << ans[i]->longitude << " " << nextWaypoint->longitude << " | " << ans[i]->latitude << " " << nextWaypoint->latitude << " | " << ans[i]->altitude << " " << nextWaypoint->altitude << " | " << ans[i]->waypointType << " " << nextWaypoint->waypointType << " | " << ans[i]->turnRadius << " " << nextWaypoint->turnRadius << endl;
             return ARRAY_DIFFERENT;
         }
     }
@@ -124,10 +124,10 @@ static _ArrayStatus compare_arrays(_PathData ** ans, _PathData ** testArray, int
 }
 
 static _ArrayStatus compare_buffer_status(_WaypointBufferStatus * ans, WaypointManager& waypointManagerInstance) {
-    // cout << "Here" << endl;
+    // // cout << "Here" << endl;
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         if(ans[i] != waypointManagerInstance.get_status_of_index(i)) {
-            // cout << "Buffer Compare Index: " << i << " | " << ans[i] << " " << waypointManagerInstance.get_status_of_index(i) << endl;
+            // // cout << "Buffer Compare Index: " << i << " | " << ans[i] << " " << waypointManagerInstance.get_status_of_index(i) << endl;
             return ARRAY_DIFFERENT;
         }
     }
@@ -137,7 +137,7 @@ static _ArrayStatus compare_buffer_status(_WaypointBufferStatus * ans, WaypointM
 
 static _WaypointSt compare_waypoint(_PathData * ans, _PathData * test) {
     if(ans->waypointId != test->waypointId && ans->longitude != test->longitude && ans->latitude != test->latitude && ans->altitude != test->altitude && ans->waypointType != test->waypointType && ans->turnRadius != test->turnRadius) {
-        // cout << "Waypoint Equality Check: " << ans->waypointId << " " << test->waypointId << " | " << ans->longitude << " " << test->longitude << " | " << ans->latitude << " " << test->latitude << " | " << ans->altitude << " " << test->altitude << " | " << ans->waypointType << " " << test->waypointType << " | " << ans->turnRadius << " " << test->turnRadius << endl;
+        // // cout << "Waypoint Equality Check: " << ans->waypointId << " " << test->waypointId << " | " << ans->longitude << " " << test->longitude << " | " << ans->latitude << " " << test->latitude << " | " << ans->altitude << " " << test->altitude << " | " << ans->waypointType << " " << test->waypointType << " | " << ans->turnRadius << " " << test->turnRadius << endl;
         return WAYPOINT_INCORRECT;
     }
 
@@ -1168,7 +1168,7 @@ TEST (CruisingState, NextDirectionsRegularCorrect) {
 
     // Set up answer for output data
     _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
-    ans1->desiredHeading = 294;         
+    ans1->desiredTrack = 294;         
     ans1->desiredAltitude = 33;
     ans1->distanceToNextWaypoint = 960;
     ans1->radius = 0;
@@ -1242,7 +1242,7 @@ TEST (CruisingState, NextDirectionsGoingHomeCorrect) {
 
     // Set up answer for output data
     _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
-    ans1->desiredHeading = 215;        
+    ans1->desiredTrack = 215;        
     ans1->desiredAltitude = 45;
     ans1->distanceToNextWaypoint = 13755;
     ans1->radius = 0;
@@ -1331,7 +1331,7 @@ TEST (CruisingState, GoingHomeHomeBaseUndefined) {
 
     // Set up answer for output data
     _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
-    ans1->desiredHeading = 215;        
+    ans1->desiredTrack = 215;        
     ans1->desiredAltitude = 45;
     ans1->distanceToNextWaypoint = 13755;
     ans1->radius = 0;
@@ -1406,7 +1406,7 @@ TEST (CruisingState, NextDirectionsStartHoldingCorrect) {
 
     // Set up answer for output data
     _WaypointManager_Data_Out * ans1 = new _WaypointManager_Data_Out;
-    ans1->desiredHeading = 100;        
+    ans1->desiredTrack = 100;        
     ans1->desiredAltitude = 78;
     ans1->distanceToNextWaypoint = 0;
     ans1->radius = 100;

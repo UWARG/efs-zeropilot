@@ -53,7 +53,7 @@ TEST(getSensorData, FailedBusyAltimeterDataReturnsNegative1) {
 		.WillOnce(DoAll(SetArgReferee<0>(GpsTestData)));
 
 	/********************STEPTHROUGH********************/
-	getSensorDataError = SensorMeasurements_GetResult(&altimetermock, &gpsmock, &AltimeterPathTestData, &GpsPathTestData);
+	getSensorDataError = Path_SensorMeasurements_GetResult(&altimetermock, &gpsmock, &AltimeterPathTestData, &GpsPathTestData);
 
 	/**********************ASSERTS**********************/
 	EXPECT_EQ(getSensorDataError.errorCode, -1);
@@ -88,7 +88,7 @@ TEST(getSensorData, FailedBusyGpsDataReturnsNegative1) {
 		.WillOnce(DoAll(SetArgReferee<0>(GpsTestData)));
 
 	/********************STEPTHROUGH********************/
-	getSensorDataError = SensorMeasurements_GetResult(&altimetermock, &gpsmock, &AltimeterPathTestData, &GpsPathTestData);
+	getSensorDataError = Path_SensorMeasurements_GetResult(&altimetermock, &gpsmock, &AltimeterPathTestData, &GpsPathTestData);
 
 	/**********************ASSERTS**********************/
 	EXPECT_EQ(getSensorDataError.errorCode, -1);
@@ -135,7 +135,7 @@ TEST(getSensorData, AltimeterOldDataReturns1) {
 		.WillOnce(DoAll(SetArgReferee<0>(GpsTestData)));
 
 	/********************STEPTHROUGH********************/
-	getSensorDataError = SensorMeasurements_GetResult(&altimetermock, &gpsmock, &AltimeterPathTestData, &GpsPathTestData);
+	getSensorDataError = Path_SensorMeasurements_GetResult(&altimetermock, &gpsmock, &AltimeterPathTestData, &GpsPathTestData);
 
 	/**********************ASSERTS**********************/
 	EXPECT_EQ(getSensorDataError.errorCode, 1);
@@ -183,7 +183,7 @@ TEST(getSensorData, GpsOldDataReturns1) {
 		.WillOnce(DoAll(SetArgReferee<0>(GpsTestData)));
 
 	/********************STEPTHROUGH********************/
-	getSensorDataError = SensorMeasurements_GetResult(&altimetermock, &gpsmock, &AltimeterPathTestData, &GpsPathTestData);
+	getSensorDataError = Path_SensorMeasurements_GetResult(&altimetermock, &gpsmock, &AltimeterPathTestData, &GpsPathTestData);
 
 	/**********************ASSERTS**********************/
 	EXPECT_EQ(getSensorDataError.errorCode, 1);

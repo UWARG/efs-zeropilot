@@ -9,6 +9,8 @@ Telemetry_PIGO_t commsWithTelemetry::_incomingData;
 _CruisingState_Telemetry_Return cruisingState::_returnToGround;
 _WaypointManager_Data_In cruisingState::_inputdata;
 _WaypointManager_Data_Out cruisingState::_outputdata; 
+Altimeter_Data_t getSensorData::_altimeterdata;
+Gps_Data_t getSensorData::_gpsdata;
 
 /***********************************************************************************************************************
  * Code
@@ -52,10 +54,24 @@ pathManagerState& commsWithTelemetry::getInstance()
     return singleton;
 }
 
+getSensorData::getSensorData()
+{
+    #ifdef SIMULATION
+        GpsSens = new SimulatedGps;
+        AltimeterSens = new SimulatedAltimeter;
+    #elif defined(UNIT_TESTING)
+        GpsSens = new MockGps;
+        // AltimeterSens = new MockAltimeter;
+    #else
+        AltimeterSens = MS5637::GetInstance();
+        GpsSens = NEOM8::GetInstance();
+    #endif
+}
+
 void getSensorData::execute(pathManager* pathMgr)
 {
     // Initializes the sensor data structures 
-    SensorError_t errorStruct = SensorMeasurements_GetResult(&AltimeterSens, &GpsSens, &_altimeterdata, &_gpsdata); 
+    SensorError_t errorStruct = Path_SensorMeasurements_GetResult(AltimeterSens, GpsSens, &_altimeterdata, &_gpsdata); 
     
     //obtain sensor data
     if(isError)
@@ -105,7 +121,7 @@ void cruisingState::execute(pathManager* pathMgr)
     // Get sensor fusion data
     // SFPositionOutput_t * sfData = sensorFusion::GetSFPositionOutput();
 
-    _inputdata.heading = gpsData->heading;
+    _inputdata.track = gpsData->heading;
     // Set input data parameters
     // _inputdata.longitude = sfData->longitude;
     // _inputdata.latitude = sfData->latitude;

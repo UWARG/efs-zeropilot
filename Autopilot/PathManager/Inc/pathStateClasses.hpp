@@ -14,23 +14,6 @@
  * Definitions
  **********************************************************************************************************************/
 
-#ifdef SIMULATION
-
-#define GPS_CLASS SimulatedGPS
-#define ALTIMETER_CLASS SimulatedAltimeter
-
-#elif defined(UNIT_TESTING)
-
-#define GPS_CLASS MockGPS
-#define ALTIMETER_CLASS MockAltimeter
-
-#else
-
-#define GPS_CLASS NEOM8  
-#define ALTIMETER_CLASS MS5637
-
-#endif
-
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
@@ -73,13 +56,13 @@ class getSensorData : public pathManagerState
         static Altimeter_Data_t* GetAltimeterOutput(void) {return &_altimeterdata;}
         static Gps_Data_t* GetGPSOutput(void) {return &_gpsdata;}
     private:
-        getSensorData() {}
+        getSensorData();
         getSensorData(const getSensorData& other);
         getSensorData& operator =(const getSensorData& other);
         static Altimeter_Data_t _altimeterdata; 
         static Gps_Data_t _gpsdata; 
-        GPS_CLASS GpsSens;
-        ALTIMETER_CLASS AltimeterSens;
+        Gps* GpsSens;
+        Altimeter* AltimeterSens;
 };
 
 class sensorFusion : public pathManagerState

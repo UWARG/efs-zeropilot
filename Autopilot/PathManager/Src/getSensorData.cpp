@@ -14,7 +14,7 @@ SensorError_t SensorMeasurements_GetResult(Altimeter *altimetersns, Gps *gpssns,
 
     AltimeterData_t tempAltimeterdata;
     GpsData_t tempGpsData;
-
+    
     //Retrieve raw IMU and Airspeed data
     altimetersns->GetResult(&tempAltimeterdata);
     gpssns->GetResult(&tempGpsData);
