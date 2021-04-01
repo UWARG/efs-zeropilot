@@ -57,7 +57,7 @@ TEST(SensorFusion, FailedBusyIMUDataReturnsNegative1) {
 
 	SFError_t error;
 	SensorError_t fetchMeasurementsError;
-	SFOutput_t output;
+	SFAttitudeOutput_t output;
 
 	/********************DEPENDENCIES*******************/
 
@@ -71,7 +71,7 @@ TEST(SensorFusion, FailedBusyIMUDataReturnsNegative1) {
 	
 	fetchMeasurementsError = SensorMeasurements_GetResult(&imumock, &airspeedmock, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
-	error = SF_GetResult(&output, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
+	error = SF_GetAttitude(&output, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
 	/**********************ASSERTS**********************/
 
@@ -97,7 +97,7 @@ TEST(SensorFusion, FailedBusyAirspeedDataReturnsNegative1 ) {
 	AirspeedAttitudeTestData.isDataNew = 1;
 
 	SFError_t error;
-	SFOutput_t output;
+	SFAttitudeOutput_t output;
 	SensorError_t fetchMeasurementsError;
 
 	/********************DEPENDENCIES*******************/
@@ -112,7 +112,7 @@ TEST(SensorFusion, FailedBusyAirspeedDataReturnsNegative1 ) {
 
 	fetchMeasurementsError = SensorMeasurements_GetResult(&imumock, &airspeedmock, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
-	error = SF_GetResult(&output, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
+	error = SF_GetAttitude(&output, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
 	/**********************ASSERTS**********************/
 
@@ -152,7 +152,7 @@ TEST(SensorFusion, OldDataReturns1) {
 
 	SensorError_t fetchMeasurementsError;
 	SFError_t error;
-	SFOutput_t output;
+	SFAttitudeOutput_t output;
 
 	/********************DEPENDENCIES*******************/
 
@@ -166,7 +166,7 @@ TEST(SensorFusion, OldDataReturns1) {
 
 	fetchMeasurementsError = SensorMeasurements_GetResult(&imumock, &airspeedmock, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
-	error = SF_GetResult(&output, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
+	error = SF_GetAttitude(&output, &IMUAttitudeTestData, &AirspeedAttitudeTestData);
 
 	/**********************ASSERTS**********************/
 

@@ -40,7 +40,7 @@ OutputMixing_error_t OutputMixing_Execute(PID_Output_t *PidOutput, float *channe
     channelOut[R_TAIL_OUT_CHANNEL] =  (PidOutput->yawPercent * RUDDER_PROPORTION) + (PidOutput->pitchPercent * ELEVATOR_PROPORTION); //Tail Output Right
 #else
     channelOut[ELEVATOR_OUT_CHANNEL] =  PidOutput->pitchPercent;
-    channelOut[RUDDER_OUT_CHANNEL] =  PidOutput->yawPercent;
+    channelOut[RUDDER_OUT_CHANNEL] =  PidOutput->rudderPercent;
 #endif
 
     channelOut[AILERON_OUT_CHANNEL] = PidOutput->rollPercent;
@@ -55,11 +55,11 @@ static int checkInputValidity(PID_Output_t *PidOutput)
 {
 	int errorCode;
 
-	if ( (PidOutput->rollPercent < -100.0f) || (PidOutput->pitchPercent < -100.0f) || (PidOutput->yawPercent < -100.0f) || (PidOutput->throttlePercent < 0.0f) )
+	if ( (PidOutput->rollPercent < -100.0f) || (PidOutput->pitchPercent < -100.0f) || (PidOutput->rudderPercent < -100.0f) || (PidOutput->throttlePercent < 0.0f) )
 	{
 		errorCode = 1;
 	}
-	else if ( (PidOutput->rollPercent > 100.0f) || (PidOutput->pitchPercent > 100.0f) || (PidOutput->yawPercent > 100.0f) || (PidOutput->throttlePercent > 100.0f) )
+	else if ( (PidOutput->rollPercent > 100.0f) || (PidOutput->pitchPercent > 100.0f) || (PidOutput->rudderPercent > 100.0f) || (PidOutput->throttlePercent > 100.0f) )
 	{
 		errorCode = 2;
 	}

@@ -96,6 +96,30 @@ if [[ $RUN_UNIT_TESTS == true ]]; then
 
 elif [[ $RUN_SIMULATION == true ]]; then
 
+  #detecting OS
+     
+    case $(uname | tr '[:upper:]' '[:lower:]') in
+    linux*)
+        export SIM_OS=linux
+        ;;
+    darwin*)
+        export SIM_OS=osx
+        ;;
+    msys*)
+        export SIM_OS=windows
+        ;;
+    cygwin*)
+        export SIM_OS=windows
+        ;;
+    mingw*)
+        export SIM_OS=windows
+        ;;
+    *)
+        export SIM_OS=notset
+        ;;
+    esac
+    echo "OS value: $SIM_OS" 
+
     echo "Building Simulation !"
     echo ""
     echo ""
@@ -138,21 +162,25 @@ elif [[ $RUN_SIMULATION == true ]]; then
     echo ""
     echo ""
 
-    BUILD_DIR="../../Simulink-Sim/FlightGear/SendToFlightGear/build"
-
-    if [[ $CLEAN == true ]]; then
-        cmake -E remove_directory $BUILD_DIR
+    BUILD_DIR="../../Simulink-Sim/FlightGear/SendToFG"
+    if [[ "$SIM_OS" == "linux" ]]; then
+        echo "building for linux"
+        ./$BUILD_DIR/LinSendToFG -hostname="127.0.0.1" -port=5500 -time=20 -location="SimulationBuild/SensorOutputs/"
     fi
 
-    cmake -E make_directory $BUILD_DIR
+    if [[ "$SIM_OS" == "windows" ]]; then
+        echo "building for windows"
+        ./$BUILD_DIR/WinSendToFG.exe -hostname="127.0.0.1" -port=5500 -time=20 -location="SimulationBuild/SensorOutputs/"
+    fi
 
-    cmake -E chdir $BUILD_DIR\
-        cmake -G "${GENERATOR}" ..
+    if [[ "$SIM_OS" == "osx" ]]; then
+        echo "building for macos"
+        ./$BUILD_DIR/MacSendToFG -hostname="127.0.0.1" -port=5500 -time=20 -location="SimulationBuild/SensorOutputs/"
+    fi
 
-    cmake --build $BUILD_DIR
-
-    # This program always needs to be run from the autopilot directory
-    ./$BUILD_DIR/SendToFG
+    if [[ "$SIM_OS" == "notset" ]]; then
+        echo "OS not found"
+    fi
 
 else
     echo "Building For The Microcontroller !"

@@ -20,16 +20,27 @@
 
 typedef struct
 {
-    float currentHeading;    // degrees
-    float desiredHeading;    // degrees
-    float accY;              // Y axis accelerometer reading from the IMU.
+    /*
+    By using currentHeadingTrack, the user can pass in whatever type of parameter they want to control
+    For example, if they wanted to maintain a heading, simply pass in the desired heading and current heading
+    If track needs to be controlled, simply pass tracks into these entries
 
+    Each path manager stage will have its own control needs for its functions. Doing this will allow each
+    stage to control the plane's attitude more precisely.
+    Ex. waypoint manager needs to control track, but landingDecrabStage needs to control heading
+    */
+
+    float currentHeadingTrack;    // degrees
+    float desiredHeadingTrack;    // degrees
+    float accY;              // Y axis accelerometer reading from the IMU.
 }CoordinatedTurnInput_t;
 
 typedef struct
 {
     float currentAltitude;   // in meters
     float desiredAltitude;   // in meters
+    float currentAirspeed;
+    float desiredAirspeed;
 
 }AltitudeAirspeedInput_t;
 
@@ -43,7 +54,7 @@ typedef struct
 typedef struct
 {
     float requiredPitch;        // radians
-    float requiredAirspeed;     // in m/s
+    float requiredThrottlePercent;     // in percentage
 }AltitudeAirspeedCommands_t;
 
 

@@ -20,11 +20,11 @@ matrix:
         apt:
           packages:
           - ninja-build
-          - cmake  
-      install: #install google test 
+          - cmake
+      install: #install google test
         - curl -LO https://github.com/google/googletest/archive/release-1.10.0.tar.gz
         - tar xf release-1.10.0.tar.gz
-        - cd googletest-release-1.10.0        
+        - cd googletest-release-1.10.0
         - sudo mkdir build
         - cd build
         - sudo cmake ..
@@ -98,9 +98,7 @@ matrix:
     - os: windows # run unit tests on Windows
       env: TYPE_OF_BUILD="unit tests" CXX_FLAGS="-std=c++11" GTEST_ROOT="C:/Program Files (x86)/googletest-distribution/" GMOCK_ROOT="C:/Program Files (x86)/googletest-distribution/"
       before install:
-        - choco upgrade make
         - choco upgrade cmake
-        - choco upgrade mingw
         - choco install ninja
       install:
         - mkdir $HOME/gtest
@@ -110,9 +108,9 @@ matrix:
         - cd googletest-release-1.10.0
         - mkdir build
         - cd build
-        - cmake -G "MSYS Makefiles" ..
-        - make
-        - make install
+        - cmake -G "Ninja" ..
+        - ninja
+        - ninja install
       script:
         - cd $TRAVIS_BUILD_DIR/Autopilot
         - ./Tools/build.bash -c -t

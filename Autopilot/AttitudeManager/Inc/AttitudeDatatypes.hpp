@@ -6,7 +6,7 @@ typedef struct
 {
     float rollPercent;
     float pitchPercent;
-    float yawPercent;
+    float rudderPercent;
     float throttlePercent;
 
 } PID_Output_t;
@@ -50,7 +50,7 @@ typedef struct {
     bool isDataNew; 
     int status; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
     float utcTime; //Last time GetResult was called
-} AltimeterData_t;
+} Altimeter_Data_t;
 
 typedef struct
 {
@@ -65,7 +65,7 @@ typedef struct
     int sensorStatus; // 0 = no fix, 1 = gps fix, 2 = differential gps fix (DGPS) (other codes are possible)
     bool dataIsNew; // true if data has been refreshed since the previous time GetResult was called, false otherwise.
 
-} GpsData_t;
+} Gps_Data_t;
 
 #endif
 

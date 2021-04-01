@@ -5,25 +5,30 @@
 
 #include "AttitudeDatatypes.hpp"
 #include "fetchSensorMeasurementsMode.hpp"
-#include "arm_math.h"
 
 #ifndef SENSORFUSION_HPP
 #define SENSORFUSION_HPP
-typedef struct {
-    float IMUroll, IMUpitch, IMUyaw; //in rad (for now)
-    float IMUrollrate, IMUpitchrate, IMUyawrate; //in rad/s (for now)
-    float Airspeed; //in m/s (for now)
-} SFOutput_t ;
 
 typedef struct {
-    float altitude;
-    long double latitude; 
-    long double longitude;
+    float IMUroll, IMUpitch, IMUyaw; //rad
+    float IMUrollrate, IMUpitchrate, IMUyawrate; //rad/s
+    float Airspeed; //m/s
+} SFAttitudeOutput_t ;
+
+typedef struct {
+    float altitude; //m
+    float altSpeed; //m/s
+    long double latitude; //Decimal degrees
+    float latSpeed; //m/s
+    long double longitude; //Decimal degrees
+    float longSpeed; //m/s
 } SFPositionOutput_t;
 
+const int NUM_KALMAN_VALUES = 6; 
+
 typedef struct {
-    arm_matrix_instance_f32 prevX;
-    arm_matrix_instance_f32 prevP;
+    float prevX[NUM_KALMAN_VALUES];
+    float prevP[NUM_KALMAN_VALUES*NUM_KALMAN_VALUES];
 } SFIterationData_t;
 
 // -1 = FAILED
@@ -40,7 +45,7 @@ struct SFError_t{
  * @param[in]   imudata
  * @param[in]   airspeeddata
  */ 
-SFError_t SF_GetResult(SFOutput_t *Output, IMU_Data_t *imudata, Airspeed_Data_t *airspeeddata);
+SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMU_Data_t *imudata, Airspeed_Data_t *airspeeddata);
 
 /**
  * Get position data by fusing data from IMU and GPS.
@@ -50,6 +55,6 @@ SFError_t SF_GetResult(SFOutput_t *Output, IMU_Data_t *imudata, Airspeed_Data_t 
  * @param[in]     imudata
  * @param[in,out] iterdata Iterative data from previous call which becomes input for next call.
  */
-SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterdata, GpsData_t *gpsdata, IMU_Data_t *imudata, SFIterationData_t *iterdata);
+SFError_t SF_GetPosition(SFPositionOutput_t *Output, Altimeter_Data_t *altimeterdata, Gps_Data_t *gpsdata, IMU_Data_t *imudata, SFIterationData_t *iterdata);
 
 #endif

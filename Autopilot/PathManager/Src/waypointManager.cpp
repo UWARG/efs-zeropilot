@@ -45,7 +45,7 @@ WaypointManager::WaypointManager(float relLat, float relLong) {
     errorStatus = WAYPOINT_SUCCESS;
 
     // Initialize all other parameters (defaults)
-    desiredHeading = 0;
+    desiredTrack = 0;
     desiredAltitude = 0;
     distanceToNextWaypoint = 0.0;
     errorCode = WAYPOINT_SUCCESS;
@@ -260,8 +260,8 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
     errorCode = WAYPOINT_SUCCESS;
 
     float position[3]; 
-    // Gets current heading
-    float currentHeading = (float) currentStatus.heading;
+    // Gets current track
+    float currentTrack = (float) currentStatus.track;
 
     // Holding is given higher priority to heading home
     if (inHold) { // If plane is currently circling and waiting for commands
@@ -276,8 +276,8 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
         position[1] = currentStatus.latitude;
         position[2] = (float) currentStatus.altitude;
 
-        // Calculates desired heading, altitude, and all output values
-        follow_hold_pattern(position, currentHeading);
+        // Calculates desired track, altitude, and all output values
+        follow_hold_pattern(position, currentTrack);
 
         // Updates the return structure
         outputType = ORBIT_FOLLOW;
@@ -312,8 +312,8 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
         homeBase->next = nullptr;
         homeBase->waypointType = HOLD_WAYPOINT;
         
-        // Calculates desired heading, altitude, and all output values
-        follow_waypoints(currentPosition, position, currentHeading);
+        // Calculates desired track, altitude, and all output values
+        follow_waypoints(currentPosition, position, currentTrack);
         
         // Updates the return structure
         dataIsNew = true;
@@ -334,8 +334,8 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
         return errorCode;
     }
 
-    // Calculates desired heading, altitude, and all output values
-    follow_waypoints(waypointBuffer[currentIndex], position, currentHeading);
+    // Calculates desired track, altitude, and all output values
+    follow_waypoints(waypointBuffer[currentIndex], position, currentTrack);
 
     // Updates the return structure
     dataIsNew = true;
@@ -346,7 +346,7 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
 }
 
 void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
-    Data->desiredHeading = desiredHeading;
+    Data->desiredTrack = desiredTrack;
     Data->desiredAltitude =  desiredAltitude;
     Data->distanceToNextWaypoint = distanceToNextWaypoint;
     Data->radius = turnRadius;
@@ -372,8 +372,8 @@ _WaypointStatus WaypointManager::start_circling(_WaypointManager_Data_In current
         turnRadius = radius;
         turnDirection = direction;
 
-        // Gets current heading
-        float currentHeading = (float) currentStatus.heading;
+        // Gets current track
+        float currentTrack = (float) currentStatus.track;
 
         // Gets current position
         float position[3]; 
@@ -385,12 +385,12 @@ _WaypointStatus WaypointManager::start_circling(_WaypointManager_Data_In current
         float turnCenterBearing = 0.0f; // Bearing of line pointing to the center point of the turn
 
         if (turnDirection == -1) { // CW
-            turnCenterBearing = currentHeading + 90;
+            turnCenterBearing = currentTrack + 90;
         } else if (turnDirection == 1) { // CCW
-            turnCenterBearing = currentHeading - 90;
+            turnCenterBearing = currentTrack - 90;
         }
 
-        // Normalizes heading (keeps it between 0.0 and 259.9999)
+        // Normalizes track (keeps it between 0.0 and 259.9999)
         if (turnCenterBearing >= 360.0) {
             turnCenterBearing = fmod(turnCenterBearing, 360.0);
         } else if (turnCenterBearing < 0.0) {
@@ -436,27 +436,27 @@ _HeadHomeStatus WaypointManager::head_home(bool startHeadingHome) {
     }
 }
 
-void WaypointManager::follow_hold_pattern(float* position, float heading) {
+void WaypointManager::follow_hold_pattern(float* position, float track) {
     // Converts the position array and turnCenter array from radians to an xy coordinate system.
     get_coordinates(position[0], position[1], position);
 
     // Calls follow_orbit method 
-    follow_orbit(position, heading);
+    follow_orbit(position, track);
 }
 
-void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* position, float heading) {
+void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* position, float track) {
     float waypointPosition[3]; 
     get_coordinates(currentWaypoint->longitude, currentWaypoint->latitude, waypointPosition);
     waypointPosition[2] = currentWaypoint->altitude;
 
     if (currentWaypoint->next == nullptr) { // If target waypoint is not defined
         // std::cout << "Next not defined" << std::endl;
-        follow_last_line_segment(currentWaypoint, position, heading);
+        follow_last_line_segment(currentWaypoint, position, track);
         return;
     }
     if (currentWaypoint->next->next == nullptr) { // If waypoint after target waypoint is not defined
         // std::cout << "Next to next not defined" << std::endl;
-        follow_line_segment(currentWaypoint, position, heading);
+        follow_line_segment(currentWaypoint, position, track);
         return;
     }
 
@@ -529,7 +529,7 @@ void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* posit
         // std::cout << "Here3 --> " << waypointDirection[0] << " " << waypointDirection[1] << " " << waypointDirection[2] << std::endl;
         // std::cout << "Here4 --> " << targetCoordinates[0] << " " << targetCoordinates[1] << " " << targetCoordinates[2] << std::endl;
 
-        follow_straight_path(waypointDirection, targetCoordinates, position, heading);
+        follow_straight_path(waypointDirection, targetCoordinates, position, track);
     } else {
         // Determines turn direction (CCW returns 2; CW returns 1)
         turnDirection = waypointDirection[0] * nextWaypointDirection[1] - waypointDirection[1] * nextWaypointDirection[0]>0?1:-1;
@@ -576,11 +576,11 @@ void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* posit
 
         outputType = ORBIT_FOLLOW;
 
-        follow_orbit(position, heading);
+        follow_orbit(position, track);
     }
 }
 
-void WaypointManager::follow_line_segment(_PathData * currentWaypoint, float* position, float heading) {
+void WaypointManager::follow_line_segment(_PathData * currentWaypoint, float* position, float track) {
     float waypointPosition[3];
     get_coordinates(currentWaypoint->longitude, currentWaypoint->latitude, waypointPosition);
     waypointPosition[2] = currentWaypoint->altitude;
@@ -605,12 +605,12 @@ void WaypointManager::follow_line_segment(_PathData * currentWaypoint, float* po
     // std::cout << "Here1.1 --> " << waypointDirection[0] << " " << waypointDirection[1] << " " << waypointDirection[2] << std::endl;
     // std::cout << "Here1.2 --> " << targetCoordinates[0] << " " << targetCoordinates[1] << " " << targetCoordinates[2] << std::endl;
     // std::cout << "Here1.3 --> " << waypointPosition[0] << " " << waypointPosition[1] << " " << waypointPosition[2] << std::endl;
-    // std::cout << heading << std::endl;
+    // std::cout << track << std::endl;
 
-    follow_straight_path(waypointDirection, targetCoordinates, position, heading);
+    follow_straight_path(waypointDirection, targetCoordinates, position, track);
 }
 
-void WaypointManager::follow_last_line_segment(_PathData * currentWaypoint, float* position, float heading) {
+void WaypointManager::follow_last_line_segment(_PathData * currentWaypoint, float* position, float track) {
     // Current position is set to waypointPosition
     float waypointPosition[3];
     waypointPosition[0] = position[0];
@@ -646,11 +646,11 @@ void WaypointManager::follow_last_line_segment(_PathData * currentWaypoint, floa
         turnCenter[2] = turnDesiredAltitude; 
     }
 
-    follow_straight_path(waypointDirection, targetCoordinates, position, heading);
+    follow_straight_path(waypointDirection, targetCoordinates, position, track);
 }
 
-void WaypointManager::follow_orbit(float* position, float heading) {
-    heading = deg2rad(90 - heading);
+void WaypointManager::follow_orbit(float* position, float track) {
+    track = deg2rad(90 - track);
 
     // Distance from centre of circle
     float orbitDistance = sqrt(pow(position[0] - turnCenter[0],2) + pow(position[1] - turnCenter[1],2));
@@ -658,9 +658,9 @@ void WaypointManager::follow_orbit(float* position, float heading) {
 
     // Normalizes angles
     // First gets the angle between 0 and 2 pi
-    if (courseAngle - heading >= 2 * PI) {
+    if (courseAngle - track >= 2 * PI) {
         courseAngle = fmod(courseAngle, 2 * PI);
-    } else if (courseAngle - heading < 0.0) {
+    } else if (courseAngle - track < 0.0) {
         courseAngle = fmod(courseAngle, 2 * PI) + 2 * PI;
     }
     // Now ensures that courseAngle is between -pi and pi
@@ -668,32 +668,32 @@ void WaypointManager::follow_orbit(float* position, float heading) {
         courseAngle -= 2 * PI;
     }
 
-    // Desired heading
-    int calcHeading = round(90 - rad2deg(courseAngle + turnDirection * (PI/2 + atan(k_gain[ORBIT_FOLLOW] * (orbitDistance - turnRadius)/turnRadius)))); //Heading in degrees (magnetic)
+    // Desired track
+    int calcTrack = round(90 - rad2deg(courseAngle + turnDirection * (PI/2 + atan(k_gain[ORBIT_FOLLOW] * (orbitDistance - turnRadius)/turnRadius)))); //Track in degrees 
     
-    // Normalizes heading (keeps it between 0.0 and 259.9999)
-    if (calcHeading >= 360.0) {
-        calcHeading = fmod(calcHeading, 360.0);
-    } else if (calcHeading < 0.0) {
-        calcHeading = fmod(calcHeading, 360.0) + 360.0;
+    // Normalizes track (keeps it between 0.0 and 259.9999)
+    if (calcTrack >= 360.0) {
+        calcTrack = fmod(calcTrack, 360.0);
+    } else if (calcTrack < 0.0) {
+        calcTrack = fmod(calcTrack, 360.0) + 360.0;
     }
     
     // Sets the return values
-    desiredHeading = calcHeading;
+    desiredTrack = calcTrack;
     distanceToNextWaypoint = 0.0;
     outputType = ORBIT_FOLLOW;
     desiredAltitude = turnDesiredAltitude;
 }
 
-void WaypointManager::follow_straight_path(float* waypointDirection, float* targetWaypoint, float* position, float heading) {
-    heading = deg2rad(90 - heading);//90 - heading = magnetic heading to cartesian heading
+void WaypointManager::follow_straight_path(float* waypointDirection, float* targetWaypoint, float* position, float track) {
+    track = deg2rad(90 - track);//90 - track = track to cartesian track
     float courseAngle = atan2(waypointDirection[1], waypointDirection[0]); // (y,x) format
     
     // Normalizes angles
     // First gets the angle between 0 and 2 pi
-    if (courseAngle - heading >= 2 * PI) {
+    if (courseAngle - track >= 2 * PI) {
         courseAngle = fmod(courseAngle, 2 * PI);
-    } else if (courseAngle - heading < 0.0) {
+    } else if (courseAngle - track < 0.0) {
         courseAngle = fmod(courseAngle, 2 * PI) + 2 * PI;
     }
     // Now ensures that courseAngle is between -pi and pi
@@ -701,19 +701,19 @@ void WaypointManager::follow_straight_path(float* waypointDirection, float* targ
         courseAngle -= 2 * PI;
     }
 
-    // Calculates desired heading
+    // Calculates desired track
     float pathError = -sin(courseAngle) * (position[0] - targetWaypoint[0]) + cos(courseAngle) * (position[1] - targetWaypoint[1]);
-    int calcHeading = 90 - rad2deg(courseAngle - MAX_PATH_APPROACH_ANGLE * 2/PI * atan(k_gain[PATH_FOLLOW] * pathError)); //Heading in degrees (magnetic) 
+    int calcTrack = 90 - rad2deg(courseAngle - MAX_PATH_APPROACH_ANGLE * 2/PI * atan(k_gain[PATH_FOLLOW] * pathError)); //Heading in degrees (magnetic) 
     
-    // Normalizes heading (keeps it between 0.0 and 259.9999)
-    if (calcHeading >= 360.0) {
-        calcHeading = fmod(calcHeading, 360.0);
-    } else if (calcHeading < 0.0) {
-        calcHeading = fmod(calcHeading, 360.0) + 360.0;
+    // Normalizes track (keeps it between 0.0 and 259.9999)
+    if (calcTrack >= 360.0) {
+        calcTrack = fmod(calcTrack, 360.0);
+    } else if (calcTrack < 0.0) {
+        calcTrack = fmod(calcTrack, 360.0) + 360.0;
     }
     
     // Sets the return values 
-    desiredHeading = calcHeading;
+    desiredTrack = calcTrack;
     outputType = PATH_FOLLOW;
     desiredAltitude = targetWaypoint[2];
 
