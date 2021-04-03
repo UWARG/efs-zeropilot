@@ -8,8 +8,6 @@ float OutputMixingMode::_channelOut[4];
 PMCommands fetchInstructionsMode::_PMInstructions;
 SFAttitudeOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t PIDloopMode::_PidOutput;
-IMU_Data_t fetchSensorMeasurementsMode::_imudata;
-Airspeed_Data_t fetchSensorMeasurementsMode::_airspeeddata;
 
 /***********************************************************************************************************************
  * Code
@@ -22,8 +20,7 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 
     if (ErrorStruct.errorCode == 0)
     {
-        // Before calling sensor fusion, we must first get the new sensor data
-        attitudeMgr->setState(fetchSensorMeasurementsMode::getInstance()); 
+        attitudeMgr->setState(sensorFusionMode::getInstance());
     }
     else
     {
@@ -37,63 +34,11 @@ attitudeState& fetchInstructionsMode::getInstance()
     return singleton;
 }
 
-fetchSensorMeasurementsMode::fetchSensorMeasurementsMode() 
-{
-    #ifdef SIMULATION
-
-    ImuSens = new SimulatedIMU;
-    AirspeedSens = new SimulatedAirspeed;
-
-    #elif defined(UNIT_TESTING)
-
-    ImuSens = new MockIMU;
-    AirspeedSens = new MockAirspeed;
-
-    #else
-
-    ImuSens = ICM20602::GetInstance();
-    AirspeedSens = nullptr; // Airspeed header not in yet
-
-    #endif
-}
-
-void fetchSensorMeasurementsMode::execute(attitudeManager* attitudeMgr) 
-{
-    // Initializes the sensor data structures 
-    SensorError_t ErrorStruct = SensorMeasurements_GetResult(ImuSens, AirspeedSens, &_imudata, &_airspeeddata); 
-
-    if (ErrorStruct.errorCode == 0)
-    {
-        // Sets state to sensor fusion
-        attitudeMgr->setState(sensorFusionMode::getInstance()); 
-    }
-    else 
-    {
-        attitudeMgr->setState(FatalFailureMode::getInstance());
-    }
-}
-
-attitudeState& fetchSensorMeasurementsMode::getInstance()
-{
-    static fetchSensorMeasurementsMode singleton;
-    return singleton;
-}
-
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
-{   
-    IMU_Data_t *dataimu = fetchSensorMeasurementsMode::GetIMUOutput();
-    Airspeed_Data_t *dataairspeed = fetchSensorMeasurementsMode::GetAirspeedOutput();
+{
+    SFOutput_t _SFOutput = SF_GetResult();
 
-    SFError_t ErrorStruct = SF_GetAttitude(&_SFOutput, dataimu, dataairspeed);
-
-    if (ErrorStruct.errorCode == 0)
-    {
-        attitudeMgr->setState(PIDloopMode::getInstance());
-    }
-    else
-    {
-        attitudeMgr->setState(FatalFailureMode::getInstance());
-    }
+    attitudeMgr->setState(PIDloopMode::getInstance());
 }
 
 attitudeState& sensorFusionMode::getInstance()
@@ -117,11 +62,11 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     _PidOutput.rudderPercent = pathManagerOutput.rudderPercent;
     _PidOutput.throttlePercent = pathManagerOutput.throttlePercent;
 
-    if (pmError.errorCode == 0) 
+    if (pmError.errorCode == 0)
     {
         attitudeMgr->setState(OutputMixingMode::getInstance());
     }
-    else 
+    else
     {
         attitudeMgr->setState(FatalFailureMode::getInstance());
     }
