@@ -10,7 +10,6 @@
 #include <ctime>
 #include <cstdint>
 #include <math.h>
-#include "main.h"
 
 #define ICM_20602 0
 #define MPU9255 1
