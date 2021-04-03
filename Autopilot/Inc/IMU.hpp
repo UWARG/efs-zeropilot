@@ -89,10 +89,14 @@ class ICM20602: public IMU{
 
 #ifdef SIMULATION
 
-class SimulatedIMU : public IMU {
-    public:
-        void Begin_Measuring();
+// This derived class hooks into the Simulink simulation rather than hardware
+class SimulatedIMU : public IMU
+{
+    public :
+        void Begin_Measuring(){};
         void GetResult(IMUData_t &Data);
+    private:
+        float getNewestDataPoint(const char * fileName);
 };
 
 #endif
