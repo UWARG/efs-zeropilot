@@ -44,28 +44,5 @@ struct Airspeed_Data_t
     float utcTime;          
 };
 
-typedef struct {
-    float pressure, altitude, temp;
-
-    bool isDataNew; 
-    int status; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
-    float utcTime; //Last time GetResult was called
-} Altimeter_Data_t;
-
-typedef struct
-{
-    long double latitude;  // 8 Bytes
-    long double longitude; // 8 Bytes
-    float utcTime;     // 4 Bytes. Time in seconds since 00:00 (midnight)
-    float groundSpeed; // in m/s
-    int altitude; // in m
-    int heading; // in degrees. Should be between 0-360 at all times, but using integer just in case
-    int numSatellites;    // 1 Byte
-
-    int sensorStatus; // 0 = no fix, 1 = gps fix, 2 = differential gps fix (DGPS) (other codes are possible)
-    bool dataIsNew; // true if data has been refreshed since the previous time GetResult was called, false otherwise.
-
-} Gps_Data_t;
-
 #endif
 
