@@ -4,7 +4,6 @@
  */
 
 #include "AttitudeDatatypes.hpp"
-#include "fetchSensorMeasurementsMode.hpp"
 
 #ifndef SENSORFUSION_HPP
 #define SENSORFUSION_HPP
@@ -26,6 +25,7 @@ struct SFOutput_t {
     float latSpeed; //m/s
     long double longitude; //Decimal degrees
     float longSpeed; //m/s
+    float heading;
 };
 
 /**
