@@ -40,7 +40,7 @@ typedef enum {
  *   
  * }
  **/
-mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, mavlink_message_t *msg, uint8_t **telemetryData) ;
+mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uint8_t *telemetryData) ;
 
 
 /**
@@ -52,7 +52,7 @@ mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, mav
  * 
  * @return the length of the finalized message: msg->len + header_len + signature_len
  */
-uint16_t Mavlink_encoder(Message_IDs_t type, mavlink_message_t ** msg, const uint64_t *struct_ptr);
+uint16_t Mavlink_encoder(Message_IDs_t type, mavlink_message_t * msg, uint8_t *struct_ptr);
 
 
 #endif //MAVLINKFUNCTIONS_HPP
