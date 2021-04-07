@@ -2,7 +2,6 @@
 
 
 #include "waypointManager.hpp"
-#include "pathDatatypes.hpp"
 #include "vectorClass.hpp"
 
 enum _FlightStage{ROLL=0, CLIMB, CRUISING, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN};
@@ -45,13 +44,13 @@ struct _LandingPath
 
 struct _LandingInitialData
 {
-    double stoppingLatitude;
-    double stoppingLongitude;
-    double stoppingAltitude;
-    double landingDirection;
+    long double stoppingLatitude;
+    long double stoppingLongitude;
+    long double stoppingAltitude;
+    long double landingDirection;
 };
 
-class LandingManager : public WaypointManager{
+class LandingManager{
     
     public:
         /*
@@ -60,11 +59,6 @@ class LandingManager : public WaypointManager{
             Takes the one of the horizontal coordinates, plug it into the equation of the slope, get an altitude
         */
         static double changingAltitude(Telemetry_PIGO_t input, _PathData aimingPoint, _PathData intersectionPoint, _PathData stoppingPoint);
-
-        /*
-            This function sets the desired altitude so that the throttle turns off
-        */
-        static double throttleOff(void);
 
         /*
             This function takes in the current magnitude of windspeed, and returns an approach speed the aircraft should follow
@@ -95,7 +89,7 @@ constexpr static double CLIMB_SPEED_NO_PACKAGE {5}; // in meters per second
 constexpr static double CLIMB_SPEED_WITH_PACKAGE {7}; // in meters per second
 constexpr static double DISTANCE_OF_TAKEOFF {100}; // in meters, just used to approximate the horizontal location
 
-class TakeoffManager : public WaypointManager{
+class TakeoffManager{
 
     public:
         /*

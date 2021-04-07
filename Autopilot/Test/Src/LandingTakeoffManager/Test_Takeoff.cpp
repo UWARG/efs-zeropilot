@@ -58,3 +58,4 @@ TEST(TakeoffFunctions, Test_createTakeoffWaypoint){
     EXPECT_NEAR(desiredTakeoffPoint.longitude, 2.0006352019, 0.000001);
     EXPECT_NEAR(desiredTakeoffPoint.altitude, 3, 0.000001);
 }
+

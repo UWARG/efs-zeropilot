@@ -1,5 +1,4 @@
 #include "pathStateClasses.hpp"
-#include "landingTakeoffManager.hpp"
 
 /***********************************************************************************************************************
  * Static Member Variable Declarations
@@ -77,7 +76,10 @@ void sensorFusion::execute(pathManager* pathMgr)
     {
         pathMgr->setState(fatalFailureMode::getInstance());
     }
-    pathMgr->setState(sensorFusion::getInstance());
+    else
+    {
+        pathMgr->setState(sensorFusion::getInstance());
+    }
 }
 
 pathManagerState& sensorFusion::getInstance()
@@ -224,7 +226,7 @@ LANDING STATE FUNCTIONS
 
 void landingTransitionStage::execute(pathManager* pathMgr)
 {
-    if(!pathMgr -> madeLandingPoints)
+    if(!pathMgr->madeLandingPoints)
     {
         //requires data structure that dhruv wants to use 
         path = LandingManager::createSlopeWaypoints(getFromTelemetry::telemetryInput, sensorFusion::sensorInput.altitude);
@@ -233,7 +235,7 @@ void landingTransitionStage::execute(pathManager* pathMgr)
         pathArray[0] = landingPath.initialize_waypoint(path.intersectionPoint.longitude, path.intersectionPoint.latitude, path.intersectionPoint.altitude, PATH_FOLLOW);
         pathArray[1] = landingPath.initialize_waypoint(path.aimingPoint.longitude, path.aimingPoint.latitude, path.aimingPoint.altitude, PATH_FOLLOW);
         pathArray[2] = landingPath.initialize_waypoint(path.stoppingPoint.longitude, path.stoppingPoint.latitude, path.stoppingPoint.altitude, PATH_FOLLOW);
-        currentLocation = landingPath.initialize_waypoint(sensorFusion::sensorInput.longitude, sensorFusion::sensorInput.latitude, sensorFusion::sensorInput.altitude, HOLD_WAYPOINT); //fill in with sensor fusion data
+        currentLocation = landingPath.initialize_waypoint(sensorFusion::sensorInput.longitude, sensorFusion::sensorInput.latitude, sensorFusion::sensorInput.altitude, HOLD_WAYPOINT, 20); //fill in with sensor fusion data
         //initializing flight path
         waypointStatus = landingPath.initialize_flight_path(pathArray, 3, currentLocation);
         
@@ -253,13 +255,11 @@ void landingTransitionStage::execute(pathManager* pathMgr)
     if(differenceInHeading2 < 0){differenceInHeading2 += 360;}
 
     //if the smaller heading is less than 5 degrees, set stage to slope
-    if(differenceInHeading1<differenceInHeading2)
+
+    
+    if(differenceInHeading1 < differenceInHeading2 && fabs(differenceInHeading1) <= 5)
     {
-        if(fabs(differenceInHeading1) <= 5)
-        {
-            //set enum to slope state
-            pathMgr->stage = SLOPE;
-        }
+        pathMgr->stage = SLOPE;
     }
     else
     {

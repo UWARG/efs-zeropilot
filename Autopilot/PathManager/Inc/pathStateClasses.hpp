@@ -81,6 +81,8 @@ class resetVariables : public pathManagerState
         resetVariables() {}
         resetVariables(const resetVariables& other);
         resetVariables& operator =(const resetVariables& other);
+
+        //resetPassby uses operator chaining, for more info, refer to the assignment operator chaining in the following link http://courses.cms.caltech.edu/cs11/material/cpp/donnie/cpp-ops.html
         void resetPassby(_PassbyControl* controlDetails){controlDetails->rollPassby = controlDetails->pitchPassby = controlDetails->throttlePassby = controlDetails->rudderPassby = false;}
 };
 
@@ -92,14 +94,18 @@ class takeoffRollStage : public pathManagerState
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
         static WaypointManager takeoffPath;
+        static _PathData takeoffPoint;
+        static _WaypointStatus waypointStatus;
+
+    private:
         static _PathData * pathArray[1];
         static _PathData * currentLocation;
-        static _WaypointStatus waypointStatus;
-        static _PathData takeoffPoint;
-    private:
+        
+        
         takeoffRollStage() {}
         takeoffRollStage(const takeoffRollStage& other);
         takeoffRollStage& operator =(const takeoffRollStage& other);
+
 };
 
 class takeoffClimbStage : public pathManagerState
