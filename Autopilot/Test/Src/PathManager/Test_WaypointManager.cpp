@@ -84,7 +84,7 @@ static _OutputStatus compare_output_data(_WaypointManager_Data_Out *ans, _Waypoi
         // cout << "Comparing Output Data: Alt " << ans->desiredAltitude << " " << test->desiredAltitude << " | Track " << ans->desiredTrack << " " << test->desiredTrack << " | Distance " << ans->distanceToNextWaypoint << " " << test->distanceToNextWaypoint << " | Radius " << ans->radius << " " << test->radius << " | Direction " << ans->turnDirection << " " << test->turnDirection << " | OutType " << ans->out_type << " " << test->out_type << endl;
         return OUTPUT_CORRECT;
     } else {
-        // cout << "Comparing Output Data: Alt " << ans->desiredAltitude << " " << test->desiredAltitude << " | Track " << ans->desiredTrack << " " << test->desiredTrack << " | Distance " << ans->distanceToNextWaypoint << " " << test->distanceToNextWaypoint << " | Radius " << ans->radius << " " << test->radius << " | Direction " << ans->turnDirection << " " << test->turnDirection << " | OutType " << ans->out_type << " " << test->out_type << endl;
+        //cout << "Comparing Output Data: Alt " << ans->desiredAltitude << " " << test->desiredAltitude << " | Track " << ans->desiredTrack << " " << test->desiredTrack << " | Distance " << ans->distanceToNextWaypoint << " " << test->distanceToNextWaypoint << " | Radius " << ans->radius << " " << test->radius << " | Direction " << ans->turnDirection << " " << test->turnDirection << " | OutType " << ans->out_type << " " << test->out_type << endl;
         return OUTPUT_INCORRECT;
     }
 }
