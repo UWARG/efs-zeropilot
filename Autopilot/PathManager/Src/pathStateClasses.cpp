@@ -210,13 +210,9 @@ void landingTransitionStage::execute(pathManager* pathMgr)
     {
         pathMgr->stage = SLOPE;
     }
-    else
+    else if(fabs(differenceInHeading2) <= 5)
     {
-        if(fabs(differenceInHeading2) <= 5)
-        {
-            //set enum to slope state
-            pathMgr->stage = SLOPE;
-        }
+        pathMgr->stage = SLOPE;
     }
     
     if(pathMgr->isError)
