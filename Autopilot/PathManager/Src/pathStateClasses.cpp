@@ -256,7 +256,7 @@ void landingTransitionStage::execute(pathManager* pathMgr)
 
     //if the smaller heading is less than 5 degrees, set stage to slope
 
-    
+
     if(differenceInHeading1 < differenceInHeading2 && fabs(differenceInHeading1) <= 5)
     {
         pathMgr->stage = SLOPE;
@@ -451,7 +451,7 @@ void takeoffRollStage::execute(pathManager* pathMgr)
         pathMgr->madeTakeoffPoints = true;
     }
 
-    if(sensorFusion::sensorInput.airspeed>(TakeoffManager::desiredRotationSpeed(getFromTelemetry::telemetryInput.windSpeed,pathMgr->isPackage)))
+    if(sensorFusion::currentAirspeed>(TakeoffManager::desiredRotationSpeed(getFromTelemetry::telemetryInput.windSpeed,pathMgr->isPackage)))
     {
         pathMgr->stage = CLIMB;
     }
