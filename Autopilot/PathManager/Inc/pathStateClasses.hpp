@@ -98,6 +98,8 @@ class resetVariables : public pathManagerState
         resetVariables() {}
         resetVariables(const resetVariables& other);
         resetVariables& operator =(const resetVariables& other);
+
+        //resetPassby uses operator chaining, for more info, refer to the assignment operator chaining in the following link http://courses.cms.caltech.edu/cs11/material/cpp/donnie/cpp-ops.html
         void resetPassby(_PassbyControl* controlDetails){controlDetails->rollPassby = controlDetails->pitchPassby = controlDetails->throttlePassby = controlDetails->rudderPassby = false;}
 };
 
