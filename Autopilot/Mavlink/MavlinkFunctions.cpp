@@ -101,27 +101,50 @@ uint16_t Mavlink_encoder(Message_IDs_t type, mavlink_message_t **msg, const uint
 {
     uint8_t system_id = 1;
     uint8_t component_id = 1;
-    mavlink_message_t encoded_msg;
+    mavlink_message_t encoded_msg_original;
+
     switch(type)
     {
-        printf("Inside encoder\n");
         case MESSAGE_ID_GPS:
         {
             //return mavlink_msg_global_position_int_encode(system_id, component_id, msg, &global_position);
-            printf("Encoding GPS Message\n");
-            uint16_t message_len = mavlink_msg_global_position_int_encode(system_id, component_id, &encoded_msg, (mavlink_global_position_int_t*) struct_ptr);
+            uint16_t message_len = mavlink_msg_global_position_int_encode(system_id, component_id, &encoded_msg_original, (mavlink_global_position_int_t*) struct_ptr);
 
             mavlink_decoding_status_t decoderStatus = MAVLINK_DECODING_INCOMPLETE;
             mavlink_global_position_int_t global_position_decoded;
 
-            unsigned char* ptr_in_byte = (unsigned char *) &encoded_msg;
-            for( int i = 2; i < message_len+2; i++) //TODO first 2 byte are garbage, need to identify the first bit and add the length from there
+            unsigned char* ptr = (unsigned char *) &encoded_msg_original;
+            for( int i = 2; i < message_len+2; i++)
             {
-                char current_byte = ptr_in_byte[i]; 
-                printf("encoding byte: %d, out of %d |||| current byte: %hhx\n",i-2, message_len,current_byte);
-                decoderStatus = Mavlink_decoder(MAVLINK_COMM_0, current_byte, (uint8_t*) &global_position_decoded);
+                char current_byte = ptr[i];
+                printf("encoding byte: %d / %d   |   current byte : %hhx\n", i-2, message_len,current_byte);
             }
-            *msg = &encoded_msg;
+
+            unsigned char* ptr_in_byte = (unsigned char *) &encoded_msg_original;
+            char message_buffer[message_len];
+            for( int i = 0; i < message_len; i++)
+            {
+                if (ptr_in_byte == NULL)
+                {
+                    //null ptr 
+                }
+                else if (ptr_in_byte[i] == 0xfd) //0xfd, starting byte
+                {
+                    //ptr_in_byte += i;
+                    printf("shifting : %d\n", i);
+                    //char current_byte = message_buffer[i];
+                    //memcpy(message_buffer, &ptr_in_byte[i], sizeof(message_len));
+                    for(int r = 0; r < message_len; r++)
+                    {
+                        message_buffer[r] = ptr_in_byte[r+i];
+                        printf("copying byte: %d / %d   |   current byte : %hhx\n", r, message_len,message_buffer[r]);
+                        decoderStatus = Mavlink_decoder(MAVLINK_COMM_0, message_buffer[r], (uint8_t*) &global_position_decoded);
+                    }
+                    break;
+                }
+            }
+
+            *msg = (mavlink_message_t*) &message_buffer;
 
             //return message_len;
 ///*
@@ -129,7 +152,6 @@ uint16_t Mavlink_encoder(Message_IDs_t type, mavlink_message_t **msg, const uint
             if (decoderStatus == MAVLINK_DECODING_OKAY)
             {
                 printf("decoding complete\n");
-                //memcpy(&global_position_revieved, (mavlink_global_position_int_t*) telemetryData, sizeof(mavlink_global_position_int_t));
                 int32_t altitude = global_position_decoded.alt;
                 printf("altitude is: %d\n", altitude);
             }
