@@ -40,19 +40,18 @@ typedef enum {
  *   
  * }
  **/
-mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uint8_t *telemetryData) ;
-
+mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uint8_t *telemetryData);
 
 /**
  * @brief Encode an selected struct
  *
  * @param type The type of telemetry data
- * @param msg The MAVLink message to compress the data into
+ * @param msg The MAVLink message to compress the data into, this is guarenteed to be a full message starts from byte 0xfd
  * @param struct_ptr C-struct to read the message contents from
  * 
  * @return the length of the finalized message: msg->len + header_len + signature_len
  */
-uint16_t Mavlink_encoder(Message_IDs_t type, mavlink_message_t * msg, uint8_t *struct_ptr);
-
+//uint16_t Mavlink_encoder(Message_IDs_t type, mavlink_message_t * msg, uint8_t *struct_ptr);
+mavlink_message_t * Mavlink_encoder(Message_IDs_t type, const uint8_t *struct_ptr);
 
 #endif //MAVLINKFUNCTIONS_HPP
