@@ -2,7 +2,7 @@
  * Gets the commanded orientation and airspeed from the path manager.
  * Author: Anthony Berbari
  */
-#include "landingTakeoffManager.hpp"
+#include "pathDatatypes.hpp"
 #ifndef GET_FROM_PATH_MANAGER_HPP
 #define GET_FROM_PATH_MANAGER_HPP
 

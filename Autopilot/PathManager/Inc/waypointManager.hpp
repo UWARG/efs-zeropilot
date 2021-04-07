@@ -16,6 +16,7 @@
 
 #include <cstdint>
 #include <stdlib.h>
+#include "pathDatatypes.hpp"
 
 #define PATH_BUFFER_SIZE 100
 
@@ -26,24 +27,6 @@ struct _WaypointManager_Data_In {
     double heading;
     double track;
     double airspeed;
-};
-
-/*
-* Structure stores manual control information
-* If a certain variable needs to be controlled, set the percent to the desired value and its respective boolean to true
-*/
-struct _PassbyControl{
-    double rollPercent;
-    bool rollPassby;
-
-    double rudderPercent;
-    bool rudderPassby;
-
-    double pitchPercent;
-    bool pitchPassby;
-
-    double throttlePercent;
-    bool throttlePassby;
 };
 
 // Stores error codes for the waypoint manager

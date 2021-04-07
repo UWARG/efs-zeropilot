@@ -1,7 +1,5 @@
-#include "waypointManager.hpp"
 #include "landingTakeoffManager.hpp"
 #include <math.h>
-#include "vectorClass.hpp"
 
 double LandingManager::changingAltitude(_WaypointManager_Data_In input, _PathData aimingPoint, _PathData intersectionPoint, _PathData stoppingPoint)
 {
@@ -16,16 +14,16 @@ double LandingManager::changingAltitude(_WaypointManager_Data_In input, _PathDat
     Vector3D vectorAI(iPoint.x - aPoint.x, iPoint.y - aPoint.y, iPoint.z - aPoint.z);
     Vector3D vectorAS(sPoint.x - aPoint.x, sPoint.y - aPoint.y, sPoint.z - aPoint.z);
     Vector3D vectorAC(cPoint.x - aPoint.x, cPoint.y - aPoint.y, cPoint.z - aPoint.z);
-    Vector3D normal;
+    Vector3D normalVector;
     
     //normal of the plane created by aiming, stopping, and intersection point
-    normal = vectorAI.crossProduct(vectorAS);
+    normalVector = vectorAI.crossProduct(vectorAS);
 
     //projecting vectorAC to the normal
     //equation is the dot product of normal and vectorAC, divided by the norm of the normal squared, multiplied by the normal vector
     Vector3D projectionACToNormal;
 
-    projectionACToNormal = normal * (normal.dotProduct(vectorAC) / pow(normal.norm(),2));
+    projectionACToNormal = normalVector * (normalVector.dotProduct(vectorAC) / pow(normalVector.norm(),2));
 
     //project point onto plane (cpoint minus the projection)
 
@@ -35,12 +33,6 @@ double LandingManager::changingAltitude(_WaypointManager_Data_In input, _PathDat
     double altitude = (((projectedPoint.x - aPoint.x) / vectorAI.x) + aPoint.z) * vectorAI.z;
 
     return altitude;
-}
-
-double LandingManager::throttleOff(void)
-{
-    //return 0 for now, this function needs to be fixed
-    return 0;
 }
 
 double LandingManager::approachSpeed(double windSpeed, bool ifPackage)
