@@ -1,5 +1,4 @@
 #include "pathStateClasses.hpp"
-#include "landingTakeoffManager.hpp"
 
 /***********************************************************************************************************************
  * Static Member Variable Declarations
