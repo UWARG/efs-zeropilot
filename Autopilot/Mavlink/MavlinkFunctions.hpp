@@ -9,8 +9,13 @@ typedef enum {
     MAVLINK_DECODING_INCOMPLETE=0,
     MAVLINK_DECODING_OKAY=1,
     MAVLINK_DECODING_FAIL=2,
-    MAVLINK_DECODING_NULL_PTR=3,
+    MAVLINK_DECODING_BAD_PARSING=3,
 } mavlink_decoding_status_t;
+
+typedef enum {
+    MAVLINK_ENCODING_OKAY=1,
+    MAVLINK_ENCODING_FAIL=2,
+} mavlink_encoding_status_t;
 
 typedef enum {
     MESSAGE_ID_GPS,
@@ -23,22 +28,21 @@ typedef enum {
  * The parser handles mavlink messages one byte at a time. 
  * Once the complete packet could be successfully decoded, the decoder would translate the message into telemetry data.
  * 
- * An example of how this function should be called is demonstrated below:
+ * mavlink_decoding_status_t decoderStatus = MAVLINK_DECODING_INCOMPLETE;
+    mavlink_global_position_int_t global_position_decoded;
+
+    // the following few lines imitates how a decoder is used when it gets one byte at a time from a serial port
+
+    while(byteavailable == true) // 50 is just a random number larger than message length (for GPS message length is 39)
+    {
+        // get incoming byte here
+
+        if (decoderStatus != MAVLINK_DECODING_OKAY) //this make sure it stops after a whole message is received
+        {
+            decoderStatus = Mavlink_decoder(MAVLINK_COMM_0, current_byte, (uint8_t*) &global_position_decoded);
+        }
+    }
  * 
- * #include <mavlink.h>
- *
- * mavlink_status_t status;
- * mavlink_message_t msg;
- * uint8_t *telemetryData;
- * int channel = MAVLINK_COMM_0; //0, assume only one MAVlink stream exists
- * 
- * //the following part should exist in the state machine
- * while(serial.bytesAvailable > 0) // should make the xbee send one byte at a time from the serial port
- * {
- *   uint8_t byte = serial.getNextByte(); //this is just a space filler arduino function
- *   mavlink_decoding_status_t decoderStatus = Mavlink_decoder(channel, byte ,&msg, &status, &telemetryData)
- *   
- * }
  **/
 mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uint8_t *telemetryData);
 
@@ -51,7 +55,13 @@ mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uin
  * 
  * @return the length of the finalized message: msg->len + header_len + signature_len
  */
-//uint16_t Mavlink_encoder(Message_IDs_t type, mavlink_message_t * msg, uint8_t *struct_ptr);
-mavlink_message_t * Mavlink_encoder(Message_IDs_t type, const uint8_t *struct_ptr);
+mavlink_encoding_status_t Mavlink_encoder(Message_IDs_t type, mavlink_message_t *message, const uint8_t *struct_ptr);
+
+
+int test__encode_then_decode(void);
+
+
+
+
 
 #endif //MAVLINKFUNCTIONS_HPP
