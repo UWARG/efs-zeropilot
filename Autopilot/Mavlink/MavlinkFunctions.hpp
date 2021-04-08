@@ -31,8 +31,6 @@ typedef enum {
  * mavlink_decoding_status_t decoderStatus = MAVLINK_DECODING_INCOMPLETE;
     mavlink_global_position_int_t global_position_decoded;
 
-    // the following few lines imitates how a decoder is used when it gets one byte at a time from a serial port
-
     while(byteavailable == true) // 50 is just a random number larger than message length (for GPS message length is 39)
     {
         // get incoming byte here, decoder can pick up the starting byte by itself
