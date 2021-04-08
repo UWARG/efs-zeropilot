@@ -55,12 +55,15 @@ mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uin
                 }
 
                 break;
-            case MAVLINK_MSG_ID_GPS_STATUS:
+            //add more mode here to support more data types
+            /*
+            case MAVLINK_MSG_ID_GPS_STATUS: 
                 {
                     // Get just one field from payload
                     uint8_t visible_sats = mavlink_msg_gps_status_get_satellites_visible(&decoded_msg);
                 }
                 break;
+            */
             default:
                 break;
         }
