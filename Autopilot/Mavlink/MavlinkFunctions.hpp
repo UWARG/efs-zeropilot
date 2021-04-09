@@ -20,13 +20,17 @@ typedef enum {
 typedef enum {
     MESSAGE_ID_GPS,
     MESSAGE_ID_GIMBAL,
+    Message_ID_TAKEOFF,
+    Message_ID_CUSTOM_CMD,
 } Message_IDs_t;
 
 typedef enum {
-    MAVLINK_CMD_TAKEOFF,
+    MAVLINK_CMD_TAKEOFF, //TODO change to begin take off or stuff
     MAVLINK_CMD_LANDING,
     MAVLINK_CMD_DISCONNECT,
 } mavlink_bool_command_t;
+
+
 
 //-------------------------- Prototypes ---------------------------------------------------------------
 
@@ -70,12 +74,16 @@ mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uin
 
     uint8_t encoderStatus = Mavlink_encoder(MESSAGE_ID_GPS, &encoded_msg, (const uint8_t*) &global_position);
  */
-mavlink_encoding_status_t Mavlink_encoder(Message_IDs_t type, mavlink_message_t *message, const uint8_t *struct_ptr);
+mavlink_encoding_status_t Mavlink_encoder(Message_IDs_t id, mavlink_message_t *message, const uint8_t *struct_ptr);
 
 
 int test__encode_then_decode(void);
 
-int custom_fcn_bool_command_encode(int cmd_type, bool command, mavlink_message_t *message);
+int custom_mavlink_msg__begin_takeoff_command_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* message, const mavlink_custom_cmd_takeoff_t* struct_ptr);
+void custom_mavlink_msg__begin_takeoff_command_decode(const mavlink_message_t* message, mavlink_custom_cmd_takeoff_t* takeoff_command);
+
+
+uint16_t custom_fcn__calculate_crc(mavlink_message_t* msg, uint8_t crc_extra);
 
 
 

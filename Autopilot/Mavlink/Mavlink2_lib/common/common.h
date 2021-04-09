@@ -2188,6 +2188,8 @@ typedef enum MAG_CAL_STATUS
 #endif
 
 // MESSAGE DEFINITIONS
+#include "./warg_custom_functions.h"
+
 #include "./mavlink_msg_sys_status.h"
 #include "./mavlink_msg_system_time.h"
 #include "./mavlink_msg_ping.h"
