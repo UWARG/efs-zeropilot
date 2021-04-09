@@ -19,7 +19,14 @@ typedef enum {
 
 typedef enum {
     MESSAGE_ID_GPS,
+    MESSAGE_ID_GIMBAL,
 } Message_IDs_t;
+
+typedef enum {
+    MAVLINK_CMD_TAKEOFF,
+    MAVLINK_CMD_LANDING,
+    MAVLINK_CMD_DISCONNECT,
+} mavlink_bool_command_t;
 
 //-------------------------- Prototypes ---------------------------------------------------------------
 
@@ -68,7 +75,7 @@ mavlink_encoding_status_t Mavlink_encoder(Message_IDs_t type, mavlink_message_t 
 
 int test__encode_then_decode(void);
 
-
+int custom_fcn_bool_command_encode(int cmd_type, bool command, mavlink_message_t *message);
 
 
 
