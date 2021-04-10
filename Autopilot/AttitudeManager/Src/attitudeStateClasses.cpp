@@ -6,7 +6,7 @@
 
 float OutputMixingMode::_channelOut[4];
 PMCommands fetchInstructionsMode::_PMInstructions;
-SFOutput_t sensorFusionMode::_SFOutput;
+SFAttitudeOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t PIDloopMode::_PidOutput;
 IMU_Data_t fetchSensorMeasurementsMode::_imudata;
 Airspeed_Data_t fetchSensorMeasurementsMode::_airspeeddata;
@@ -84,7 +84,7 @@ void sensorFusionMode::execute(attitudeManager* attitudeMgr)
     IMU_Data_t *dataimu = fetchSensorMeasurementsMode::GetIMUOutput();
     Airspeed_Data_t *dataairspeed = fetchSensorMeasurementsMode::GetAirspeedOutput();
 
-    SFError_t ErrorStruct = SF_GetResult(&_SFOutput, dataimu, dataairspeed);
+    SFError_t ErrorStruct = SF_GetAttitude(&_SFOutput, dataimu, dataairspeed);
 
     if (ErrorStruct.errorCode == 0)
     {
@@ -106,7 +106,7 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
 {
 
     PMCommands *PMInstructions = fetchInstructionsMode::GetPMInstructions();
-    SFOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
+    SFAttitudeOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
 
     // Gets roll, pitch, rudder, and throttle commands from the path manager module
     PMCommands pathManagerOutput;
