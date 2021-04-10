@@ -1,4 +1,18 @@
+/**************************************************************************************************/
 // Author: Jingting Liu
+// April 9th, 2021
+
+// to run the test without cmake:
+// gcc -g MavlinkFunctions.cpp
+// a.out
+
+// refer to this page for the stucture of mavlink messages 
+// https://mavlink.io/en/guide/serialization.html
+
+// The decoder and encoder only support GPS and gimbal control, other simpler commands will be taken
+// care of by the Xbee communication directly
+/**************************************************************************************************/
+
 #include "Mavlink2_lib/common/mavlink.h"
 #include "MavlinkFunctions.hpp"
 
@@ -13,7 +27,6 @@ mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uin
     {
         if (parsingStatus != MAVLINK_FRAMING_OK )
         {
-            printf("reached here 1\n");
             return MAVLINK_DECODING_BAD_PARSING;
         }
 
@@ -40,7 +53,6 @@ mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uin
                     //int16_t Vy = global_position.vy; /*< [cm/s] Ground Y Speed (Longitude, positive east)*/
                     //int16_t Vz = global_position.vz; /*< [cm/s] Ground Z Speed (Altitude, positive down)*/
                     uint16_t Hdg = global_position.hdg; /*< [cdeg] Vehicle heading (yaw angle), 0.0..359.99 degrees. If unknown, set to: UINT16_MAX*/
-                    //printf("timestamp: %d, latitude: %d longitude %d, hdg: %d\n",timestamp_ms, latitude, longitude, Hdg);
                     
                     // someone needs to change this to an actual GPS check, e.g. check for a valid range
                     if (Hdg == 9) //to be changed
@@ -70,21 +82,15 @@ mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uin
                     float pitchspeed; /< [rad/s] Pitch angular speed/
                     float yawspeed; /< [rad/s] Yaw angular speed/
                     */
-                    printf("flags: %d\n", gimbal_command.time_boot_ms);
-                    printf("roll: %f\n", gimbal_command.roll);
-                    printf("pitch: %f\n", gimbal_command.pitch);
-                    printf("yaw: %f\n", gimbal_command.yaw);
 
                     // to be changed
                     if (gimbal_command.time_boot_ms == 1)
                     {
                         memcpy((void*) telemetryData, (void*) &gimbal_command, sizeof(mavlink_attitude_t));
-                        printf("decoding successful!\n");
                         return MAVLINK_DECODING_OKAY;
                     }
                     else
                     {
-                        printf("decoding NOT successful!\n");
                         return MAVLINK_DECODING_FAIL;
                     }
                 }
@@ -150,18 +156,17 @@ mavlink_encoding_status_t Mavlink_encoder(Message_IDs_t msgID, mavlink_message_t
 
     if (message_len == 0)
     {
-        printf("encoding failed, message_len is zero\n");
         return MAVLINK_ENCODING_FAIL;
     }
 
-    // the following loop is supposed to fix a bug from the original mavlink encoder, where the first byte is always shifted.
+    // the following loop is supposed to fix an inconsistency the original mavlink encoder, where the first byte is always shifted.
     // this code lets the encoder to send out a message (byte array) that starts exactly with the starting byte
     unsigned char* ptr_in_byte = (unsigned char *) &encoded_msg_original;
     char message_buffer[message_len];
 
     for( int i = 0; i < message_len; i++)
     {
-        //printf("pre bytes: %d / %d   |   current byte : %hhx\n", i, message_len, ptr_in_byte[i]);
+
         if (ptr_in_byte[i] == 0xfd) //0xfd, starting byte
         {
             for(int r = 0; r < message_len; r++)
@@ -187,7 +192,6 @@ mavlink_encoding_status_t Mavlink_encoder(Message_IDs_t msgID, mavlink_message_t
 uint16_t custom_mavlink_msg__begin_takeoff_command_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* message, const mavlink_custom_cmd_takeoff_t* struct_ptr)
 {
 
-    printf("starting to encode for takeoff\n");
     mavlink_custom_cmd_takeoff_t cmd;
     cmd.beginTakeoff = struct_ptr->beginTakeoff;
 
@@ -296,7 +300,6 @@ int test__encode_then_decode(void)
     {
         if (decoderStatus != MAVLINK_DECODING_OKAY)
         {
-            printf("copying byte: %d / %d   |   current byte : %hhx\n", i, 50, ptr_in_byte[i]);
             //decoderStatus = Mavlink_decoder(MAVLINK_COMM_0, ptr_in_byte[i], (uint8_t*) &global_position_decoded);
             decoderStatus = Mavlink_decoder(MAVLINK_COMM_0, ptr_in_byte[i], (uint8_t*) &gimbal_command_decoded);
             //decoderStatus = Mavlink_decoder(MAVLINK_COMM_0, ptr_in_byte[i], (uint8_t*) &takeoff_command_decoded);
@@ -310,11 +313,10 @@ int test__encode_then_decode(void)
         //int result = memcmp(&takeoff_command_decoded, &takeoff_command, sizeof(mavlink_custom_cmd_takeoff_t) );
         if (result == 0)
         {
-            printf("decoding successful\n");
+            //printf("test passed!\n");
             return 1;
         }
     }
-    printf("decoding NOT successful\n");
     return 0;
 }
 
@@ -325,11 +327,3 @@ int main(void) // TODO: this main needs to be removed once integrated
 
     return 0;
 }
-
-
-// to run the test without cmake:
-// gcc -g MavlinkFunctions.cpp
-// a.out
-
-// refer to this page for the stucture of mavlink messages 
-// https://mavlink.io/en/guide/serialization.html
