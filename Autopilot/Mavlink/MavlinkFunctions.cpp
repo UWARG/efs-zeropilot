@@ -8,11 +8,13 @@ mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uin
     mavlink_status_t status;
     mavlink_message_t decoded_msg;
     uint8_t parsingStatus = mavlink_parse_char(channel, incomingByte, &decoded_msg, &status);
+    printf("parsing status: %d\n", parsingStatus);
 
     if (status.msg_received)
     {
         if (parsingStatus != MAVLINK_FRAMING_OK )
         {
+            //printf("reached here 1\n");
             return MAVLINK_DECODING_BAD_PARSING;
         }
 
@@ -156,6 +158,7 @@ mavlink_encoding_status_t Mavlink_encoder(Message_IDs_t msgID, mavlink_message_t
 
     if (message_len == 0)
     {
+        printf("encoding failed, message_len is zero\n");
         return MAVLINK_ENCODING_FAIL;
     }
 
@@ -190,11 +193,11 @@ mavlink_encoding_status_t Mavlink_encoder(Message_IDs_t msgID, mavlink_message_t
 
 //--------------------------------------custom decoder and encoders for specific functions---------------------------------
 
-int custom_mavlink_msg__begin_takeoff_command_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* message, const mavlink_custom_cmd_takeoff_t* struct_ptr)
+uint16_t custom_mavlink_msg__begin_takeoff_command_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* message, const mavlink_custom_cmd_takeoff_t* struct_ptr)
 {
     //mavlink_finalize_message_buffer();
     //mavlink_msg_global_position_int_encode
-
+    printf("starting to encode for takeoff\n");
     mavlink_custom_cmd_takeoff_t cmd;
     cmd.beginTakeoff = struct_ptr->beginTakeoff;
 
@@ -202,19 +205,28 @@ int custom_mavlink_msg__begin_takeoff_command_encode(uint8_t system_id, uint8_t 
 
     message->msgid = MAVLINK_MSG_ID_TAKEOFF_CMD;
 
-    mavlink_finalize_message(   message, 
-                                system_id, 
-                                component_id, 
-                                MAVLINK_MSG_ID_TAKEOFF_CMD_MIN_LEN, 
-                                MAVLINK_MSG_ID_TAKEOFF_CMD_LEN, 
-                                MAVLINK_MSG_ID_GLOBAL_POSITION_INT_CRC);
+    uint16_t message_len = mavlink_finalize_message(    message, 
+                                                        system_id, 
+                                                        component_id, 
+                                                        MAVLINK_MSG_ID_TAKEOFF_CMD_MIN_LEN, 
+                                                        MAVLINK_MSG_ID_TAKEOFF_CMD_LEN, 
+                                                        MAVLINK_MSG_ID_GLOBAL_POSITION_INT_CRC);
+/*
+    unsigned char* ptr_in_byte = (unsigned char *) message;
+    for( int i = 0; i < 50; i++) // 50 is just a random number larger than message length (for GPS message length is 39)
+    {
 
-    return 0;
+        printf("copying byte: %d / %d   |   current byte : %hhx\n", i, 50, ptr_in_byte[i]);
+
+    }
+*/
+    return message_len;
 }
 
 
 void custom_mavlink_msg__begin_takeoff_command_decode(const mavlink_message_t* message, mavlink_custom_cmd_takeoff_t* takeoff_command)
 {
+    printf("starting to decode for takeoff\n");
     uint8_t len = message->len < MAVLINK_MSG_ID_TAKEOFF_CMD_LEN? message->len : MAVLINK_MSG_ID_TAKEOFF_CMD_LEN;
     memset(takeoff_command, 0, MAVLINK_MSG_ID_TAKEOFF_CMD_LEN);
     memcpy(takeoff_command, _MAV_PAYLOAD(message), len);
