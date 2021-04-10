@@ -8,13 +8,12 @@ mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uin
     mavlink_status_t status;
     mavlink_message_t decoded_msg;
     uint8_t parsingStatus = mavlink_parse_char(channel, incomingByte, &decoded_msg, &status);
-    printf("parsing status: %d\n", parsingStatus);
 
     if (status.msg_received)
     {
         if (parsingStatus != MAVLINK_FRAMING_OK )
         {
-            //printf("reached here 1\n");
+            printf("reached here 1\n");
             return MAVLINK_DECODING_BAD_PARSING;
         }
 
@@ -57,33 +56,29 @@ mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uin
 
                 break;
 
-            case MAVLINK_MSG_ID_GIMBAL_MANAGER_SET_PITCHYAW: 
+            case MAVLINK_MSG_ID_ATTITUDE: 
                 {
-                    mavlink_gimbal_manager_set_pitchyaw_t gimbal_command;
+                    mavlink_attitude_t gimbal_command;
 
-                    mavlink_msg_gimbal_manager_set_pitchyaw_decode(&decoded_msg, &gimbal_command);
-                    
-                    //uint32_t flags; /*<  High level gimbal manager flags to use.*/
-                    //float pitch; /*< [rad] Pitch angle (positive: up, negative: down, NaN to be ignored).*/
-                    //float yaw; /*< [rad] Yaw angle (positive: to the right, negative: to the left, NaN to be ignored).*/
-                    //float pitch_rate; /*< [rad/s] Pitch angular rate (positive: up, negative: down, NaN to be ignored).*/
-                    //float yaw_rate; /*< [rad/s] Yaw angular rate (positive: to the right, negative: to the left, NaN to be ignored).*/
-                    uint8_t target_system; /*<  System ID*/
-                    //uint8_t target_component; /*<  Component ID*/
-                    //uint8_t gimbal_device_id; /*<  Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals).*/
-                    
-                    printf("flags: %d\n", gimbal_command.flags);
+                    mavlink_msg_attitude_decode(&decoded_msg, &gimbal_command);
+                    /*            
+                    uint32_t time_boot_ms; /< [ms] Timestamp (time since system boot)./
+                    float roll; /< [rad] Roll angle (-pi..+pi)/
+                    float pitch; /< [rad] Pitch angle (-pi..+pi)/
+                    float yaw; /< [rad] Yaw angle (-pi..+pi)/
+                    float rollspeed; /< [rad/s] Roll angular speed/
+                    float pitchspeed; /< [rad/s] Pitch angular speed/
+                    float yawspeed; /< [rad/s] Yaw angular speed/
+                    */
+                    printf("flags: %d\n", gimbal_command.time_boot_ms);
+                    printf("roll: %f\n", gimbal_command.roll);
                     printf("pitch: %f\n", gimbal_command.pitch);
                     printf("yaw: %f\n", gimbal_command.yaw);
-                    printf("pitch_rate: %f\n", gimbal_command.pitch_rate);
-                    printf("yaw_rate: %f\n", gimbal_command.yaw_rate);
-                    printf("target_system: %d\n", gimbal_command.target_system);
-                    printf("target_component: %d\n", gimbal_command.target_component);
-                    printf("gimbal_device_id: %d\n", gimbal_command.gimbal_device_id);
+
                     // to be changed
-                    if (gimbal_command.target_system == 1)
+                    if (gimbal_command.time_boot_ms == 1)
                     {
-                        memcpy((void*) telemetryData, (void*) &gimbal_command, sizeof(mavlink_gimbal_manager_set_pitchyaw_t));
+                        memcpy((void*) telemetryData, (void*) &gimbal_command, sizeof(mavlink_attitude_t));
                         printf("decoding successful!\n");
                         return MAVLINK_DECODING_OKAY;
                     }
@@ -99,18 +94,15 @@ mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uin
                     mavlink_custom_cmd_takeoff_t takeoff_command;
                     custom_mavlink_msg__begin_takeoff_command_decode(&decoded_msg, &takeoff_command);
 
-                    printf ("begin takeoff: %d",takeoff_command.beginTakeoff);
-
                     // to be changed
                     if (takeoff_command.beginTakeoff == 1)
                     {
                         memcpy((void*) telemetryData, (void*) &takeoff_command, sizeof(mavlink_custom_cmd_takeoff_t));
-                        printf("decoding successful!\n");
+
                         return MAVLINK_DECODING_OKAY;
                     }
                     else
                     {
-                        printf("decoding NOT successful!\n");
                         return MAVLINK_DECODING_FAIL;
                     }
                 }
@@ -142,7 +134,7 @@ mavlink_encoding_status_t Mavlink_encoder(Message_IDs_t msgID, mavlink_message_t
 
         case MESSAGE_ID_GIMBAL:
         {
-            message_len = mavlink_msg_gimbal_manager_set_pitchyaw_encode(system_id, component_id, &encoded_msg_original, (mavlink_gimbal_manager_set_pitchyaw_t*) struct_ptr);
+            message_len = mavlink_msg_attitude_encode(system_id, component_id, &encoded_msg_original, (mavlink_attitude_t*) struct_ptr);
         }
         break;
 
@@ -175,7 +167,7 @@ mavlink_encoding_status_t Mavlink_encoder(Message_IDs_t msgID, mavlink_message_t
             for(int r = 0; r < message_len; r++)
             {
                 message_buffer[r] = ptr_in_byte[r+i];
-                printf("copying byte: %d / %d   |   current byte : %hhx\n", r, message_len, message_buffer[r]);
+                //printf("copying byte: %d / %d   |   current byte : %hhx\n", r, message_len, message_buffer[r]);
             }
             break;
         }
@@ -184,8 +176,7 @@ mavlink_encoding_status_t Mavlink_encoder(Message_IDs_t msgID, mavlink_message_t
             return MAVLINK_ENCODING_FAIL;
         }
     }
-    printf("message length: %d\n", message_len);
-    printf("encoding successful\n");
+
     memcpy(message, message_buffer, message_len);
 
     return MAVLINK_ENCODING_OKAY;
@@ -195,8 +186,7 @@ mavlink_encoding_status_t Mavlink_encoder(Message_IDs_t msgID, mavlink_message_t
 
 uint16_t custom_mavlink_msg__begin_takeoff_command_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* message, const mavlink_custom_cmd_takeoff_t* struct_ptr)
 {
-    //mavlink_finalize_message_buffer();
-    //mavlink_msg_global_position_int_encode
+
     printf("starting to encode for takeoff\n");
     mavlink_custom_cmd_takeoff_t cmd;
     cmd.beginTakeoff = struct_ptr->beginTakeoff;
@@ -211,28 +201,19 @@ uint16_t custom_mavlink_msg__begin_takeoff_command_encode(uint8_t system_id, uin
                                                         MAVLINK_MSG_ID_TAKEOFF_CMD_MIN_LEN, 
                                                         MAVLINK_MSG_ID_TAKEOFF_CMD_LEN, 
                                                         MAVLINK_MSG_ID_GLOBAL_POSITION_INT_CRC);
-/*
-    unsigned char* ptr_in_byte = (unsigned char *) message;
-    for( int i = 0; i < 50; i++) // 50 is just a random number larger than message length (for GPS message length is 39)
-    {
 
-        printf("copying byte: %d / %d   |   current byte : %hhx\n", i, 50, ptr_in_byte[i]);
-
-    }
-*/
     return message_len;
 }
 
 
 void custom_mavlink_msg__begin_takeoff_command_decode(const mavlink_message_t* message, mavlink_custom_cmd_takeoff_t* takeoff_command)
 {
-    printf("starting to decode for takeoff\n");
     uint8_t len = message->len < MAVLINK_MSG_ID_TAKEOFF_CMD_LEN? message->len : MAVLINK_MSG_ID_TAKEOFF_CMD_LEN;
     memset(takeoff_command, 0, MAVLINK_MSG_ID_TAKEOFF_CMD_LEN);
     memcpy(takeoff_command, _MAV_PAYLOAD(message), len);
 }
 
-
+//this needs a proper crc_extra to work
 uint16_t custom_fcn__calculate_crc(mavlink_message_t* msg, uint8_t crc_extra)
 {
     uint8_t buf[MAVLINK_CORE_HEADER_LEN+1];
@@ -277,16 +258,15 @@ int test__encode_then_decode(void)
         9 // hdg
     };
 
-    mavlink_gimbal_manager_set_pitchyaw_t gimbal_command =
+    mavlink_attitude_t gimbal_command =
     {
-        8, //flag
-        7, //pitch
-        6, //yaw
-        5, //pitch rate
-        4, // yaw rate
-        1, // system ID
-        1, // component ID
-        1  //gimbal device component ID
+        1, //time_boot_ms
+        1, //roll
+        2, //pitch
+        3, //yaw
+        4, // roll speed
+        5, // pitch speed
+        6, // yaw speed
     };
 
     mavlink_custom_cmd_takeoff_t takeoff_command = 
@@ -297,8 +277,8 @@ int test__encode_then_decode(void)
     mavlink_message_t encoded_msg;
 
     //uint8_t encoderStatus = Mavlink_encoder(MESSAGE_ID_GPS, &encoded_msg, (const uint8_t*) &global_position);
-    //uint8_t encoderStatus = Mavlink_encoder(MESSAGE_ID_GIMBAL, &encoded_msg, (const uint8_t*) &gimbal_command);
-    uint8_t encoderStatus = Mavlink_encoder(Message_ID_TAKEOFF, &encoded_msg, (const uint8_t*) &takeoff_command);
+    uint8_t encoderStatus = Mavlink_encoder(MESSAGE_ID_GIMBAL, &encoded_msg, (const uint8_t*) &gimbal_command);
+    //uint8_t encoderStatus = Mavlink_encoder(Message_ID_TAKEOFF, &encoded_msg, (const uint8_t*) &takeoff_command);
     if (encoderStatus == MAVLINK_ENCODING_FAIL)
     {
         return 0;
@@ -307,7 +287,7 @@ int test__encode_then_decode(void)
     //---------------------------------- decoding starts ---------------------------------- 
     mavlink_decoding_status_t decoderStatus = MAVLINK_DECODING_INCOMPLETE;
     mavlink_global_position_int_t global_position_decoded;
-    mavlink_gimbal_manager_set_pitchyaw_t gimbal_command_decoded;
+    mavlink_attitude_t gimbal_command_decoded;
     mavlink_custom_cmd_takeoff_t takeoff_command_decoded;
 
     // the following few lines imitates how a decoder is used when it gets one byte at a time from a serial port
@@ -318,29 +298,29 @@ int test__encode_then_decode(void)
         {
             printf("copying byte: %d / %d   |   current byte : %hhx\n", i, 50, ptr_in_byte[i]);
             //decoderStatus = Mavlink_decoder(MAVLINK_COMM_0, ptr_in_byte[i], (uint8_t*) &global_position_decoded);
-            //decoderStatus = Mavlink_decoder(MAVLINK_COMM_0, ptr_in_byte[i], (uint8_t*) &gimbal_command_decoded);
-            decoderStatus = Mavlink_decoder(MAVLINK_COMM_0, ptr_in_byte[i], (uint8_t*) &takeoff_command_decoded);
+            decoderStatus = Mavlink_decoder(MAVLINK_COMM_0, ptr_in_byte[i], (uint8_t*) &gimbal_command_decoded);
+            //decoderStatus = Mavlink_decoder(MAVLINK_COMM_0, ptr_in_byte[i], (uint8_t*) &takeoff_command_decoded);
         }
     }
 
     if (decoderStatus == MAVLINK_DECODING_OKAY)
     {
         //int result = memcmp(&global_position_decoded, &global_position, sizeof(mavlink_global_position_int_t) );
-        //int result = memcmp(&gimbal_command_decoded, &gimbal_command, sizeof(mavlink_gimbal_manager_set_pitchyaw_t) );
-        int result = memcmp(&takeoff_command_decoded, &takeoff_command, sizeof(mavlink_custom_cmd_takeoff_t) );
+        int result = memcmp(&gimbal_command_decoded, &gimbal_command, sizeof(mavlink_attitude_t) );
+        //int result = memcmp(&takeoff_command_decoded, &takeoff_command, sizeof(mavlink_custom_cmd_takeoff_t) );
         if (result == 0)
         {
             printf("decoding successful\n");
             return 1;
         }
     }
+    printf("decoding NOT successful\n");
     return 0;
 }
 
 
 int main(void) // TODO: this main needs to be removed once integrated
 {
-    printf("starting test1\n");
     test__encode_then_decode();
 
     return 0;
