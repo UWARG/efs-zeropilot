@@ -7,7 +7,7 @@
 #include "gps.hpp"
 #include "AutoSteer.hpp"
 #include "waypointManager.hpp"
-#include "pathDataTypes.hpp"
+#include "pathDatatypes.hpp"
 #include "CommWithAttitudeManager.hpp"
 
 #include "SensorFusion.hpp"
