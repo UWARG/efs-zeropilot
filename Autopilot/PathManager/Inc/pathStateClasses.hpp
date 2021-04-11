@@ -8,7 +8,12 @@
 #include "AutoSteer.hpp"
 #include "waypointManager.hpp"
 #include "pathDataTypes.hpp"
-#include "getSensordata.hpp"
+#include "CommWithAttitudeManager.hpp"
+
+#include "SensorFusion.hpp"
+#include "AttitudePathInterface.hpp"
+
+
 
 /***********************************************************************************************************************
  * Definitions
@@ -25,10 +30,12 @@ class commsWithAttitude : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
+        static AttitudeData* GetCommWithAttitudeData(void) { return &_receivedData; }
     private:
-        commsWithAttitude() {}
+        commsWithAttitude() { CommWithAMInit(); } // Initializes module
         commsWithAttitude(const commsWithAttitude& other);
         commsWithAttitude& operator =(const commsWithAttitude& other);
+        static AttitudeData _receivedData;
 };
 
 class commsWithTelemetry : public pathManagerState
@@ -46,25 +53,6 @@ class commsWithTelemetry : public pathManagerState
         static Telemetry_PIGO_t _incomingData; // Stores the commands sent by telemetry for easy access by other states in the pathmanager
 };
 
-class getSensorData : public pathManagerState
-{
-    public:
-        void enter(pathManager* pathMgr) {(void) pathMgr;}
-        void execute(pathManager* pathMgr);
-        void exit(pathManager* pathMgr) {(void) pathMgr;}
-        static pathManagerState& getInstance();
-        static Altimeter_Data_t* GetAltimeterOutput(void) {return &_altimeterdata;}
-        static Gps_Data_t* GetGPSOutput(void) {return &_gpsdata;}
-    private:
-        getSensorData();
-        getSensorData(const getSensorData& other);
-        getSensorData& operator =(const getSensorData& other);
-        static Altimeter_Data_t _altimeterdata; 
-        static Gps_Data_t _gpsdata; 
-        Gps* GpsSens;
-        Altimeter* AltimeterSens;
-};
-
 class sensorFusion : public pathManagerState
 {
     public:
@@ -72,10 +60,12 @@ class sensorFusion : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
+        static SFOutput_t* GetSFOutput(void) { return &sfOutputData; }
     private:
         sensorFusion() {}
         sensorFusion(const sensorFusion& other);
         sensorFusion& operator =(const sensorFusion& other);
+        static SFOutput_t sfOutputData;
 };
 
 class cruisingState : public pathManagerState
@@ -116,7 +106,7 @@ class coordinateTurnElevation : public pathManagerState
         static CoordinatedTurnAttitudeManagerCommands_t* GetRollAndRudder(void) {return &_rollandrudder;}
         static AltitudeAirspeedCommands_t* GetPitchAndAirspeed(void) {return &_pitchandairspeed;}
     private:
-        coordinateTurnElevation() {}
+        coordinateTurnElevation() { AutoSteer_Init(); } // Initializes autosteer module
         coordinateTurnElevation(const coordinateTurnElevation& other);
         coordinateTurnElevation& operator =(const coordinateTurnElevation& other);
         static CoordinatedTurnAttitudeManagerCommands_t _rollandrudder;

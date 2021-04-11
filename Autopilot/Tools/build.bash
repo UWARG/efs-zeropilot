@@ -118,7 +118,6 @@ elif [[ $RUN_SIMULATION == true ]]; then
         export SIM_OS=notset
         ;;
     esac
-
     echo "OS value: $SIM_OS"
 
     echo "Building Simulation !"

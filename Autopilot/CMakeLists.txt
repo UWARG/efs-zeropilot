@@ -181,7 +181,6 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/waypointManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingState.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/getSensorData.cpp
   )
 
   set(PATH_MANAGER_FSM_UNIT_TEST_SOURCES
@@ -198,13 +197,11 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
   set(PATH_MANAGER_MODULES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/waypointManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingState.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/getSensorData.cpp
   )
 
   set(PATH_MANAGER_MODULES_UNIT_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_WaypointManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_CruisingState.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_GetSensorData.cpp
   )
 
   add_executable(pathManagerModules ${PATH_MANAGER_MODULES_SOURCES} ${PATH_MANAGER_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})

@@ -10,9 +10,11 @@
 
 #include "waypointManager.hpp"
 #include "cruisingState.hpp"
-#include "getSensorData.hpp"
-#include "gps.hpp"
-#include "altimeter.hpp"
+#include "CommWithAttitudeManager.hpp"
+
+#include "SensorFusion.hpp"
+#include "AttitudePathInterface.hpp"
+
 
 using namespace std; 
 using ::testing::Test;
@@ -21,7 +23,13 @@ using ::testing::Test;
  * Test Fixtures
  **********************************************************************************************************************/
 
-FAKE_VALUE_FUNC(SensorError_t, Path_SensorMeasurements_GetResult, Altimeter*, Gps*, Altimeter_Data_t*, Gps_Data_t*);
+FAKE_VALUE_FUNC(SFOutput_t, SF_GetResult);
+FAKE_VOID_FUNC(AutoSteer_Init);
+FAKE_VOID_FUNC(CommWithAMInit);
+FAKE_VOID_FUNC(SendCommandsForAM, CommandsForAM*);
+FAKE_VALUE_FUNC(bool, GetAttitudeData, AttitudeData*);
+FAKE_VOID_FUNC(AutoSteer_ComputeCoordinatedTurn, CoordinatedTurnInput_t*, CoordinatedTurnAttitudeManagerCommands_t*);
+FAKE_VOID_FUNC(AutoSteer_ComputeAltitudeAndAirspeed, AltitudeAirspeedInput_t*, AltitudeAirspeedCommands_t*);
 
 class PathManagerFSM : public ::testing::Test
 {
@@ -29,7 +37,13 @@ class PathManagerFSM : public ::testing::Test
 
 		virtual void SetUp()
 		{
-			RESET_FAKE(Path_SensorMeasurements_GetResult);
+			RESET_FAKE(SF_GetResult);
+			RESET_FAKE(AutoSteer_Init);
+			RESET_FAKE(CommWithAMInit);
+			RESET_FAKE(SendCommandsForAM);
+			RESET_FAKE(GetAttitudeData);
+			RESET_FAKE(AutoSteer_ComputeCoordinatedTurn);
+			RESET_FAKE(AutoSteer_ComputeAltitudeAndAirspeed);
 		}
 
 		virtual void TearDown()
@@ -45,7 +59,13 @@ class PathManagerDataHandoff : public ::testing::Test
 
 		virtual void SetUp()
 		{
-			RESET_FAKE(Path_SensorMeasurements_GetResult);
+			RESET_FAKE(SF_GetResult);
+			RESET_FAKE(AutoSteer_Init);
+			RESET_FAKE(CommWithAMInit);
+			RESET_FAKE(SendCommandsForAM);
+			RESET_FAKE(GetAttitudeData);
+			RESET_FAKE(AutoSteer_ComputeCoordinatedTurn);
+			RESET_FAKE(AutoSteer_ComputeAltitudeAndAirspeed);
 		}
 
 		virtual void TearDown()
@@ -91,7 +111,7 @@ TEST (PathManagerFSM, CommsWithAttitudeTransitionToCommsWithTelemetry) {
     EXPECT_EQ(*(pathMan.getCurrentState()), commsWithTelemetry::getInstance());
 }
 
-TEST (PathManagerFSM, CommsWithTelemetryTransitionToGetSensorData) {
+TEST (PathManagerFSM, CommsWithTelemetryTransitionToSensorFusion) {
     /***********************SETUP***********************/
 
 	pathManager pathMan;
@@ -100,22 +120,6 @@ TEST (PathManagerFSM, CommsWithTelemetryTransitionToGetSensorData) {
 	/********************STEPTHROUGH********************/
 
     pathMan.setState(commsWithTelemetry::getInstance());
-    pathMan.execute();
-
-	/**********************ASSERTS**********************/
-
-    EXPECT_EQ(*(pathMan.getCurrentState()), getSensorData::getInstance());
-}
-
-TEST (PathManagerFSM, GetSensorDataTransitionToSensorFusion) {
-    /***********************SETUP***********************/
-
-	pathManager pathMan;
-
-	/********************DEPENDENCIES*******************/
-	/********************STEPTHROUGH********************/
-
-    pathMan.setState(getSensorData::getInstance());
     pathMan.execute();
 
 	/**********************ASSERTS**********************/
