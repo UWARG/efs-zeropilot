@@ -71,11 +71,7 @@ getSensorData::getSensorData()
 void getSensorData::execute(pathManager* pathMgr)
 {
     // Initializes the sensor data structures 
-<<<<<<< HEAD
     SensorError_t errorStruct = Path_SensorMeasurements_GetResult(AltimeterSens, GpsSens, &_altimeterdata, &_gpsdata); 
-=======
-    SensorError_t errorStruct = SensorMeasurements_GetResult(&AltimeterSens, &GpsSens, &_altimeterdata, &_gpsdata); 
->>>>>>> Placeholder before rebasing
     
     //obtain sensor data
     if(isError)
@@ -125,11 +121,7 @@ void cruisingState::execute(pathManager* pathMgr)
     // Get sensor fusion data
     // SFPositionOutput_t * sfData = sensorFusion::GetSFPositionOutput();
 
-<<<<<<< HEAD
-    _inputdata.track = gpsData->heading;
-=======
-    _inputdata.heading = gpsData->heading;
->>>>>>> Placeholder before rebasing
+    // _inputdata.heading = gpsData->heading;
     // Set input data parameters
     // _inputdata.longitude = sfData->longitude;
     // _inputdata.latitude = sfData->latitude;
