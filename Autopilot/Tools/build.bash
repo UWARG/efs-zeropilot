@@ -97,11 +97,7 @@ if [[ $RUN_UNIT_TESTS == true ]]; then
 elif [[ $RUN_SIMULATION == true ]]; then
 
   #detecting OS
-<<<<<<< HEAD
 
-=======
-     
->>>>>>> blah (#13)
     case $(uname | tr '[:upper:]' '[:lower:]') in
     linux*)
         export SIM_OS=linux
@@ -122,11 +118,8 @@ elif [[ $RUN_SIMULATION == true ]]; then
         export SIM_OS=notset
         ;;
     esac
-<<<<<<< HEAD
+
     echo "OS value: $SIM_OS"
-=======
-    echo "OS value: $SIM_OS" 
->>>>>>> blah (#13)
 
     echo "Building Simulation !"
     echo ""
