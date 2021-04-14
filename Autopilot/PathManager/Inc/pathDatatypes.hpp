@@ -42,12 +42,13 @@ struct Telemetry_PIGO_t {
     Telemetry_Waypoint_Data_t homebase;
 
     // landing and takeoff 
-    double latitude;
-    double longitude;
-    double altitude;
-    float directionLanding;
     bool beginLanding;
     bool beginTakeoff;
+    float stoppingDirectionHeading;
+    float stoppingLongitude;
+    float stoppingLatitude;
+    float stoppingAltitude;
+    float takeoffDirectionHeading;
     // Struct for stopping point gps coordinates
 
 };

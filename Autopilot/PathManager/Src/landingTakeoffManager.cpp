@@ -35,16 +35,16 @@ double LandingManager::changingAltitude(_WaypointManager_Data_In input, _PathDat
     return altitude;
 }
 
-double LandingManager::approachSpeed(double windSpeed, bool ifPackage)
+double LandingManager::approachSpeed(bool ifPackage)
 {
     //approach speed calculation for both package and no package scenarios
     if(ifPackage)
     {
-        return STALL_SPEED_WITH_PACKAGE * 1.3 + windSpeed;
+        return STALL_SPEED_WITH_PACKAGE * 1.3;
     }
     else 
     {
-        return STALL_SPEED_NO_PACKAGE * 1.3 + windSpeed;
+        return STALL_SPEED_NO_PACKAGE * 1.3;
     }
 }
 
@@ -116,27 +116,54 @@ _LandingPath LandingManager::createSlopeWaypoints(Telemetry_PIGO_t input, double
     return path;
 }
 
-double TakeoffManager::desiredRotationSpeed(double wind, bool ifPackage)
+_LandingTakeoffOutput LandingManager::translateWaypointCommands(_WaypointManager_Data_Out outputData)
 {
-    if(ifPackage)
+    _LandingTakeoffOutput controlOutput;
+    controlOutput.desiredTrack = outputData.desiredTrack;
+    controlOutput.desiredAltitude = outputData.desiredAltitude;
+    return controlOutput;
+}
+
+void LandingManager::translateLTSFCommandsToCoordTurns(_LandingTakeoffOutput* outputData, SFOutput_t* sensorOutput, CoordinatedTurnInput_t* turnInput, AltitudeAirspeedInput_t* altitudeAirspeedInput)
+{
+    //loading in data depending on if heading needs to be used
+    if(outputData->useHeading)
     {
-        return ROTATION_SPEED_WITH_PACKAGE + wind;
+        turnInput->desiredHeadingTrack = outputData->desiredHeading;
+        turnInput->currentHeadingTrack = sensorOutput->currentHeading;
     }
     else
     {
-        return ROTATION_SPEED_NO_PACKAGE + wind;
+        turnInput->desiredHeadingTrack = outputData->desiredTrack;
+        turnInput->currentHeadingTrack = sensorOutput->currentTrack;
+    }
+    altitudeAirspeedInput->currentAltitude = sensorOutput->currentAltitude;
+    altitudeAirspeedInput->desiredAltitude = outputData->desiredAltitude;
+    altitudeAirspeedInput->currentAirspeed = sensorOutput->currentAirspeed;
+    altitudeAirspeedInput->desiredAirspeed = outputData->desiredAirspeed;
+}
+
+double TakeoffManager::desiredRotationSpeed(bool ifPackage)
+{
+    if(ifPackage)
+    {
+        return ROTATION_SPEED_WITH_PACKAGE;
+    }
+    else
+    {
+        return ROTATION_SPEED_NO_PACKAGE;
     }
 }
 
-double TakeoffManager::desiredClimbSpeed(double wind, bool ifPackage)
+double TakeoffManager::desiredClimbSpeed(bool ifPackage)
 {
     if(ifPackage)
     {
-        return CLIMB_SPEED_WITH_PACKAGE + wind;
+        return CLIMB_SPEED_WITH_PACKAGE;
     }
     else
     {
-        return CLIMB_SPEED_NO_PACKAGE + wind;
+        return CLIMB_SPEED_NO_PACKAGE;
     }
 }
 
