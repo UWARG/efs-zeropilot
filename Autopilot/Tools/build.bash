@@ -97,7 +97,7 @@ if [[ $RUN_UNIT_TESTS == true ]]; then
 elif [[ $RUN_SIMULATION == true ]]; then
 
   #detecting OS
-     
+
     case $(uname | tr '[:upper:]' '[:lower:]') in
     linux*)
         export SIM_OS=linux
@@ -118,7 +118,7 @@ elif [[ $RUN_SIMULATION == true ]]; then
         export SIM_OS=notset
         ;;
     esac
-    echo "OS value: $SIM_OS" 
+    echo "OS value: $SIM_OS"
 
     echo "Building Simulation !"
     echo ""
@@ -149,8 +149,8 @@ elif [[ $RUN_SIMULATION == true ]]; then
 
     if [[ $AGE_OF_EXE -gt $TIME_OF_BUILD ]]; then
         #clear any older simulation results
-        cmake -E remove_directory $BUILD_DIR/ActuatorCommands/* 2>/dev/null
-        cmake -E remove_directory $BUILD_DIR/SensorOutputs/* 2>/dev/null
+        cmake -E rm -r $BUILD_DIR/ActuatorCommands/* 2>/dev/null
+        cmake -E rm -r $BUILD_DIR/SensorOutputs/* 2>/dev/null
         # Note that the program needs to be run from the build directory since it opens and closes files via relative paths.
         cmake -E chdir $BUILD_DIR\
         ./sim
