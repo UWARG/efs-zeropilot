@@ -567,7 +567,6 @@ void landingDecrabStage::execute(pathManager* pathMgr)
         //align heading with landing direction
         output.desiredHeading = input.telemetryData.stoppingDirectionHeading;
         output.useHeading = true;
-
         //retrieving desired slow flight speed
         output.desiredAirspeed = LandingManager::slowFlightSpeed(pathMgr->isPackage);
         
