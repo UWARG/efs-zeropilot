@@ -10,42 +10,38 @@ using ::testing::Test;
 
 TEST(TakeoffFunctions, Test_desiredRotationNoPackage){ 
     /***SETUP***/
-    double wind = 10;
     bool ifPackage = false;
     /***STEPTHROUGH***/
-    double desiredSpeed = TakeoffManager::desiredRotationSpeed(wind, ifPackage);
+    double desiredSpeed = TakeoffManager::desiredRotationSpeed(ifPackage);
     /***ASSERTS***/
-    EXPECT_NEAR(desiredSpeed, 14.0, 0.000001); 
+    EXPECT_NEAR(desiredSpeed, 4.0, 0.000001); 
 }
 
 TEST(TakeoffFunctions, Test_desiredRotationWithPackage){ 
     /***SETUP***/
-    double wind = 10;
     bool ifPackage = true;
     /***STEPTHROUGH***/
-    double desiredSpeed = TakeoffManager::desiredRotationSpeed(wind, ifPackage);
+    double desiredSpeed = TakeoffManager::desiredRotationSpeed(ifPackage);
     /***ASSERTS***/
-    EXPECT_NEAR(desiredSpeed, 16.0, 0.000001); 
+    EXPECT_NEAR(desiredSpeed, 6.0, 0.000001); 
 }
 
 TEST(TakeoffFunctions, Test_desiredClimbNoPackage){ 
     /***SETUP***/
-    double wind = 10;
     bool ifPackage = false;
     /***STEPTHROUGH***/
-    double desiredSpeed = TakeoffManager::desiredClimbSpeed(wind, ifPackage);
+    double desiredSpeed = TakeoffManager::desiredClimbSpeed(ifPackage);
     /***ASSERTS***/
-    EXPECT_NEAR(desiredSpeed, 15.0, 0.000001); 
+    EXPECT_NEAR(desiredSpeed, 5.0, 0.000001); 
 }
 
 TEST(TakeoffFunctions, Test_desiredClimbWithPackage){ 
     /***SETUP***/
-    double wind = 10;
     bool ifPackage = true;
     /***STEPTHROUGH***/
-    double desiredSpeed = TakeoffManager::desiredClimbSpeed(wind, ifPackage);
+    double desiredSpeed = TakeoffManager::desiredClimbSpeed(ifPackage);
     /***ASSERTS***/
-    EXPECT_NEAR(desiredSpeed, 17.0, 0.000001); 
+    EXPECT_NEAR(desiredSpeed, 7.0, 0.000001); 
 }
 
 TEST(TakeoffFunctions, Test_createTakeoffWaypoint){

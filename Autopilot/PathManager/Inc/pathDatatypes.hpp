@@ -30,8 +30,6 @@ struct Telemetry_PIGO_t {
     Telemetry_Waypoint_Data_t homebase;
 
     // Nixon's stuff
-    bool packageOnBoard;
-    float windSpeed;
     float stoppingDirectionHeading;
     float stoppingLongitude;
     float stoppingLatitude;

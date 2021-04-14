@@ -65,7 +65,6 @@ class sensorFusion : public pathManagerState
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
         static _WaypointManager_Data_In sensorInput; //must be filled out
-        static double currentAirspeed;
     private:
         sensorFusion() {}
         sensorFusion(const sensorFusion& other);
@@ -98,12 +97,14 @@ class takeoffRollStage : public pathManagerState
         static WaypointManager takeoffPath;
         static _PathData takeoffPoint;
         static _WaypointStatus waypointStatus;
+        static _LandingTakeoffOutput* getControlOutput(){return &output;}
 
     private:
         static _PathData * pathArray[1];
         static _PathData * currentLocation;
-        
-        
+        static _LandingTakeoffInput input;
+        static _LandingTakeoffOutput output;
+        static _WaypointManager_Data_Out waypointOutput;
         takeoffRollStage() {}
         takeoffRollStage(const takeoffRollStage& other);
         takeoffRollStage& operator =(const takeoffRollStage& other);
@@ -117,7 +118,11 @@ class takeoffClimbStage : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
+        static _LandingTakeoffOutput* getControlOutput(){return &output;}
     private:
+        static _LandingTakeoffInput input;
+        static _LandingTakeoffOutput output;
+        static _WaypointManager_Data_Out waypointOutput;
         takeoffClimbStage() {}
         takeoffClimbStage(const takeoffClimbStage& other);
         takeoffClimbStage& operator =(const takeoffClimbStage& other);
@@ -150,16 +155,18 @@ class landingTransitionStage : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-
+        static _LandingTakeoffOutput* getControlOutput(){return &output;}
         static WaypointManager landingPath; //in future merge, parameters needs to be taken out *****
+        static _WaypointStatus waypointStatus; //used to catch errors
         static _LandingPath path; //used to load in path
+    private:
+        static _LandingTakeoffInput input;
+        static _LandingTakeoffOutput output;
+        static _WaypointManager_Data_Out waypointOutput;
         static _PathData * pathArray[3]; //used to translate loaded in path to something the waypoint manager can take as a parameter
         static _PathData * currentLocation;
-        static _WaypointStatus waypointStatus; //used to catch errors
         static double differenceInHeading1;
         static double differenceInHeading2;
-
-    private:
         landingTransitionStage() {}
         landingTransitionStage(const landingTransitionStage& other);
         landingTransitionStage& operator =(const landingTransitionStage& other);
@@ -173,8 +180,11 @@ class landingSlopeStage : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-
+        static _LandingTakeoffOutput* getControlOutput(){return &output;}
     private:
+        static _LandingTakeoffInput input;
+        static _LandingTakeoffOutput output;
+        static _WaypointManager_Data_Out waypointOutput;
         landingSlopeStage() {}
         landingSlopeStage(const landingSlopeStage& other);
         landingSlopeStage& operator =(const landingSlopeStage& other);
@@ -187,8 +197,11 @@ class landingFlareStage : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-
+        static _LandingTakeoffOutput* getControlOutput(){return &output;}
     private:
+        static _LandingTakeoffInput input;
+        static _LandingTakeoffOutput output;
+        static _WaypointManager_Data_Out waypointOutput;
         landingFlareStage() {}
         landingFlareStage(const landingFlareStage& other);
         landingFlareStage& operator =(const landingFlareStage& other);
@@ -201,8 +214,11 @@ class landingDecrabStage : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-
+        static _LandingTakeoffOutput* getControlOutput(){return &output;}
     private:
+        static _LandingTakeoffInput input;
+        static _LandingTakeoffOutput output;
+        static _WaypointManager_Data_Out waypointOutput;
         landingDecrabStage() {}
         landingDecrabStage(const landingDecrabStage& other);
         landingDecrabStage& operator =(const landingDecrabStage& other);
@@ -215,8 +231,11 @@ class landingTouchdownStage : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-
+        static _LandingTakeoffOutput* getControlOutput(){return &output;}
     private:
+        static _LandingTakeoffInput input;
+        static _LandingTakeoffOutput output;
+        static _WaypointManager_Data_Out waypointOutput;
         landingTouchdownStage() {}
         landingTouchdownStage(const landingTouchdownStage& other);
         landingTouchdownStage& operator =(const landingTouchdownStage& other);
@@ -235,6 +254,10 @@ class coordinateTurnElevation : public pathManagerState
         coordinateTurnElevation() {}
         coordinateTurnElevation(const coordinateTurnElevation& other);
         coordinateTurnElevation& operator =(const coordinateTurnElevation& other);
+        static _LandingTakeoffOutput landingTakeoffOutput;
+        static _WaypointManager_Data_Out cruisingOutput;
+        static CoordinatedTurnInput_t turnInput;
+        static AltitudeAirspeedInput_t altitudeAirspeedInput;
         static CoordinatedTurnAttitudeManagerCommands_t _rollandrudder;
         static AltitudeAirspeedCommands_t _pitchandairspeed; 
 };

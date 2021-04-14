@@ -3,6 +3,7 @@
 
 #include "waypointManager.hpp"
 #include "vectorClass.hpp"
+#include "AutoSteer.hpp"
 
 enum _FlightStage{ROLL=0, CLIMB, CRUISING, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN};
 
@@ -28,13 +29,22 @@ struct _LandingPath
     _PathData intersectionPoint;
 };
 
-struct _LandingInitialData
+struct _LandingTakeoffInput
 {
-    long double stoppingLatitude;
-    long double stoppingLongitude;
-    long double stoppingAltitude;
-    long double landingDirection;
+    Telemetry_PIGO_t telemetryData;
+    SFOutput_t sensorOutput;
 };
+
+struct _LandingTakeoffOutput
+{
+    double desiredHeading;
+    double desiredTrack;
+    double useHeading; //pay attention
+    double desiredAltitude;
+    double desiredAirspeed;
+    _PassbyControl controlDetails;
+};
+
 
 class LandingManager{
     
@@ -44,12 +54,12 @@ class LandingManager{
             Projects the position to the vertical plane relative to the aimingPoint, intersectionPoint, and stoppingPoint
             Takes the one of the horizontal coordinates, plug it into the equation of the slope, get an altitude
         */
-        static double changingAltitude(_WaypointManager_Data_In input, _PathData aimingPoint, _PathData intersectionPoint, _PathData stoppingPoint);
+        static double changingAltitude(SFOutput_t input, _PathData aimingPoint, _PathData intersectionPoint, _PathData stoppingPoint);
 
         /*
             This function takes in the current magnitude of windspeed, and returns an approach speed the aircraft should follow
         */
-        static double approachSpeed(double windSpeed, bool ifPackage);
+        static double approachSpeed(bool ifPackage);
 
         /* 
             This function takes the stall speed and multiplies it by a constant to return a slow flight speed
@@ -62,6 +72,17 @@ class LandingManager{
         */
         static _LandingPath createSlopeWaypoints(Telemetry_PIGO_t input, double currentAltitude);
 
+        /*
+            This function translates waypoint output data into landing takeoff output data
+            Takes in a waypoint data out structure, reformats it, and outputs a landingTakeoffOutput instance
+        */
+        static _LandingTakeoffOutput translateWaypointCommands(_WaypointManager_Data_Out outputData);
+
+        /*
+            This function translates landing takeoff data to output data
+            Takes in a landingTakeoffOutput instance, translates its information into the 2 types of coordinated turn inputs
+        */
+        static void translateLTSFCommandsToCoordTurns(_LandingTakeoffOutput* outputData, SFOutput_t* sensorOutput, CoordinatedTurnInput_t* turnInput, AltitudeAirspeedInput_t* altitudeAirspeedInput);
 };
 
 /************************
@@ -81,12 +102,12 @@ class TakeoffManager{
         /*
             This function returns the desired rotation speed limit, where the plane will transition from roll to climb
         */
-        static double desiredRotationSpeed(double wind, bool ifPackage);
+        static double desiredRotationSpeed(bool ifPackage);
 
         /*
             This function returns the desired climb speed to be maintained throughout the climb
         */
-        static double desiredClimbSpeed(double wind, bool ifPackage);
+        static double desiredClimbSpeed(bool ifPackage);
         /*
             This function returns a waypoint that the plane should follow horizontally
             This waypoint does not have a vertical component, as max throttle is kept throughout the climb
