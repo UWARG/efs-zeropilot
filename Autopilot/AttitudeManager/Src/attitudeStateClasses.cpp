@@ -6,7 +6,7 @@
 
 float OutputMixingMode::_channelOut[4];
 PMCommands fetchInstructionsMode::_PMInstructions;
-SFAttitudeOutput_t sensorFusionMode::_SFOutput;
+SFOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t PIDloopMode::_PidOutput;
 IMU_Data_t fetchSensorMeasurementsMode::_imudata;
 Airspeed_Data_t fetchSensorMeasurementsMode::_airspeeddata;
@@ -64,7 +64,7 @@ void sensorFusionMode::execute(attitudeManager* attitudeMgr)
     IMU_Data_t *dataimu = fetchSensorMeasurementsMode::GetIMUOutput();
     Airspeed_Data_t *dataairspeed = fetchSensorMeasurementsMode::GetAirspeedOutput();
 
-    SFError_t ErrorStruct = SF_GetAttitude(&_SFOutput, dataimu, dataairspeed);
+    SFError_t ErrorStruct = SF_GetResult(&_SFOutput);
 
     if (ErrorStruct.errorCode == 0)
     {
@@ -86,14 +86,14 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
 {
 
     PMCommands *PMInstructions = fetchInstructionsMode::GetPMInstructions();
-    SFAttitudeOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
+    SFOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
 
     // Gets roll, pitch, rudder, and throttle commands from the path manager module
     PMCommands pathManagerOutput;
     PMError_t pmError = PM_GetCommands(&pathManagerOutput);
 
-    _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->IMUroll, SFOutput->IMUrollrate);
-    _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->IMUpitch, SFOutput->IMUpitchrate);
+    _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->roll, SFOutput->rollRate);
+    _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->pitch, SFOutput->pitchRate);
     _PidOutput.rudderPercent = pathManagerOutput.rudderPercent;
     _PidOutput.throttlePercent = pathManagerOutput.throttlePercent;
 

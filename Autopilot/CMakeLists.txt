@@ -32,6 +32,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
     AttitudeManager/Inc
     PathManager/Inc
     TelemetryManager/Inc
+    CControl/Inc
   )
 
   # Add ARM math directory for linker to find
@@ -118,6 +119,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc/
   )
 
   # Let cmake know where to find all the find<Package>.cmake files
@@ -162,6 +164,10 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/SensorFusion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MadgwickAHRS.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/fetchSensorMeasurementsMode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/mul.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/tran.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/inv.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/lup.c
   )
 
   set(ATTITUDE_MANAGER_MODULES_UNIT_TEST_SOURCES

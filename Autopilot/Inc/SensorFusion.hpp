@@ -5,6 +5,11 @@
 
 #include "AttitudeDatatypes.hpp"
 
+extern "C"
+{
+    #include "CControlFunctions.h"
+}
+
 #ifndef SENSORFUSION_HPP
 #define SENSORFUSION_HPP
 
@@ -44,26 +49,9 @@ SFError_t SF_GenerateNewResult();
  * Get latest fused sensor data. Can be called any time data is needed after SF_init has been called once. Waits until the output struct is not being accessed by another task.
  * @return Output struct for fused data.
  */ 
-SFOutput_t SF_GetResult();
+SFError_t SF_GetResult(SFOutput_t *output);
 
 
 
-
-//TO BE DELETED - Temporary declarations to prevent build from breaking
-
-//Deprecated
-typedef struct {
-    float IMUroll, IMUpitch, IMUyaw; //rad
-    float IMUrollrate, IMUpitchrate, IMUyawrate; //rad/s
-    float Airspeed; //m/s
-} SFAttitudeOutput_t ;
-
-/**
- * Deprecated
- * @param[out]  Output  Reference to an output struct for attitude data.
- * @param[in]   imudata
- * @param[in]   airspeeddata
- */ 
-SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMU_Data_t *imudata, Airspeed_Data_t *airspeeddata);
 
 #endif

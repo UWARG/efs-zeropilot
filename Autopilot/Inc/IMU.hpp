@@ -44,6 +44,8 @@ class IMU{
 //To be replaced with implementation of actual sensor
 class ICM20602: public IMU{
     public:
+		static ICM20602* GetInstance(); //Adding this early so the build works
+
         /**
          * Initializes IMU
          * */
