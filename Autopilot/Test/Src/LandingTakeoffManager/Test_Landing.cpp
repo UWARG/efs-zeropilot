@@ -40,22 +40,20 @@ TEST(LandingFunctions, Test_changingAltitude){
 
 TEST(LandingFunctions, Test_approachSpeed_packageTrue){ 
     /***SETUP***/
-    double windSpeed = 5;
     bool ifPackage = true;
     /***STEPTHROUGH***/
-    double desiredSpeed = LandingManager::approachSpeed(windSpeed, ifPackage);
+    double desiredSpeed = LandingManager::approachSpeed(ifPackage);
     /***ASSERTS***/
-    EXPECT_EQ(desiredSpeed, 10.2);
+    EXPECT_EQ(desiredSpeed, 5.2);
 }
 
 TEST(LandingFunctions, Test_approachSpeed_packageFalse){ 
     /***SETUP***/
-    double windSpeed = 5;
     bool ifPackage = false;
     /***STEPTHROUGH***/
-    double desiredSpeed = LandingManager::approachSpeed(windSpeed, ifPackage);
+    double desiredSpeed = LandingManager::approachSpeed(ifPackage);
     /***ASSERTS***/
-    EXPECT_EQ(desiredSpeed, 7.6);
+    EXPECT_EQ(desiredSpeed, 2.6);
 }
 
 TEST(LandingFunctions, Test_slowFlightSpeed_packageTrue){ 
