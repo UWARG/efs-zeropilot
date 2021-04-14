@@ -63,13 +63,13 @@ class fetchSensorMeasurementsMode : public attitudeState
         static IMU_Data_t *GetIMUOutput(void) {return &_imudata;}
         static Airspeed_Data_t *GetAirspeedOutput(void) {return &_airspeeddata;}
     private:
-        fetchSensorMeasurementsMode() {}
+        fetchSensorMeasurementsMode();
         fetchSensorMeasurementsMode(const fetchSensorMeasurementsMode& other);
         fetchSensorMeasurementsMode& operator =(const fetchSensorMeasurementsMode& other);
         static IMU_Data_t _imudata;
         static Airspeed_Data_t _airspeeddata;
-        IMU_CLASS ImuSens;
-        AIRSPEED_CLASS AirspeedSens;
+        IMU_CLASS *ImuSens;
+        AIRSPEED_CLASS *AirspeedSens;
 };
 
 class sensorFusionMode : public attitudeState

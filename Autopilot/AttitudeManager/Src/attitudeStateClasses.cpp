@@ -37,10 +37,30 @@ attitudeState& fetchInstructionsMode::getInstance()
     return singleton;
 }
 
+fetchSensorMeasurementsMode::fetchSensorMeasurementsMode() 
+{
+    #ifdef SIMULATION
+
+    ImuSens = new SimulatedIMU;
+    AirspeedSens = new SimulatedAirspeed;
+
+    #elif defined(UNIT_TESTING)
+
+    ImuSens = new MockIMU;
+    AirspeedSens = new MockAirspeed;
+
+    #else
+
+    ImuSens = ICM20602::GetInstance();
+    AirspeedSens = nullptr; // Airspeed header not in yet
+
+    #endif
+}
+
 void fetchSensorMeasurementsMode::execute(attitudeManager* attitudeMgr) 
 {
     // Initializes the sensor data structures 
-    SensorError_t ErrorStruct = SensorMeasurements_GetResult(&ImuSens, &AirspeedSens, &_imudata, &_airspeeddata); 
+    SensorError_t ErrorStruct = SensorMeasurements_GetResult(ImuSens, AirspeedSens, &_imudata, &_airspeeddata); 
 
     if (ErrorStruct.errorCode == 0)
     {
