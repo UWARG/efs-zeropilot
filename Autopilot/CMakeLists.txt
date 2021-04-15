@@ -181,6 +181,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/waypointManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingState.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/trackFinder.cpp
   )
 
   set(PATH_MANAGER_FSM_UNIT_TEST_SOURCES

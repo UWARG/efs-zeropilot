@@ -83,13 +83,8 @@ static _ArrayStatus compare_arrays(_PathData ** ans, _PathData ** testArray, int
 
     // Checks if nexts are linked properly
     for(int i = 0; i < numElements; i++) {
-        // // cout << i << " ";
-        // // cout << ans[i]->turnRadius << " ";
-        // // cout << nextWaypoint->turnRadius << endl;
         if(ans[i]->waypointId == nextWaypoint->waypointId && ans[i]->longitude == nextWaypoint->longitude && ans[i]->latitude == nextWaypoint->latitude && ans[i]->altitude == nextWaypoint->altitude && ans[i]->waypointType == nextWaypoint->waypointType && ans[i]->turnRadius == nextWaypoint->turnRadius) {
-            // // cout << "Here 1 ";
             nextWaypoint = nextWaypoint->next;
-            // // cout << "Here 2 " << (bool) nextWaypoint << endl;
         } else {
             // cout << "Next Check Index: " << i << " | " << ans[i]->waypointId << " " << nextWaypoint->waypointId << " | " << ans[i]->longitude << " " << nextWaypoint->longitude << " | " << ans[i]->latitude << " " << nextWaypoint->latitude << " | " << ans[i]->altitude << " " << nextWaypoint->altitude << " | " << ans[i]->waypointType << " " << nextWaypoint->waypointType << " | " << ans[i]->turnRadius << " " << nextWaypoint->turnRadius << endl;
             return ARRAY_DIFFERENT;
@@ -97,7 +92,6 @@ static _ArrayStatus compare_arrays(_PathData ** ans, _PathData ** testArray, int
     }
 
     nextWaypoint = testArray[numElements - 1];
-    // // cout << "Checking backwards" << endl;
 
     // Checks if previous are linked properly
     for(int i = numElements-1; i >= 0; i--) {
@@ -108,8 +102,6 @@ static _ArrayStatus compare_arrays(_PathData ** ans, _PathData ** testArray, int
             return ARRAY_DIFFERENT;
         }
     }
-
-    // // cout << "Checking indexes" << endl;
 
     // Checks if indexes are the same
     for(int i = 0; i < numElements; i++) {
@@ -160,13 +152,17 @@ static Telemetry_Waypoint_Data_t * createTelemetryWaypoint(long double lon, long
 /*** TESTS ***/
 
 
+#include <iostream>
+using namespace std;
+
+
 TEST (CruisingState, IncorrectTelemetryCommandsReturnErrorCode) {
     /***********************SETUP***********************/
 
 	TelemetryTestData.numWaypoints = 1;
-    TelemetryTestData.waypointModifyFlightPathCommand = 7;
+    TelemetryTestData.waypointModifyFlightPathCommand = (_ModifyFlightPathCommand) 7;
     TelemetryTestData.initializingHomeBase = 0;
-    TelemetryTestData.waypointNextDirectionsCommand = 3;
+    TelemetryTestData.waypointNextDirectionsCommand = (_GetNextDirectionsCommand) 3;
     TelemetryTestData.holdingAltitude = 0;
     TelemetryTestData.holdingTurnRadius = 0;
     TelemetryTestData.holdingTurnDirection = 0;
@@ -183,8 +179,8 @@ TEST (CruisingState, IncorrectTelemetryCommandsReturnErrorCode) {
     WaypointManager cruisingStateManager;
     bool goingHome = false, inHold = false; 
 
-    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
-    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
+    _ModifyFlightPathErrorCode editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
 
     // Remove heap-allocated memory
@@ -213,9 +209,9 @@ TEST (CruisingState, InitializeFlightPathSuccess) {
     TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
 
 	TelemetryTestData.numWaypoints = 4;
-    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
     TelemetryTestData.initializingHomeBase = 1;
-    TelemetryTestData.waypointNextDirectionsCommand = 0;
+    TelemetryTestData.waypointNextDirectionsCommand = REGULAR_PATH_FOLLOWING;
     TelemetryTestData.holdingAltitude = 0;
     TelemetryTestData.holdingTurnRadius = 0;
     TelemetryTestData.holdingTurnDirection = 0;
@@ -264,8 +260,8 @@ TEST (CruisingState, InitializeFlightPathSuccess) {
 	/********************DEPENDENCIES*******************/	
 	/********************STEPTHROUGH********************/
 
-    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
-    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
+    _ModifyFlightPathErrorCode editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
 
     _ArrayStatus idArrayComparision = compare_id_arrays(idArray, idTestArray);    
@@ -309,9 +305,9 @@ TEST (CruisingState, NukeFlightPathSuccess) {
     TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
 
 	TelemetryTestData.numWaypoints = 4;
-    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
     TelemetryTestData.initializingHomeBase = 0;
-    TelemetryTestData.waypointNextDirectionsCommand = 10;
+    TelemetryTestData.waypointNextDirectionsCommand = (_GetNextDirectionsCommand) 10;
     TelemetryTestData.holdingAltitude = 0;
     TelemetryTestData.holdingTurnRadius = 0;
     TelemetryTestData.holdingTurnDirection = 0;
@@ -343,13 +339,13 @@ TEST (CruisingState, NukeFlightPathSuccess) {
 	/********************STEPTHROUGH********************/
 
     // Initialize waypoint manager for cruisingState
-    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    _ModifyFlightPathErrorCode editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
 
     TelemetryTestData.numWaypoints = 0;
-    TelemetryTestData.waypointModifyFlightPathCommand = 6;
+    TelemetryTestData.waypointModifyFlightPathCommand = NUKE;
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
-    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
+    _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
 
     _ArrayStatus idArrayComparision = compare_id_arrays(idArray, idTestArray);    
@@ -385,9 +381,9 @@ TEST (CruisingState, AppendWaypointSuccess) {
     TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
 
 	TelemetryTestData.numWaypoints = 4;
-    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
     TelemetryTestData.initializingHomeBase = 0;
-    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.waypointNextDirectionsCommand = (_GetNextDirectionsCommand) 10; // Don't want to get next directions, so set it to return error
     TelemetryTestData.holdingAltitude = 0;
     TelemetryTestData.holdingTurnRadius = 0;
     TelemetryTestData.holdingTurnDirection = 0;
@@ -435,16 +431,16 @@ TEST (CruisingState, AppendWaypointSuccess) {
 	/********************STEPTHROUGH********************/
 
     // Initialize waypoint manager for cruisingState
-    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    _ModifyFlightPathErrorCode editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
 
     TelemetryTestData.numWaypoints = 1;
-    TelemetryTestData.waypointModifyFlightPathCommand = 2; // Appending
+    TelemetryTestData.waypointModifyFlightPathCommand = APPEND; // Appending
 
     delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
     TelemetryTestData.waypoints[0] = createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0);  
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
-    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
+    _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
 
     _ArrayStatus idArrayComparision = compare_id_arrays(idArray, idTestArray);    
@@ -483,9 +479,9 @@ TEST (CruisingState, AppendWaypointFail) {
     TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
 
 	TelemetryTestData.numWaypoints = 4;
-    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
     TelemetryTestData.initializingHomeBase = 0;
-    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.waypointNextDirectionsCommand = (_GetNextDirectionsCommand) 10; // Don't want to get next directions, so set it to return error
     TelemetryTestData.holdingAltitude = 0;
     TelemetryTestData.holdingTurnRadius = 0;
     TelemetryTestData.holdingTurnDirection = 0;
@@ -530,16 +526,16 @@ TEST (CruisingState, AppendWaypointFail) {
 	/********************STEPTHROUGH********************/
 
     // Initialize waypoint manager for cruisingState
-    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    _ModifyFlightPathErrorCode editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
 
     TelemetryTestData.numWaypoints = 1;
-    TelemetryTestData.waypointModifyFlightPathCommand = 2; // Appending
+    TelemetryTestData.waypointModifyFlightPathCommand = APPEND; // Appending
 
     delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
     TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 10, 0.0, 0); // Duplicate, so it will not append
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
-    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
+    _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
 
     _ArrayStatus idArrayComparision = compare_id_arrays(idArray, idTestArray);    
@@ -578,9 +574,9 @@ TEST (CruisingState, InsertWaypointSuccess) {
     TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
 
 	TelemetryTestData.numWaypoints = 4;
-    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
     TelemetryTestData.initializingHomeBase = 0;
-    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.waypointNextDirectionsCommand = (_GetNextDirectionsCommand) 10; // Don't want to get next directions, so set it to return error
     TelemetryTestData.holdingAltitude = 0;
     TelemetryTestData.holdingTurnRadius = 0;
     TelemetryTestData.holdingTurnDirection = 0;
@@ -628,16 +624,16 @@ TEST (CruisingState, InsertWaypointSuccess) {
 	/********************STEPTHROUGH********************/
 
     // Initialize waypoint manager for cruisingState
-    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    _ModifyFlightPathErrorCode editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
 
     TelemetryTestData.numWaypoints = 1;
-    TelemetryTestData.waypointModifyFlightPathCommand = 3; // Inserting
+    TelemetryTestData.waypointModifyFlightPathCommand = INSERT; // Inserting
 
     delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
     TelemetryTestData.waypoints[0] = createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0);  
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
-    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
+    _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
 
     _ArrayStatus idArrayComparision = compare_id_arrays(idArray, idTestArray);    
@@ -676,9 +672,9 @@ TEST (CruisingState, InsertWaypointFail) {
     TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
 
 	TelemetryTestData.numWaypoints = 4;
-    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
     TelemetryTestData.initializingHomeBase = 0;
-    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.waypointNextDirectionsCommand = (_GetNextDirectionsCommand) 10; // Don't want to get next directions, so set it to return error
     TelemetryTestData.holdingAltitude = 0;
     TelemetryTestData.holdingTurnRadius = 0;
     TelemetryTestData.holdingTurnDirection = 0;
@@ -723,16 +719,16 @@ TEST (CruisingState, InsertWaypointFail) {
 	/********************STEPTHROUGH********************/
 
     // Initialize waypoint manager for cruisingState
-    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    _ModifyFlightPathErrorCode editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
 
     TelemetryTestData.numWaypoints = 1;
-    TelemetryTestData.waypointModifyFlightPathCommand = 3; // Inserting
+    TelemetryTestData.waypointModifyFlightPathCommand = INSERT; // Inserting
 
     delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
     TelemetryTestData.waypoints[0] = createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0);  
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
-    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
+    _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
 
     _ArrayStatus idArrayComparision = compare_id_arrays(idArray, idTestArray);    
@@ -771,9 +767,9 @@ TEST (CruisingState, UpdateWaypointSuccess) {
     TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
 
 	TelemetryTestData.numWaypoints = 4;
-    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
     TelemetryTestData.initializingHomeBase = 0;
-    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.waypointNextDirectionsCommand = (_GetNextDirectionsCommand) 10; // Don't want to get next directions, so set it to return error
     TelemetryTestData.holdingAltitude = 0;
     TelemetryTestData.holdingTurnRadius = 0;
     TelemetryTestData.holdingTurnDirection = 0;
@@ -819,16 +815,16 @@ TEST (CruisingState, UpdateWaypointSuccess) {
 	/********************STEPTHROUGH********************/
 
     // Initialize waypoint manager for cruisingState
-    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    _ModifyFlightPathErrorCode editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
 
     TelemetryTestData.numWaypoints = 1;
-    TelemetryTestData.waypointModifyFlightPathCommand = 4; // Updating
+    TelemetryTestData.waypointModifyFlightPathCommand = UPDATE; // Updating
 
     delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
     TelemetryTestData.waypoints[0] = createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0);  
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
-    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
+    _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
 
     _ArrayStatus idArrayComparision = compare_id_arrays(idArray, idTestArray);    
@@ -867,9 +863,9 @@ TEST (CruisingState, UpdateWaypointFail) {
     TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
 
 	TelemetryTestData.numWaypoints = 4;
-    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
     TelemetryTestData.initializingHomeBase = 0;
-    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.waypointNextDirectionsCommand = (_GetNextDirectionsCommand) 10; // Don't want to get next directions, so set it to return error
     TelemetryTestData.holdingAltitude = 0;
     TelemetryTestData.holdingTurnRadius = 0;
     TelemetryTestData.holdingTurnDirection = 0;
@@ -914,16 +910,16 @@ TEST (CruisingState, UpdateWaypointFail) {
 	/********************STEPTHROUGH********************/
 
     // Initialize waypoint manager for cruisingState
-    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    _ModifyFlightPathErrorCode editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
 
     TelemetryTestData.numWaypoints = 1;
-    TelemetryTestData.waypointModifyFlightPathCommand = 4; // Updating
+    TelemetryTestData.waypointModifyFlightPathCommand = UPDATE; // Updating
 
     delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
     TelemetryTestData.waypoints[0] = createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0);  
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
-    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
+    _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
 
     _ArrayStatus idArrayComparision = compare_id_arrays(idArray, idTestArray);    
@@ -962,9 +958,9 @@ TEST (CruisingState, DeleteWaypointSuccess) {
     TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
 
 	TelemetryTestData.numWaypoints = 4;
-    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
     TelemetryTestData.initializingHomeBase = 0;
-    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.waypointNextDirectionsCommand = (_GetNextDirectionsCommand) 10; // Don't want to get next directions, so set it to return error
     TelemetryTestData.holdingAltitude = 0;
     TelemetryTestData.holdingTurnRadius = 0;
     TelemetryTestData.holdingTurnDirection = 0;
@@ -1009,15 +1005,15 @@ TEST (CruisingState, DeleteWaypointSuccess) {
 	/********************STEPTHROUGH********************/
 
     // Initialize waypoint manager for cruisingState
-    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    _ModifyFlightPathErrorCode editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
 
     TelemetryTestData.numWaypoints = 0;
-    TelemetryTestData.waypointModifyFlightPathCommand = 5; // Deleting
+    TelemetryTestData.waypointModifyFlightPathCommand = DELETE; // Deleting
 
     delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
-    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
+    _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
 
     _ArrayStatus idArrayComparision = compare_id_arrays(idArray, idTestArray);    
@@ -1055,9 +1051,9 @@ TEST (CruisingState, DeleteWaypointFail) {
     TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
 
 	TelemetryTestData.numWaypoints = 4;
-    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
     TelemetryTestData.initializingHomeBase = 0;
-    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.waypointNextDirectionsCommand = (_GetNextDirectionsCommand) 10; // Don't want to get next directions, so set it to return error
     TelemetryTestData.holdingAltitude = 0;
     TelemetryTestData.holdingTurnRadius = 0;
     TelemetryTestData.holdingTurnDirection = 0;
@@ -1102,15 +1098,15 @@ TEST (CruisingState, DeleteWaypointFail) {
 	/********************STEPTHROUGH********************/
 
     // Initialize waypoint manager for cruisingState
-    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    _ModifyFlightPathErrorCode editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
 
     TelemetryTestData.numWaypoints = 0;
-    TelemetryTestData.waypointModifyFlightPathCommand = 5; // Deleting
+    TelemetryTestData.waypointModifyFlightPathCommand = DELETE; // Deleting
 
     delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
-    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
+    _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
 
     _ArrayStatus idArrayComparision = compare_id_arrays(idArray, idTestArray);    
@@ -1148,9 +1144,9 @@ TEST (CruisingState, NextDirectionsRegularCorrect) {
     TelemetryTestData.waypoints[3] = createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0);
 
 	TelemetryTestData.numWaypoints = 4;
-    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
     TelemetryTestData.initializingHomeBase = 0;
-    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.waypointNextDirectionsCommand = (_GetNextDirectionsCommand) 10; // Don't want to get next directions, so set it to return error
     TelemetryTestData.holdingAltitude = 0;
     TelemetryTestData.holdingTurnRadius = 0;
     TelemetryTestData.holdingTurnDirection = 0;
@@ -1182,14 +1178,14 @@ TEST (CruisingState, NextDirectionsRegularCorrect) {
 	/********************STEPTHROUGH********************/
 
     // Initialize waypoint manager for cruisingState
-    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    _ModifyFlightPathErrorCode editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
 
     TelemetryTestData.numWaypoints = 0;
-    TelemetryTestData.waypointModifyFlightPathCommand = 0; // Nothing
-    TelemetryTestData.waypointNextDirectionsCommand = 0; // Get next directions
+    TelemetryTestData.waypointModifyFlightPathCommand = NO_FLIGHT_PATH_EDIT; // Nothing
+    TelemetryTestData.waypointNextDirectionsCommand = REGULAR_PATH_FOLLOWING; // Get next directions
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
-    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
+    _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
   
     _OutputStatus returnedValuesSuccess = compare_output_data(ans1, &TestOutputData);
@@ -1222,9 +1218,9 @@ TEST (CruisingState, NextDirectionsGoingHomeCorrect) {
     TelemetryTestData.waypoints[3] = createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0);
 
 	TelemetryTestData.numWaypoints = 4;
-    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
     TelemetryTestData.initializingHomeBase = 1;
-    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.waypointNextDirectionsCommand = (_GetNextDirectionsCommand) 10; // Don't want to get next directions, so set it to return error
     TelemetryTestData.holdingAltitude = 0;
     TelemetryTestData.holdingTurnRadius = 0;
     TelemetryTestData.holdingTurnDirection = 0;
@@ -1256,23 +1252,23 @@ TEST (CruisingState, NextDirectionsGoingHomeCorrect) {
 	/********************STEPTHROUGH********************/
 
     // Initialize waypoint manager for cruisingState
-    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    _ModifyFlightPathErrorCode editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
 
     TelemetryTestData.numWaypoints = 0;
-    TelemetryTestData.waypointModifyFlightPathCommand = 0; // Nothing
-    TelemetryTestData.waypointNextDirectionsCommand = 2; // Head Home
+    TelemetryTestData.waypointModifyFlightPathCommand = NO_FLIGHT_PATH_EDIT; // Nothing
+    TelemetryTestData.waypointNextDirectionsCommand = TOGGLE_HEAD_HOME; // Head Home
     TelemetryTestData.initializingHomeBase = 0; // Get next directions
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);    
-    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Set going home to true
+    _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Set going home to true
     
-    TelemetryTestData.waypointNextDirectionsCommand = 0; // Regular path following
+    TelemetryTestData.waypointNextDirectionsCommand = REGULAR_PATH_FOLLOWING; // Regular path following
     
     pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Get next directions (output)
 
     bool firstRunGoingHome = goingHome; // Store current going home value
 
-    TelemetryTestData.waypointNextDirectionsCommand = 2; // Head home
+    TelemetryTestData.waypointNextDirectionsCommand = TOGGLE_HEAD_HOME; // Head home
 
     pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Set going home to false
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
@@ -1311,9 +1307,9 @@ TEST (CruisingState, GoingHomeHomeBaseUndefined) {
     TelemetryTestData.waypoints[3] = createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0);
 
 	TelemetryTestData.numWaypoints = 4;
-    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
     TelemetryTestData.initializingHomeBase = 0;
-    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.waypointNextDirectionsCommand = (_GetNextDirectionsCommand) 10; // Don't want to get next directions, so set it to return error
     TelemetryTestData.holdingAltitude = 0;
     TelemetryTestData.holdingTurnRadius = 0;
     TelemetryTestData.holdingTurnDirection = 0;
@@ -1345,15 +1341,15 @@ TEST (CruisingState, GoingHomeHomeBaseUndefined) {
 	/********************STEPTHROUGH********************/
 
     // Initialize waypoint manager for cruisingState
-    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    _ModifyFlightPathErrorCode editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
 
     TelemetryTestData.numWaypoints = 0;
-    TelemetryTestData.waypointModifyFlightPathCommand = 0; // Nothing
-    TelemetryTestData.waypointNextDirectionsCommand = 2; // Head Home
+    TelemetryTestData.waypointModifyFlightPathCommand = NO_FLIGHT_PATH_EDIT; // Nothing
+    TelemetryTestData.waypointNextDirectionsCommand = TOGGLE_HEAD_HOME; // Head Home
     TelemetryTestData.initializingHomeBase = 0; // Get next directions
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);    
-    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Set going home to true
+    _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Set going home to true
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
 
     // Remove heap-allocated stuff
@@ -1385,9 +1381,9 @@ TEST (CruisingState, NextDirectionsStartHoldingCorrect) {
     TelemetryTestData.waypoints[3] = createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0);
 
 	TelemetryTestData.numWaypoints = 4;
-    TelemetryTestData.waypointModifyFlightPathCommand = 1;
+    TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
     TelemetryTestData.initializingHomeBase = 1;
-    TelemetryTestData.waypointNextDirectionsCommand = 10; // Don't want to get next directions, so set it to return error
+    TelemetryTestData.waypointNextDirectionsCommand = (_GetNextDirectionsCommand) 10; // Don't want to get next directions, so set it to return error
     TelemetryTestData.holdingAltitude = 78;
     TelemetryTestData.holdingTurnRadius = 100;
     TelemetryTestData.holdingTurnDirection = 0;
@@ -1420,24 +1416,24 @@ TEST (CruisingState, NextDirectionsStartHoldingCorrect) {
 	/********************STEPTHROUGH********************/
 
     // Initialize waypoint manager for cruisingState
-    int editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
+    _ModifyFlightPathErrorCode editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
 
     TelemetryTestData.numWaypoints = 0;
-    TelemetryTestData.waypointModifyFlightPathCommand = 0; // Nothing
-    TelemetryTestData.waypointNextDirectionsCommand = 1; // Start circling
+    TelemetryTestData.waypointModifyFlightPathCommand = NO_FLIGHT_PATH_EDIT; // Nothing
+    TelemetryTestData.waypointNextDirectionsCommand = TOGGLE_HOLDING; // Start circling
     TelemetryTestData.initializingHomeBase = 0; // Get next directions
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);  
     // Send in set up input data  
-    int pathError = pathFollow(&TelemetryTestData, cruisingStateManager, setup1, &TestOutputData, goingHome, inHold); // Set going home to true
+    _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, setup1, &TestOutputData, goingHome, inHold); // Set going home to true
     
-    TelemetryTestData.waypointNextDirectionsCommand = 0; // Regular path following
+    TelemetryTestData.waypointNextDirectionsCommand = REGULAR_PATH_FOLLOWING; // Regular path following
     
     pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Get next directions (output)
 
     bool firstRunInHold = inHold; // Store current going home value
 
-    TelemetryTestData.waypointNextDirectionsCommand = 1; // Start circling
+    TelemetryTestData.waypointNextDirectionsCommand = TOGGLE_HOLDING; // Start circling
 
     pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold); // Set going home to false
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);

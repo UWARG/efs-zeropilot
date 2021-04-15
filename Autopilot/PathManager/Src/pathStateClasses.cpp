@@ -1,7 +1,7 @@
 #include "pathStateClasses.hpp"
 
 /***********************************************************************************************************************
- * Definitions
+ * Static Member Variable Declarations
  **********************************************************************************************************************/
 
 bool isError; 
@@ -9,7 +9,7 @@ Telemetry_PIGO_t commsWithTelemetry::_incomingData;
 _CruisingState_Telemetry_Return cruisingState::_returnToGround;
 _WaypointManager_Data_In cruisingState::_inputdata;
 _WaypointManager_Data_Out cruisingState::_outputdata; 
-SFOutput_t sensorFusion::sfOutputData;
+SFOutput_t sensorFusion::_sfOutputData;
 CoordinatedTurnAttitudeManagerCommands_t coordinateTurnElevation::_rollandrudder;
 AltitudeAirspeedCommands_t coordinateTurnElevation::_pitchandairspeed; 
 AttitudeData commsWithAttitude::_receivedData;
@@ -23,6 +23,7 @@ void commsWithAttitude::execute(pathManager* pathMgr)
     
     bool newDataAvailable = GetAttitudeData(&_receivedData); // Gets attitude manager data
 
+    // Gets data used to populate CommandsForAM struct
     CoordinatedTurnAttitudeManagerCommands_t * turnCommands = coordinateTurnElevation::GetRollAndRudder();
     AltitudeAirspeedCommands_t * altCommands = coordinateTurnElevation::GetPitchAndAirspeed();
 
@@ -72,7 +73,7 @@ pathManagerState& commsWithTelemetry::getInstance()
 void sensorFusion::execute(pathManager* pathMgr)
 {
     
-    sfOutputData = SF_GetResult(); // Gets current Sensor fusion output struct
+    _sfOutputData = SF_GetResult(); // Gets current Sensor fusion output struct
 
     if(isError)
     {
@@ -94,34 +95,17 @@ void cruisingState::execute(pathManager* pathMgr)
 {
 
     Telemetry_PIGO_t * telemetryData = commsWithTelemetry::GetTelemetryIncomingData(); // Get struct from telemetry state with all of the commands and values.
-    SFOutput_t * pSensFusionOutput = sensorFusion::GetSFOutput(); // Get sensor fusion data
+    SFOutput_t * sensFusionOutput = sensorFusion::GetSFOutput(); // Get sensor fusion data
     
-    // Waypoint manager expects to receive the track of the plane, not its heading, so we will use the data from the sensor fusion regarding the plane's x (longitude) and y (latitude) motion to get its track.
-    double track = atan(pSensFusionOutput->latitudeSpeed / pSensFusionOutput->longitudeSpeed) * 180.0 / PI; // Gets angle of track in quadrant 1
-
-    /* 
-    
-    Need a way to convert the value above to a good track value 
-    
-    */
-
-    // if (pSensFusionOutput->yaw >= PI/2 && pSensFusionOutput->yaw <= PI) { // If in Quadrant 2
-    //     track = 180.0 - track;
-    // } else if (pSensFusionOutput->yaw > PI && pSensFusionOutput->yaw <= 3*PI/2) { // If in Quadrant 3
-    //     track = 180.0 + track;
-    // } else if (pSensFusionOutput->yaw > 3*PI/2 && pSensFusionOutput->yaw <= 2*PI) { // If in Quadrant 4
-    //     track = 360.0 - track;
-    // }
-
     // Set waypoint manager input struct
-    _inputdata.track = track;
-    _inputdata.longitude = pSensFusionOutput->longitude;
-    _inputdata.latitude = pSensFusionOutput->latitude;
-    _inputdata.altitude = pSensFusionOutput->altitude;
+    _inputdata.track = getTrack(sensFusionOutput->latitudeSpeed, sensFusionOutput->longitudeSpeed); // Gets track
+    _inputdata.longitude = sensFusionOutput->longitude;
+    _inputdata.latitude = sensFusionOutput->latitude;
+    _inputdata.altitude = sensFusionOutput->altitude;
 
     // Call module functions
-    int editError = editFlightPath(telemetryData, cruisingStateManager, waypointIDArray); // Edit flight path if applicable
-    int pathError = pathFollow(telemetryData, cruisingStateManager, _inputdata, &_outputdata, goingHome, inHold); // Get next direction or modify flight behaviour pattern
+    _ModifyFlightPathErrorCode editError = editFlightPath(telemetryData, cruisingStateManager, waypointIDArray); // Edit flight path if applicable
+    _GetNextDirectionsErrorCode pathError = pathFollow(telemetryData, cruisingStateManager, _inputdata, &_outputdata, goingHome, inHold); // Get next direction or modify flight behaviour pattern
     setReturnValues(&_returnToGround, cruisingStateManager, editError, pathError); // Set error codes
 
     if(isError)
@@ -143,29 +127,20 @@ pathManagerState& cruisingState::getInstance()
 void coordinateTurnElevation::execute(pathManager* pathMgr)
 {
     
-    SFOutput_t * pSensFusionOutput = sensorFusion::GetSFOutput(); // Get sensor fusion data
+    SFOutput_t * sensFusionOutput = sensorFusion::GetSFOutput(); // Get sensor fusion data
     _WaypointManager_Data_Out * waypointOutput = cruisingState::GetOutputData(); // Get output data from waypoint manager
     
-    // Set up the coordinated turn function input
-    double track = atan(pSensFusionOutput->latitudeSpeed / pSensFusionOutput->longitudeSpeed) * 180.0 / PI; // Gets angle of track in quadrant 1
-
-    /* 
-    
-    Need a way to convert the value above to a good track value 
-    
-    */
-
     CoordinatedTurnInput_t turnInput {};
-    turnInput.currentHeadingTrack = track;
+    turnInput.currentHeadingTrack = getTrack(sensFusionOutput->latitudeSpeed, sensFusionOutput->longitudeSpeed); // Gets track;
     turnInput.desiredHeadingTrack = waypointOutput->desiredTrack;
-    turnInput.accY = pSensFusionOutput->pitch; // Is this actually the data that you want?
+    turnInput.accY = 0; // NEED TO FIND A WAY TO GET IMU DATA HERE. MAY NEED TO GET IT FROM SENSOR FUSION?
     
     // Set up the compute altitude and airspeed function input
     AltitudeAirspeedInput_t altAirspeedInput {};
-    altAirspeedInput.currentAltitude = pSensFusionOutput->altitude;
+    altAirspeedInput.currentAltitude = sensFusionOutput->altitude;
     altAirspeedInput.desiredAltitude = waypointOutput->desiredAltitude;
-    altAirspeedInput.currentAirspeed = pSensFusionOutput->airspeed;
-    altAirspeedInput.desiredAirspeed = 30;                                      // Where am I supposed to get this?
+    altAirspeedInput.currentAirspeed = sensFusionOutput->airspeed;
+    altAirspeedInput.desiredAirspeed = waypointOutput->desiredAirspeed;                                      
 
     // Call module functions
     AutoSteer_ComputeCoordinatedTurn(&turnInput, &_rollandrudder);

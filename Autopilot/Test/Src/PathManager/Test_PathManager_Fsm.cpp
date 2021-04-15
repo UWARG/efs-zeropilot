@@ -10,6 +10,7 @@
 
 #include "waypointManager.hpp"
 #include "cruisingState.hpp"
+#include "trackFinder.hpp"
 #include "CommWithAttitudeManager.hpp"
 
 #include "SensorFusion.hpp"
@@ -80,7 +81,7 @@ class PathManagerDataHandoff : public ::testing::Test
 
 
 TEST (PathManagerFSM, InitialStateIsCommsWithAttitude) {
-    /***********************SETUP***********************/
+	/***********************SETUP***********************/
 
 	pathManager pathMan;
 
@@ -88,7 +89,7 @@ TEST (PathManagerFSM, InitialStateIsCommsWithAttitude) {
 	/********************STEPTHROUGH********************/
 	/**********************ASSERTS**********************/
 
-    EXPECT_EQ(*(pathMan.getCurrentState()), commsWithAttitude::getInstance());
+	EXPECT_EQ(*(pathMan.getCurrentState()), commsWithAttitude::getInstance());
 }
 
 /***************************************
@@ -96,82 +97,82 @@ TESTING TRANSITION BETWEEN NORMAL STATES
 ****************************************/
 
 TEST (PathManagerFSM, CommsWithAttitudeTransitionToCommsWithTelemetry) {
-    /***********************SETUP***********************/
+	/***********************SETUP***********************/
 
 	pathManager pathMan;
 
 	/********************DEPENDENCIES*******************/
 	/********************STEPTHROUGH********************/
 
-    pathMan.setState(commsWithAttitude::getInstance());
-    pathMan.execute();
+	pathMan.setState(commsWithAttitude::getInstance());
+	pathMan.execute();
 
 	/**********************ASSERTS**********************/
 
-    EXPECT_EQ(*(pathMan.getCurrentState()), commsWithTelemetry::getInstance());
+	EXPECT_EQ(*(pathMan.getCurrentState()), commsWithTelemetry::getInstance());
 }
 
 TEST (PathManagerFSM, CommsWithTelemetryTransitionToSensorFusion) {
-    /***********************SETUP***********************/
+	/***********************SETUP***********************/
 
 	pathManager pathMan;
 
 	/********************DEPENDENCIES*******************/
 	/********************STEPTHROUGH********************/
 
-    pathMan.setState(commsWithTelemetry::getInstance());
-    pathMan.execute();
+	pathMan.setState(commsWithTelemetry::getInstance());
+	pathMan.execute();
 
 	/**********************ASSERTS**********************/
 
-    EXPECT_EQ(*(pathMan.getCurrentState()), sensorFusion::getInstance());
+	EXPECT_EQ(*(pathMan.getCurrentState()), sensorFusion::getInstance());
 }
 
 TEST (PathManagerFSM, SensorFusionTransitionToCruisingState) {
-    /***********************SETUP***********************/
+	/***********************SETUP***********************/
 
 	pathManager pathMan;
 
 	/********************DEPENDENCIES*******************/
 	/********************STEPTHROUGH********************/
 
-    pathMan.setState(sensorFusion::getInstance());
-    pathMan.execute();
+	pathMan.setState(sensorFusion::getInstance());
+	pathMan.execute();
 
 	/**********************ASSERTS**********************/
 
-    EXPECT_EQ(*(pathMan.getCurrentState()), cruisingState::getInstance());
+	EXPECT_EQ(*(pathMan.getCurrentState()), cruisingState::getInstance());
 }
 
 TEST (PathManagerFSM, CruisingStateTransitionToCoordinatedTurnElevation) {
-    /***********************SETUP***********************/
+	/***********************SETUP***********************/
 
 	pathManager pathMan;
 
 	/********************DEPENDENCIES*******************/
 	/********************STEPTHROUGH********************/
 
-    pathMan.setState(cruisingState::getInstance());
-    pathMan.execute();
+	pathMan.setState(cruisingState::getInstance());
+	pathMan.execute();
 
 	/**********************ASSERTS**********************/
 
-    EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
+	EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
 }
 
 TEST (PathManagerFSM, CoordinatedTurnElevationTransitionToCommsWithAttitude) {
-    /***********************SETUP***********************/
+	/***********************SETUP***********************/
 
 	pathManager pathMan;
 
 	/********************DEPENDENCIES*******************/
 	/********************STEPTHROUGH********************/
 
-    pathMan.setState(coordinateTurnElevation::getInstance());
-    pathMan.execute();
+	pathMan.setState(coordinateTurnElevation::getInstance());
+	pathMan.execute();
 
 	/**********************ASSERTS**********************/
 
-    EXPECT_EQ(*(pathMan.getCurrentState()), commsWithAttitude::getInstance());
+	EXPECT_EQ(*(pathMan.getCurrentState()), commsWithAttitude::getInstance());
 }
 

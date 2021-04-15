@@ -3,6 +3,17 @@
 
 #define PI 3.14159265358979323846
 
+/********************************************************************
+* Enums
+********************************************************************/
+
+enum _ModifyFlightPathCommand { NO_FLIGHT_PATH_EDIT = 0, INITIALIZE_FLIGHT_PATH, APPEND, INSERT, UPDATE, DELETE, NUKE }; // Used by cruisingState
+enum _GetNextDirectionsCommand { REGULAR_PATH_FOLLOWING = 0, TOGGLE_HOLDING, TOGGLE_HEAD_HOME }; // Used by cruisingState
+
+/********************************************************************
+* Imporatant Structs
+********************************************************************/
+
 struct Telemetry_Waypoint_Data_t {
     long double latitude;
     long double longitude;
@@ -15,9 +26,9 @@ struct Telemetry_PIGO_t {
     /* Parameters for the waypoint manager (crusingState) */
     int numWaypoints;
     
-    char waypointModifyFlightPathCommand; // 0 = nothing, 1 = initialize flight path, 2 = append, 3 = insert, 4 = update, 5 = delete, 6 = nuke
+    _ModifyFlightPathCommand waypointModifyFlightPathCommand; 
     bool initializingHomeBase; // 0 = no, 1 = yes
-    char waypointNextDirectionsCommand; // 0 = nothing, 1 = start/end holding, 2 = head home
+    _GetNextDirectionsCommand waypointNextDirectionsCommand; 
     int holdingAltitude;
     int holdingTurnRadius;
     char holdingTurnDirection; // 0 = CW, 1 = CCW
@@ -29,13 +40,6 @@ struct Telemetry_PIGO_t {
 
     Telemetry_Waypoint_Data_t * waypoints[100]; // Somehow need to get PATH_BUFFER_SIZE here...
     Telemetry_Waypoint_Data_t homebase;
-
-    // Nixon's stuff
-    bool packageOnBoard;
-    float windDirectionHeading;
-    float stoppingDirectionHeading;
-    // Struct for stopping point gps coordinates
-
 };
 
 #endif

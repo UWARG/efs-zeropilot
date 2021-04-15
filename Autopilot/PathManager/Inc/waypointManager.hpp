@@ -55,13 +55,14 @@ struct _PathData {
 * This data will be used by the PID and coordinated turn engine to determine the commands to be sent to the Attitude Manager.
 */
 struct _WaypointManager_Data_Out{
-    uint16_t desiredTrack;            // Desired track to stay on path
+    uint16_t desiredTrack;              // Desired track to stay on path
     int desiredAltitude;                // Desired altitude at next waypoint
     long double distanceToNextWaypoint; // Distance to the next waypoint (helps with airspeed PID)
     float radius;                       // Radius of turn if required
     int turnDirection;                  // Direction of turn -> -1 = CW (Right bank), 1 = CCW (Left bank). (Looking down from sky)
     _WaypointStatus errorCode;          // Contains error codes
     bool isDataNew;                     // Notifies PID modules if the data in this structure is new
+    int desiredAirspeed;
     uint32_t timeOfData;                // The time that the data in this structure was collected
     _WaypointOutputType out_type;       // Output type (determines which parameters are defined)
 };
@@ -69,14 +70,7 @@ struct _WaypointManager_Data_Out{
 class WaypointManager {
 public:
 
-    /**
-    * Constructor for this class
-    *
-    * @param[in] float relLat -> This is the relative latitude of the point that will be used as (0,0) when converting lat-long coordinates to cartesian coordiantes. 
-    * @param[in] float relLong -> This is the relative longitude of the point that will be used as (0,0) when converting lat-long coordinates to cartesian coordiantes.
-    */
-    WaypointManager(); // CALL THIS ONE
-    WaypointManager(float relLat, float relLong); // Call this to get an instance of the class
+    WaypointManager();
     ~WaypointManager();
 
     /**
@@ -218,7 +212,7 @@ private:
     //Home base
     _PathData * homeBase;
 
-    // For calculating desired heading. This affects the sensitivity of the given desired headings
+    // For calculating desired track. This affects the sensitivity of the given desired tracks
     float k_gain[2] = {0.01, 1.0f};
 
     // Relative lat and long for coordinate calcilation

@@ -91,7 +91,7 @@ static _OutputStatus compare_output_data(_WaypointManager_Data_Out *ans, _Waypoi
 
 static _OutputStatus compare_coordinates(float * ans, float * test) {
     // Accept an error of maximum 0.01 degrees
-    if (abs((ans[0]- test[0])/ans[0]) < 0.1 && abs((ans[1]- test[1])/ans[1]) < 0.1 && abs((ans[2]- test[2])/ans[2]) < 0.01) {
+    if (abs((ans[0]- test[0])/ans[0]) < 0.01 && abs((ans[1]- test[1])/ans[1]) < 0.01 && abs((ans[2]- test[2])/ans[2]) < 0.01) {
         // cout << "Comparing Coordinates: " << ans[0] << " " << test[0] << " | " << ans[1] << " " << test[1] << " | " << ans[2] << " " << test[2] << endl;
         return OUTPUT_CORRECT; 
     } else {

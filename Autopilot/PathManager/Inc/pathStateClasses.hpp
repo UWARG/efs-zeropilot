@@ -9,6 +9,7 @@
 #include "waypointManager.hpp"
 #include "pathDatatypes.hpp"
 #include "CommWithAttitudeManager.hpp"
+#include "trackFinder.hpp"
 
 #include "SensorFusion.hpp"
 #include "AttitudePathInterface.hpp"
@@ -60,12 +61,12 @@ class sensorFusion : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-        static SFOutput_t* GetSFOutput(void) { return &sfOutputData; }
+        static SFOutput_t* GetSFOutput(void) { return &_sfOutputData; }
     private:
         sensorFusion() {}
         sensorFusion(const sensorFusion& other);
         sensorFusion& operator =(const sensorFusion& other);
-        static SFOutput_t sfOutputData;
+        static SFOutput_t _sfOutputData;
 };
 
 class cruisingState : public pathManagerState

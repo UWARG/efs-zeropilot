@@ -16,7 +16,7 @@
 #define PI 3.14159265358979323846 // Was giving me problems with M_PI, so I resorted to defining it myself
 #define MAX_PATH_APPROACH_ANGLE PI/2
 
-// Reference Coordinates
+// Reference Coordinates (University of Waterloo, Parking Lot C)
 #define REFERENCE_LONGITUDE -80.537331184
 #define REFERENCE_LATITUDE 43.467998128
 
@@ -67,44 +67,6 @@ WaypointManager::WaypointManager() {
         waypointBuffer[i] = nullptr;
     }
 }
-
-/*
-WaypointManager::WaypointManager(float relLat, float relLong) {
-    // Initializes important array and id navigation constants
-    currentIndex = 0;
-    nextAssignedId = 1;
-    numWaypoints = 0;
-    nextFilledIndex = 0;
-
-    // Sets relative long and lat
-    relativeLongitude = relLong;
-    relativeLatitude = relLat;
-
-    homeBase = nullptr; // Sets the pointer to null
-
-    // Sets boolean variables
-    inHold = false;
-    goingHome = false;
-    dataIsNew = false;
-    orbitPathStatus = PATH_FOLLOW;
-    errorStatus = WAYPOINT_SUCCESS;
-
-    // Initialize all other parameters (defaults)
-    desiredTrack = 0;
-    desiredAltitude = 0;
-    distanceToNextWaypoint = 0.0;
-    errorCode = WAYPOINT_SUCCESS;
-    dataIsNew = false;
-    outputType = PATH_FOLLOW;
-    turnDesiredAltitude = 0;
-    turnDirection = 0; // 1 for CW, 2 for CCW
-    turnRadius = 0.0;
-
-    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
-        waypointBufferStatus[i] = FREE;
-    }
-}
-*/
 
 _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData * currentLocation) {
     
@@ -401,7 +363,8 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
     Data->errorCode = errorCode;
     Data->isDataNew = dataIsNew;
     dataIsNew = false; 
-    Data->timeOfData = 0; // Not setting time of data yet bc I think we need to come up with a way to get it???
+    Data->timeOfData = 0;
+    Data->desiredAirspeed = 0; 
     Data->out_type = outputType;
 }
 
@@ -815,10 +778,9 @@ void WaypointManager::clear_path_nodes() {
     nextFilledIndex = 0;
     currentIndex = 0;
 }
-#include <iostream>
+
 void WaypointManager::clear_home_base() {
     if (homeBase != nullptr) {
-        using namespace std;
         destroy_waypoint(homeBase);
     }
 
