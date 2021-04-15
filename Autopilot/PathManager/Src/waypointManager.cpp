@@ -13,16 +13,15 @@
 
 //Constants
 #define EARTH_RADIUS 6378.137
-#define PI 3.14159265358979323846 // Was giving me problems with M_PI, so I resorted to defining it myself
-#define MAX_PATH_APPROACH_ANGLE PI/2
+#define MAX_PATH_APPROACH_ANGLE M_PI/2
 
 // Reference Coordinates (University of Waterloo, Parking Lot C)
 #define REFERENCE_LONGITUDE -80.537331184
 #define REFERENCE_LATITUDE 43.467998128
 
 //Basic Mathematical Conversions
-#define deg2rad(angle_in_degrees) ((angle_in_degrees) * PI/180.0)
-#define rad2deg(angle_in_radians) ((angle_in_radians) * 180.0/PI)
+#define deg2rad(angle_in_degrees) ((angle_in_degrees) * M_PI/180.0)
+#define rad2deg(angle_in_radians) ((angle_in_radians) * 180.0/M_PI)
 
 
 /*** INITIALIZATION ***/
@@ -673,18 +672,18 @@ void WaypointManager::follow_orbit(float* position, float track) {
 
     // Normalizes angles
     // First gets the angle between 0 and 2 pi
-    if (courseAngle - track >= 2 * PI) {
-        courseAngle = fmod(courseAngle, 2 * PI);
+    if (courseAngle - track >= 2 * M_PI) {
+        courseAngle = fmod(courseAngle, 2 * M_PI);
     } else if (courseAngle - track < 0.0) {
-        courseAngle = fmod(courseAngle, 2 * PI) + 2 * PI;
+        courseAngle = fmod(courseAngle, 2 * M_PI) + 2 * M_PI;
     }
     // Now ensures that courseAngle is between -pi and pi
-    if (courseAngle > PI && courseAngle <= 2 * PI) {
-        courseAngle -= 2 * PI;
+    if (courseAngle > M_PI && courseAngle <= 2 * M_PI) {
+        courseAngle -= 2 * M_PI;
     }
 
     // Desired track
-    int calcTrack = round(90 - rad2deg(courseAngle + turnDirection * (PI/2 + atan(k_gain[ORBIT_FOLLOW] * (orbitDistance - turnRadius)/turnRadius)))); //Track in degrees 
+    int calcTrack = round(90 - rad2deg(courseAngle + turnDirection * (M_PI/2 + atan(k_gain[ORBIT_FOLLOW] * (orbitDistance - turnRadius)/turnRadius)))); //Track in degrees 
     
     // Normalizes track (keeps it between 0.0 and 259.9999)
     if (calcTrack >= 360.0) {
@@ -706,19 +705,19 @@ void WaypointManager::follow_straight_path(float* waypointDirection, float* targ
     
     // Normalizes angles
     // First gets the angle between 0 and 2 pi
-    if (courseAngle - track >= 2 * PI) {
-        courseAngle = fmod(courseAngle, 2 * PI);
+    if (courseAngle - track >= 2 * M_PI) {
+        courseAngle = fmod(courseAngle, 2 * M_PI);
     } else if (courseAngle - track < 0.0) {
-        courseAngle = fmod(courseAngle, 2 * PI) + 2 * PI;
+        courseAngle = fmod(courseAngle, 2 * M_PI) + 2 * M_PI;
     }
     // Now ensures that courseAngle is between -pi and pi
-    if (courseAngle > PI && courseAngle <= 2 * PI) {
-        courseAngle -= 2 * PI;
+    if (courseAngle > M_PI && courseAngle <= 2 * M_PI) {
+        courseAngle -= 2 * M_PI;
     }
 
     // Calculates desired track
     float pathError = -sin(courseAngle) * (position[0] - targetWaypoint[0]) + cos(courseAngle) * (position[1] - targetWaypoint[1]);
-    int calcTrack = 90 - rad2deg(courseAngle - MAX_PATH_APPROACH_ANGLE * 2/PI * atan(k_gain[PATH_FOLLOW] * pathError)); //Heading in degrees (magnetic) 
+    int calcTrack = 90 - rad2deg(courseAngle - MAX_PATH_APPROACH_ANGLE * 2/M_PI * atan(k_gain[PATH_FOLLOW] * pathError)); //Heading in degrees (magnetic) 
     
     // Normalizes track (keeps it between 0.0 and 259.9999)
     if (calcTrack >= 360.0) {

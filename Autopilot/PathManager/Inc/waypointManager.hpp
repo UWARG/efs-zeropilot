@@ -4,13 +4,18 @@
  * Created: November 2020
  * Last Updated: December 2020 (Dhruv)
  */
+ 
 
 #ifndef WAYPOINT_MANAGER_H
 #define WAYPOINT_MANAGER_H
 
-#include <stdlib.h>
 #include <math.h>
+#ifndef  M_PI 
+    #define M_PI 3.1415926535897932384626433
+#endif
+
 #include <cstdint>
+#include <stdlib.h>
 
 #define PATH_BUFFER_SIZE 100
 
