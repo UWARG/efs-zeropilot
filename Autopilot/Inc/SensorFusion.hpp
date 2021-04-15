@@ -3,8 +3,6 @@
  * Author: Lucy Gong, Dhruv Rawat, Anthony Bertnyk
  */
 
-#include "AttitudeDatatypes.hpp"
-
 #ifndef SENSORFUSION_HPP
 #define SENSORFUSION_HPP
 
@@ -30,6 +28,31 @@ struct SFOutput_t {
     float longitudeSpeed; //m/s
 };
 
+
+#ifndef ATTITUDE_DATATYPES_HPP //Temporary protection until redefinitions are deleted
+// New datatypes store the IMU and Airspeed data so SensorFusion and other modules
+// do not need to include "IMU.hpp" and "airspeed.hpp"
+struct IMU_Data_t
+{
+    float magx, magy, magz;
+    float accx, accy, accz;
+    float gyrx, gyry, gyrz; 
+
+    bool isDataNew; 
+    int sensorStatus; 
+    float utcTime; 
+};
+
+struct Airspeed_Data_t
+{
+    double airspeed;        
+
+    int sensorStatus;       
+    bool isDataNew;         
+    float utcTime;          
+};
+#endif
+
 /**
  * Initialize sensor fusion.
  */ 
@@ -49,17 +72,15 @@ SFError_t SF_GetResult(SFOutput_t *SFoutput);
 
 /**
  * Get raw sensor data. Can be called any time raw data is needed.
- * @param [out] imuOutput
- * @return Error struct.
+ * @return IMU struct.
  */ 
-SFError_t SF_GetRawIMU(IMU_Data_t *imuOutput);
+IMU_Data_t SF_GetRawIMU();
 
 /**
  * Get raw sensor data. Can be called any time raw data is needed.
- * @param [out] airspeedOutput
- * @return Error struct.
+ * @return Airspeed struct.
  */ 
-SFError_t SF_GetRawAirspeed(Airspeed_Data_t *airspeedOutput);
+Airspeed_Data_t SF_GetRawAirspeed();
 
 //TO BE DELETED - Temporary declarations to prevent build from breaking
 
