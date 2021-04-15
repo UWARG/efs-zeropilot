@@ -29,10 +29,8 @@ struct SFOutput_t {
 };
 
 
-#ifndef ATTITUDE_DATATYPES_HPP //Temporary protection until redefinitions are deleted
-// New datatypes store the IMU and Airspeed data so SensorFusion and other modules
-// do not need to include "IMU.hpp" and "airspeed.hpp"
-struct IMU_Data_t
+//Following structs store the raw sensor data so other modules can have direct access to them without including sensor header files
+struct IMU_Raw_Data_t
 {
     float magx, magy, magz;
     float accx, accy, accz;
@@ -43,7 +41,7 @@ struct IMU_Data_t
     float utcTime; 
 };
 
-struct Airspeed_Data_t
+struct Airspeed_Raw_Data_t
 {
     double airspeed;        
 
@@ -51,7 +49,35 @@ struct Airspeed_Data_t
     bool isDataNew;         
     float utcTime;          
 };
-#endif
+
+struct Gps_Raw_Data_t
+{
+    long double latitude;  // 8 Bytes
+    long double longitude; // 8 Bytes
+    float utcTime;     // 4 Bytes. Time in seconds since 00:00 (midnight)
+    float groundSpeed; // in m/s
+    int altitude; // in m
+    short heading; // in degrees. Should be between 0-360 at all times, but using integer just in case
+    char numSatellites;    // 1 Byte
+	char fixStatus; //0 = No GPS, 1 = GPS fix, 2 = DGSP Fix, 3 = Estimated/Dead Recoking Fix
+
+    char sensorStatus; // 0 = no fix, 1 = gps fix, 2 = differential gps fix (DGPS) (other codes are possible)
+    bool dataIsNew; // true if data has been refreshed since the previous time GetResult was called, false otherwise.
+	bool timeIsValid;
+
+	//Added these so autopilot knows which data is new
+	bool ggaDataIsNew; //Position, altitude, time, and number of satellites
+	bool vtgDataIsNew; //Groundspeed and Heading
+};
+
+struct Altimeter_Raw_Data_t {
+
+    float pressure, altitude, temp;
+
+    bool isDataNew; 
+    int status; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
+    int utcTime; //Last time GetResult was called
+};
 
 /**
  * Initialize sensor fusion.
@@ -71,16 +97,28 @@ SFError_t SF_GenerateNewResult();
 SFError_t SF_GetResult(SFOutput_t *SFoutput);
 
 /**
- * Get raw sensor data. Can be called any time raw data is needed.
+ * Get raw IMU data. Can be called any time raw data is needed.
  * @return IMU struct.
  */ 
-IMU_Data_t SF_GetRawIMU();
+IMU_Raw_Data_t SF_GetRawIMU();
 
 /**
- * Get raw sensor data. Can be called any time raw data is needed.
+ * Get raw Airspeed data. Can be called any time raw data is needed.
  * @return Airspeed struct.
  */ 
-Airspeed_Data_t SF_GetRawAirspeed();
+Airspeed_Raw_Data_t SF_GetRawAirspeed();
+
+/**
+ * Get raw GPS data. Can be called any time raw data is needed.
+ * @return GPS struct.
+ */ 
+Gps_Raw_Data_t SF_GetRawGPS();
+
+/**
+ * Get raw Altimeter data. Can be called any time raw data is needed.
+ * @return Altimeter struct.
+ */ 
+Altimeter_Raw_Data_t SF_GetRawAltimeter();
 
 //TO BE DELETED - Temporary declarations to prevent build from breaking
 
