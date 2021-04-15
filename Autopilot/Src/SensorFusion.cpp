@@ -395,3 +395,33 @@ SFError_t SF_GetResult(SFOutput_t *output)
 
     return SFError;
 }
+
+SFError_t SF_GetRawIMU(IMU_Data_t *imuOutput)
+{
+    IMUData_t imuData;
+    //imuData = imuObj->getResult();
+
+    imuOutput->accx = imuData.accx;
+    imuOutput->accy = imuData.accy;
+    imuOutput->accz = imuData.accz;
+    imuOutput->gyrx = imuData.gyrx;
+    imuOutput->gyry = imuData.gyry;
+    imuOutput->gyrz = imuData.gyrz;
+    imuOutput->magx = imuData.magx;
+    imuOutput->magy = imuData.magy;
+    imuOutput->magz = imuData.magz;
+    imuOutput->utcTime = imuData.utcTime;
+    imuOutput->isDataNew = imuData.isDataNew;
+    imuOutput->sensorStatus = imuData.sensorStatus;
+}
+
+SFError_t SF_GetRawAirspeed(Airspeed_Data_t *airspeedOutput)
+{
+    airspeedData_t airspeedData;
+    //airspeedData = airspeedObj->getResult();
+    
+    airspeedOutput->airspeed = airspeedData.airspeed;
+    airspeedOutput->utcTime = airspeedData.utcTime;
+    airspeedOutput->isDataNew = airspeedData.isDataNew;
+    airspeedOutput->sensorStatus = airspeedData.sensorStatus;
+}

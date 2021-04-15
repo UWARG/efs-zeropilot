@@ -47,11 +47,24 @@ SFError_t SF_GenerateNewResult();
 
 /**
  * Get latest fused sensor data. Can be called any time data is needed after SF_init has been called once. Waits until the output struct is not being accessed by another task.
- * @return Output struct for fused data.
+ * @param [out] output Output struct for fused data.
+ * @return Error struct.
  */ 
 SFError_t SF_GetResult(SFOutput_t *output);
 
+/**
+ * Get raw sensor data. Can be called any time raw data is needed.
+ * @param [out] imuOutput
+ * @return Error struct.
+ */ 
+SFError_t SF_GetRawIMU(IMU_Data_t *imuOutput);
 
+/**
+ * Get raw sensor data. Can be called any time raw data is needed.
+ * @param [out] airspeedOutput
+ * @return Error struct.
+ */ 
+SFError_t SF_GetRawAirspeed(Airspeed_Data_t *airspeedOutput);
 
 
 #endif
