@@ -396,32 +396,40 @@ SFError_t SF_GetResult(SFOutput_t *output)
     return SFError;
 }
 
-SFError_t SF_GetRawIMU(IMU_Data_t *imuOutput)
+IMU_Data_t SF_GetRawIMU()
 {
     IMUData_t imuData;
     //imuData = imuObj->getResult();
 
-    imuOutput->accx = imuData.accx;
-    imuOutput->accy = imuData.accy;
-    imuOutput->accz = imuData.accz;
-    imuOutput->gyrx = imuData.gyrx;
-    imuOutput->gyry = imuData.gyry;
-    imuOutput->gyrz = imuData.gyrz;
-    imuOutput->magx = imuData.magx;
-    imuOutput->magy = imuData.magy;
-    imuOutput->magz = imuData.magz;
-    imuOutput->utcTime = imuData.utcTime;
-    imuOutput->isDataNew = imuData.isDataNew;
-    imuOutput->sensorStatus = imuData.sensorStatus;
+    IMU_Data_t imuOutput;
+
+    imuOutput.accx = imuData.accx;
+    imuOutput.accy = imuData.accy;
+    imuOutput.accz = imuData.accz;
+    imuOutput.gyrx = imuData.gyrx;
+    imuOutput.gyry = imuData.gyry;
+    imuOutput.gyrz = imuData.gyrz;
+    imuOutput.magx = imuData.magx;
+    imuOutput.magy = imuData.magy;
+    imuOutput.magz = imuData.magz;
+    imuOutput.utcTime = imuData.utcTime;
+    imuOutput.isDataNew = imuData.isDataNew;
+    imuOutput.sensorStatus = imuData.sensorStatus;
+
+    return imuOutput;
 }
 
-SFError_t SF_GetRawAirspeed(Airspeed_Data_t *airspeedOutput)
+Airspeed_Data_t SF_GetRawAirspeed()
 {
     airspeedData_t airspeedData;
     //airspeedData = airspeedObj->getResult();
-    
-    airspeedOutput->airspeed = airspeedData.airspeed;
-    airspeedOutput->utcTime = airspeedData.utcTime;
-    airspeedOutput->isDataNew = airspeedData.isDataNew;
-    airspeedOutput->sensorStatus = airspeedData.sensorStatus;
+
+    Airspeed_Data_t airspeedOutput;
+
+    airspeedOutput.airspeed = airspeedData.airspeed;
+    airspeedOutput.utcTime = airspeedData.utcTime;
+    airspeedOutput.isDataNew = airspeedData.isDataNew;
+    airspeedOutput.sensorStatus = airspeedData.sensorStatus;
+
+    return airspeedOutput;
 }
