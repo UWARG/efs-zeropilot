@@ -27,7 +27,7 @@ using ::testing::Test;
 FAKE_VALUE_FUNC(PMError_t, PM_GetCommands, PMCommands * );
 FAKE_VOID_FUNC(SendToSafety_Init);
 FAKE_VOID_FUNC(SF_Init);
-FAKE_VALUE_FUNC(SFOutput_t, SF_GetResult);
+FAKE_VALUE_FUNC(SFError_t, SF_GetResult, SFOutput_t * );
 FAKE_VALUE_FUNC(OutputMixing_error_t, OutputMixing_Execute, PID_Output_t * , float * );
 FAKE_VALUE_FUNC(SendToSafety_error_t, SendToSafety_Execute, int, int);
 
