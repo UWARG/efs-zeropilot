@@ -28,9 +28,9 @@ struct SFOutput_t {
     float longitudeSpeed; //m/s
 };
 
-
+#ifndef ATTITUDE_DATATYPES_HPP
 //Following structs store the raw sensor data so other modules can have direct access to them without including sensor header files
-struct IMU_Raw_Data_t
+struct IMU_Data_t
 {
     float magx, magy, magz;
     float accx, accy, accz;
@@ -41,7 +41,7 @@ struct IMU_Raw_Data_t
     float utcTime; 
 };
 
-struct Airspeed_Raw_Data_t
+struct Airspeed_Data_t
 {
     double airspeed;        
 
@@ -49,8 +49,9 @@ struct Airspeed_Raw_Data_t
     bool isDataNew;         
     float utcTime;          
 };
+#endif
 
-struct Gps_Raw_Data_t
+struct Gps_Data_t
 {
     long double latitude;  // 8 Bytes
     long double longitude; // 8 Bytes
@@ -70,7 +71,7 @@ struct Gps_Raw_Data_t
 	bool vtgDataIsNew; //Groundspeed and Heading
 };
 
-struct Altimeter_Raw_Data_t {
+struct Altimeter_Data_t {
 
     float pressure, altitude, temp;
 
@@ -100,25 +101,25 @@ SFError_t SF_GetResult(SFOutput_t *SFoutput);
  * Get raw IMU data. Can be called any time raw data is needed.
  * @return IMU struct.
  */ 
-IMU_Raw_Data_t SF_GetRawIMU();
+IMU_Data_t SF_GetRawIMU();
 
 /**
  * Get raw Airspeed data. Can be called any time raw data is needed.
  * @return Airspeed struct.
  */ 
-Airspeed_Raw_Data_t SF_GetRawAirspeed();
+Airspeed_Data_t SF_GetRawAirspeed();
 
 /**
  * Get raw GPS data. Can be called any time raw data is needed.
  * @return GPS struct.
  */ 
-Gps_Raw_Data_t SF_GetRawGPS();
+Gps_Data_t SF_GetRawGPS();
 
 /**
  * Get raw Altimeter data. Can be called any time raw data is needed.
  * @return Altimeter struct.
  */ 
-Altimeter_Raw_Data_t SF_GetRawAltimeter();
+Altimeter_Data_t SF_GetRawAltimeter();
 
 //TO BE DELETED - Temporary declarations to prevent build from breaking
 
