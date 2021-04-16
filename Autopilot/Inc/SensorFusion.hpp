@@ -28,7 +28,6 @@ struct SFOutput_t {
     float longitudeSpeed; //m/s
 };
 
-#ifndef ATTITUDE_DATATYPES_HPP
 //Following structs store the raw sensor data so other modules can have direct access to them without including sensor header files
 struct IMU_Data_t
 {
@@ -49,7 +48,6 @@ struct Airspeed_Data_t
     bool isDataNew;         
     float utcTime;          
 };
-#endif
 
 struct Gps_Data_t
 {
@@ -60,15 +58,15 @@ struct Gps_Data_t
     int altitude; // in m
     short heading; // in degrees. Should be between 0-360 at all times, but using integer just in case
     char numSatellites;    // 1 Byte
-	char fixStatus; //0 = No GPS, 1 = GPS fix, 2 = DGSP Fix, 3 = Estimated/Dead Recoking Fix
+    char fixStatus; //0 = No GPS, 1 = GPS fix, 2 = DGSP Fix, 3 = Estimated/Dead Recoking Fix
 
     char sensorStatus; // 0 = no fix, 1 = gps fix, 2 = differential gps fix (DGPS) (other codes are possible)
     bool dataIsNew; // true if data has been refreshed since the previous time GetResult was called, false otherwise.
-	bool timeIsValid;
+    bool timeIsValid;
 
-	//Added these so autopilot knows which data is new
-	bool ggaDataIsNew; //Position, altitude, time, and number of satellites
-	bool vtgDataIsNew; //Groundspeed and Heading
+    //Added these so autopilot knows which data is new
+    bool ggaDataIsNew; //Position, altitude, time, and number of satellites
+    bool vtgDataIsNew; //Groundspeed and Heading
 };
 
 struct Altimeter_Data_t {
@@ -120,22 +118,5 @@ Gps_Data_t SF_GetRawGPS();
  * @return Altimeter struct.
  */ 
 Altimeter_Data_t SF_GetRawAltimeter();
-
-//TO BE DELETED - Temporary declarations to prevent build from breaking
-
-//Deprecated
-typedef struct {
-    float IMUroll, IMUpitch, IMUyaw; //rad
-    float IMUrollrate, IMUpitchrate, IMUyawrate; //rad/s
-    float Airspeed; //m/s
-} SFAttitudeOutput_t ;
-
-/**
- * Deprecated
- * @param[out]  Output  Reference to an output struct for attitude data.
- * @param[in]   imudata
- * @param[in]   airspeeddata
- */ 
-SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMU_Data_t *imudata, Airspeed_Data_t *airspeeddata);
 
 #endif
