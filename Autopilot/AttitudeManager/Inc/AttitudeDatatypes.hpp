@@ -28,20 +28,20 @@ struct IMU_Data_t
 {
     float magx, magy, magz;
     float accx, accy, accz;
-    float gyrx, gyry, gyrz; 
+    float gyrx, gyry, gyrz;
 
-    bool isDataNew; 
-    int sensorStatus; 
-    float utcTime; 
+    bool isDataNew;
+    int sensorStatus;
+    float utcTime;
 };
 
 struct Airspeed_Data_t
 {
-    double airspeed;        
+    double airspeed;
 
-    int sensorStatus;       
-    bool isDataNew;         
-    float utcTime;          
+    int sensorStatus;
+    bool isDataNew;
+    float utcTime;
 };
 
 #endif
