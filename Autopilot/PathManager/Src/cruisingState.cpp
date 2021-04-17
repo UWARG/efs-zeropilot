@@ -150,13 +150,13 @@ _GetNextDirectionsErrorCode pathFollow(Telemetry_PIGO_t * telemetryData, Waypoin
 
         pathFollowingStatus = cruisingStateManager.get_next_directions(input, output);
 
-        output->desiredAirspeed = 20; // NEED TO DECIDE ON A VALUE
+        output->desiredAirspeed = 15; // NEED TO DECIDE ON A VALUE
 
     } else if (telemetryData->waypointNextDirectionsCommand == TOGGLE_HOLDING) { // Holding pattern
 
         pathFollowingStatus = cruisingStateManager.start_circling(input, telemetryData->holdingTurnRadius, telemetryData->holdingTurnDirection, telemetryData->holdingAltitude, inHold);
 
-        output->desiredAirspeed = 20; // NEED TO DECIDE ON A VALUE
+        output->desiredAirspeed = 15; // NEED TO DECIDE ON A VALUE
         
         // Updates the in hold flag if execution was successful
         if (inHold && pathFollowingStatus == WAYPOINT_SUCCESS) {
@@ -175,7 +175,7 @@ _GetNextDirectionsErrorCode pathFollow(Telemetry_PIGO_t * telemetryData, Waypoin
 
         goingHomeStatus = cruisingStateManager.head_home(goingHome);
 
-        output->desiredAirspeed = 20; // NEED TO DECIDE ON A VALUE
+        output->desiredAirspeed = 15; // NEED TO DECIDE ON A VALUE
 
         if (goingHomeStatus == HOME_UNDEFINED_PARAMETER && goingHome) { // If setting home mode fails, reverse change
             goingHome = false;
