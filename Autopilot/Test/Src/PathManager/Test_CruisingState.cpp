@@ -152,10 +152,6 @@ static Telemetry_Waypoint_Data_t * createTelemetryWaypoint(long double lon, long
 /*** TESTS ***/
 
 
-#include <iostream>
-using namespace std;
-
-
 TEST (CruisingState, IncorrectTelemetryCommandsReturnErrorCode) {
     /***********************SETUP***********************/
 
