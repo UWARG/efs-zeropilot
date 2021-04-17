@@ -3,6 +3,8 @@
  * Author: Lucy Gong, Dhruv Rawat, Anthony Bertnyk
  */
 
+#include "AttitudeDatatypes.hpp"
+
 #ifndef SENSORFUSION_HPP
 #define SENSORFUSION_HPP
 
@@ -28,56 +30,6 @@ struct SFOutput_t {
     float longitudeSpeed; //m/s
 };
 
-//Following structs store the raw sensor data so other modules can have direct access to them without including sensor header files
-struct IMU_Data_t
-{
-    float magx, magy, magz;
-    float accx, accy, accz;
-    float gyrx, gyry, gyrz; 
-
-    bool isDataNew; 
-    int sensorStatus; 
-    float utcTime; 
-};
-
-struct Airspeed_Data_t
-{
-    double airspeed;        
-
-    int sensorStatus;       
-    bool isDataNew;         
-    float utcTime;          
-};
-
-struct Gps_Data_t
-{
-    long double latitude;  // 8 Bytes
-    long double longitude; // 8 Bytes
-    float utcTime;     // 4 Bytes. Time in seconds since 00:00 (midnight)
-    float groundSpeed; // in m/s
-    int altitude; // in m
-    short heading; // in degrees. Should be between 0-360 at all times, but using integer just in case
-    char numSatellites;    // 1 Byte
-    char fixStatus; //0 = No GPS, 1 = GPS fix, 2 = DGSP Fix, 3 = Estimated/Dead Recoking Fix
-
-    char sensorStatus; // 0 = no fix, 1 = gps fix, 2 = differential gps fix (DGPS) (other codes are possible)
-    bool dataIsNew; // true if data has been refreshed since the previous time GetResult was called, false otherwise.
-    bool timeIsValid;
-
-    //Added these so autopilot knows which data is new
-    bool ggaDataIsNew; //Position, altitude, time, and number of satellites
-    bool vtgDataIsNew; //Groundspeed and Heading
-};
-
-struct Altimeter_Data_t {
-
-    float pressure, altitude, temp;
-
-    bool isDataNew; 
-    int status; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
-    int utcTime; //Last time GetResult was called
-};
-
 /**
  * Initialize sensor fusion.
  */ 
@@ -90,33 +42,28 @@ SFError_t SF_GenerateNewResult();
 
 /**
  * Get latest fused sensor data. Can be called any time data is needed after SF_init has been called once. Waits until the output struct is not being accessed by another task.
- * @param [out] output Output struct for fused data.
- * @return Error struct.
+ * @return Output struct for fused data.
  */ 
-SFError_t SF_GetResult(SFOutput_t *SFoutput);
+SFOutput_t SF_GetResult();
+
+
+
+
+//TO BE DELETED - Temporary declarations to prevent build from breaking
+
+//Deprecated
+typedef struct {
+    float IMUroll, IMUpitch, IMUyaw; //rad
+    float IMUrollrate, IMUpitchrate, IMUyawrate; //rad/s
+    float Airspeed; //m/s
+} SFAttitudeOutput_t ;
 
 /**
- * Get raw IMU data. Can be called any time raw data is needed.
- * @return IMU struct.
+ * Deprecated
+ * @param[out]  Output  Reference to an output struct for attitude data.
+ * @param[in]   imudata
+ * @param[in]   airspeeddata
  */ 
-IMU_Data_t SF_GetRawIMU();
-
-/**
- * Get raw Airspeed data. Can be called any time raw data is needed.
- * @return Airspeed struct.
- */ 
-Airspeed_Data_t SF_GetRawAirspeed();
-
-/**
- * Get raw GPS data. Can be called any time raw data is needed.
- * @return GPS struct.
- */ 
-Gps_Data_t SF_GetRawGPS();
-
-/**
- * Get raw Altimeter data. Can be called any time raw data is needed.
- * @return Altimeter struct.
- */ 
-Altimeter_Data_t SF_GetRawAltimeter();
+SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMU_Data_t *imudata, Airspeed_Data_t *airspeeddata);
 
 #endif

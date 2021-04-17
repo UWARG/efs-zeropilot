@@ -6,12 +6,6 @@
 #include "MadgwickAHRS.h"
 #include <math.h>
 
-typedef struct {
-    float roll, pitch, yaw; //rad
-    float rollRate, pitchRate, yawRate; //rad/s
-    float Airspeed; //m/s
-} SFAttitudeOutput_t ;
-
 SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMU_Data_t *imudata, Airspeed_Data_t *airspeeddata) {
     
     //Error output
@@ -72,13 +66,13 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMU_Data_t *imudata, Airspe
     imu_YawRate = atan2f(qDot2 * qDot3 + qDot1 * qDot4, 0.5f - qDot3 * qDot3 - qDot4 * qDot4) * 57.29578f + 180.0f;
 
     //Transfer Fused IMU data into SF Output struct
-    Output->pitch = imu_PitchAngle;
-    Output->roll = imu_RollAngle;
-    Output->yaw = imu_YawAngle;
+    Output->IMUpitch = imu_PitchAngle;
+    Output->IMUroll = imu_RollAngle;
+    Output->IMUyaw = imu_YawAngle;
 
-    Output->pitchRate = imu_PitchRate;
-    Output->rollRate = imu_RollRate;
-    Output->yawRate = imu_YawRate;
+    Output->IMUpitchrate = imu_PitchRate;
+    Output->IMUrollrate = imu_RollRate;
+    Output->IMUyawrate = imu_YawRate;
 
     //Transfer Airspeed data
     Output->Airspeed = airspeeddata->airspeed;

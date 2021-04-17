@@ -11,6 +11,7 @@
 #include "AttitudeDatatypes.hpp"
 
 #include "GetFromPathManager.hpp"
+#include "fetchSensorMeasurementsMode.hpp"
 #include "SensorFusion.hpp"
 #include "OutputMixing.hpp"
 #include "SendInstructionsToSafety.hpp"
@@ -25,9 +26,9 @@ using ::testing::Test;
  **********************************************************************************************************************/
 
 FAKE_VALUE_FUNC(PMError_t, PM_GetCommands, PMCommands * );
+FAKE_VALUE_FUNC(SFError_t, SF_GetAttitude, SFAttitudeOutput_t *, IMU_Data_t *, Airspeed_Data_t *);
+FAKE_VALUE_FUNC(SensorError_t, SensorMeasurements_GetResult, IMU *, airspeed *, IMU_Data_t *, Airspeed_Data_t *);
 FAKE_VOID_FUNC(SendToSafety_Init);
-FAKE_VOID_FUNC(SF_Init);
-FAKE_VALUE_FUNC(SFError_t, SF_GetResult, SFOutput_t * );
 FAKE_VALUE_FUNC(OutputMixing_error_t, OutputMixing_Execute, PID_Output_t * , float * );
 FAKE_VALUE_FUNC(SendToSafety_error_t, SendToSafety_Execute, int, int);
 
@@ -48,6 +49,8 @@ class AttitudeManagerFSM : public ::testing::Test
 		virtual void SetUp()
 		{
 			RESET_FAKE(PM_GetCommands);
+			RESET_FAKE(SF_GetAttitude);
+			RESET_FAKE(SensorMeasurements_GetResult);
 			RESET_FAKE(SendToSafety_Init);
 			RESET_FAKE(OutputMixing_Execute);
 			RESET_FAKE(SendToSafety_Execute);
@@ -67,6 +70,8 @@ class AttitudeManagerDataHandoff : public ::testing::Test
 		virtual void SetUp()
 		{
 			RESET_FAKE(PM_GetCommands);
+			RESET_FAKE(SF_GetAttitude);
+			RESET_FAKE(SensorMeasurements_GetResult);
 			RESET_FAKE(SendToSafety_Init);
 			RESET_FAKE(OutputMixing_Execute);
 			RESET_FAKE(SendToSafety_Execute);
@@ -117,7 +122,7 @@ TEST(AttitudeManagerFSM, InitialStateIsFetchInstructions) {
 
 }
 
-TEST(AttitudeManagerFSM, IfFetchInstructionsSucceedsTransitionToSensorFusion) {
+TEST(AttitudeManagerFSM, IfFetchInstructionsSucceedsTransitionToFetchSensorMeasurements) {
 
    	/***********************SETUP***********************/
 
@@ -137,7 +142,7 @@ TEST(AttitudeManagerFSM, IfFetchInstructionsSucceedsTransitionToSensorFusion) {
 
 	/**********************ASSERTS**********************/
 
-	EXPECT_EQ(*(attMng.getCurrentState()), sensorFusionMode::getInstance());
+	EXPECT_EQ(*(attMng.getCurrentState()), fetchSensorMeasurementsMode::getInstance());
 	EXPECT_EQ(attMng.getStatus(), IN_CYCLE);
 
 }
@@ -167,21 +172,67 @@ TEST(AttitudeManagerFSM, IfFetchInstructionsFailsTransitionToFatalFailure) {
 
 }
 
+TEST(AttitudeManagerFSM, IfFetchSensorMeasurementsSuccessTransitionToSensorFusion) {
+
+   	/***********************SETUP***********************/
+
+	attitudeManager attMng;
+
+	SensorError_t error;
+	error.errorCode = 0;
+
+	/********************DEPENDENCIES*******************/
+
+	SensorMeasurements_GetResult_fake.return_val = error;
+
+	/********************STEPTHROUGH********************/
+
+	attMng.setState(fetchSensorMeasurementsMode::getInstance());
+	attMng.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(attMng.getCurrentState()), sensorFusionMode::getInstance());
+	EXPECT_EQ(attMng.getStatus(), IN_CYCLE);
+
+}
+
+TEST(AttitudeManagerFSM, IfFetchSensorMeasurementsFailsTransitionToFailure) {
+
+   	/***********************SETUP***********************/
+
+	attitudeManager attMng;
+
+	SensorError_t error;
+	error.errorCode = 1;
+
+	/********************DEPENDENCIES*******************/
+
+	SensorMeasurements_GetResult_fake.return_val = error;
+
+	/********************STEPTHROUGH********************/
+
+	attMng.setState(fetchSensorMeasurementsMode::getInstance());
+	attMng.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
+	EXPECT_EQ(attMng.getStatus(), FAILURE_MODE);
+
+}
+
 TEST(AttitudeManagerFSM, IfSensorFusionSucceedsTransitionToPID) {
 
    	/***********************SETUP***********************/
 
 	attitudeManager attMng;
-	#if 0
 	SFError_t SFNoError;
 	SFNoError.errorCode = 0;
-	#endif
 
 	/********************DEPENDENCIES*******************/
 
-	#if 0
 	SF_GetAttitude_fake.return_val = SFNoError;
-	#endif
 
 	/********************STEPTHROUGH********************/
 
@@ -194,7 +245,6 @@ TEST(AttitudeManagerFSM, IfSensorFusionSucceedsTransitionToPID) {
 	EXPECT_EQ(attMng.getStatus(), IN_CYCLE);
 }
 
-#if 0 // disactivating until the sensor fusion function returns an error code.
 TEST(AttitudeManagerFSM, IfSensorFusionFailsTransitionToFailed) {
 
    	/***********************SETUP***********************/
@@ -217,7 +267,7 @@ TEST(AttitudeManagerFSM, IfSensorFusionFailsTransitionToFailed) {
 	EXPECT_EQ(*(attMng.getCurrentState()), FatalFailureMode::getInstance());
 	EXPECT_EQ(attMng.getStatus(), FAILURE_MODE);
 }
-#endif
+
 
 TEST(AttitudeManagerFSM, IfPIDLoopModeSuccessTransitionToOutputMixing) {
 
