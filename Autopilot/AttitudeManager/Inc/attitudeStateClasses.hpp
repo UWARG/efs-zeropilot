@@ -36,12 +36,12 @@ class sensorFusionMode : public attitudeState
         void execute(attitudeManager* attitudeMgr);
         void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
-        static SFAttitudeOutput_t *GetSFOutput(void) {return &_SFOutput;}
+        static SFOutput_t *GetSFOutput(void) {return &_SFOutput;}
     private:
         sensorFusionMode() {SF_Init();}
         sensorFusionMode(const sensorFusionMode& other);
         sensorFusionMode& operator =(const sensorFusionMode& other);
-        static SFAttitudeOutput_t _SFOutput;
+        static SFOutput_t _SFOutput;
 };
 
 class PIDloopMode : public attitudeState
