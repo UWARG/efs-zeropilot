@@ -5,6 +5,15 @@
 
 #include "cruisingState.hpp"
 
+// The following functions are used to update the ID array that is a part of the CruisingState class
+static void appendNewElement(int * idArray, int newId);             // Adds newId to the first free element in idArray
+static int indexOfDesiredId(int * idArray, int id);                 // Returns the index of id in idArray
+static void insertNewElement(int * idArray, int prevId, int newId); // Inserts newId after prevId in idArray
+static void updateElement(int * idArray, int oldId, int newId);     // Replaces oldId with newId in idArray
+static void removeElement(int * idArray, int id);                   // Removes id from idArray
+static void clearArray(int * idArray);                              // Resets all elements in idArray to 0
+
+
 _ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingStateManager, int * idArray) {
     
     // If no commands given, just skip over this function
@@ -20,9 +29,9 @@ _ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, Wayp
     if (telemetryData->numWaypoints == 1 && (telemetryData->waypointModifyFlightPathCommand >= 2 && telemetryData->waypointModifyFlightPathCommand <= 4)) { // Inserting, Appending, or Updating a waypoint
 
         // Set the output type of the new waypoint. Need if statements because of the enum parameter of the initialize_waypoint() method
-        if (telemetryData->waypoints[0]->waypointType == 0) {
+        if (telemetryData->waypoints[0].waypointType == 0) {
             waypointType = PATH_FOLLOW;
-        } else if (telemetryData->waypoints[0]->waypointType == 1) {
+        } else if (telemetryData->waypoints[0].waypointType == 1) {
             waypointType = ORBIT_FOLLOW;
         } else {
             waypointType = HOLD_WAYPOINT;
@@ -31,9 +40,9 @@ _ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, Wayp
         // Depending on the waypointType of the waypoint, we will need to call a different initialize_waypoint() method
         _PathData * modifyWaypoint;
         if (waypointType == PATH_FOLLOW) {
-            modifyWaypoint = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[0]->longitude, telemetryData->waypoints[0]->latitude, telemetryData->waypoints[0]->altitude, waypointType); 
+            modifyWaypoint = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[0].longitude, telemetryData->waypoints[0].latitude, telemetryData->waypoints[0].altitude, waypointType); 
         } else {
-            modifyWaypoint = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[0]->longitude, telemetryData->waypoints[0]->latitude, telemetryData->waypoints[0]->altitude, waypointType, telemetryData->waypoints[0]->turnRadius); // Create a _PathData object
+            modifyWaypoint = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[0].longitude, telemetryData->waypoints[0].latitude, telemetryData->waypoints[0].altitude, waypointType, telemetryData->waypoints[0].turnRadius); // Create a _PathData object
         }
         
         // Update flight path by passing in the appropriate parameters to update_path_nodes()
@@ -79,9 +88,9 @@ _ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, Wayp
 
         for(int i = 0; i < telemetryData->numWaypoints && i < PATH_BUFFER_SIZE; i++) {
             // Set the output type of the new waypoint. Need if statements because of the enum parameter of the initialize_waypoint() method
-            if (telemetryData->waypoints[i]->waypointType == 0) {
+            if (telemetryData->waypoints[i].waypointType == 0) {
                 waypointType = PATH_FOLLOW;
-            } else if (telemetryData->waypoints[i]->waypointType == 1) {
+            } else if (telemetryData->waypoints[i].waypointType == 1) {
                 waypointType = ORBIT_FOLLOW;
             } else {
                 waypointType = HOLD_WAYPOINT;
@@ -89,9 +98,9 @@ _ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, Wayp
             
             // Depending on the waypointType of the waypoint, we will need to call a different initialize_waypoint() method
             if (waypointType == PATH_FOLLOW) {
-                newFlightPath[i] = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[i]->longitude, telemetryData->waypoints[i]->latitude, telemetryData->waypoints[i]->altitude, waypointType); 
+                newFlightPath[i] = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[i].longitude, telemetryData->waypoints[i].latitude, telemetryData->waypoints[i].altitude, waypointType); 
             } else {
-                newFlightPath[i] = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[i]->longitude, telemetryData->waypoints[i]->latitude, telemetryData->waypoints[i]->altitude, waypointType, telemetryData->waypoints[i]->turnRadius); 
+                newFlightPath[i] = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[i].longitude, telemetryData->waypoints[i].latitude, telemetryData->waypoints[i].altitude, waypointType, telemetryData->waypoints[i].turnRadius); 
             }
 
             appendNewElement(idArray, newFlightPath[i]->waypointId); // Append elements to the idArray while we go :))
@@ -150,13 +159,13 @@ _GetNextDirectionsErrorCode pathFollow(Telemetry_PIGO_t * telemetryData, Waypoin
 
         pathFollowingStatus = cruisingStateManager.get_next_directions(input, output);
 
-        output->desiredAirspeed = 15; // NEED TO DECIDE ON A VALUE
+        output->desiredAirspeed = 15;
 
     } else if (telemetryData->waypointNextDirectionsCommand == TOGGLE_HOLDING) { // Holding pattern
 
         pathFollowingStatus = cruisingStateManager.start_circling(input, telemetryData->holdingTurnRadius, telemetryData->holdingTurnDirection, telemetryData->holdingAltitude, inHold);
 
-        output->desiredAirspeed = 15; // NEED TO DECIDE ON A VALUE
+        output->desiredAirspeed = 15;
         
         // Updates the in hold flag if execution was successful
         if (inHold && pathFollowingStatus == WAYPOINT_SUCCESS) {
@@ -175,7 +184,7 @@ _GetNextDirectionsErrorCode pathFollow(Telemetry_PIGO_t * telemetryData, Waypoin
 
         goingHomeStatus = cruisingStateManager.head_home(goingHome);
 
-        output->desiredAirspeed = 15; // NEED TO DECIDE ON A VALUE
+        output->desiredAirspeed = 15;
 
         if (goingHomeStatus == HOME_UNDEFINED_PARAMETER && goingHome) { // If setting home mode fails, reverse change
             goingHome = false;
@@ -206,8 +215,8 @@ void setReturnValues(_CruisingState_Telemetry_Return * _returnToGround, Waypoint
     _returnToGround->currentWaypointIndex = cruisingStateManager.get_current_index();
     _returnToGround->homeBaseInitialized = cruisingStateManager.is_home_base_initialized();
 
-    _returnToGround->editingFlightPathErrorCode = (char) editErrorCode;
-    _returnToGround->pathFollowingErrorCode = (char) pathErrorCode;
+    _returnToGround->editingFlightPathErrorCode = (uint8_t) editErrorCode;
+    _returnToGround->pathFollowingErrorCode = (uint8_t) pathErrorCode;
 }
 
 void appendNewElement(int * idArray, int newId) {

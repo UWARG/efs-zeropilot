@@ -9,12 +9,9 @@
 #include "waypointManager.hpp"
 #include "pathDatatypes.hpp"
 #include "CommWithAttitudeManager.hpp"
-#include "trackFinder.hpp"
 
 #include "SensorFusion.hpp"
 #include "AttitudePathInterface.hpp"
-
-
 
 /***********************************************************************************************************************
  * Definitions

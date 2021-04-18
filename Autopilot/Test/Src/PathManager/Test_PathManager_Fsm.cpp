@@ -10,7 +10,6 @@
 
 #include "waypointManager.hpp"
 #include "cruisingState.hpp"
-#include "trackFinder.hpp"
 #include "CommWithAttitudeManager.hpp"
 
 #include "SensorFusion.hpp"

@@ -4,7 +4,7 @@
  * Static Member Variable Declarations
  **********************************************************************************************************************/
 
-bool isError; 
+static bool isError; 
 Telemetry_PIGO_t commsWithTelemetry::_incomingData;
 _CruisingState_Telemetry_Return cruisingState::_returnToGround;
 _WaypointManager_Data_In cruisingState::_inputdata;
@@ -99,7 +99,7 @@ void cruisingState::execute(pathManager* pathMgr)
     SFOutput_t * sensFusionOutput = sensorFusion::GetSFOutput(); // Get sensor fusion data
     
     // Set waypoint manager input struct
-    _inputdata.track = getTrack(sensFusionOutput->latitudeSpeed, sensFusionOutput->longitudeSpeed); // Gets track
+    _inputdata.track = sensFusionOutput->track; // Gets track
     _inputdata.longitude = sensFusionOutput->longitude;
     _inputdata.latitude = sensFusionOutput->latitude;
     _inputdata.altitude = sensFusionOutput->altitude;
@@ -133,7 +133,7 @@ void coordinateTurnElevation::execute(pathManager* pathMgr)
     _WaypointManager_Data_Out * waypointOutput = cruisingState::GetOutputData(); // Get output data from waypoint manager
     
     CoordinatedTurnInput_t turnInput {};
-    turnInput.currentHeadingTrack = getTrack(sensFusionOutput->latitudeSpeed, sensFusionOutput->longitudeSpeed); // Gets track;
+    turnInput.currentHeadingTrack = sensFusionOutput->track; // Gets track;
     turnInput.desiredHeadingTrack = waypointOutput->desiredTrack;
     turnInput.accY = imudata->accy;
     

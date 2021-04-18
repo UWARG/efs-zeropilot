@@ -136,14 +136,14 @@ static _WaypointSt compare_waypoint(_PathData * ans, _PathData * test) {
     return WAYPOINT_CORRECT;
 }
 
-static Telemetry_Waypoint_Data_t * createTelemetryWaypoint(long double lon, long double lat, int alt, float turnRadius, int type) {
-    Telemetry_Waypoint_Data_t * waypoint = new Telemetry_Waypoint_Data_t {};
+static Telemetry_Waypoint_Data_t createTelemetryWaypoint(long double lon, long double lat, int alt, float turnRadius, int type) {
+    Telemetry_Waypoint_Data_t waypoint {};
 
-    waypoint->longitude = lon;
-    waypoint->latitude = lat;
-    waypoint->altitude = alt;
-    waypoint->turnRadius = turnRadius;
-    waypoint->waypointType = type;
+    waypoint.longitude = lon;
+    waypoint.latitude = lat;
+    waypoint.altitude = alt;
+    waypoint.turnRadius = turnRadius;
+    waypoint.waypointType = type;
 
     return waypoint;
 }
@@ -166,7 +166,7 @@ TEST (CruisingState, IncorrectTelemetryCommandsReturnErrorCode) {
     TelemetryTestData.prevId = 0;
     TelemetryTestData.modifyId = 0;
     TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0);
-    TelemetryTestData.homebase = *(createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0));
+    TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
 	/********************DEPENDENCIES*******************/	
 	/********************STEPTHROUGH********************/
@@ -182,7 +182,6 @@ TEST (CruisingState, IncorrectTelemetryCommandsReturnErrorCode) {
     // Remove heap-allocated memory
     cruisingStateManager.clear_path_nodes();
     cruisingStateManager.clear_home_base();
-    delete TelemetryTestData.waypoints[0];
 
 	/**********************ASSERTS**********************/
 
@@ -214,7 +213,7 @@ TEST (CruisingState, InitializeFlightPathSuccess) {
     TelemetryTestData.nextId = 0;
     TelemetryTestData.prevId = 0;
     TelemetryTestData.modifyId = 0;
-    TelemetryTestData.homebase = *(createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0));
+    TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
     int idTestArray[PATH_BUFFER_SIZE];
@@ -273,7 +272,6 @@ TEST (CruisingState, InitializeFlightPathSuccess) {
     cruisingStateManager.clear_path_nodes();
     delete testHomeBase;
     delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3];
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
 
 	/**********************ASSERTS**********************/
 
@@ -310,7 +308,7 @@ TEST (CruisingState, NukeFlightPathSuccess) {
     TelemetryTestData.nextId = 0;
     TelemetryTestData.prevId = 0;
     TelemetryTestData.modifyId = 0;
-    TelemetryTestData.homebase = *(createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0));
+    TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
     int idTestArray[PATH_BUFFER_SIZE];
@@ -350,8 +348,6 @@ TEST (CruisingState, NukeFlightPathSuccess) {
     _ArrayStatus flightPathComparision = compare_arrays(testFlightPath, flightPath, 0);
     _ArrayStatus flightPathStatusComparision = compare_buffer_status(testStatus, cruisingStateManager);
 
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
-
 	/**********************ASSERTS**********************/
 
     EXPECT_EQ(TestReturnToGround.editingFlightPathErrorCode, 0);
@@ -386,7 +382,7 @@ TEST (CruisingState, AppendWaypointSuccess) {
     TelemetryTestData.nextId = 0;
     TelemetryTestData.prevId = 0;
     TelemetryTestData.modifyId = 0;
-    TelemetryTestData.homebase = *(createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0));
+    TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
     int idTestArray[PATH_BUFFER_SIZE] = { 0 };
@@ -432,7 +428,6 @@ TEST (CruisingState, AppendWaypointSuccess) {
     TelemetryTestData.numWaypoints = 1;
     TelemetryTestData.waypointModifyFlightPathCommand = APPEND; // Appending
 
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
     TelemetryTestData.waypoints[0] = createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0);  
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
@@ -448,7 +443,6 @@ TEST (CruisingState, AppendWaypointSuccess) {
     // Remove heap-allocated stuff
     cruisingStateManager.clear_path_nodes();
     delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3]; delete testFlightPath[4];
-    delete TelemetryTestData.waypoints[0];
 
 	/**********************ASSERTS**********************/
 
@@ -484,7 +478,7 @@ TEST (CruisingState, AppendWaypointFail) {
     TelemetryTestData.nextId = 0;
     TelemetryTestData.prevId = 0;
     TelemetryTestData.modifyId = 0;
-    TelemetryTestData.homebase = *(createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0));
+    TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
     int idTestArray[PATH_BUFFER_SIZE] = { 0 };
@@ -527,7 +521,6 @@ TEST (CruisingState, AppendWaypointFail) {
     TelemetryTestData.numWaypoints = 1;
     TelemetryTestData.waypointModifyFlightPathCommand = APPEND; // Appending
 
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
     TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 10, 0.0, 0); // Duplicate, so it will not append
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
@@ -543,7 +536,6 @@ TEST (CruisingState, AppendWaypointFail) {
     // Remove heap-allocated stuff
     cruisingStateManager.clear_path_nodes();
     delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3];
-    delete TelemetryTestData.waypoints[0];
 
 	/**********************ASSERTS**********************/
 
@@ -579,7 +571,7 @@ TEST (CruisingState, InsertWaypointSuccess) {
     TelemetryTestData.nextId = 4;
     TelemetryTestData.prevId = 3;
     TelemetryTestData.modifyId = 0;
-    TelemetryTestData.homebase = *(createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0));
+    TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
     int idTestArray[PATH_BUFFER_SIZE] = { 0 };
@@ -625,7 +617,6 @@ TEST (CruisingState, InsertWaypointSuccess) {
     TelemetryTestData.numWaypoints = 1;
     TelemetryTestData.waypointModifyFlightPathCommand = INSERT; // Inserting
 
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
     TelemetryTestData.waypoints[0] = createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0);  
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
@@ -641,7 +632,6 @@ TEST (CruisingState, InsertWaypointSuccess) {
     // Remove heap-allocated stuff
     cruisingStateManager.clear_path_nodes();
     delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3]; delete testFlightPath[4];
-    delete TelemetryTestData.waypoints[0];
 
 	/**********************ASSERTS**********************/
 
@@ -677,7 +667,7 @@ TEST (CruisingState, InsertWaypointFail) {
     TelemetryTestData.nextId = 2;
     TelemetryTestData.prevId = 1;
     TelemetryTestData.modifyId = 0;
-    TelemetryTestData.homebase = *(createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0));
+    TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
     int idTestArray[PATH_BUFFER_SIZE] = { 0 };
@@ -720,7 +710,6 @@ TEST (CruisingState, InsertWaypointFail) {
     TelemetryTestData.numWaypoints = 1;
     TelemetryTestData.waypointModifyFlightPathCommand = INSERT; // Inserting
 
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
     TelemetryTestData.waypoints[0] = createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0);  
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
@@ -736,7 +725,6 @@ TEST (CruisingState, InsertWaypointFail) {
     // Remove heap-allocated stuff
     cruisingStateManager.clear_path_nodes();
     delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3]; 
-    delete TelemetryTestData.waypoints[0];
 
 	/**********************ASSERTS**********************/
 
@@ -772,7 +760,7 @@ TEST (CruisingState, UpdateWaypointSuccess) {
     TelemetryTestData.nextId = 0;
     TelemetryTestData.prevId = 0;
     TelemetryTestData.modifyId = 3;
-    TelemetryTestData.homebase = *(createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0));
+    TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
     int idTestArray[PATH_BUFFER_SIZE] = { 0 };
@@ -816,7 +804,6 @@ TEST (CruisingState, UpdateWaypointSuccess) {
     TelemetryTestData.numWaypoints = 1;
     TelemetryTestData.waypointModifyFlightPathCommand = UPDATE; // Updating
 
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
     TelemetryTestData.waypoints[0] = createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0);  
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
@@ -832,7 +819,6 @@ TEST (CruisingState, UpdateWaypointSuccess) {
     // Remove heap-allocated stuff
     cruisingStateManager.clear_path_nodes();
     delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3];
-    delete TelemetryTestData.waypoints[0];
 
 	/**********************ASSERTS**********************/
 
@@ -868,7 +854,7 @@ TEST (CruisingState, UpdateWaypointFail) {
     TelemetryTestData.nextId = 0;
     TelemetryTestData.prevId = 0;
     TelemetryTestData.modifyId = 10; // Not a valid index
-    TelemetryTestData.homebase = *(createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0));
+    TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
     int idTestArray[PATH_BUFFER_SIZE] = { 0 };
@@ -911,7 +897,6 @@ TEST (CruisingState, UpdateWaypointFail) {
     TelemetryTestData.numWaypoints = 1;
     TelemetryTestData.waypointModifyFlightPathCommand = UPDATE; // Updating
 
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
     TelemetryTestData.waypoints[0] = createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0);  
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
@@ -927,7 +912,6 @@ TEST (CruisingState, UpdateWaypointFail) {
     // Remove heap-allocated stuff
     cruisingStateManager.clear_path_nodes();
     delete testFlightPath[0]; delete testFlightPath[1]; delete testFlightPath[2]; delete testFlightPath[3];
-    delete TelemetryTestData.waypoints[0];
 
 	/**********************ASSERTS**********************/
 
@@ -963,7 +947,7 @@ TEST (CruisingState, DeleteWaypointSuccess) {
     TelemetryTestData.nextId = 0;
     TelemetryTestData.prevId = 0;
     TelemetryTestData.modifyId = 3;
-    TelemetryTestData.homebase = *(createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0));
+    TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
     int idTestArray[PATH_BUFFER_SIZE] = { 0 };
@@ -1005,8 +989,6 @@ TEST (CruisingState, DeleteWaypointSuccess) {
 
     TelemetryTestData.numWaypoints = 0;
     TelemetryTestData.waypointModifyFlightPathCommand = DELETE; // Deleting
-
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
     _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
@@ -1056,7 +1038,7 @@ TEST (CruisingState, DeleteWaypointFail) {
     TelemetryTestData.nextId = 0;
     TelemetryTestData.prevId = 0;
     TelemetryTestData.modifyId = 10;
-    TelemetryTestData.homebase = *(createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0));
+    TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
     int idTestArray[PATH_BUFFER_SIZE] = { 0 };
@@ -1098,8 +1080,6 @@ TEST (CruisingState, DeleteWaypointFail) {
 
     TelemetryTestData.numWaypoints = 0;
     TelemetryTestData.waypointModifyFlightPathCommand = DELETE; // Deleting
-
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
     _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
@@ -1149,7 +1129,7 @@ TEST (CruisingState, NextDirectionsRegularCorrect) {
     TelemetryTestData.nextId = 0;
     TelemetryTestData.prevId = 0;
     TelemetryTestData.modifyId = 10;
-    TelemetryTestData.homebase = *(createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0));    
+    TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);    
       
     // Variables that will be modified as we go
     int idArray[PATH_BUFFER_SIZE] = { 0 };
@@ -1189,7 +1169,6 @@ TEST (CruisingState, NextDirectionsRegularCorrect) {
     // Remove heap-allocated stuff
     cruisingStateManager.clear_path_nodes();
     delete ans1;
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
 
 	/**********************ASSERTS**********************/
 
@@ -1223,7 +1202,7 @@ TEST (CruisingState, NextDirectionsGoingHomeCorrect) {
     TelemetryTestData.nextId = 0;
     TelemetryTestData.prevId = 0;
     TelemetryTestData.modifyId = 10;
-    TelemetryTestData.homebase = *(createTelemetryWaypoint(-80.537331184, 43.467998128, 45, 0.0, 2));
+    TelemetryTestData.homebase = createTelemetryWaypoint(-80.537331184, 43.467998128, 45, 0.0, 2);
     
     // Variables that will be modified as we go
     int idArray[PATH_BUFFER_SIZE] = { 0 };
@@ -1274,7 +1253,6 @@ TEST (CruisingState, NextDirectionsGoingHomeCorrect) {
     // Remove heap-allocated stuff
     cruisingStateManager.clear_path_nodes();
     delete ans1;
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
 
 	/**********************ASSERTS**********************/
 
@@ -1312,7 +1290,7 @@ TEST (CruisingState, GoingHomeHomeBaseUndefined) {
     TelemetryTestData.nextId = 0;
     TelemetryTestData.prevId = 0;
     TelemetryTestData.modifyId = 10;
-    TelemetryTestData.homebase = *(createTelemetryWaypoint(-80.537331184, 43.467998128, 45, 0.0, 2));
+    TelemetryTestData.homebase = createTelemetryWaypoint(-80.537331184, 43.467998128, 45, 0.0, 2);
     
     // Variables that will be modified as we go
     int idArray[PATH_BUFFER_SIZE] = { 0 };
@@ -1351,7 +1329,6 @@ TEST (CruisingState, GoingHomeHomeBaseUndefined) {
     // Remove heap-allocated stuff
     cruisingStateManager.clear_path_nodes();
     delete ans1;
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
 
 	/**********************ASSERTS**********************/
 
@@ -1386,7 +1363,7 @@ TEST (CruisingState, NextDirectionsStartHoldingCorrect) {
     TelemetryTestData.nextId = 0;
     TelemetryTestData.prevId = 0;
     TelemetryTestData.modifyId = 10;
-    TelemetryTestData.homebase = *(createTelemetryWaypoint(-80.537331184, 43.467998128, 45, 0.0, 2));
+    TelemetryTestData.homebase = createTelemetryWaypoint(-80.537331184, 43.467998128, 45, 0.0, 2);
     
     // Variables that will be modified as we go
     int idArray[PATH_BUFFER_SIZE] = { 0 };
@@ -1439,7 +1416,6 @@ TEST (CruisingState, NextDirectionsStartHoldingCorrect) {
     // Remove heap-allocated stuff
     cruisingStateManager.clear_path_nodes();
     delete ans1;
-    delete TelemetryTestData.waypoints[0]; delete TelemetryTestData.waypoints[1]; delete TelemetryTestData.waypoints[2]; delete TelemetryTestData.waypoints[3];
 
 	/**********************ASSERTS**********************/
 
