@@ -3,8 +3,6 @@
 #include "pathManagerStateManager.hpp"
 #include "cruisingState.hpp"
 #include "pathManager.hpp"
-#include "altimeter.hpp"
-#include "gps.hpp"
 #include "AutoSteer.hpp"
 #include "waypointManager.hpp"
 #include "pathDatatypes.hpp"
