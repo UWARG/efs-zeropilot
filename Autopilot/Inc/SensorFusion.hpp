@@ -27,6 +27,7 @@ struct SFOutput_t {
     long double longitude; //Decimal degrees
     float longitudeSpeed; //m/s
     double track; // degrees
+    double heading; //degrees
 };
 
 //Following structs store the raw sensor data so other modules can have direct access to them without including sensor header files

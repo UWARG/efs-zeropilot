@@ -66,7 +66,7 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     }
     else
     {
-        _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->IMUpitch, SFOutput->IMUpitchrate);
+        _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->pitch, SFOutput->pitchRate);
     }
 
     if(pathManagerOutput.passbyData.rollPassby)
@@ -75,7 +75,7 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     }
     else
     {
-        _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->IMUroll, SFOutput->IMUrollrate);
+        _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->roll, SFOutput->rollRate);
     }
 
     if(pathManagerOutput.passbyData.rudderPassby)

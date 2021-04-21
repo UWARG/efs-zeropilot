@@ -4,6 +4,7 @@
 #include "waypointManager.hpp"
 #include "vectorClass.hpp"
 #include "AutoSteer.hpp"
+#include "SensorFusion.hpp"
 
 enum _FlightStage{ROLL=0, CLIMB, CRUISING, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN};
 
@@ -96,7 +97,7 @@ class LandingManager{
             This function translates landing takeoff data to output data
             Takes in a landingTakeoffOutput instance, translates its information into the 2 types of coordinated turn inputs
         */
-        static void translateLTSFCommandsToCoordTurns(_LandingTakeoffOutput* outputData, SFOutput_t* sensorOutput, CoordinatedTurnInput_t* turnInput, AltitudeAirspeedInput_t* altitudeAirspeedInput);
+        static void translateLTSFCommandsToCoordTurns(_LandingTakeoffOutput* outputData, SFOutput_t* sensorOutput, IMU_Data_t* imuOutput, CoordinatedTurnInput_t* turnInput, AltitudeAirspeedInput_t* altitudeAirspeedInput);
 };
 
 /************************

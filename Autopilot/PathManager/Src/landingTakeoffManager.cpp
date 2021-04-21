@@ -1,7 +1,7 @@
 #include "landingTakeoffManager.hpp"
 #include <math.h>
 
-double LandingManager::changingAltitude(_WaypointManager_Data_In input, _PathData aimingPoint, _PathData intersectionPoint, _PathData stoppingPoint)
+double LandingManager::changingAltitude(SFOutput_t input, _PathData aimingPoint, _PathData intersectionPoint, _PathData stoppingPoint)
 {
     //vector declaration
     Vector3D aPoint(aimingPoint.longitude, aimingPoint.latitude, aimingPoint.altitude); //aiming point
@@ -124,22 +124,23 @@ _LandingTakeoffOutput LandingManager::translateWaypointCommands(_WaypointManager
     return controlOutput;
 }
 
-void LandingManager::translateLTSFCommandsToCoordTurns(_LandingTakeoffOutput* outputData, SFOutput_t* sensorOutput, CoordinatedTurnInput_t* turnInput, AltitudeAirspeedInput_t* altitudeAirspeedInput)
+void LandingManager::translateLTSFCommandsToCoordTurns(_LandingTakeoffOutput* outputData, SFOutput_t* sensorOutput, IMU_Data_t* imuOutput, CoordinatedTurnInput_t* turnInput, AltitudeAirspeedInput_t* altitudeAirspeedInput)
 {
     //loading in data depending on if heading needs to be used
     if(outputData->useHeading)
     {
         turnInput->desiredHeadingTrack = outputData->desiredHeading;
-        turnInput->currentHeadingTrack = sensorOutput->currentHeading;
+        turnInput->currentHeadingTrack = sensorOutput->heading;
     }
     else
     {
         turnInput->desiredHeadingTrack = outputData->desiredTrack;
-        turnInput->currentHeadingTrack = sensorOutput->currentTrack;
+        turnInput->currentHeadingTrack = sensorOutput->track;
     }
-    altitudeAirspeedInput->currentAltitude = sensorOutput->currentAltitude;
+    turnInput->accY = imuOutput->accy;
+    altitudeAirspeedInput->currentAltitude = sensorOutput->altitude;
     altitudeAirspeedInput->desiredAltitude = outputData->desiredAltitude;
-    altitudeAirspeedInput->currentAirspeed = sensorOutput->currentAirspeed;
+    altitudeAirspeedInput->currentAirspeed = sensorOutput->airspeed;
     altitudeAirspeedInput->desiredAirspeed = outputData->desiredAirspeed;
 }
 
