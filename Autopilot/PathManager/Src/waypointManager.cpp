@@ -13,27 +13,29 @@
 
 //Constants
 #define EARTH_RADIUS 6378.137
-#define PI 3.14159265358979323846 // Was giving me problems with M_PI, so I resorted to defining it myself
-#define MAX_PATH_APPROACH_ANGLE PI/2
+#define MAX_PATH_APPROACH_ANGLE M_PI/2
+
+// Reference Coordinates (University of Waterloo, Parking Lot C)
+#define REFERENCE_LONGITUDE -80.537331184
+#define REFERENCE_LATITUDE 43.467998128
 
 //Basic Mathematical Conversions
-#define deg2rad(angle_in_degrees) ((angle_in_degrees) * PI/180.0)
-#define rad2deg(angle_in_radians) ((angle_in_radians) * 180.0/PI)
+#define deg2rad(angle_in_degrees) ((angle_in_degrees) * M_PI/180.0)
+#define rad2deg(angle_in_radians) ((angle_in_radians) * 180.0/M_PI)
 
 
 /*** INITIALIZATION ***/
 
-
-WaypointManager::WaypointManager(float relLat, float relLong) {
+WaypointManager::WaypointManager() {
     // Initializes important array and id navigation constants
     currentIndex = 0;
-    nextAssignedId = 0;
+    nextAssignedId = 1;
     numWaypoints = 0;
     nextFilledIndex = 0;
 
     // Sets relative long and lat
-    relativeLongitude = relLong;
-    relativeLatitude = relLat;
+    relativeLongitude = REFERENCE_LONGITUDE;
+    relativeLatitude = REFERENCE_LATITUDE;
 
     homeBase = nullptr; // Sets the pointer to null
 
@@ -58,9 +60,15 @@ WaypointManager::WaypointManager(float relLat, float relLong) {
     for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
         waypointBufferStatus[i] = FREE;
     }
+
+    // Sets empty elements to null to prevent segmentation faults
+    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
+        waypointBuffer[i] = nullptr;
+    }
 }
 
 _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData * currentLocation) {
+    
     errorStatus = WAYPOINT_SUCCESS; 
 
     // The waypointBuffer array must be empty before we initialize the flight path
@@ -354,14 +362,15 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
     Data->errorCode = errorCode;
     Data->isDataNew = dataIsNew;
     dataIsNew = false; 
-    Data->timeOfData = 0; // Not setting time of data yet bc I think we need to come up with a way to get it???
+    Data->timeOfData = 0;
+    Data->desiredAirspeed = 0; 
     Data->out_type = outputType;
 }
 
 _WaypointStatus WaypointManager::start_circling(_WaypointManager_Data_In currentStatus, float radius, int direction, int altitude, bool cancelTurning) {
     if (!cancelTurning) {
         // If parameters are not valid. Minimum altitude of 10 metres
-        if (radius <= 0 || (direction != -1 && direction != 1) || altitude < 10) { // SHOULD I JUST SET THIS TO DEFAULT VALUES INSTEAD??????
+        if (radius <= 0 || (direction != 0 && direction != 1) || altitude < 10) { // SHOULD I JUST SET THIS TO DEFAULT VALUES INSTEAD??????
             return INVALID_PARAMETERS; 
         }
 
@@ -370,7 +379,12 @@ _WaypointStatus WaypointManager::start_circling(_WaypointManager_Data_In current
         // Sets class parameters
         turnDesiredAltitude = altitude;
         turnRadius = radius;
-        turnDirection = direction;
+        if (0 == direction) {
+            turnDirection = -1;
+        } else {
+            turnDirection = 1;    
+        }
+        
 
         // Gets current track
         float currentTrack = (float) currentStatus.track;
@@ -658,18 +672,18 @@ void WaypointManager::follow_orbit(float* position, float track) {
 
     // Normalizes angles
     // First gets the angle between 0 and 2 pi
-    if (courseAngle - track >= 2 * PI) {
-        courseAngle = fmod(courseAngle, 2 * PI);
+    if (courseAngle - track >= 2 * M_PI) {
+        courseAngle = fmod(courseAngle, 2 * M_PI);
     } else if (courseAngle - track < 0.0) {
-        courseAngle = fmod(courseAngle, 2 * PI) + 2 * PI;
+        courseAngle = fmod(courseAngle, 2 * M_PI) + 2 * M_PI;
     }
     // Now ensures that courseAngle is between -pi and pi
-    if (courseAngle > PI && courseAngle <= 2 * PI) {
-        courseAngle -= 2 * PI;
+    if (courseAngle > M_PI && courseAngle <= 2 * M_PI) {
+        courseAngle -= 2 * M_PI;
     }
 
     // Desired track
-    int calcTrack = round(90 - rad2deg(courseAngle + turnDirection * (PI/2 + atan(k_gain[ORBIT_FOLLOW] * (orbitDistance - turnRadius)/turnRadius)))); //Track in degrees 
+    int calcTrack = round(90 - rad2deg(courseAngle + turnDirection * (M_PI/2 + atan(k_gain[ORBIT_FOLLOW] * (orbitDistance - turnRadius)/turnRadius)))); //Track in degrees 
     
     // Normalizes track (keeps it between 0.0 and 259.9999)
     if (calcTrack >= 360.0) {
@@ -691,19 +705,19 @@ void WaypointManager::follow_straight_path(float* waypointDirection, float* targ
     
     // Normalizes angles
     // First gets the angle between 0 and 2 pi
-    if (courseAngle - track >= 2 * PI) {
-        courseAngle = fmod(courseAngle, 2 * PI);
+    if (courseAngle - track >= 2 * M_PI) {
+        courseAngle = fmod(courseAngle, 2 * M_PI);
     } else if (courseAngle - track < 0.0) {
-        courseAngle = fmod(courseAngle, 2 * PI) + 2 * PI;
+        courseAngle = fmod(courseAngle, 2 * M_PI) + 2 * M_PI;
     }
     // Now ensures that courseAngle is between -pi and pi
-    if (courseAngle > PI && courseAngle <= 2 * PI) {
-        courseAngle -= 2 * PI;
+    if (courseAngle > M_PI && courseAngle <= 2 * M_PI) {
+        courseAngle -= 2 * M_PI;
     }
 
     // Calculates desired track
     float pathError = -sin(courseAngle) * (position[0] - targetWaypoint[0]) + cos(courseAngle) * (position[1] - targetWaypoint[1]);
-    int calcTrack = 90 - rad2deg(courseAngle - MAX_PATH_APPROACH_ANGLE * 2/PI * atan(k_gain[PATH_FOLLOW] * pathError)); //Heading in degrees (magnetic) 
+    int calcTrack = 90 - rad2deg(courseAngle - MAX_PATH_APPROACH_ANGLE * 2/M_PI * atan(k_gain[PATH_FOLLOW] * pathError)); //Heading in degrees (magnetic) 
     
     // Normalizes track (keeps it between 0.0 and 259.9999)
     if (calcTrack >= 360.0) {
@@ -761,12 +775,15 @@ void WaypointManager::clear_path_nodes() {
     // Resets buffer status variables
     numWaypoints = 0;
     nextFilledIndex = 0;
-    nextAssignedId = 0;
     currentIndex = 0;
 }
 
 void WaypointManager::clear_home_base() {
-    destroy_waypoint(homeBase);
+    if (homeBase != nullptr) {
+        destroy_waypoint(homeBase);
+    }
+
+    homeBase = nullptr; // For safety
 }
 
 void WaypointManager::destroy_waypoint(_PathData *waypoint) {
@@ -953,7 +970,11 @@ int WaypointManager::get_current_index() {
 }
 
 int WaypointManager::get_id_of_current_index() {
-    return waypointBuffer[currentIndex]->waypointId;
+    return waypointBuffer[currentIndex] ? waypointBuffer[currentIndex]->waypointId : 0;
+}
+
+bool WaypointManager::is_home_base_initialized() {
+    return homeBase ? true : false;
 }
 
 // For valgrind tests
