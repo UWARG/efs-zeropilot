@@ -10,6 +10,7 @@
 
 #include "waypointManager.hpp"
 #include "cruisingState.hpp"
+#include "landingTakeoffManager.hpp"
 #include "CommWithAttitudeManager.hpp"
 
 #include "SensorFusion.hpp"
@@ -130,7 +131,7 @@ TEST (PathManagerFSM, CommsWithTelemetryTransitionToSensorFusion) {
 	EXPECT_EQ(*(pathMan.getCurrentState()), sensorFusion::getInstance());
 }
 
-TEST (PathManagerFSM, SensorFusionTransitionToCruisingState) {
+TEST (PathManagerFSM, SensorFusionTransitionToResetVariablesState) {
 	/***********************SETUP***********************/
 
 	pathManager pathMan;
@@ -143,7 +144,7 @@ TEST (PathManagerFSM, SensorFusionTransitionToCruisingState) {
 
 	/**********************ASSERTS**********************/
 
-	EXPECT_EQ(*(pathMan.getCurrentState()), cruisingState::getInstance());
+	EXPECT_EQ(*(pathMan.getCurrentState()), resetVariables::getInstance());
 }
 
 TEST (PathManagerFSM, CruisingStateTransitionToCoordinatedTurnElevation) {
@@ -176,5 +177,257 @@ TEST (PathManagerFSM, CoordinatedTurnElevationTransitionToCommsWithAttitude) {
 	/**********************ASSERTS**********************/
 
 	EXPECT_EQ(*(pathMan.getCurrentState()), commsWithAttitude::getInstance());
+}
+
+/************************************************************************************************************
+ _FlightStage Enum Testing
+ ***********************************************************************************************************/
+
+TEST (PathManagerFSM, ResetVariablesToLandingTransition) {
+	/***********************SETUP***********************/
+
+	pathManager pathMan;
+	pathMan.stage = TRANSITION;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	pathMan.setState(resetVariables::getInstance());
+	pathMan.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(pathMan.getCurrentState()), landingTransitionStage::getInstance());
+}
+
+TEST (PathManagerFSM, ResetVariablesToLandingSlope) {
+	/***********************SETUP***********************/
+
+	pathManager pathMan;
+	pathMan.stage = SLOPE;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	pathMan.setState(resetVariables::getInstance());
+	pathMan.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(pathMan.getCurrentState()), landingSlopeStage::getInstance());
+}
+
+TEST (PathManagerFSM, ResetVariablesToLandingFlare) {
+	/***********************SETUP***********************/
+
+	pathManager pathMan;
+	pathMan.stage = FLARE;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	pathMan.setState(resetVariables::getInstance());
+	pathMan.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(pathMan.getCurrentState()), landingFlareStage::getInstance());
+}
+
+TEST (PathManagerFSM, ResetVariablesToLandingDecrab) {
+	/***********************SETUP***********************/
+
+	pathManager pathMan;
+	pathMan.stage = DECRAB;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	pathMan.setState(resetVariables::getInstance());
+	pathMan.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(pathMan.getCurrentState()), landingDecrabStage::getInstance());
+}
+
+TEST (PathManagerFSM, ResetVariablesToLandingTouchdown) {
+	/***********************SETUP***********************/
+
+	pathManager pathMan;
+	pathMan.stage = TOUCHDOWN;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	pathMan.setState(resetVariables::getInstance());
+	pathMan.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(pathMan.getCurrentState()), landingTouchdownStage::getInstance());
+}
+
+TEST (PathManagerFSM, ResetVariablesToCruising) {
+	/***********************SETUP***********************/
+
+	pathManager pathMan;
+	pathMan.stage = CRUISING;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	pathMan.setState(resetVariables::getInstance());
+	pathMan.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(pathMan.getCurrentState()), cruisingState::getInstance());
+}
+
+TEST (PathManagerFSM, ResetVariablesToTakeoffRoll) {
+	/***********************SETUP***********************/
+
+	pathManager pathMan;
+	pathMan.stage = ROLL;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	pathMan.setState(resetVariables::getInstance());
+	pathMan.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(pathMan.getCurrentState()), takeoffRollStage::getInstance());
+}
+
+TEST (PathManagerFSM, ResetVariablesToTakeoffClimb) {
+	/***********************SETUP***********************/
+
+	pathManager pathMan;
+	pathMan.stage = CLIMB;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	pathMan.setState(resetVariables::getInstance());
+	pathMan.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(pathMan.getCurrentState()), takeoffClimbStage::getInstance());
+}
+
+TEST (PathManagerFSM, TransitionToCT) {
+	/***********************SETUP***********************/
+
+	pathManager pathMan;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	pathMan.setState(landingTransitionStage::getInstance());
+	pathMan.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
+}
+
+TEST (PathManagerFSM, SlopeToCT) {
+	/***********************SETUP***********************/
+
+	pathManager pathMan;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	pathMan.setState(landingSlopeStage::getInstance());
+	pathMan.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
+}
+
+TEST (PathManagerFSM, FlareToCT) {
+	/***********************SETUP***********************/
+
+	pathManager pathMan;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	pathMan.setState(landingFlareStage::getInstance());
+	pathMan.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
+}
+
+TEST (PathManagerFSM, DecrabToCT) {
+	/***********************SETUP***********************/
+
+	pathManager pathMan;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	pathMan.setState(landingDecrabStage::getInstance());
+	pathMan.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
+}
+
+TEST (PathManagerFSM, TouchdownToCT) {
+	/***********************SETUP***********************/
+
+	pathManager pathMan;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	pathMan.setState(landingTouchdownStage::getInstance());
+	pathMan.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
+}
+
+TEST (PathManagerFSM, RollToCT) {
+	/***********************SETUP***********************/
+
+	pathManager pathMan;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	pathMan.setState(takeoffRollStage::getInstance());
+	pathMan.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
+}
+
+TEST (PathManagerFSM, ClimbToCT) {
+	/***********************SETUP***********************/
+
+	pathManager pathMan;
+
+	/********************DEPENDENCIES*******************/
+	/********************STEPTHROUGH********************/
+
+	pathMan.setState(takeoffClimbStage::getInstance());
+	pathMan.execute();
+
+	/**********************ASSERTS**********************/
+
+	EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
 }
 

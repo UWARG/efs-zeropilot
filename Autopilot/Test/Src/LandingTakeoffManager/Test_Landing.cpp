@@ -14,7 +14,7 @@ TEST(LandingFunctions, Test_changingAltitude){
     _PathData aimingPoint;
     _PathData intersectionPoint;
     _PathData stoppingPoint;
-    _WaypointManager_Data_In input;
+    SFOutput_t input;
 
     aimingPoint.longitude = 0;
     aimingPoint.latitude = 0;

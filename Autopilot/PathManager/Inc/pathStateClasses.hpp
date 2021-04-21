@@ -121,6 +121,7 @@ class takeoffClimbStage : public pathManagerState
     private:
         static _LandingTakeoffInput input;
         static _LandingTakeoffOutput output;
+        static _WaypointManager_Data_In waypointInput;
         static _WaypointManager_Data_Out waypointOutput;
         takeoffClimbStage() {}
         takeoffClimbStage(const takeoffClimbStage& other);
@@ -165,13 +166,14 @@ class landingTransitionStage : public pathManagerState
         static pathManagerState& getInstance();
         
         static _LandingTakeoffOutput* getControlOutput(){return &output;}
-        static WaypointManager landingPath; //in future merge, parameters needs to be taken out *****
+        static WaypointManager landingPath; 
         static _WaypointStatus waypointStatus; //used to catch errors
         static _LandingPath path; //used to load in path
     private:
         int waypointIDArray[PATH_BUFFER_SIZE];
         static _LandingTakeoffInput input;
         static _LandingTakeoffOutput output;
+        static _WaypointManager_Data_In waypointInput;
         static _WaypointManager_Data_Out waypointOutput;
         static _PathData * pathArray[3]; //used to translate loaded in path to something the waypoint manager can take as a parameter
         static _PathData * currentLocation;
@@ -194,6 +196,7 @@ class landingSlopeStage : public pathManagerState
     private:
         static _LandingTakeoffInput input;
         static _LandingTakeoffOutput output;
+        static _WaypointManager_Data_In waypointInput;
         static _WaypointManager_Data_Out waypointOutput;
         landingSlopeStage() {}
         landingSlopeStage(const landingSlopeStage& other);
@@ -211,6 +214,7 @@ class landingFlareStage : public pathManagerState
     private:
         static _LandingTakeoffInput input;
         static _LandingTakeoffOutput output;
+        static _WaypointManager_Data_In waypointInput;
         static _WaypointManager_Data_Out waypointOutput;
         landingFlareStage() {}
         landingFlareStage(const landingFlareStage& other);
