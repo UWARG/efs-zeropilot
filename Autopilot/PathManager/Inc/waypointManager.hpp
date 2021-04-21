@@ -62,7 +62,6 @@ struct _PathData {
 * This data will be used by the PID and coordinated turn engine to determine the commands to be sent to the Attitude Manager.
 */
 struct _WaypointManager_Data_Out{
-    uint16_t desiredHeading;            // Desired heading to stay on path
     uint16_t desiredTrack;              // Desired track to stay on path
     float desiredSpeed;
     bool useHeading;                    // Used to determine if heading or track should be used

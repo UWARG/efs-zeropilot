@@ -137,8 +137,6 @@ pathManagerState& sensorFusion::getInstance()
 void resetVariables::execute(pathManager* pathMgr)
 {   
     //resetting the variables for passby
-    
-
     if(pathMgr->isError)
     {
         pathMgr -> setState(fatalFailureMode::getInstance());
@@ -521,7 +519,6 @@ void landingDecrabStage::execute(pathManager* pathMgr)
         //align heading with landing direction
         output.desiredHeading = input.telemetryData.stoppingDirectionHeading;
         output.useHeading = true;
-
         //retrieving desired slow flight speed
         output.desiredAirspeed = LandingManager::slowFlightSpeed(pathMgr->isPackage);
         
