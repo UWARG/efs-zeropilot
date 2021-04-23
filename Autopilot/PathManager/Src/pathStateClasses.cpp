@@ -15,6 +15,8 @@ AltitudeAirspeedCommands_t coordinateTurnElevation::_pitchandairspeed;
 AttitudeData commsWithAttitude::_receivedData;
 
 // Landing and Takeoff Variables (some stages DO NOT need waypoint inputs, it's not a mistake that some are missing)
+// For landing and takeoff states that use waypoint manager functions, the varaibles below will hold the I/O that is needed for those functions to work
+
 _LandingTakeoffInput takeoffRollStage::input;
 _LandingTakeoffOutput takeoffRollStage::output;
 _WaypointManager_Data_Out takeoffRollStage::waypointOutput;
@@ -33,8 +35,6 @@ _LandingTakeoffInput landingTransitionStage::input;
 _LandingTakeoffOutput landingTransitionStage::output;
 _WaypointManager_Data_In landingTransitionStage::waypointInput;
 _WaypointManager_Data_Out landingTransitionStage::waypointOutput;
-double landingTransitionStage::differenceInHeading1;
-double landingTransitionStage::differenceInHeading2;
 _WaypointStatus landingTransitionStage::waypointStatus;
 _PathData * landingTransitionStage::currentLocation;
 _PathData * landingTransitionStage::pathArray[3];
@@ -99,11 +99,11 @@ void commsWithTelemetry::execute(pathManager* pathMgr)
     // Store data inside of the Telemetry_PIGO_t struct that is a parameter of this child class
     if(pathMgr->isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(sensorFusion::getInstance());
+        pathMgr->setState(sensorFusion::getInstance());
     }
 }
 
@@ -139,7 +139,7 @@ void resetVariables::execute(pathManager* pathMgr)
     //resetting the variables for passby
     if(pathMgr->isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
 
     if(commsWithTelemetry::GetTelemetryIncomingData()->beginLanding)
@@ -347,6 +347,7 @@ void landingTransitionStage::execute(pathManager* pathMgr)
         pathArray[1] = landingPath.initialize_waypoint(path.aimingPoint.longitude, path.aimingPoint.latitude, path.aimingPoint.altitude, PATH_FOLLOW);
         pathArray[2] = landingPath.initialize_waypoint(path.stoppingPoint.longitude, path.stoppingPoint.latitude, path.stoppingPoint.altitude, PATH_FOLLOW);
         currentLocation = landingPath.initialize_waypoint(input.sensorOutput.longitude, input.sensorOutput.latitude, input.sensorOutput.altitude, HOLD_WAYPOINT, 20); //fill in with sensor fusion data
+        
         //initializing flight path
         waypointStatus = landingPath.initialize_flight_path(pathArray, 3, currentLocation);
         
@@ -375,22 +376,23 @@ void landingTransitionStage::execute(pathManager* pathMgr)
     if(differenceInHeading2 < 0){differenceInHeading2 += 360;}
 
     //if the smaller heading is less than 5 degrees, set stage to slope
-    if(differenceInHeading1 < differenceInHeading2 && fabs(differenceInHeading1) <= 5)
+    if((differenceInHeading1 < differenceInHeading2 && fabs(differenceInHeading1) <= 5) || (fabs(differenceInHeading2) <= 5))
     {
         pathMgr->stage = SLOPE;
     }
-    else if(fabs(differenceInHeading2) <= 5)
+
+    if(!landingTransitionStage::waypointStatus == WAYPOINT_SUCCESS)
     {
-        pathMgr->stage = SLOPE;
+        pathMgr->isError = true;
     }
     
     if(pathMgr->isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(coordinateTurnElevation::getInstance());
+        pathMgr->setState(coordinateTurnElevation::getInstance());
     }
 }
 
@@ -421,26 +423,29 @@ void landingSlopeStage::execute(pathManager* pathMgr)
 
         //aligning horizontal position using waypointManager get_next_directions
         landingTransitionStage::waypointStatus = landingTransitionStage::landingPath.get_next_directions(waypointInput, &waypointOutput);
+        
         //translate waypoint ouput data into landing data
         output = LandingManager::translateWaypointCommands(waypointOutput);
+        
         //retrieving desired altitude for slope state and setting it 
         output.desiredAltitude = LandingManager::changingAltitude(input.sensorOutput,landingTransitionStage::path.aimingPoint, landingTransitionStage::path.intersectionPoint, landingTransitionStage::path.stoppingPoint);
+        
         //retrieving desired speed for approach speed and setting it
         output.desiredAirspeed = LandingManager::approachSpeed(pathMgr->isPackage);
     }
-
-    if(landingTransitionStage::waypointStatus == INVALID_PARAMETERS)
-    {
-        pathMgr -> isError = true;
-    }
     
+    if(!landingTransitionStage::waypointStatus == WAYPOINT_SUCCESS)
+    {
+        pathMgr->isError = true;
+    }
+
     if(pathMgr->isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(coordinateTurnElevation::getInstance());
+        pathMgr->setState(coordinateTurnElevation::getInstance());
     }
 }
 
@@ -482,19 +487,18 @@ void landingFlareStage::execute(pathManager* pathMgr)
         output.desiredAirspeed = LandingManager::slowFlightSpeed(pathMgr->isPackage);
     }   
 
-    if(landingTransitionStage::waypointStatus == INVALID_PARAMETERS)
+    if(!landingTransitionStage::waypointStatus == WAYPOINT_SUCCESS)
     {
-        pathMgr -> isError = true;
+        pathMgr->isError = true;
     }
-    
 
     if(pathMgr->isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(coordinateTurnElevation::getInstance());
+        pathMgr->setState(coordinateTurnElevation::getInstance());
     }
 }
 
@@ -519,6 +523,7 @@ void landingDecrabStage::execute(pathManager* pathMgr)
         //align heading with landing direction
         output.desiredHeading = input.telemetryData.stoppingDirectionHeading;
         output.useHeading = true;
+        
         //retrieving desired slow flight speed
         output.desiredAirspeed = LandingManager::slowFlightSpeed(pathMgr->isPackage);
         
@@ -527,17 +532,13 @@ void landingDecrabStage::execute(pathManager* pathMgr)
         output.controlDetails.throttlePercent = 0;
     }
 
-    if(landingTransitionStage::waypointStatus == INVALID_PARAMETERS)
+    if(pathMgr->isError)
     {
-        pathMgr -> isError = true;
-    }
-    if(pathMgr -> isError)
-    {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(coordinateTurnElevation::getInstance());
+        pathMgr->setState(coordinateTurnElevation::getInstance());
     }
 }
 
@@ -561,13 +562,16 @@ void landingTouchdownStage::execute(pathManager* pathMgr)
     output.desiredHeading = input.telemetryData.stoppingDirectionHeading;
     output.useHeading = true;
 
-    if(pathMgr -> isError)
+    //ensure made landing points is reset
+    pathMgr->madeLandingPoints = false;
+
+    if(pathMgr->isError)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(coordinateTurnElevation::getInstance());
+        pathMgr->setState(coordinateTurnElevation::getInstance());
     }
 }
 
@@ -600,22 +604,26 @@ void takeoffRollStage::execute(pathManager* pathMgr)
         pathArray[0] = takeoffPath.initialize_waypoint(takeoffPoint.longitude, takeoffPoint.latitude, takeoffPoint.altitude, PATH_FOLLOW);
         currentLocation = takeoffPath.initialize_waypoint(input.sensorOutput.longitude, input.sensorOutput.latitude, input.sensorOutput.altitude, HOLD_WAYPOINT);
         waypointStatus = takeoffPath.initialize_flight_path(pathArray, 1, currentLocation);
-
         pathMgr->madeTakeoffPoints = true;
     }
 
-    if(input.sensorOutput.airspeed>(TakeoffManager::desiredRotationSpeed(pathMgr->isPackage)))
+    if(input.sensorOutput.airspeed > (TakeoffManager::desiredRotationSpeed(pathMgr->isPackage)))
     {
         pathMgr->stage = CLIMB;
     }
 
-    if(pathMgr -> isError)
+    if(!takeoffRollStage::waypointStatus == WAYPOINT_SUCCESS)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->isError = true;
+    }
+
+    if(pathMgr->isError)
+    {
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(coordinateTurnElevation::getInstance());
+        pathMgr->setState(coordinateTurnElevation::getInstance());
     }
 }
 
@@ -631,7 +639,7 @@ void takeoffClimbStage::execute(pathManager* pathMgr)
     input.telemetryData = *(commsWithTelemetry::GetTelemetryIncomingData());
     input.sensorOutput = *(sensorFusion::GetSFOutput());
 
-    if(input.sensorOutput.altitude>(takeoffRollStage::takeoffPoint.altitude + EXIT_TAKEOFF_ALTITUDE))
+    if(input.sensorOutput.altitude > (takeoffRollStage::takeoffPoint.altitude + EXIT_TAKEOFF_ALTITUDE))
     {
         pathMgr->stage = CRUISING;
     }
@@ -645,20 +653,29 @@ void takeoffClimbStage::execute(pathManager* pathMgr)
 
         takeoffRollStage::waypointStatus = takeoffRollStage::takeoffPath.get_next_directions(waypointInput, &waypointOutput);
         output = LandingManager::translateWaypointCommands(waypointOutput);
+        
         output.desiredAirspeed = TakeoffManager::desiredClimbSpeed(pathMgr->isPackage);
         
         //maxThrottle
         output.controlDetails.throttlePassby = true;
         output.controlDetails.throttlePercent = 80;
     }
-    
-    if(pathMgr -> isError)
+
+    //ensuring made takeoff points is reset
+    pathMgr->madeTakeoffPoints = false;
+
+    if(!takeoffRollStage::waypointStatus == WAYPOINT_SUCCESS)
     {
-        pathMgr -> setState(fatalFailureMode::getInstance());
+        pathMgr->isError = true;
+    }
+    
+    if(pathMgr->isError)
+    {
+        pathMgr->setState(fatalFailureMode::getInstance());
     }
     else
     {
-        pathMgr -> setState(coordinateTurnElevation::getInstance());
+        pathMgr->setState(coordinateTurnElevation::getInstance());
     }
 }
 
