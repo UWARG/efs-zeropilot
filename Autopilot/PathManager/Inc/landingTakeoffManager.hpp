@@ -8,7 +8,6 @@
 
 enum _FlightStage{ROLL=0, CLIMB, CRUISING, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN};
 
-
 /************************
     LANDING SECTION
 ************************/
@@ -23,7 +22,6 @@ constexpr static int FLARE_ALTITUDE {2}; //in meters
 constexpr static double DECRAB_ALTITUDE {0.7}; //in meters
 constexpr static double TOUCHDOWN_ALTITUDE {0.05}; //in meters
 constexpr static double LATITUDE_LONGITUDE_CONVERSION_CONSTANT {40075000.0};
-
 
 struct _LandingPath
 {
