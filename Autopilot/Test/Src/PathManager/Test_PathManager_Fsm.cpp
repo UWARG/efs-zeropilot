@@ -1,5 +1,5 @@
 /*
-* Author: Dhruv Rawat
+* Author: Dhruv Rawat, Nixon Chan
 */
 
 #include "fff.h"
@@ -319,7 +319,7 @@ TEST (PathManagerFSM, ResetVariablesToTakeoffClimb) {
 	EXPECT_EQ(*(pathMan.getCurrentState()), takeoffClimbStage::getInstance());
 }
 
-TEST (PathManagerFSM, TransitionToCT) {
+TEST (PathManagerFSM, TransitionToCoordinatedTurnElevation) {
 	/***********************SETUP***********************/
 
 	pathManager pathMan;
@@ -335,7 +335,7 @@ TEST (PathManagerFSM, TransitionToCT) {
 	EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
 }
 
-TEST (PathManagerFSM, SlopeToCT) {
+TEST (PathManagerFSM, SlopeToCoordinatedTurnElevation) {
 	/***********************SETUP***********************/
 
 	pathManager pathMan;
@@ -351,7 +351,7 @@ TEST (PathManagerFSM, SlopeToCT) {
 	EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
 }
 
-TEST (PathManagerFSM, FlareToCT) {
+TEST (PathManagerFSM, FlareToCoordinatedTurnElevation) {
 	/***********************SETUP***********************/
 
 	pathManager pathMan;
@@ -367,7 +367,7 @@ TEST (PathManagerFSM, FlareToCT) {
 	EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
 }
 
-TEST (PathManagerFSM, DecrabToCT) {
+TEST (PathManagerFSM, DecrabToCoordinatedTurnElevation) {
 	/***********************SETUP***********************/
 
 	pathManager pathMan;
@@ -383,7 +383,7 @@ TEST (PathManagerFSM, DecrabToCT) {
 	EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
 }
 
-TEST (PathManagerFSM, TouchdownToCT) {
+TEST (PathManagerFSM, TouchdownToCoordinatedTurnElevation) {
 	/***********************SETUP***********************/
 
 	pathManager pathMan;
@@ -399,7 +399,7 @@ TEST (PathManagerFSM, TouchdownToCT) {
 	EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
 }
 
-TEST (PathManagerFSM, RollToCT) {
+TEST (PathManagerFSM, RollToCoordinatedTurnElevation) {
 	/***********************SETUP***********************/
 
 	pathManager pathMan;
@@ -415,7 +415,7 @@ TEST (PathManagerFSM, RollToCT) {
 	EXPECT_EQ(*(pathMan.getCurrentState()), coordinateTurnElevation::getInstance());
 }
 
-TEST (PathManagerFSM, ClimbToCT) {
+TEST (PathManagerFSM, ClimbToCoordinatedTurnElevation) {
 	/***********************SETUP***********************/
 
 	pathManager pathMan;

@@ -11,9 +11,10 @@ double LandingManager::changingAltitude(SFOutput_t input, _PathData aimingPoint,
     Vector3D projectedPoint;
 
     //calculating the vectors
-    Vector3D vectorAI(iPoint.x - aPoint.x, iPoint.y - aPoint.y, iPoint.z - aPoint.z);
-    Vector3D vectorAS(sPoint.x - aPoint.x, sPoint.y - aPoint.y, sPoint.z - aPoint.z);
-    Vector3D vectorAC(cPoint.x - aPoint.x, cPoint.y - aPoint.y, cPoint.z - aPoint.z);
+    Vector3D vectorAI(iPoint.x - aPoint.x, iPoint.y - aPoint.y, iPoint.z - aPoint.z); //aiming point --> intersection point
+    Vector3D vectorAS(sPoint.x - aPoint.x, sPoint.y - aPoint.y, sPoint.z - aPoint.z); //aiming point --> stopping point
+
+    Vector3D vectorAC(cPoint.x - aPoint.x, cPoint.y - aPoint.y, cPoint.z - aPoint.z); //aiming point --> current point
     Vector3D normalVector;
     
     //normal of the plane created by aiming, stopping, and intersection point
@@ -63,54 +64,51 @@ double LandingManager::slowFlightSpeed(bool ifPackage)
 
 _LandingPath LandingManager::createSlopeWaypoints(Telemetry_PIGO_t input, double currentAltitude)
 {
-    //created comments for testing
     _LandingPath path;
-    path.stoppingPoint.latitude = input.stoppingLatitude; //0
-    path.stoppingPoint.longitude = input.stoppingLongitude; //0
-    path.stoppingPoint.altitude = input.stoppingAltitude; //0
+    path.stoppingPoint.latitude = input.stoppingLatitude; 
+    path.stoppingPoint.longitude = input.stoppingLongitude; 
+    path.stoppingPoint.altitude = input.stoppingAltitude; 
 
     //creating points from stopping point to aiming point 
     
     //setting Z of aiming point
-    path.aimingPoint.altitude = input.stoppingAltitude; //0
+    path.aimingPoint.altitude = input.stoppingAltitude; 
     
     //determining x and y of aiming point
-    double radianDirection = input.stoppingDirectionHeading * PI / 180.0; //PI/4
+    double radianDirection = input.stoppingDirectionHeading * PI / 180.0; 
 
     //finding the x and y components of the rolling distance vector
-    double stoppingDistX = sin(radianDirection) * DISTANCE_OF_LANDING; //5root2
-    double stoppingDistY = cos(radianDirection) * DISTANCE_OF_LANDING; //5root2
+    double stoppingDistX = sin(radianDirection) * DISTANCE_OF_LANDING; 
+    double stoppingDistY = cos(radianDirection) * DISTANCE_OF_LANDING;
 
     //converting into x and y components in lat and lon
-    double metersPerDegLon = 40075000.0 * cos(input.stoppingLatitude*PI/180)/360.0; //111251.6316
-    double stoppingDistLon = stoppingDistX / metersPerDegLon; //6.355922792e-5
-    double stoppingDistLat = stoppingDistY / METERS_PER_DEG_LAT; //6.352019235e-5
-
- 
+    double metersPerDegLon = LATITUDE_LONGITUDE_CONVERSION_CONSTANT * cos(input.stoppingLatitude*PI/180)/360.0; 
+    double stoppingDistLon = stoppingDistX / metersPerDegLon; 
+    double stoppingDistLat = stoppingDistY / METERS_PER_DEG_LAT; 
 
     //subtracting the distances from stopping point to get aiming point
-    path.aimingPoint.longitude = input.stoppingLongitude - stoppingDistLon;//1-6.355922792e-5
-    path.aimingPoint.latitude = input.stoppingLatitude - stoppingDistLat; //2-6.352019235e-5
+    path.aimingPoint.longitude = input.stoppingLongitude - stoppingDistLon;
+    path.aimingPoint.latitude = input.stoppingLatitude - stoppingDistLat; 
     
     //calculating the intersection point
 
     //determining altitude of intersection
-    path.intersectionPoint.altitude = currentAltitude; //100
+    path.intersectionPoint.altitude = currentAltitude; 
 
     //determining the horizontal distance of intersection
-    double horizDist = (currentAltitude - path.aimingPoint.altitude) / tan(ANGLE_OF_LANDING * PI / 180.0); //altitude in meters //1108.715073
+    double horizDist = (currentAltitude - path.aimingPoint.altitude) / tan(ANGLE_OF_LANDING * PI / 180.0);
 
     //finding the x and y components of the horizDist vector
-    double slopeDistX = sin(radianDirection) * horizDist; //783.9799468
-    double slopeDistY = cos(radianDirection) * horizDist; //783.9799468
+    double slopeDistX = sin(radianDirection) * horizDist; 
+    double slopeDistY = cos(radianDirection) * horizDist; 
 
     //converting x and y components 
-    double slopeDistLon = slopeDistX / metersPerDegLon;//7.046907407e-3 //same conversion factor used here because we are flying at a relatively small scale. Lat adjustments will affect it very minimally
-    double slopeDistLat = slopeDistY / METERS_PER_DEG_LAT;//7.042579472e-3
+    double slopeDistLon = slopeDistX / metersPerDegLon;
+    double slopeDistLat = slopeDistY / METERS_PER_DEG_LAT;
 
     //subtracting the distances from aiming point to get intersection point
-    path.intersectionPoint.longitude = path.aimingPoint.longitude - slopeDistLon; //1-6.355922792e-5 - 7.046907407e-3 
-    path.intersectionPoint.latitude = path.aimingPoint.latitude - slopeDistLat; //2-6.352019235e-5 - 7.042579472e-3
+    path.intersectionPoint.longitude = path.aimingPoint.longitude - slopeDistLon;
+    path.intersectionPoint.latitude = path.aimingPoint.latitude - slopeDistLat;
 
 
     return path;
@@ -172,20 +170,20 @@ _PathData TakeoffManager::createTakeoffWaypoint(double currentLatitude, double c
 {
     _PathData desiredWaypoint;
     //retrieve radian direction of heading (starts from positive y axis)
-    double radianDirection = takeoffDirection * PI / 180.0; //0.785398163397
+    double radianDirection = takeoffDirection * PI / 180.0;
 
     //retrieve the horizontal and vertical components of takeoff distance
-    double takeoffDistX = sin(radianDirection) * DISTANCE_OF_TAKEOFF; //70.71067811862
-    double takeoffDistY = cos(radianDirection) * DISTANCE_OF_TAKEOFF; //70.71067811862
+    double takeoffDistX = sin(radianDirection) * DISTANCE_OF_TAKEOFF; 
+    double takeoffDistY = cos(radianDirection) * DISTANCE_OF_TAKEOFF; 
 
     //convert horizontal and vertical components into latitude and longitude
-    double metersPerDegLon = 40075000.0 * cos(currentLatitude * PI/180)/360.0; //111302.489953867719
-    double takeoffDistLon = takeoffDistX / metersPerDegLon; //0.0006353018
-    double takeoffDistLat = takeoffDistY / METERS_PER_DEG_LAT; //0.0006352019
+    double metersPerDegLon = LATITUDE_LONGITUDE_CONVERSION_CONSTANT * cos(currentLatitude * PI/180)/360.0; 
+    double takeoffDistLon = takeoffDistX / metersPerDegLon; 
+    double takeoffDistLat = takeoffDistY / METERS_PER_DEG_LAT; 
 
     //add components onto the current location to determine takeoff point
-    desiredWaypoint.latitude = currentLatitude + takeoffDistLat;//1.0006353018
-    desiredWaypoint.longitude = currentLongitude + takeoffDistLon; //2.0006352019
+    desiredWaypoint.latitude = currentLatitude + takeoffDistLat;
+    desiredWaypoint.longitude = currentLongitude + takeoffDistLon; 
 
     /*
     takeoff waypoint will have the same altitude as the current position, constant additional altitude 
