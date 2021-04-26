@@ -15,7 +15,7 @@ AltitudeAirspeedCommands_t coordinateTurnElevation::_pitchandairspeed;
 AttitudeData commsWithAttitude::_receivedData;
 
 // Landing and Takeoff Variables (some stages DO NOT need waypoint inputs, it's not a mistake that some are missing)
-// For landing and takeoff states that use waypoint manager functions, the varaibles below will hold the I/O that is needed for those functions to work
+// For landing and takeoff states that use waypoint manager functions, the variables below will hold the I/O that is needed for those functions to work
 
 _LandingTakeoffInput takeoffRollStage::input;
 _LandingTakeoffOutput takeoffRollStage::output;
@@ -416,8 +416,8 @@ void landingTransitionStage::execute(pathManager* pathMgr)
     output = LandingManager::translateWaypointCommands(waypointOutput);
 
     //calculating the difference in heading to detect if finished turning (2 differences possible)
-    differenceInHeading1 = input.telemetryData.stoppingDirectionHeading - input.sensorOutput.track;
-    differenceInHeading2 = input.sensorOutput.track - input.telemetryData.stoppingDirectionHeading;
+    double differenceInHeading1 = input.telemetryData.stoppingDirectionHeading - input.sensorOutput.track;
+    double differenceInHeading2 = input.sensorOutput.track - input.telemetryData.stoppingDirectionHeading;
 
     //making sure both headings are positive
     if(differenceInHeading1 < 0){differenceInHeading1 += 360;}
@@ -429,7 +429,7 @@ void landingTransitionStage::execute(pathManager* pathMgr)
         pathMgr->stage = SLOPE;
     }
 
-    if(!landingTransitionStage::waypointStatus == WAYPOINT_SUCCESS)
+    if(landingTransitionStage::waypointStatus != WAYPOINT_SUCCESS)
     {
         pathMgr->isError = true;
     }
@@ -482,7 +482,7 @@ void landingSlopeStage::execute(pathManager* pathMgr)
         output.desiredAirspeed = LandingManager::approachSpeed(pathMgr->isPackage);
     }
     
-    if(!landingTransitionStage::waypointStatus == WAYPOINT_SUCCESS)
+    if(landingTransitionStage::waypointStatus != WAYPOINT_SUCCESS)
     {
         pathMgr->isError = true;
     }
@@ -535,7 +535,7 @@ void landingFlareStage::execute(pathManager* pathMgr)
         output.desiredAirspeed = LandingManager::slowFlightSpeed(pathMgr->isPackage);
     }   
 
-    if(!landingTransitionStage::waypointStatus == WAYPOINT_SUCCESS)
+    if(landingTransitionStage::waypointStatus != WAYPOINT_SUCCESS)
     {
         pathMgr->isError = true;
     }
@@ -660,7 +660,7 @@ void takeoffRollStage::execute(pathManager* pathMgr)
         pathMgr->stage = CLIMB;
     }
 
-    if(!takeoffRollStage::waypointStatus == WAYPOINT_SUCCESS)
+    if(takeoffRollStage::waypointStatus != WAYPOINT_SUCCESS)
     {
         pathMgr->isError = true;
     }
@@ -712,7 +712,7 @@ void takeoffClimbStage::execute(pathManager* pathMgr)
     //ensuring made takeoff points is reset
     pathMgr->madeTakeoffPoints = false;
 
-    if(!takeoffRollStage::waypointStatus == WAYPOINT_SUCCESS)
+    if(takeoffRollStage::waypointStatus != WAYPOINT_SUCCESS)
     {
         pathMgr->isError = true;
     }

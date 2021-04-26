@@ -194,8 +194,6 @@ class landingTransitionStage : public pathManagerState
         static _WaypointManager_Data_Out waypointOutput;
         static _PathData * pathArray[3]; //used to translate loaded in path to something the waypoint manager can take as a parameter
         static _PathData * currentLocation;
-        double differenceInHeading1;
-        double differenceInHeading2;
         landingTransitionStage() {}
         landingTransitionStage(const landingTransitionStage& other);
         landingTransitionStage& operator =(const landingTransitionStage& other);
