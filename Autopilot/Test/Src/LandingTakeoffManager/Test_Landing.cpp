@@ -33,7 +33,7 @@ TEST(LandingFunctions, Test_changingAltitude){
     input.altitude = 0;
     /***STEPTHROUGH***/
     
-    double desiredAltitude = LandingManager::changingAltitude(input, aimingPoint, intersectionPoint, stoppingPoint);
+    double desiredAltitude = LandingManager::changingAltitude(&input, &aimingPoint, &intersectionPoint, &stoppingPoint);
     /***ASSERTS***/
     EXPECT_NEAR(desiredAltitude, 1.5, 0.000001); //6 decimal places for altitude
 }
@@ -42,7 +42,7 @@ TEST(LandingFunctions, Test_approachSpeed_packageTrue){
     /***SETUP***/
     bool ifPackage = true;
     /***STEPTHROUGH***/
-    double desiredSpeed = LandingManager::approachSpeed(ifPackage);
+    double desiredSpeed = LandingManager::approachSpeed(&ifPackage);
     /***ASSERTS***/
     EXPECT_EQ(desiredSpeed, 5.2);
 }
@@ -51,7 +51,7 @@ TEST(LandingFunctions, Test_approachSpeed_packageFalse){
     /***SETUP***/
     bool ifPackage = false;
     /***STEPTHROUGH***/
-    double desiredSpeed = LandingManager::approachSpeed(ifPackage);
+    double desiredSpeed = LandingManager::approachSpeed(&ifPackage);
     /***ASSERTS***/
     EXPECT_EQ(desiredSpeed, 2.6);
 }
@@ -60,7 +60,7 @@ TEST(LandingFunctions, Test_slowFlightSpeed_packageTrue){
     /***SETUP***/
     bool ifPackage = true;
     /***STEPTHROUGH***/
-    double desiredSpeed = LandingManager::slowFlightSpeed(ifPackage);
+    double desiredSpeed = LandingManager::slowFlightSpeed(&ifPackage);
     /***ASSERTS***/
     EXPECT_EQ(desiredSpeed, 6);
 }
@@ -69,7 +69,7 @@ TEST(LandingFunctions, Test_slowFlightSpeed_packageFalse){
     /***SETUP***/
     bool ifPackage = false;
     /***STEPTHROUGH***/
-    double desiredSpeed = LandingManager::slowFlightSpeed(ifPackage);
+    double desiredSpeed = LandingManager::slowFlightSpeed(&ifPackage);
     /***ASSERTS***/
     EXPECT_EQ(desiredSpeed, 4);
 }
@@ -81,10 +81,10 @@ TEST(LandingFunctions, Test_createSlopeWaypoints){
     input.stoppingLatitude = 2;
     input.stoppingAltitude = 3;
     input.stoppingDirectionHeading = 45;
-    double currentAltitude = 100;
+    float currentAltitude = 100;
     _LandingPath path;
     /***STEPTHROUGH***/
-    path = LandingManager::createSlopeWaypoints(input, currentAltitude);
+    path = LandingManager::createSlopeWaypoints(&input, &currentAltitude);
     
     /***ASSERTS***/
     //error of 6 decimal places allowed in difference of degrees, translates to 1 m

@@ -142,6 +142,7 @@ void resetVariables::execute(pathManager* pathMgr)
         pathMgr->setState(fatalFailureMode::getInstance());
     }
 
+    //if begin landing or begin takeoff is true, this state will bypass the enum and start the plane at roll/transition
     if(commsWithTelemetry::GetTelemetryIncomingData()->beginLanding)
     {
         resetPassby(&landingTransitionStage::getControlOutput()->controlDetails);
@@ -331,20 +332,20 @@ LANDING STATE FUNCTIONS
 void landingTransitionStage::execute(pathManager* pathMgr)
 {
     //load in sensor fusion data and telemtry data into input structure
-    input.telemetryData = *(commsWithTelemetry::GetTelemetryIncomingData());
-    input.sensorOutput = *(sensorFusion::GetSFOutput());
+    input.telemetryData = commsWithTelemetry::GetTelemetryIncomingData();
+    input.sensorOutput = sensorFusion::GetSFOutput();
 
     //making sure landing points are only made once 
     if(!pathMgr->madeLandingPoints)
     {
         //requires data structure that dhruv wants to use 
-        path = LandingManager::createSlopeWaypoints(input.telemetryData, input.sensorOutput.altitude);
+        path = LandingManager::createSlopeWaypoints(input.telemetryData, &(input.sensorOutput->altitude));
 
         //creating waypoints 
         pathArray[0] = landingPath.initialize_waypoint(path.intersectionPoint.longitude, path.intersectionPoint.latitude, path.intersectionPoint.altitude, PATH_FOLLOW);
         pathArray[1] = landingPath.initialize_waypoint(path.aimingPoint.longitude, path.aimingPoint.latitude, path.aimingPoint.altitude, PATH_FOLLOW);
         pathArray[2] = landingPath.initialize_waypoint(path.stoppingPoint.longitude, path.stoppingPoint.latitude, path.stoppingPoint.altitude, PATH_FOLLOW);
-        currentLocation = landingPath.initialize_waypoint(input.sensorOutput.longitude, input.sensorOutput.latitude, input.sensorOutput.altitude, HOLD_WAYPOINT, 20); //fill in with sensor fusion data
+        currentLocation = landingPath.initialize_waypoint(input.sensorOutput->longitude, input.sensorOutput->latitude, input.sensorOutput->altitude, HOLD_WAYPOINT, 20); //fill in with sensor fusion data
         
         //initializing flight path
         waypointStatus = landingPath.initialize_flight_path(pathArray, 3, currentLocation);
@@ -354,20 +355,20 @@ void landingTransitionStage::execute(pathManager* pathMgr)
     }
 
     //translate sensor data to waypoint data in struct
-    waypointInput.latitude = input.sensorOutput.latitude;
-    waypointInput.longitude = input.sensorOutput.longitude;
-    waypointInput.altitude = input.sensorOutput.altitude;
-    waypointInput.track = input.sensorOutput.track;
+    waypointInput.latitude = input.sensorOutput->latitude;
+    waypointInput.longitude = input.sensorOutput->longitude;
+    waypointInput.altitude = input.sensorOutput->altitude;
+    waypointInput.track = input.sensorOutput->track;
 
     //follow the landing waypoints
     waypointStatus = landingPath.get_next_directions(waypointInput, &waypointOutput);
 
     //translate waypoint commands into landing output structure
-    output = LandingManager::translateWaypointCommands(waypointOutput);
+    output = LandingManager::translateWaypointCommands(&waypointOutput);
 
     //calculating the difference in heading to detect if finished turning (2 differences possible)
-    double differenceInHeading1 = input.telemetryData.stoppingDirectionHeading - input.sensorOutput.track;
-    double differenceInHeading2 = input.sensorOutput.track - input.telemetryData.stoppingDirectionHeading;
+    double differenceInHeading1 = input.telemetryData->stoppingDirectionHeading - input.sensorOutput->track;
+    double differenceInHeading2 = input.sensorOutput->track - input.telemetryData->stoppingDirectionHeading;
 
     //making sure both headings are positive
     if(differenceInHeading1 < 0){differenceInHeading1 += 360;}
@@ -403,10 +404,10 @@ pathManagerState& landingTransitionStage::getInstance()
 void landingSlopeStage::execute(pathManager* pathMgr)
 {
     //load in sensor fusion data and telemtry data into input structure
-    input.telemetryData = *(commsWithTelemetry::GetTelemetryIncomingData());
-    input.sensorOutput = *(sensorFusion::GetSFOutput());
+    input.telemetryData = commsWithTelemetry::GetTelemetryIncomingData();
+    input.sensorOutput = sensorFusion::GetSFOutput();
 
-    if(input.sensorOutput.altitude <= (FLARE_ALTITUDE + input.telemetryData.stoppingAltitude)) //if less than flare altitude
+    if(input.sensorOutput->altitude <= (FLARE_ALTITUDE + input.telemetryData->stoppingAltitude)) //if less than flare altitude
     {
         pathMgr->stage = FLARE;
 
@@ -414,22 +415,22 @@ void landingSlopeStage::execute(pathManager* pathMgr)
     else
     {
         //setting sensorFusion input to waypoint data in
-        waypointInput.latitude = input.sensorOutput.latitude;
-        waypointInput.longitude = input.sensorOutput.longitude;
-        waypointInput.altitude = input.sensorOutput.altitude;
-        waypointInput.track = input.sensorOutput.track;
+        waypointInput.latitude = input.sensorOutput->latitude;
+        waypointInput.longitude = input.sensorOutput->longitude;
+        waypointInput.altitude = input.sensorOutput->altitude;
+        waypointInput.track = input.sensorOutput->track;
 
         //aligning horizontal position using waypointManager get_next_directions
         landingTransitionStage::waypointStatus = landingTransitionStage::landingPath.get_next_directions(waypointInput, &waypointOutput);
         
         //translate waypoint ouput data into landing data
-        output = LandingManager::translateWaypointCommands(waypointOutput);
+        output = LandingManager::translateWaypointCommands(&waypointOutput);
         
         //retrieving desired altitude for slope state and setting it 
-        output.desiredAltitude = LandingManager::changingAltitude(input.sensorOutput,landingTransitionStage::path.aimingPoint, landingTransitionStage::path.intersectionPoint, landingTransitionStage::path.stoppingPoint);
+        output.desiredAltitude = LandingManager::changingAltitude(input.sensorOutput, &landingTransitionStage::path.aimingPoint, &landingTransitionStage::path.intersectionPoint, &landingTransitionStage::path.stoppingPoint);
         
         //retrieving desired speed for approach speed and setting it
-        output.desiredAirspeed = LandingManager::approachSpeed(pathMgr->isPackage);
+        output.desiredAirspeed = LandingManager::approachSpeed(&pathMgr->isPackage);
     }
     
     if(landingTransitionStage::waypointStatus != WAYPOINT_SUCCESS)
@@ -456,33 +457,33 @@ pathManagerState& landingSlopeStage::getInstance()
 void landingFlareStage::execute(pathManager* pathMgr)
 {
     //load in sensor fusion data and telemtry data into input structure
-    input.telemetryData = *(commsWithTelemetry::GetTelemetryIncomingData());
-    input.sensorOutput = *(sensorFusion::GetSFOutput());
+    input.telemetryData = commsWithTelemetry::GetTelemetryIncomingData();
+    input.sensorOutput = sensorFusion::GetSFOutput();
 
-    if(input.sensorOutput.altitude <= (DECRAB_ALTITUDE + input.telemetryData.stoppingAltitude)) //altitude is below 70 cm
+    if(input.sensorOutput->altitude <= (DECRAB_ALTITUDE + input.telemetryData->stoppingAltitude)) //altitude is below 70 cm
     {
         pathMgr->stage = DECRAB;
     }
     else
     {
         //setting sensorFusion input to waypoint data in
-        waypointInput.latitude = input.sensorOutput.latitude;
-        waypointInput.longitude = input.sensorOutput.longitude;
-        waypointInput.altitude = input.sensorOutput.altitude;
-        waypointInput.track = input.sensorOutput.track;
+        waypointInput.latitude = input.sensorOutput->latitude;
+        waypointInput.longitude = input.sensorOutput->longitude;
+        waypointInput.altitude = input.sensorOutput->altitude;
+        waypointInput.track = input.sensorOutput->track;
 
         //maintaining horizontal position
         landingTransitionStage::waypointStatus = landingTransitionStage::landingPath.get_next_directions(waypointInput, &waypointOutput);
         
         //translating waypoint data into landing data
-        output = LandingManager::translateWaypointCommands(waypointOutput);
+        output = LandingManager::translateWaypointCommands(&waypointOutput);
 
         //throttle off
         output.controlDetails.throttlePassby = true;
         output.controlDetails.throttlePercent = 0;
 
         //maintaing speed for flare attitude
-        output.desiredAirspeed = LandingManager::slowFlightSpeed(pathMgr->isPackage);
+        output.desiredAirspeed = LandingManager::slowFlightSpeed(&pathMgr->isPackage);
     }   
 
     if(landingTransitionStage::waypointStatus != WAYPOINT_SUCCESS)
@@ -509,21 +510,21 @@ pathManagerState& landingFlareStage::getInstance()
 void landingDecrabStage::execute(pathManager* pathMgr)
 {
     //load in sensor fusion data and telemtry data into input structure
-    input.telemetryData = *(commsWithTelemetry::GetTelemetryIncomingData());
-    input.sensorOutput = *(sensorFusion::GetSFOutput());
+    input.telemetryData = commsWithTelemetry::GetTelemetryIncomingData();
+    input.sensorOutput = sensorFusion::GetSFOutput();
 
-    if(input.sensorOutput.altitude <= (TOUCHDOWN_ALTITUDE + input.telemetryData.stoppingAltitude)) //altitude is 5 cm or less/ultrasonic sensor sensed 5cm or less
+    if(input.sensorOutput->altitude <= (TOUCHDOWN_ALTITUDE + input.telemetryData->stoppingAltitude)) //altitude is 5 cm or less/ultrasonic sensor sensed 5cm or less
     {
         pathMgr->stage = TOUCHDOWN;
     }
     else
     {
         //align heading with landing direction
-        output.desiredHeading = input.telemetryData.stoppingDirectionHeading;
+        output.desiredHeading = input.telemetryData->stoppingDirectionHeading;
         output.useHeading = true;
         
         //retrieving desired slow flight speed
-        output.desiredAirspeed = LandingManager::slowFlightSpeed(pathMgr->isPackage);
+        output.desiredAirspeed = LandingManager::slowFlightSpeed(&pathMgr->isPackage);
         
         //throttle off
         output.controlDetails.throttlePassby = true;
@@ -549,15 +550,15 @@ pathManagerState& landingDecrabStage::getInstance()
 void landingTouchdownStage::execute(pathManager* pathMgr)
 {
     //load in sensor fusion data and telemtry data into input structure
-    input.telemetryData = *(commsWithTelemetry::GetTelemetryIncomingData());
-    input.sensorOutput = *(sensorFusion::GetSFOutput());
+    input.telemetryData = commsWithTelemetry::GetTelemetryIncomingData();
+    input.sensorOutput = sensorFusion::GetSFOutput();
 
     //throttle off
     output.controlDetails.throttlePassby = true;
     output.controlDetails.throttlePercent = 0;
 
     //aligning heading
-    output.desiredHeading = input.telemetryData.stoppingDirectionHeading;
+    output.desiredHeading = input.telemetryData->stoppingDirectionHeading;
     output.useHeading = true;
 
     //ensure made landing points is reset
@@ -587,8 +588,8 @@ TAKEOFF STATE FUNCTIONS
 void takeoffRollStage::execute(pathManager* pathMgr)
 {
     //load in sensor fusion data and telemtry data into input structure
-    input.telemetryData = *(commsWithTelemetry::GetTelemetryIncomingData());
-    input.sensorOutput = *(sensorFusion::GetSFOutput());
+    input.telemetryData = commsWithTelemetry::GetTelemetryIncomingData();
+    input.sensorOutput = sensorFusion::GetSFOutput();
 
     //max throttle
     output.controlDetails.throttlePassby = true;
@@ -596,14 +597,14 @@ void takeoffRollStage::execute(pathManager* pathMgr)
 
     if(!pathMgr->madeTakeoffPoints)
     {
-        takeoffPoint = TakeoffManager::createTakeoffWaypoint(input.sensorOutput.latitude,input.sensorOutput.longitude, input.sensorOutput.altitude, input.telemetryData.takeoffDirectionHeading);
+        takeoffPoint = TakeoffManager::createTakeoffWaypoint(&(input.sensorOutput->latitude),&(input.sensorOutput->longitude), &(input.sensorOutput->altitude), &(input.telemetryData->takeoffDirectionHeading));
         pathArray[0] = takeoffPath.initialize_waypoint(takeoffPoint.longitude, takeoffPoint.latitude, takeoffPoint.altitude, PATH_FOLLOW);
-        currentLocation = takeoffPath.initialize_waypoint(input.sensorOutput.longitude, input.sensorOutput.latitude, input.sensorOutput.altitude, HOLD_WAYPOINT);
+        currentLocation = takeoffPath.initialize_waypoint(input.sensorOutput->longitude, input.sensorOutput->latitude, input.sensorOutput->altitude, HOLD_WAYPOINT);
         waypointStatus = takeoffPath.initialize_flight_path(pathArray, 1, currentLocation);
         pathMgr->madeTakeoffPoints = true;
     }
 
-    if(input.sensorOutput.airspeed > (TakeoffManager::desiredRotationSpeed(pathMgr->isPackage)))
+    if(input.sensorOutput->airspeed > (TakeoffManager::desiredRotationSpeed(&pathMgr->isPackage)))
     {
         pathMgr->stage = CLIMB;
     }
@@ -632,25 +633,25 @@ pathManagerState& takeoffRollStage::getInstance()
 void takeoffClimbStage::execute(pathManager* pathMgr)
 {
     //load in sensor fusion data and telemtry data into input structure
-    input.telemetryData = *(commsWithTelemetry::GetTelemetryIncomingData());
-    input.sensorOutput = *(sensorFusion::GetSFOutput());
+    input.telemetryData = commsWithTelemetry::GetTelemetryIncomingData();
+    input.sensorOutput = sensorFusion::GetSFOutput();
 
-    if(input.sensorOutput.altitude > (takeoffRollStage::takeoffPoint.altitude + EXIT_TAKEOFF_ALTITUDE))
+    if(input.sensorOutput->altitude > (takeoffRollStage::takeoffPoint.altitude + EXIT_TAKEOFF_ALTITUDE))
     {
         pathMgr->stage = CRUISING;
     }
     else
     {   
         //setting sensorFusion input to waypoint data in
-        waypointInput.latitude = input.sensorOutput.latitude;
-        waypointInput.longitude = input.sensorOutput.longitude;
-        waypointInput.altitude = input.sensorOutput.altitude;
-        waypointInput.track = input.sensorOutput.track;
+        waypointInput.latitude = input.sensorOutput->latitude;
+        waypointInput.longitude = input.sensorOutput->longitude;
+        waypointInput.altitude = input.sensorOutput->altitude;
+        waypointInput.track = input.sensorOutput->track;
 
         takeoffRollStage::waypointStatus = takeoffRollStage::takeoffPath.get_next_directions(waypointInput, &waypointOutput);
-        output = LandingManager::translateWaypointCommands(waypointOutput);
+        output = LandingManager::translateWaypointCommands(&waypointOutput);
         
-        output.desiredAirspeed = TakeoffManager::desiredClimbSpeed(pathMgr->isPackage);
+        output.desiredAirspeed = TakeoffManager::desiredClimbSpeed(&pathMgr->isPackage);
         
         //maxThrottle
         output.controlDetails.throttlePassby = true;
