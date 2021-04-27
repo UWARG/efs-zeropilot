@@ -242,31 +242,31 @@ void coordinateTurnElevation::execute(pathManager* pathMgr)
     
     CoordinatedTurnInput_t turnInput {};
     AltitudeAirspeedInput_t altAirspeedInput {};                                   
-
+    _LandingTakeoffOutput * landingTakeoffOutput;
     
     //get elevation and turning data
     //loading in commands data from each of the states
     switch(pathMgr->stage){
         case ROLL:
-            LandingManager::translateLTSFCommandsToCoordTurns(takeoffRollStage::getControlOutput(), sensFusionOutput, imudata, &turnInput, &altAirspeedInput);
+            landingTakeoffOutput = takeoffRollStage::getControlOutput();
             break;
         case CLIMB:
-            LandingManager::translateLTSFCommandsToCoordTurns(takeoffClimbStage::getControlOutput(), sensFusionOutput, imudata, &turnInput, &altAirspeedInput);
+            landingTakeoffOutput = takeoffClimbStage::getControlOutput();
             break;
         case TRANSITION:
-            LandingManager::translateLTSFCommandsToCoordTurns(landingTransitionStage::getControlOutput(), sensFusionOutput, imudata, &turnInput, &altAirspeedInput);
+            landingTakeoffOutput = landingTransitionStage::getControlOutput();
             break;
         case SLOPE:
-            LandingManager::translateLTSFCommandsToCoordTurns(landingSlopeStage::getControlOutput(), sensFusionOutput, imudata, &turnInput, &altAirspeedInput);
+            landingTakeoffOutput = landingSlopeStage::getControlOutput();
             break;
         case FLARE:
-            LandingManager::translateLTSFCommandsToCoordTurns(landingFlareStage::getControlOutput(), sensFusionOutput, imudata, &turnInput, &altAirspeedInput);
+            landingTakeoffOutput = landingFlareStage::getControlOutput();
             break;
         case DECRAB:
-            LandingManager::translateLTSFCommandsToCoordTurns(landingDecrabStage::getControlOutput(), sensFusionOutput, imudata, &turnInput, &altAirspeedInput);
+            landingTakeoffOutput = landingDecrabStage::getControlOutput();
             break;
         case TOUCHDOWN:
-            LandingManager::translateLTSFCommandsToCoordTurns(landingTouchdownStage::getControlOutput(), sensFusionOutput, imudata, &turnInput, &altAirspeedInput);
+            landingTakeoffOutput = landingTouchdownStage::getControlOutput();
             break;
         case CRUISING:
             turnInput.currentHeadingTrack = sensFusionOutput->track; // Gets track;
@@ -292,6 +292,11 @@ void coordinateTurnElevation::execute(pathManager* pathMgr)
             altAirspeedInput.currentAirspeed = sensFusionOutput->airspeed;
             altAirspeedInput.desiredAirspeed = waypointOutput->desiredAirspeed; 
             
+    }
+
+    if(pathMgr->stage!=CRUISING)
+    {
+        LandingManager::translateLTSFCommandsToCoordTurns(landingTakeoffOutput, sensFusionOutput, imudata, &turnInput, &altAirspeedInput);
     }
 
     // Call module functions
