@@ -62,7 +62,7 @@ class LandingManager{
 
             @return double - this function will return the desiredAltitude for the position of the relative points
         */
-        static double changingAltitude(Telemetry_PIGO_t input, _PathData aimingPoint, _PathData intersectionPoint, _PathData stoppingPoint);
+        static double changingAltitude(SFOutput_t input, _PathData aimingPoint, _PathData intersectionPoint, _PathData stoppingPoint);
 
         /*
             This function takes in if there is a package on board and returns an approach speed the aircraft should follow
