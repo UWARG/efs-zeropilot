@@ -1,5 +1,6 @@
 #pragma once
 #include "pathManagerStateManager.hpp"
+#include "landingTakeoffManager.hpp"
 
 class pathManagerState;
 
@@ -16,6 +17,12 @@ class pathManager
         void setState(pathManagerState& newState);
         _Path_Manager_Cycle_Status getStatus() {return status;}
 
+        //used to determine the stage of the landing sequence
+        _FlightStage stage;
+        bool madeLandingPoints;
+        bool madeTakeoffPoints;
+        bool isError;
+        bool isPackage;
     private:
         pathManagerState* currentState;
         _Path_Manager_Cycle_Status status;

@@ -91,8 +91,13 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
     numWaypoints = numberOfWaypoints;
     nextFilledIndex = 0;
     
-    #ifdef UNIT_TESTING
-        currentIndex = 2;
+    #ifdef UNIT_TESTING 
+    //waypoint manager tests use a currentIndex of 2. To ensure that the tests work for flight paths with fewer waypoints, this if statement is employed
+        if (numberOfWaypoints > 2) {
+            currentIndex = 2;
+        } else {
+            currentIndex = 0;
+        }
     #else
         currentIndex = 0;
     #endif

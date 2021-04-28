@@ -16,6 +16,7 @@
 
 #include <cstdint>
 #include <stdlib.h>
+#include "pathDatatypes.hpp"
 
 #define PATH_BUFFER_SIZE 100
 
@@ -54,6 +55,7 @@ struct _PathData {
     float turnRadius;                 // if hold is commanded (type = 2), then this is the radius of the hold cycle
     _WaypointOutputType waypointType; 
 };
+
 
 /**
 * Structure contains the data that will be returned to the Path Manager state manager.

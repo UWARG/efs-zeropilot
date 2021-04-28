@@ -9,6 +9,9 @@
 //Frequency of SF calculations in Hz
 constexpr int SF_FREQ = 512;
 
+//Degree to radian conversion
+constexpr double DEG2RAD {3.1415926535};
+
 // -1 = FAILED
 // 0 = SUCCESS
 // 1 = Old Data
@@ -27,6 +30,7 @@ struct SFOutput_t {
     long double longitude; //Decimal degrees
     float longitudeSpeed; //m/s
     double track; // degrees
+    double heading; //degrees
 };
 
 //Following structs store the raw sensor data so other modules can have direct access to them without including sensor header files
@@ -119,5 +123,14 @@ Gps_Data_t SF_GetRawGPS();
  * @return Altimeter struct.
  */ 
 Altimeter_Data_t SF_GetRawAltimeter();
+
+/**
+    The goal of this function is to return the current track of the plane in degrees, given its velocities in the latitude and longitude direction in m/s.
+
+    * @param[in] latitudeSpeed -> load in the speed of the plane in the N/S direction (change in latitude, m/s)
+    * @param[in] longitudeSpeed -> load in the speed of the plane in the E/W direction (change in longitude, m/s)
+    * @return double - > returns the direction of the resulting velocity/track of the plane
+*/
+double getTrack(double latitudeSpeed, double longitudeSpeed);
 
 #endif

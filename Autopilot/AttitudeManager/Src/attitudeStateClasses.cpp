@@ -58,12 +58,45 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     PMCommands pathManagerOutput;
     PMError_t pmError = PM_GetCommands(&pathManagerOutput);
 
-    _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->roll, SFOutput->rollRate);
-    _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->pitch, SFOutput->pitchRate);
-    _PidOutput.rudderPercent = pathManagerOutput.rudderPercent;
-    _PidOutput.throttlePercent = pathManagerOutput.throttlePercent;
+    //executes PID's to acheive desired roll, pitch angle
+    //if manual control is needed, use loaded in percents instead!
+    if(pathManagerOutput.passbyData.pitchPassby)
+    {
+        _PidOutput.pitchPercent = pathManagerOutput.passbyData.pitchPercent;
+    }
+    else
+    {
+        _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->pitch, SFOutput->pitchRate);
+    }
 
-    if (pmError.errorCode == 0)
+    if(pathManagerOutput.passbyData.rollPassby)
+    {
+        _PidOutput.rollPercent = pathManagerOutput.passbyData.rollPercent;
+    }
+    else
+    {
+        _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->roll, SFOutput->rollRate);
+    }
+
+    if(pathManagerOutput.passbyData.rudderPassby)
+    {
+        _PidOutput.rudderPercent = pathManagerOutput.passbyData.rudderPercent;
+    }
+    else
+    {
+        _PidOutput.rudderPercent = pathManagerOutput.rudderPercent;
+    }
+
+    if(pathManagerOutput.passbyData.throttlePassby)
+    {
+        _PidOutput.throttlePercent = pathManagerOutput.passbyData.throttlePercent;
+    } 
+    else
+    {
+        _PidOutput.throttlePercent = pathManagerOutput.throttlePercent;
+    }
+
+    if (pmError.errorCode == 0) 
     {
         attitudeMgr->setState(OutputMixingMode::getInstance());
     }

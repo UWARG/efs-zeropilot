@@ -40,6 +40,36 @@ struct Telemetry_PIGO_t {
 
     Telemetry_Waypoint_Data_t waypoints[100]; // Somehow need to get PATH_BUFFER_SIZE here...
     Telemetry_Waypoint_Data_t homebase;
+
+    // landing and takeoff 
+    bool beginLanding;
+    bool beginTakeoff;
+    float stoppingDirectionHeading;
+    float stoppingLongitude;
+    float stoppingLatitude;
+    float stoppingAltitude;
+    float takeoffDirectionHeading;
+    // Struct for stopping point gps coordinates
+
+};
+
+/*
+* Structure stores manual control information
+* If a certain variable needs to be controlled, set the percent to the desired value and its respective boolean to true
+*/
+struct _PassbyControl{
+    double rollPercent;
+    bool rollPassby;
+
+    double rudderPercent;
+    bool rudderPassby;
+
+    double pitchPercent;
+    bool pitchPassby;
+
+    double throttlePercent;
+    bool throttlePassby;
 };
 
 #endif
+
