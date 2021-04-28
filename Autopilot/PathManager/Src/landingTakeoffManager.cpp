@@ -1,13 +1,13 @@
 #include "landingTakeoffManager.hpp"
 #include <math.h>
 
-double LandingManager::changingAltitude(const SFOutput_t * input, const _PathData * aimingPoint, const _PathData * intersectionPoint, const _PathData * stoppingPoint)
+double LandingTakeoffManager::changingAltitude(const SFOutput_t & input, const _PathData & aimingPoint, const _PathData & intersectionPoint, const _PathData & stoppingPoint)
 {
     //vector declaration
-    Vector3D aPoint(aimingPoint->longitude, aimingPoint->latitude, aimingPoint->altitude); //aiming point
-    Vector3D iPoint(intersectionPoint->longitude, intersectionPoint->latitude, intersectionPoint->altitude); //intersection point
-    Vector3D sPoint(stoppingPoint->longitude, stoppingPoint->latitude, stoppingPoint->altitude); //stopping point
-    Vector3D cPoint(input->longitude, input->latitude, input->altitude); //current point
+    Vector3D aPoint(aimingPoint.longitude, aimingPoint.latitude, aimingPoint.altitude); //aiming point
+    Vector3D iPoint(intersectionPoint.longitude, intersectionPoint.latitude, intersectionPoint.altitude); //intersection point
+    Vector3D sPoint(stoppingPoint.longitude, stoppingPoint.latitude, stoppingPoint.altitude); //stopping point
+    Vector3D cPoint(input.longitude, input.latitude, input.altitude); //current point
     Vector3D projectedPoint;
 
     //calculating the vectors
@@ -36,10 +36,10 @@ double LandingManager::changingAltitude(const SFOutput_t * input, const _PathDat
     return altitude;
 }
 
-double LandingManager::approachSpeed(const bool *ifPackage)
+double LandingTakeoffManager::approachSpeed(bool ifPackage)
 {
     //approach speed calculation for both package and no package scenarios
-    if(*ifPackage)
+    if(ifPackage)
     {
         return STALL_SPEED_WITH_PACKAGE * 1.3;
     }
@@ -49,10 +49,10 @@ double LandingManager::approachSpeed(const bool *ifPackage)
     }
 }
 
-double LandingManager::slowFlightSpeed(const bool *ifPackage)
+double LandingTakeoffManager::slowFlightSpeed(bool ifPackage)
 {
     //slow flight speed calculation for both package and no package scenarios
-    if(*ifPackage)
+    if(ifPackage)
     {
         return STALL_SPEED_WITH_PACKAGE + 2;
     }
@@ -62,41 +62,41 @@ double LandingManager::slowFlightSpeed(const bool *ifPackage)
     }
 }
 
-_LandingPath LandingManager::createSlopeWaypoints(const Telemetry_PIGO_t * input, const float * currentAltitude)
+_LandingPath LandingTakeoffManager::createSlopeWaypoints(const Telemetry_PIGO_t & input, float currentAltitude)
 {
     _LandingPath path;
-    path.stoppingPoint.latitude = input->stoppingLatitude; 
-    path.stoppingPoint.longitude = input->stoppingLongitude; 
-    path.stoppingPoint.altitude = input->stoppingAltitude; 
+    path.stoppingPoint.latitude = input.stoppingLatitude; 
+    path.stoppingPoint.longitude = input.stoppingLongitude; 
+    path.stoppingPoint.altitude = input.stoppingAltitude; 
 
     //creating points from stopping point to aiming point 
     
     //setting Z of aiming point
-    path.aimingPoint.altitude = input->stoppingAltitude; 
+    path.aimingPoint.altitude = input.stoppingAltitude; 
     
     //determining x and y of aiming point
-    double radianDirection = input->stoppingDirectionHeading * PI / 180.0; 
+    double radianDirection = input.stoppingDirectionHeading * PI / 180.0; 
 
     //finding the x and y components of the rolling distance vector
     double stoppingDistX = sin(radianDirection) * DISTANCE_OF_LANDING; 
     double stoppingDistY = cos(radianDirection) * DISTANCE_OF_LANDING;
 
     //converting into x and y components in lat and lon
-    double metersPerDegLon = LATITUDE_LONGITUDE_CONVERSION_CONSTANT * cos(input->stoppingLatitude*PI/180)/360.0; 
+    double metersPerDegLon = LATITUDE_LONGITUDE_CONVERSION_CONSTANT * cos(input.stoppingLatitude*PI/180)/360.0; 
     double stoppingDistLon = stoppingDistX / metersPerDegLon; 
     double stoppingDistLat = stoppingDistY / METERS_PER_DEG_LAT; 
 
     //subtracting the distances from stopping point to get aiming point
-    path.aimingPoint.longitude = input->stoppingLongitude - stoppingDistLon;
-    path.aimingPoint.latitude = input->stoppingLatitude - stoppingDistLat; 
+    path.aimingPoint.longitude = input.stoppingLongitude - stoppingDistLon;
+    path.aimingPoint.latitude = input.stoppingLatitude - stoppingDistLat; 
     
     //calculating the intersection point
 
     //determining altitude of intersection
-    path.intersectionPoint.altitude = *currentAltitude; 
+    path.intersectionPoint.altitude = currentAltitude; 
 
     //determining the horizontal distance of intersection
-    double horizDist = (*currentAltitude - path.aimingPoint.altitude) / tan(ANGLE_OF_LANDING * PI / 180.0);
+    double horizDist = (currentAltitude - path.aimingPoint.altitude) / tan(ANGLE_OF_LANDING * PI / 180.0);
 
     //finding the x and y components of the horizDist vector
     double slopeDistX = sin(radianDirection) * horizDist; 
@@ -114,37 +114,37 @@ _LandingPath LandingManager::createSlopeWaypoints(const Telemetry_PIGO_t * input
     return path;
 }
 
-_LandingTakeoffOutput LandingManager::translateWaypointCommands(const _WaypointManager_Data_Out * outputData)
+_LandingTakeoffOutput LandingTakeoffManager::translateWaypointCommands(const _WaypointManager_Data_Out & outputData)
 {
     _LandingTakeoffOutput controlOutput;
-    controlOutput.desiredTrack = outputData->desiredTrack;
-    controlOutput.desiredAltitude = outputData->desiredAltitude;
+    controlOutput.desiredTrack = outputData.desiredTrack;
+    controlOutput.desiredAltitude = outputData.desiredAltitude;
     return controlOutput;
 }
 
-void LandingManager::translateLTSFCommandsToCoordTurns(const _LandingTakeoffOutput* outputData, const SFOutput_t* sensorOutput, const IMU_Data_t* imuOutput, CoordinatedTurnInput_t* turnInput, AltitudeAirspeedInput_t* altitudeAirspeedInput)
+void LandingTakeoffManager::translateLTSFCommandsToCoordTurns(const _LandingTakeoffOutput & outputData, const SFOutput_t & sensorOutput, const IMU_Data_t & imuOutput, CoordinatedTurnInput_t & turnInput, AltitudeAirspeedInput_t & altitudeAirspeedInput)
 {
     //loading in data depending on if heading needs to be used
-    if(outputData->useHeading)
+    if(outputData.useHeading)
     {
-        turnInput->desiredHeadingTrack = outputData->desiredHeading;
-        turnInput->currentHeadingTrack = sensorOutput->heading;
+        turnInput.desiredHeadingTrack = outputData.desiredHeading;
+        turnInput.currentHeadingTrack = sensorOutput.heading;
     }
     else
     {
-        turnInput->desiredHeadingTrack = outputData->desiredTrack;
-        turnInput->currentHeadingTrack = sensorOutput->track;
+        turnInput.desiredHeadingTrack = outputData.desiredTrack;
+        turnInput.currentHeadingTrack = sensorOutput.track;
     }
-    turnInput->accY = imuOutput->accy;
-    altitudeAirspeedInput->currentAltitude = sensorOutput->altitude;
-    altitudeAirspeedInput->desiredAltitude = outputData->desiredAltitude;
-    altitudeAirspeedInput->currentAirspeed = sensorOutput->airspeed;
-    altitudeAirspeedInput->desiredAirspeed = outputData->desiredAirspeed;
+    turnInput.accY = imuOutput.accy;
+    altitudeAirspeedInput.currentAltitude = sensorOutput.altitude;
+    altitudeAirspeedInput.desiredAltitude = outputData.desiredAltitude;
+    altitudeAirspeedInput.currentAirspeed = sensorOutput.airspeed;
+    altitudeAirspeedInput.desiredAirspeed = outputData.desiredAirspeed;
 }
 
-double TakeoffManager::desiredRotationSpeed(const bool * ifPackage)
+double LandingTakeoffManager::desiredRotationSpeed(bool ifPackage)
 {
-    if(*ifPackage)
+    if(ifPackage)
     {
         return ROTATION_SPEED_WITH_PACKAGE;
     }
@@ -154,9 +154,9 @@ double TakeoffManager::desiredRotationSpeed(const bool * ifPackage)
     }
 }
 
-double TakeoffManager::desiredClimbSpeed(const bool * ifPackage)
+double LandingTakeoffManager::desiredClimbSpeed(bool ifPackage)
 {
-    if(*ifPackage)
+    if(ifPackage)
     {
         return CLIMB_SPEED_WITH_PACKAGE;
     }
@@ -166,31 +166,31 @@ double TakeoffManager::desiredClimbSpeed(const bool * ifPackage)
     }
 }
 
-_PathData TakeoffManager::createTakeoffWaypoint(const long double * currentLatitude, const long double * currentLongitude, const float * currentAltitude, const float * takeoffDirection)
+_PathData LandingTakeoffManager::createTakeoffWaypoint(double currentLatitude, double currentLongitude, float currentAltitude, float takeoffDirection)
 {
     _PathData desiredWaypoint;
     //retrieve radian direction of heading (starts from positive y axis)
-    double radianDirection = *takeoffDirection * PI / 180.0;
+    double radianDirection = takeoffDirection * PI / 180.0;
 
     //retrieve the horizontal and vertical components of takeoff distance
     double takeoffDistX = sin(radianDirection) * DISTANCE_OF_TAKEOFF; 
     double takeoffDistY = cos(radianDirection) * DISTANCE_OF_TAKEOFF; 
 
     //convert horizontal and vertical components into latitude and longitude
-    double metersPerDegLon = LATITUDE_LONGITUDE_CONVERSION_CONSTANT * cos(*currentLatitude * PI/180)/360.0; 
+    double metersPerDegLon = LATITUDE_LONGITUDE_CONVERSION_CONSTANT * cos(currentLatitude * PI/180)/360.0; 
     double takeoffDistLon = takeoffDistX / metersPerDegLon; 
     double takeoffDistLat = takeoffDistY / METERS_PER_DEG_LAT; 
 
     //add components onto the current location to determine takeoff point
-    desiredWaypoint.latitude = *currentLatitude + takeoffDistLat;
-    desiredWaypoint.longitude = *currentLongitude + takeoffDistLon; 
+    desiredWaypoint.latitude = currentLatitude + takeoffDistLat;
+    desiredWaypoint.longitude = currentLongitude + takeoffDistLon; 
 
     /*
     takeoff waypoint will have the same altitude as the current position, constant additional altitude 
     could be added in the future, but it is not needed as vertical component is already controlled by
     max throttle in the climb 
     */
-    desiredWaypoint.altitude = *currentAltitude;
+    desiredWaypoint.altitude = currentAltitude;
 
     return desiredWaypoint;
 }

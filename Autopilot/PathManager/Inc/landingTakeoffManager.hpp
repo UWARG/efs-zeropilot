@@ -13,7 +13,7 @@
 enum _FlightStage{ROLL=0, CLIMB, CRUISING, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN};
 
 /************************
-    LANDING SECTION
+    LANDING CONSTANTS
 ************************/
 
 constexpr static double DISTANCE_OF_LANDING {10}; //in meters
@@ -27,11 +27,21 @@ constexpr static double DECRAB_ALTITUDE {0.7}; //in meters
 constexpr static double TOUCHDOWN_ALTITUDE {0.05}; //in meters
 constexpr static double LATITUDE_LONGITUDE_CONVERSION_CONSTANT {40075000.0};
 
+/**********************
+    TAKEOFF CONSTANTS
+**********************/
+constexpr static double EXIT_TAKEOFF_ALTITUDE {50}; //in meters, difference in altitude
+constexpr static double ROTATION_SPEED_NO_PACKAGE {4}; //in meters per second
+constexpr static double ROTATION_SPEED_WITH_PACKAGE {6}; //in meters per second
+constexpr static double CLIMB_SPEED_NO_PACKAGE {5}; // in meters per second
+constexpr static double CLIMB_SPEED_WITH_PACKAGE {7}; // in meters per second
+constexpr static double DISTANCE_OF_TAKEOFF {100}; // in meters, just used to approximate the horizontal location
+
 struct _LandingPath //this structure is used to hold the waypoint dat of the landing path, when it is created in the transition stage
 {
-    _PathData stoppingPoint;
-    _PathData aimingPoint;
-    _PathData intersectionPoint;
+    _PathData stoppingPoint; //contains the path data to the stopping point, which is at the end of the landing when the plane comes to a stop
+    _PathData aimingPoint; //contains the path data to the aiming point, which is where the slope of the aircraft meets the surface of the ground
+    _PathData intersectionPoint; //contains the path data to the intersection point, which is where the slope of the aircraft intersects with the current altitude of the aircraft
 };
 
 struct _LandingTakeoffInput //this structure is used to hold the telemetry and sensorfusion outputs, which are needed for landing and takeoff inputs
@@ -42,8 +52,8 @@ struct _LandingTakeoffInput //this structure is used to hold the telemetry and s
 
 struct _LandingTakeoffOutput //this structure is used to hold the outputs of each landing state
 {
-    double desiredHeading;
-    double desiredTrack;
+    double desiredHeading; //desired heading is used when useHeading is true
+    double desiredTrack; //desired track is used when useHEading is false
     double useHeading; //this variable is used to determine if heading needs to be controlled, rather than track
     double desiredAltitude;
     double desiredAirspeed;
@@ -51,9 +61,14 @@ struct _LandingTakeoffOutput //this structure is used to hold the outputs of eac
 };
 
 
-class LandingManager{
+class LandingTakeoffManager{
     
     public:
+
+        /******************
+         * LANDING FUNCTIONS
+         ******************/
+
         /*
             This function takes the horizontal position of the aircraft and determines the desired altitude
             Projects the position to the vertical plane relative to the aimingPoint, intersectionPoint, and stoppingPoint
@@ -66,7 +81,7 @@ class LandingManager{
 
             @return double - this function will return the desiredAltitude for the position of the relative points
         */
-        static double changingAltitude(const SFOutput_t * input, const _PathData * aimingPoint, const _PathData * intersectionPoint, const _PathData * stoppingPoint);
+        static double changingAltitude(const SFOutput_t & input, const _PathData & aimingPoint, const _PathData & intersectionPoint, const _PathData & stoppingPoint);
 
         /*
             This function takes in if there is a package on board and returns an approach speed the aircraft should follow
@@ -75,7 +90,7 @@ class LandingManager{
 
             @return double - this function will return the desired approach speed for the aircraft
         */
-        static double approachSpeed(const bool * ifPackage);
+        static double approachSpeed(bool ifPackage);
 
         /* 
             This function takes the stall speed and multiplies it by a constant to return a slow flight speed
@@ -84,7 +99,7 @@ class LandingManager{
 
             @return double - this function will return the slow flight speed for the aircraft
         */
-        static double slowFlightSpeed(const bool * ifPackage);
+        static double slowFlightSpeed(bool ifPackage);
 
         /*
             This function takes the coordinates of the landing spots and direction of landing
@@ -95,7 +110,7 @@ class LandingManager{
 
             @return _LandingPath - this function will return a structure that contains the GPS locations of the stopping, aiming, and intersection points
         */
-        static _LandingPath createSlopeWaypoints(const Telemetry_PIGO_t * input, const float * currentAltitude);
+        static _LandingPath createSlopeWaypoints(const Telemetry_PIGO_t & input, float currentAltitude);
 
         /*
             This function translates waypoint output data into landing takeoff output data
@@ -105,7 +120,7 @@ class LandingManager{
 
             @return _LandingTakeoffOutput - this function will output a landing and takeoff output struct
         */
-        static _LandingTakeoffOutput translateWaypointCommands(const _WaypointManager_Data_Out * outputData);
+        static _LandingTakeoffOutput translateWaypointCommands(const _WaypointManager_Data_Out & outputData);
 
         /*
             This function translates landing takeoff data to output data
@@ -117,23 +132,11 @@ class LandingManager{
             @param CoordinatedTurnInput_t * turnInput - this pointer points to the coorinated turn input structure that needs to be changed
             @param AltitudeAirspeedInput_t * altitudeAirspeedInput - this pointer points to the altitude and airspeed input structure that needs to be changed
         */
-        static void translateLTSFCommandsToCoordTurns(const _LandingTakeoffOutput* outputData, const SFOutput_t* sensorOutput, const IMU_Data_t* imuOutput, CoordinatedTurnInput_t* turnInput, AltitudeAirspeedInput_t* altitudeAirspeedInput);
-};
+        static void translateLTSFCommandsToCoordTurns(const _LandingTakeoffOutput & outputData, const SFOutput_t & sensorOutput, const IMU_Data_t & imuOutput, CoordinatedTurnInput_t & turnInput, AltitudeAirspeedInput_t & altitudeAirspeedInput);
 
-/************************
-    TAKEOFF SECTION
-************************/
-
-constexpr static double EXIT_TAKEOFF_ALTITUDE {50}; //in meters, difference in altitude
-constexpr static double ROTATION_SPEED_NO_PACKAGE {4}; //in meters per second
-constexpr static double ROTATION_SPEED_WITH_PACKAGE {6}; //in meters per second
-constexpr static double CLIMB_SPEED_NO_PACKAGE {5}; // in meters per second
-constexpr static double CLIMB_SPEED_WITH_PACKAGE {7}; // in meters per second
-constexpr static double DISTANCE_OF_TAKEOFF {100}; // in meters, just used to approximate the horizontal location
-
-class TakeoffManager{
-
-    public:
+        /******************
+         * TAKEOFF FUNCTIONS
+         *****************/
         /*
             This function returns the desired rotation speed limit, where the plane will transition from roll to climb
             
@@ -141,7 +144,7 @@ class TakeoffManager{
 
             @return double - this function will return the desired rotation speed for the aircraft
         */
-        static double desiredRotationSpeed(const bool * ifPackage);
+        static double desiredRotationSpeed(bool ifPackage);
 
         /*
             This function returns the desired climb speed to be maintained throughout the climb
@@ -150,7 +153,7 @@ class TakeoffManager{
 
             @return double - this function will return the desired climb speed for the aircraft
         */
-        static double desiredClimbSpeed(const bool * ifPackage);
+        static double desiredClimbSpeed(bool ifPackage);
         /*
             This function returns a waypoint that the plane should follow horizontally
             This waypoint does not have a vertical component, as max throttle is kept throughout the climb
@@ -162,6 +165,6 @@ class TakeoffManager{
 
             @return _PathData - this structure holds the climb point, which the plane will follow until it exits at a certain altitude
         */
-        static _PathData createTakeoffWaypoint(const long double * currentLatitude, const long double * currentLongitude, const float * currentAltitude, const float * takeoffDirection);
-};
+        static _PathData createTakeoffWaypoint(double currentLatitude, double currentLongitude, float currentAltitude, float takeoffDirection);
 
+};

@@ -296,7 +296,7 @@ void coordinateTurnElevation::execute(pathManager* pathMgr)
 
     if(pathMgr->stage!=CRUISING)
     {
-        LandingManager::translateLTSFCommandsToCoordTurns(landingTakeoffOutput, sensFusionOutput, imudata, &turnInput, &altAirspeedInput);
+        LandingTakeoffManager::translateLTSFCommandsToCoordTurns(*landingTakeoffOutput, *sensFusionOutput, *imudata, turnInput, altAirspeedInput);
     }
 
     // Call module functions
@@ -344,7 +344,7 @@ void landingTransitionStage::execute(pathManager* pathMgr)
     if(!pathMgr->madeLandingPoints)
     {
         //requires data structure that dhruv wants to use 
-        path = LandingManager::createSlopeWaypoints(input.telemetryData, &(input.sensorOutput->altitude));
+        path = LandingTakeoffManager::createSlopeWaypoints(*input.telemetryData, input.sensorOutput->altitude);
 
         //creating waypoints 
         pathArray[0] = landingPath.initialize_waypoint(path.intersectionPoint.longitude, path.intersectionPoint.latitude, path.intersectionPoint.altitude, PATH_FOLLOW);
@@ -369,7 +369,7 @@ void landingTransitionStage::execute(pathManager* pathMgr)
     waypointStatus = landingPath.get_next_directions(waypointInput, &waypointOutput);
 
     //translate waypoint commands into landing output structure
-    output = LandingManager::translateWaypointCommands(&waypointOutput);
+    output = LandingTakeoffManager::translateWaypointCommands(waypointOutput);
 
     //calculating the difference in heading to detect if finished turning (2 differences possible)
     double differenceInHeading1 = input.telemetryData->stoppingDirectionHeading - input.sensorOutput->track;
@@ -429,13 +429,13 @@ void landingSlopeStage::execute(pathManager* pathMgr)
         landingTransitionStage::waypointStatus = landingTransitionStage::landingPath.get_next_directions(waypointInput, &waypointOutput);
         
         //translate waypoint ouput data into landing data
-        output = LandingManager::translateWaypointCommands(&waypointOutput);
+        output = LandingTakeoffManager::translateWaypointCommands(waypointOutput);
         
         //retrieving desired altitude for slope state and setting it 
-        output.desiredAltitude = LandingManager::changingAltitude(input.sensorOutput, &landingTransitionStage::path.aimingPoint, &landingTransitionStage::path.intersectionPoint, &landingTransitionStage::path.stoppingPoint);
+        output.desiredAltitude = LandingTakeoffManager::changingAltitude(*input.sensorOutput, landingTransitionStage::path.aimingPoint, landingTransitionStage::path.intersectionPoint, landingTransitionStage::path.stoppingPoint);
         
         //retrieving desired speed for approach speed and setting it
-        output.desiredAirspeed = LandingManager::approachSpeed(&pathMgr->isPackage);
+        output.desiredAirspeed = LandingTakeoffManager::approachSpeed(&pathMgr->isPackage);
     }
     
     if(landingTransitionStage::waypointStatus != WAYPOINT_SUCCESS)
@@ -481,14 +481,14 @@ void landingFlareStage::execute(pathManager* pathMgr)
         landingTransitionStage::waypointStatus = landingTransitionStage::landingPath.get_next_directions(waypointInput, &waypointOutput);
         
         //translating waypoint data into landing data
-        output = LandingManager::translateWaypointCommands(&waypointOutput);
+        output = LandingTakeoffManager::translateWaypointCommands(waypointOutput);
 
         //throttle off
         output.controlDetails.throttlePassby = true;
         output.controlDetails.throttlePercent = 0;
 
         //maintaing speed for flare attitude
-        output.desiredAirspeed = LandingManager::slowFlightSpeed(&pathMgr->isPackage);
+        output.desiredAirspeed = LandingTakeoffManager::slowFlightSpeed(pathMgr->isPackage);
     }   
 
     if(landingTransitionStage::waypointStatus != WAYPOINT_SUCCESS)
@@ -529,7 +529,7 @@ void landingDecrabStage::execute(pathManager* pathMgr)
         output.useHeading = true;
         
         //retrieving desired slow flight speed
-        output.desiredAirspeed = LandingManager::slowFlightSpeed(&pathMgr->isPackage);
+        output.desiredAirspeed = LandingTakeoffManager::slowFlightSpeed(pathMgr->isPackage);
         
         //throttle off
         output.controlDetails.throttlePassby = true;
@@ -602,14 +602,14 @@ void takeoffRollStage::execute(pathManager* pathMgr)
 
     if(!pathMgr->madeTakeoffPoints)
     {
-        takeoffPoint = TakeoffManager::createTakeoffWaypoint(&(input.sensorOutput->latitude),&(input.sensorOutput->longitude), &(input.sensorOutput->altitude), &(input.telemetryData->takeoffDirectionHeading));
+        takeoffPoint = LandingTakeoffManager::createTakeoffWaypoint(input.sensorOutput->latitude,input.sensorOutput->longitude, input.sensorOutput->altitude, input.telemetryData->takeoffDirectionHeading);
         pathArray[0] = takeoffPath.initialize_waypoint(takeoffPoint.longitude, takeoffPoint.latitude, takeoffPoint.altitude, PATH_FOLLOW);
         currentLocation = takeoffPath.initialize_waypoint(input.sensorOutput->longitude, input.sensorOutput->latitude, input.sensorOutput->altitude, HOLD_WAYPOINT);
         waypointStatus = takeoffPath.initialize_flight_path(pathArray, 1, currentLocation);
         pathMgr->madeTakeoffPoints = true;
     }
 
-    if(input.sensorOutput->airspeed > (TakeoffManager::desiredRotationSpeed(&pathMgr->isPackage)))
+    if(input.sensorOutput->airspeed > (LandingTakeoffManager::desiredRotationSpeed(pathMgr->isPackage)))
     {
         pathMgr->stage = CLIMB;
     }
@@ -654,9 +654,9 @@ void takeoffClimbStage::execute(pathManager* pathMgr)
         waypointInput.track = input.sensorOutput->track;
 
         takeoffRollStage::waypointStatus = takeoffRollStage::takeoffPath.get_next_directions(waypointInput, &waypointOutput);
-        output = LandingManager::translateWaypointCommands(&waypointOutput);
+        output = LandingTakeoffManager::translateWaypointCommands(waypointOutput);
         
-        output.desiredAirspeed = TakeoffManager::desiredClimbSpeed(&pathMgr->isPackage);
+        output.desiredAirspeed = LandingTakeoffManager::desiredClimbSpeed(pathMgr->isPackage);
         
         //maxThrottle
         output.controlDetails.throttlePassby = true;
