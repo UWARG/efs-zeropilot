@@ -55,6 +55,7 @@ struct _PathData {
     _WaypointOutputType waypointType; 
 };
 
+
 /**
 * Structure contains the data that will be returned to the Path Manager state manager.
 * This data will be used by the PID and coordinated turn engine to determine the commands to be sent to the Attitude Manager.

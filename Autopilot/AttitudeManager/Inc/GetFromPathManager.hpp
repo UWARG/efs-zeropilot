@@ -6,10 +6,13 @@
 #ifndef GET_FROM_PATH_MANAGER_HPP
 #define GET_FROM_PATH_MANAGER_HPP
 
+#include "pathDatatypes.hpp"
+
 struct PMCommands{
 	float roll, pitch;	// commanded orientation (radians)
 	float rudderPercent;
 	float throttlePercent;
+	_PassbyControl passbyData;
 };
 
 struct PMError_t{

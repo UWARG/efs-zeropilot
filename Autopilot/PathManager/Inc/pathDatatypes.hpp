@@ -10,6 +10,8 @@
 enum _ModifyFlightPathCommand { NO_FLIGHT_PATH_EDIT = 0, INITIALIZE_FLIGHT_PATH, APPEND, INSERT, UPDATE, DELETE, NUKE }; // Used by cruisingState
 enum _GetNextDirectionsCommand { REGULAR_PATH_FOLLOWING = 0, TOGGLE_HOLDING, TOGGLE_HEAD_HOME }; // Used by cruisingState
 
+enum _FlightStage{ROLL=0, CLIMB, CRUISING, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN}; //used to determine the stage of flight
+
 /********************************************************************
 * Important Structs
 ********************************************************************/
@@ -40,6 +42,36 @@ struct Telemetry_PIGO_t {
 
     Telemetry_Waypoint_Data_t waypoints[100]; // Somehow need to get PATH_BUFFER_SIZE here...
     Telemetry_Waypoint_Data_t homebase;
+
+    // landing and takeoff 
+    bool beginLanding;
+    bool beginTakeoff;
+    float stoppingDirectionHeading;
+    double stoppingLongitude;
+    double stoppingLatitude;
+    float stoppingAltitude;
+    float takeoffDirectionHeading;
+    // Struct for stopping point gps coordinates
+
+};
+
+/*
+* Structure stores manual control information
+* If a certain variable needs to be controlled, set the percent to the desired value and its respective boolean to true
+*/
+struct _PassbyControl{
+    double rollPercent;
+    bool rollPassby;
+
+    double rudderPercent;
+    bool rudderPassby;
+
+    double pitchPercent;
+    bool pitchPassby;
+
+    double throttlePercent;
+    bool throttlePassby;
 };
 
 #endif
+
