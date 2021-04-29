@@ -100,7 +100,7 @@ class takeoffRollStage : public pathManagerState
 
     private:
         static _PathData * pathArray[1];
-        static _PathData * currentLocation {};
+        static _PathData * currentLocation;
         static _LandingTakeoffInput input;
         static _LandingTakeoffOutput output;
         static _WaypointManager_Data_Out waypointOutput;
@@ -176,7 +176,7 @@ class landingTransitionStage : public pathManagerState
         static _WaypointManager_Data_In waypointInput;
         static _WaypointManager_Data_Out waypointOutput;
         static _PathData * pathArray[3]; //used to translate loaded in path to something the waypoint manager can take as a parameter
-        static _PathData * currentLocation {};
+        static _PathData * currentLocation;
         landingTransitionStage() {}
         landingTransitionStage(const landingTransitionStage& other);
         landingTransitionStage& operator =(const landingTransitionStage& other);
