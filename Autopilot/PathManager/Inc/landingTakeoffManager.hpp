@@ -5,7 +5,6 @@
 */
 
 #include "waypointManager.hpp"
-#include "vectorClass.hpp"
 #include "AutoSteer.hpp"
 #include "SensorFusion.hpp"
 #include "pathDatatypes.hpp"
@@ -54,7 +53,7 @@ struct _LandingTakeoffOutput //this structure is used to hold the outputs of eac
 {
     double desiredHeading; //desired heading is used when useHeading is true
     double desiredTrack; //desired track is used when useHEading is false
-    double useHeading; //this variable is used to determine if heading needs to be controlled, rather than track
+    bool useHeading; //this variable is used to determine if heading needs to be controlled, rather than track
     double desiredAltitude;
     double desiredAirspeed;
     _PassbyControl controlDetails; //this variable is used to store the controls if passby control is needed
@@ -121,19 +120,7 @@ class LandingTakeoffManager{
             @return _LandingTakeoffOutput - this function will output a landing and takeoff output struct
         */
         static _LandingTakeoffOutput translateWaypointCommands(const _WaypointManager_Data_Out & outputData);
-
-        /*
-            This function translates landing takeoff data to output data
-            Takes in a landingTakeoffOutput instance, translates its information into the 2 types of coordinated turn inputs
-
-            @param _LandingTakeoffOutput* outputData - this pointer points to the output of the landing and takeoff states
-            @param SFOutput_t* sensorOutput - this pointer points to the sensor output of sensorFusion
-            @param IMUOutput_t* imuOutput - this pointer points to the imu output of sensorFusion
-            @param CoordinatedTurnInput_t * turnInput - this pointer points to the coorinated turn input structure that needs to be changed
-            @param AltitudeAirspeedInput_t * altitudeAirspeedInput - this pointer points to the altitude and airspeed input structure that needs to be changed
-        */
-        static void translateLTSFCommandsToCoordTurns(const _LandingTakeoffOutput & outputData, const SFOutput_t & sensorOutput, const IMU_Data_t & imuOutput, CoordinatedTurnInput_t & turnInput, AltitudeAirspeedInput_t & altitudeAirspeedInput);
-
+    
         /******************
          * TAKEOFF FUNCTIONS
          *****************/
@@ -166,5 +153,21 @@ class LandingTakeoffManager{
             @return _PathData - this structure holds the climb point, which the plane will follow until it exits at a certain altitude
         */
         static _PathData createTakeoffWaypoint(double currentLatitude, double currentLongitude, float currentAltitude, float takeoffDirection);
+    
+        /***********************************
+        COMMON LANDING AND TAKEOFF FUNCTIONS
+        ************************************/
+    
+         /*
+            This function translates landing takeoff data to output data
+            Takes in a landingTakeoffOutput instance, translates its information into the 2 types of coordinated turn inputs
+
+            @param _LandingTakeoffOutput* outputData - this pointer points to the output of the landing and takeoff states
+            @param SFOutput_t* sensorOutput - this pointer points to the sensor output of sensorFusion
+            @param IMUOutput_t* imuOutput - this pointer points to the imu output of sensorFusion
+            @param CoordinatedTurnInput_t * turnInput - this pointer points to the coorinated turn input structure that needs to be changed
+            @param AltitudeAirspeedInput_t * altitudeAirspeedInput - this pointer points to the altitude and airspeed input structure that needs to be changed
+        */
+        static void translateLTSFCommandsToCoordTurns(const _LandingTakeoffOutput & outputData, const SFOutput_t & sensorOutput, const IMU_Data_t & imuOutput, CoordinatedTurnInput_t & turnInput, AltitudeAirspeedInput_t & altitudeAirspeedInput);
 
 };
