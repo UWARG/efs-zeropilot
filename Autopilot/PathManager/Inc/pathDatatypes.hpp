@@ -10,6 +10,8 @@
 enum _ModifyFlightPathCommand { NO_FLIGHT_PATH_EDIT = 0, INITIALIZE_FLIGHT_PATH, APPEND, INSERT, UPDATE, DELETE, NUKE }; // Used by cruisingState
 enum _GetNextDirectionsCommand { REGULAR_PATH_FOLLOWING = 0, TOGGLE_HOLDING, TOGGLE_HEAD_HOME }; // Used by cruisingState
 
+enum _FlightStage{ROLL=0, CLIMB, CRUISING, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN}; //used to determine the stage of flight
+
 /********************************************************************
 * Important Structs
 ********************************************************************/
@@ -45,8 +47,8 @@ struct Telemetry_PIGO_t {
     bool beginLanding;
     bool beginTakeoff;
     float stoppingDirectionHeading;
-    float stoppingLongitude;
-    float stoppingLatitude;
+    double stoppingLongitude;
+    double stoppingLatitude;
     float stoppingAltitude;
     float takeoffDirectionHeading;
     // Struct for stopping point gps coordinates

@@ -1,4 +1,5 @@
 #include "landingTakeoffManager.hpp"
+#include "vectorClass.hpp"
 #include <math.h>
 
 double LandingTakeoffManager::changingAltitude(const SFOutput_t & input, const _PathData & aimingPoint, const _PathData & intersectionPoint, const _PathData & stoppingPoint)

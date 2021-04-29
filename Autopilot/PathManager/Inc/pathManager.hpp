@@ -1,6 +1,6 @@
 #pragma once
 #include "pathManagerStateManager.hpp"
-#include "landingTakeoffManager.hpp"
+#include "pathDatatypes.hpp"
 
 class pathManagerState;
 

@@ -16,7 +16,6 @@
 
 #include <cstdint>
 #include <stdlib.h>
-#include "pathDatatypes.hpp"
 
 #define PATH_BUFFER_SIZE 100
 

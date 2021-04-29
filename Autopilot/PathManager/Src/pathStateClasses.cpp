@@ -242,7 +242,7 @@ void coordinateTurnElevation::execute(pathManager* pathMgr)
     
     CoordinatedTurnInput_t turnInput {};
     AltitudeAirspeedInput_t altAirspeedInput {};                                   
-    _LandingTakeoffOutput * landingTakeoffOutput;
+    _LandingTakeoffOutput * landingTakeoffOutput {};
     
     //get elevation and turning data
     //loading in commands data from each of the states
@@ -604,7 +604,9 @@ void takeoffRollStage::execute(pathManager* pathMgr)
     {
         takeoffPoint = LandingTakeoffManager::createTakeoffWaypoint(input.sensorOutput->latitude,input.sensorOutput->longitude, input.sensorOutput->altitude, input.telemetryData->takeoffDirectionHeading);
         pathArray[0] = takeoffPath.initialize_waypoint(takeoffPoint.longitude, takeoffPoint.latitude, takeoffPoint.altitude, PATH_FOLLOW);
-        currentLocation = takeoffPath.initialize_waypoint(input.sensorOutput->longitude, input.sensorOutput->latitude, input.sensorOutput->altitude, HOLD_WAYPOINT);
+        
+        //10 meters is added to the altitude of the currentLocation waypoint so that is is not ground level
+        currentLocation = takeoffPath.initialize_waypoint(input.sensorOutput->longitude, input.sensorOutput->latitude, (input.sensorOutput->altitude + 10), HOLD_WAYPOINT);
         waypointStatus = takeoffPath.initialize_flight_path(pathArray, 1, currentLocation);
         pathMgr->madeTakeoffPoints = true;
     }

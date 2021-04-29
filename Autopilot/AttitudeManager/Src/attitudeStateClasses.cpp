@@ -172,3 +172,4 @@ attitudeState& FatalFailureMode::getInstance()
     static FatalFailureMode singleton;
     return singleton;
 }
+

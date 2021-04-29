@@ -9,8 +9,6 @@
 #include "SensorFusion.hpp"
 #include "pathDatatypes.hpp"
 
-enum _FlightStage{ROLL=0, CLIMB, CRUISING, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN};
-
 /************************
     LANDING CONSTANTS
 ************************/
@@ -36,7 +34,7 @@ constexpr static double CLIMB_SPEED_NO_PACKAGE {5}; // in meters per second
 constexpr static double CLIMB_SPEED_WITH_PACKAGE {7}; // in meters per second
 constexpr static double DISTANCE_OF_TAKEOFF {100}; // in meters, just used to approximate the horizontal location
 
-struct _LandingPath //this structure is used to hold the waypoint dat of the landing path, when it is created in the transition stage
+struct _LandingPath //this structure is used to hold the waypoint data of the landing path, when it is created in the transition stage
 {
     _PathData stoppingPoint; //contains the path data to the stopping point, which is at the end of the landing when the plane comes to a stop
     _PathData aimingPoint; //contains the path data to the aiming point, which is where the slope of the aircraft meets the surface of the ground
