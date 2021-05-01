@@ -1,7 +1,5 @@
-
 #include "attitudeManager.hpp"
-
-#include "SendInstructionsToSafety.hpp"
+#include "pathManager.hpp"
 
 /***********************************************************************************************************************
  * Code
@@ -16,12 +14,12 @@
 
 int main(void)
 {
+    pathManager pathmMng;
 	attitudeManager attMng;
-
-	SendToSafety_Init();	// TODO Only until we have a proper way to initialize modules
 
 	for (int i = 0; i < NUM_SIMULATION_STEPS; i++)
 	{
+        pathmMng.execute();
 		attMng.execute();
 	}
 

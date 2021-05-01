@@ -272,6 +272,9 @@ elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
   set(CMAKE_CXX_STANDARD 11)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if( NOT EXISTS "${SIM_ROOT_DIR}/GeneratedCCode/Headers")
+  message( FATAL_ERROR "Evenin buddy. So looks like you've got an issue here. One of 2 things have happened. First potential issue is you've forgotten to copy the unzipped GeneratedCCode directory into the Infinion folder, go and do that if you haven't. If that's done then here's your problem: see, when Simulink generates code for you it will name one of the directories inside the GeneratedCCode directory after the current matlab version. Cmake can't keep up with that as things change over the years so you're going to have to rename the R2021a (or whatever version your'e at) to be Headers. Anyway, I'll leave you alone now. Goodluck with your cool simulation, I can only imagine what sort of crazy shit you're trying to get working :D." )
+endif()
 
   include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../Common/Inc
@@ -279,10 +282,10 @@ elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Inc
 
     ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw
-    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/extern/include
-    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/rtw/c/src
-    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/rtw/c/src/ext_mode/common
-    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/simulink/include
+    ${SIM_ROOT_DIR}/GeneratedCCode/Headers/extern/include
+    ${SIM_ROOT_DIR}/GeneratedCCode/Headers/rtw/c/src
+    ${SIM_ROOT_DIR}/GeneratedCCode/Headers/rtw/c/src/ext_mode/common
+    ${SIM_ROOT_DIR}/GeneratedCCode/Headers/simulink/include
   )
 
   add_custom_target(make-ActuatorCommand-dir ALL
@@ -296,19 +299,16 @@ elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/OutputMixing.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/SensorFusion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MadgwickAHRS.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/PID.cpp
   )
 
   set(AUTOPILOT_INTERCEPT_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/Intercepts/GetFromPathManager_Intercept.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/Intercepts/CommsBetweenStateMachines_Intercept.cpp
     )
 
   set(ZERO_PILOT_HOOK_SOURCES
-  ${SIM_ROOT_DIR}/ZeroPilotSwHooks/SendToSafetyIntercept.cpp
-  ${SIM_ROOT_DIR}/ZeroPilotSwHooks/AirspeedSensorIntercept.cpp
-  ${SIM_ROOT_DIR}/ZeroPilotSwHooks/IMUSensorIntercept.cpp
+  ${SIM_ROOT_DIR}/ZeroPilotSwHooks/SensorFusionIntercept.cpp
   )
 
   set(SIMULINK_GENERATED_SOURCES

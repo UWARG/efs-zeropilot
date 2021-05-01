@@ -36,7 +36,6 @@ attitudeState& fetchInstructionsMode::getInstance()
 
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
 {
-    SFOutput_t _SFOutput;
     SFError_t _SFError = SF_GetResult(&_SFOutput);
 
     attitudeMgr->setState(PIDloopMode::getInstance());
