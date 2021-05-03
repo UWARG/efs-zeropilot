@@ -11,7 +11,7 @@
 /**
  * Initiate communication with the path manager.
  */
-void CommWithPMInit();
+void TelemCommWithPMInit();
 
 /**
  * Send commands to the path manager.

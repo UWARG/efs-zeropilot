@@ -10,7 +10,7 @@ extern "C"
 #include "cmsis_os.h"
 }
 
-void CommWithPMInit()
+void TelemCommWithPMInit()
 {
     //commandsMailQ = osMailCreate(osMailQ(commandsMailQ), NULL);
 }
