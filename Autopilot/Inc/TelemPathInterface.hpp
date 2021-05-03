@@ -15,7 +15,7 @@ typedef struct POGI{
 	float camRoll,camPitch,camYaw;	//Current camera orientation (radians)
 	bool isLanded; //Switch to check if landed (maybe limit switch?)
 	uint8_t editingFlightPathErrorCode, flightPathFollowingErrorCode; //Flight path error codes
-	uint4_t currentWaypointId, currentWaypointIndex; //current waypoint data
+	uint8_t currentWaypointId, currentWaypointIndex; //current waypoint data
 	bool homeBaseInit; //is home base initialized
 } POGI;
 
@@ -26,9 +26,9 @@ typedef struct PIGO{
 	float pitch,yaw;	//Commanded orientation (radians)
 	bool beginLand; //Command to start landing process
 	bool beginTakeoff; //Starting command
-	uint4_t numWaypoints; //number of waypoints
+	uint8_t numWaypoints; //number of waypoints
 	uint8_t waypointModifyFlightPathCommand, waypointNextDirectionsCommand; //extra waypoint commands
-	uint4_t holdingAltitude, holdingTurnRadius, flightPathModifyNextId, flightPathModifyPrevId, flightPathModifyId; //flight path data
+	uint8_t holdingAltitude, holdingTurnRadius, flightPathModifyNextId, flightPathModifyPrevId, flightPathModifyId; //flight path data
 	uint8_t holdingTurnDirection; //turn direction
 	//waypoint* waypoints; //list of waypoints (need to see if this is defined in waypoint code)
 	//homebase data (possibly constants?)
