@@ -59,4 +59,5 @@ bool GetTelemData(PIGO *data)
         return false;
     }
     */
+    return true;
 }

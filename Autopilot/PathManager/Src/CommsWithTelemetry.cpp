@@ -57,4 +57,5 @@ bool GetCommands(POGI *commands)
         return false;
     }
     */
+    return true;
 }
