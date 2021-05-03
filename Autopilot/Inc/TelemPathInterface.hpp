@@ -9,19 +9,29 @@
 //Data for path manager to send to telemetry.
 typedef struct POGI{
 	int errorCode; //Code for specified errors
-	float gpsLattitude,gpsLongitude; //Current gps position
-	int curAltitude,curAirspeed; //Airspeed and altitude data
+	double gpsLattitude,gpsLongitude, curAltitude; //Current gps position and altitude
+	float curAirspeed; //Airspeed data
 	float roll,pitch,yaw;	//Current orientation (radians)
+	float camRoll,camPitch,camYaw;	//Current camera orientation (radians)
 	bool isLanded; //Switch to check if landed (maybe limit switch?)
+	uint8_t editingFlightPathErrorCode, flightPathFollowingErrorCode; //Flight path error codes
+	uint4_t currentWaypointId, currentWaypointIndex; //current waypoint data
+	bool homeBaseInit; //is home base initialized
 } POGI;
 
 //Data for telemetry to send to path manager.
 typedef struct PIGO{
-	float gpsLattitude,gpsLongitude; //Commanded gps position
-	float heading,distance //Commanded heading/distance
-	float roll,pitch,yaw;	//Commanded orientation (radians)
+	double gpsLattitude,gpsLongitude, altitude; //Commanded gps position and altitude
+	float landDirection,heading,distance //Commanded heading/distance/landing direction
+	float pitch,yaw;	//Commanded orientation (radians)
 	bool beginLand; //Command to start landing process
 	bool beginTakeoff; //Starting command
+	uint4_t numWaypoints; //number of waypoints
+	uint8_t waypointModifyFlightPathCommand, waypointNextDirectionsCommand; //extra waypoint commands
+	uint4_t holdingAltitude, holdingTurnRadius, flightPathModifyNextId, flightPathModifyPrevId, flightPathModifyId; //flight path data
+	uint8_t holdingTurnDirection; //turn direction
+	//waypoint* waypoints; //list of waypoints (need to see if this is defined in waypoint code)
+	//homebase data (possibly constants?)
 	bool disconnectAutopilot; //Command to switch off autopilot
 } PIGO;
 
