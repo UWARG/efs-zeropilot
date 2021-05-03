@@ -12,11 +12,12 @@ extern "C"
 
 void CommWithPMInit()
 {
-    commandsMailQ = osMailCreate(osMailQ(commandsMailQ), NULL);
+    //commandsMailQ = osMailCreate(osMailQ(commandsMailQ), NULL);
 }
 
 void SendCommandsForPM(PIGO *commands)
 {
+    /*
     //Remove previous command from mail queue if it exists
     osEvent event = osMailGet(commandsMailQ, 0);
     if(event.status == osEventMail)
@@ -33,10 +34,12 @@ void SendCommandsForPM(PIGO *commands)
 
     //Post mail slot to mail queue
     osMailPut(commandsMailQ, commandsOut);
+    */
 }
 
 bool GetTelemData(PIGO *data)
 {
+    /*
     //Try to get data from mail queue
     osEvent event;
     POGI * dataIn;
@@ -55,4 +58,5 @@ bool GetTelemData(PIGO *data)
         //Indicate that no new data is available.
         return false;
     }
+    */
 }
