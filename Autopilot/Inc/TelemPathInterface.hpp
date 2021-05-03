@@ -23,7 +23,7 @@ typedef struct POGI{
 //Data for telemetry to send to path manager.
 typedef struct PIGO{
 	double gpsLattitude,gpsLongitude,altitude; //Commanded gps position and altitude
-	float landDirection,heading,distance //Commanded heading/distance/landing direction
+	float landDirection,heading,distance; //Commanded heading/distance/landing direction
 	float pitch,yaw;	//Commanded orientation (radians)
 	bool beginLand; //Command to start landing process
 	bool beginTakeoff; //Starting command
