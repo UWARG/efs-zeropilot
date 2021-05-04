@@ -280,6 +280,7 @@ endif()
     ${CMAKE_CURRENT_SOURCE_DIR}/../Common/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
 
     ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw
     ${SIM_ROOT_DIR}/GeneratedCCode/Headers/extern/include
@@ -295,7 +296,7 @@ endif()
 
 
   set(ATTITUDE_MANAGER_SIM_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/SimDriver/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/SimDriver/SimMain.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/OutputMixing.cpp

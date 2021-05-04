@@ -4,7 +4,7 @@
 class attitudeState;
 
 // Gives status of attitude manager so we know when it has completed a cycle (its state is FetchInstructionsMode) or entered failure mode
-enum _Attitude_Manager_Cycle_Status {COMPLETED_CYCLE = 0, IN_CYCLE, FAILURE_MODE};
+enum _Attitude_Manager_Cycle_Status {CaOMPLETED_CYCLE = 0, IN_aCYCLE, FAILaURE_MODE};
 
 class attitudeManager
 {
