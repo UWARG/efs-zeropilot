@@ -12,12 +12,13 @@
 #include "cruisingState.hpp"
 #include "landingTakeoffManager.hpp"
 #include "CommWithAttitudeManager.hpp"
+#include "CommsWithTelemetry.hpp"
 
 #include "SensorFusion.hpp"
 #include "AttitudePathInterface.hpp"
 
 
-using namespace std; 
+using namespace std;
 using ::testing::Test;
 
 /***********************************************************************************************************************
@@ -29,6 +30,8 @@ FAKE_VALUE_FUNC(IMU_Data_t, SF_GetRawIMU);
 FAKE_VOID_FUNC(AutoSteer_Init);
 FAKE_VOID_FUNC(CommWithAMInit);
 FAKE_VOID_FUNC(SendCommandsForAM, CommandsForAM*);
+FAKE_VOID_FUNC(CommWithTelemInit);
+FAKE_VALUE_FUNC(bool, GetTelemetryCommands, Telemetry_PIGO_t*);
 FAKE_VALUE_FUNC(bool, GetAttitudeData, AttitudeData*);
 FAKE_VOID_FUNC(AutoSteer_ComputeCoordinatedTurn, CoordinatedTurnInput_t*, CoordinatedTurnAttitudeManagerCommands_t*);
 FAKE_VOID_FUNC(AutoSteer_ComputeAltitudeAndAirspeed, AltitudeAirspeedInput_t*, AltitudeAirspeedCommands_t*);

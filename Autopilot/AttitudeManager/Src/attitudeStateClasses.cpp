@@ -5,7 +5,7 @@
  **********************************************************************************************************************/
 
 float OutputMixingMode::_channelOut[4];
-PMCommands fetchInstructionsMode::_PMInstructions;
+CommandsForAM fetchInstructionsMode::_PMInstructions;
 SFOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t PIDloopMode::_PidOutput;
 
@@ -16,16 +16,12 @@ PID_Output_t PIDloopMode::_PidOutput;
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {
 
-    PMError_t ErrorStruct = PM_GetCommands(&_PMInstructions);
+    GetCommands(&_PMInstructions);
 
-    if (ErrorStruct.errorCode == 0)
-    {
-        attitudeMgr->setState(sensorFusionMode::getInstance());
-    }
-    else
-    {
-        attitudeMgr->setState(FatalFailureMode::getInstance());
-    }
+    // The support is also here for sending stuff to Path manager, but there's nothing I need to send atm.
+
+    attitudeMgr->setState(sensorFusionMode::getInstance());
+
 }
 
 attitudeState& fetchInstructionsMode::getInstance()
@@ -50,59 +46,49 @@ attitudeState& sensorFusionMode::getInstance()
 void PIDloopMode::execute(attitudeManager* attitudeMgr)
 {
 
-    PMCommands *PMInstructions = fetchInstructionsMode::GetPMInstructions();
+    CommandsForAM *PMInstructions = fetchInstructionsMode::GetPMInstructions();
     SFOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
-
-    // Gets roll, pitch, rudder, and throttle commands from the path manager module
-    PMCommands pathManagerOutput;
-    PMError_t pmError = PM_GetCommands(&pathManagerOutput);
 
     //executes PID's to acheive desired roll, pitch angle
     //if manual control is needed, use loaded in percents instead!
-    if(pathManagerOutput.passbyData.pitchPassby)
+    if(PMInstructions->passbyData.pitchPassby)
     {
-        _PidOutput.pitchPercent = pathManagerOutput.passbyData.pitchPercent;
+        _PidOutput.pitchPercent = PMInstructions->passbyData.pitchPercent;
     }
     else
     {
         _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->pitch, SFOutput->pitchRate);
     }
 
-    if(pathManagerOutput.passbyData.rollPassby)
+    if(PMInstructions->passbyData.rollPassby)
     {
-        _PidOutput.rollPercent = pathManagerOutput.passbyData.rollPercent;
+        _PidOutput.rollPercent = PMInstructions->passbyData.rollPercent;
     }
     else
     {
         _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->roll, SFOutput->rollRate);
     }
 
-    if(pathManagerOutput.passbyData.rudderPassby)
+    if(PMInstructions->passbyData.rudderPassby)
     {
-        _PidOutput.rudderPercent = pathManagerOutput.passbyData.rudderPercent;
+        _PidOutput.rudderPercent = PMInstructions->passbyData.rudderPercent;
     }
     else
     {
-        _PidOutput.rudderPercent = pathManagerOutput.rudderPercent;
+        _PidOutput.rudderPercent = PMInstructions->rudderPercent;
     }
 
-    if(pathManagerOutput.passbyData.throttlePassby)
+    if(PMInstructions->passbyData.throttlePassby)
     {
-        _PidOutput.throttlePercent = pathManagerOutput.passbyData.throttlePercent;
-    } 
+        _PidOutput.throttlePercent = PMInstructions->passbyData.throttlePercent;
+    }
     else
     {
-        _PidOutput.throttlePercent = pathManagerOutput.throttlePercent;
+        _PidOutput.throttlePercent = PMInstructions->throttlePercent;
     }
 
-    if (pmError.errorCode == 0) 
-    {
-        attitudeMgr->setState(OutputMixingMode::getInstance());
-    }
-    else
-    {
-        attitudeMgr->setState(FatalFailureMode::getInstance());
-    }
+    attitudeMgr->setState(OutputMixingMode::getInstance());
+
 }
 
 attitudeState& PIDloopMode::getInstance()

@@ -1,16 +1,21 @@
 /**
  * Provides declarations common to the attitude and path manager interfaces.
- * Author: Anthony Bertnyk
+ * Author: Anthony Bertnyk, Anthony Berbari
  */
 
 #ifndef ATTITUDE_PATH_INTERFACE_HPP
 #define ATTITUDE_PATH_INTERFACE_HPP
+
+#include "pathDatatypes.hpp"
+#include "AttitudeDatatypes.hpp"
+
 
 //Commands for path manager to send to attitude manager.
 typedef struct CommandsForAM{
 	float roll,pitch;	// commanded orientation (radians)
 	float rudderPercent;
 	float throttlePercent;
+    _PassbyControl passbyData;
 } CommandsForAM;
 
 //Data for attitude manager to send to path manager.

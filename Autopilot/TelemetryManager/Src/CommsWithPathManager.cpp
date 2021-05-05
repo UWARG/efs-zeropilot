@@ -15,7 +15,7 @@ void TelemCommWithPMInit()
     //commandsMailQ = osMailCreate(osMailQ(commandsMailQ), NULL);
 }
 
-void SendCommandsForPM(PIGO *commands)
+void SendCommandsForPM(Telemetry_PIGO_t *commands)
 {
     /*
     //Remove previous command from mail queue if it exists
@@ -28,7 +28,7 @@ void SendCommandsForPM(PIGO *commands)
     //Allocate mail slot
     PIGO *commandsOut;
     commandsOut = static_cast<PIGO *>(osMailAlloc(commandsMailQ, osWaitForever));
-    
+
     //Fill mail slot with data
     *commandsOut = *commands;
 
@@ -37,7 +37,7 @@ void SendCommandsForPM(PIGO *commands)
     */
 }
 
-bool GetTelemData(PIGO *data)
+bool GetTelemData(POGI *data)
 {
     /*
     //Try to get data from mail queue
@@ -47,7 +47,7 @@ bool GetTelemData(PIGO *data)
     if(event.status == osEventMail)
     {
         dataIn = static_cast<PIGO *>(event.value.p);
-        
+
         //Keep the data and remove it from the queue
         *data = *dataIn;
         osMailFree(telemDataMailQ, dataIn);
