@@ -8,15 +8,12 @@
 #define TELEM_PATH_INTERFACE_HPP
 
 /********************************************************************
-* Enums
+* Definitions
 ********************************************************************/
 
 enum _ModifyFlightPathCommand { NO_FLIGHT_PATH_EDIT = 0, INITIALIZE_FLIGHT_PATH, APPEND, INSERT, UPDATE, DELETE, NUKE }; // Used by cruisingState
 enum _GetNextDirectionsCommand { REGULAR_PATH_FOLLOWING = 0, TOGGLE_HOLDING, TOGGLE_HEAD_HOME }; // Used by cruisingState
 
-/********************************************************************
-* Important Structs
-********************************************************************/
 
 struct Telemetry_Waypoint_Data_t {
     long double latitude;
@@ -25,6 +22,7 @@ struct Telemetry_Waypoint_Data_t {
     float turnRadius;
     uint8_t waypointType; // 0 = Path follow, 1 = Orbit, 2 = Hold
 };
+
 
 //Data for path manager to send to telemetry.
 typedef struct POGI{
@@ -42,10 +40,10 @@ typedef struct POGI{
 struct Telemetry_PIGO_t {
     /* Parameters for the waypoint manager (crusingState) */
     int numWaypoints;
-
-    _ModifyFlightPathCommand waypointModifyFlightPathCommand;
+    
+    _ModifyFlightPathCommand waypointModifyFlightPathCommand; 
     bool initializingHomeBase; // 0 = no, 1 = yes
-    _GetNextDirectionsCommand waypointNextDirectionsCommand;
+    _GetNextDirectionsCommand waypointNextDirectionsCommand; 
     int holdingAltitude;
     int holdingTurnRadius;
     uint8_t holdingTurnDirection; // 0 = CW, 1 = CCW
@@ -55,10 +53,10 @@ struct Telemetry_PIGO_t {
     int prevId;
     int modifyId;
 
-    Telemetry_Waypoint_Data_t waypoints[2]; // Somehow need to get PATH_BUFFER_SIZE here...
+    Telemetry_Waypoint_Data_t waypoints[100]; // Somehow need to get PATH_BUFFER_SIZE here...
     Telemetry_Waypoint_Data_t homebase;
 
-    // landing and takeoff
+    // landing and takeoff 
     bool beginLanding;
     bool beginTakeoff;
     float stoppingDirectionHeading;
@@ -78,15 +76,15 @@ extern "C"
 #include "cmsis_os.h"
 }
 
-const char PATH_TELEM_MAIL_Q_SIZE = 1;
+const char MAIL_Q_SIZE = 1;
 
 //Set up a mail queue for sending commands to the path manager
-extern osMailQDef(PMcommandsMailQ, PATH_TELEM_MAIL_Q_SIZE, Telemetry_PIGO_t);
+extern osMailQDef(PMcommandsMailQ, MAIL_Q_SIZE, PIGO);
 extern osMailQId PMcommandsMailQ;
 
 
 //Set up a mail queue for sending data to telemetry
-extern osMailQDef(telemDataMailQ, PATH_TELEM_MAIL_Q_SIZE, POGI);
+extern osMailQDef(telemDataMailQ, MAIL_Q_SIZE, POGI);
 extern osMailQId telemDataMailQ;
 
 #endif
