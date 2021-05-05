@@ -34,15 +34,15 @@ extern "C"
 #include "cmsis_os.h"
 }
 
-const char MAIL_Q_SIZE = 1;
+const char PATH_ATTITUDE_MAIL_Q_SIZE = 1;
 
 //Set up a mail queue for sending commands to the attitude manager
-extern osMailQDef(commandsMailQ, MAIL_Q_SIZE, CommandsForAM);
+extern osMailQDef(commandsMailQ, PATH_ATTITUDE_MAIL_Q_SIZE, CommandsForAM);
 extern osMailQId commandsMailQ;
 
 
 //Set up a mail queue for sending data to the path manager
-extern osMailQDef(attitudeDataMailQ, MAIL_Q_SIZE, AttitudeData);
+extern osMailQDef(attitudeDataMailQ, PATH_ATTITUDE_MAIL_Q_SIZE, AttitudeData);
 extern osMailQId attitudeDataMailQ;
 
 #endif

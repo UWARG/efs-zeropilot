@@ -76,15 +76,15 @@ extern "C"
 #include "cmsis_os.h"
 }
 
-const char MAIL_Q_SIZE = 1;
+const char PATH_TELEM_MAIL_Q_SIZE = 1;
 
 //Set up a mail queue for sending commands to the path manager
-extern osMailQDef(PMcommandsMailQ, MAIL_Q_SIZE, PIGO);
+extern osMailQDef(PMcommandsMailQ, PATH_TELEM_MAIL_Q_SIZE, Telemetry_PIGO_t);
 extern osMailQId PMcommandsMailQ;
 
 
 //Set up a mail queue for sending data to telemetry
-extern osMailQDef(telemDataMailQ, MAIL_Q_SIZE, POGI);
+extern osMailQDef(telemDataMailQ, PATH_TELEM_MAIL_Q_SIZE, POGI);
 extern osMailQId telemDataMailQ;
 
 #endif
