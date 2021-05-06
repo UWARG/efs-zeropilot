@@ -26,12 +26,42 @@ typedef enum {
     MAVLINK_ENCODING_FAIL=2,
 } mavlink_encoding_status_t;
 
+//airside encoder, Plane In Ground Out (PIGO)
+typedef enum {
+    MESSAGE_ID_GPS_LANDING_SPOT,
+    MESSAGE_ID_GROUND_COMMAND,
+    MESSAGE_ID_GIMBAL_CMD,
+    MESSAGE_ID_BEGIN_LANDING,
+    MESSAGE_ID_BEGIN_TAKEOFF,
+    MESSAGE_ID_NUM_WAYPOINTS,
+    MESSAGE_ID_WAYPOINT_MODIFY_PATH_CMD,
+    MESSAGE_ID_WAYPOINT_NEXT_DIRECTIONS_CMD,
+    MESSAGE_ID_INITIALIZING_HOMEBASE,
+    MESSAGE_ID_HOLDING_ALTITUDE,
+    MESSAGE_ID_HOLDING_TURN_RADIUS,
+    MESSAGE_ID_HOLDING_TURN_DIRECTION,
+    MESSAGE_ID_PATH_MODIFY_NEXT_LD,
+    MESSAGE_ID_PATH_MODIFY_PREV_LD,
+    MESSAGE_ID_PATH_MODIFY_LD,
+    MESSAGE_ID_WAYPOINTS,
+    MESSAGE_ID_HOMEBASE,
+} PIGO_Message_IDs_t;
+
+//airside decoder, Plane Out Ground In (POGI)
 typedef enum {
     MESSAGE_ID_GPS,
     MESSAGE_ID_GIMBAL,
-    Message_ID_TAKEOFF,
-    Message_ID_CUSTOM_CMD,
-} Message_IDs_t;
+    MESSAGE_ID_ERROR_CODE,
+    MESSAGE_ID_AIR_SPEED,
+    MESSAGE_ID_EULER_ANGLE_PLANE,
+    MESSAGE_ID_EULER_ANGLE_CAM,
+    MESSAGE_ID_IS_LANDED,
+    MESSAGE_ID_EDITING_FLIGHT_PATH_ERROR_CODE,
+    MESSAGE_ID_FLIGHT_PATH_FOLLOWING_ERROR_CODE,
+    MESSAGE_ID_CURRENT_WAYPOINT_LD,
+    MESSAGE_ID_CURRENT_WAYPOINT_INDEX,
+    MESSAGE_ID_HOMEBASE_INITIALIZED,
+} POGI_Message_IDs_t;
 
 //-------------------------- Prototypes ---------------------------------------------------------------
 
@@ -49,12 +79,12 @@ typedef enum {
 
         if (decoderStatus != MAVLINK_DECODING_OKAY) //this make sure it stops after a whole message is received
         {
-            decoderStatus = Mavlink_decoder(MAVLINK_COMM_0, current_byte, (uint8_t*) &global_position_decoded);
+            decoderStatus = Mavlink_airside_decoder(MAVLINK_COMM_0, current_byte, (uint8_t*) &global_position_decoded);
         }
     }
  * 
  **/
-mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uint8_t *telemetryData);
+mavlink_decoding_status_t Mavlink_airside_decoder(int channel, uint8_t incomingByte, uint8_t *telemetryData);
 
 /**
  * @brief Encode an selected struct
@@ -73,9 +103,9 @@ mavlink_decoding_status_t Mavlink_decoder(int channel, uint8_t incomingByte, uin
 
     mavlink_message_t encoded_msg;
 
-    uint8_t encoderStatus = Mavlink_encoder(MESSAGE_ID_GPS, &encoded_msg, (const uint8_t*) &global_position);
+    uint8_t encoderStatus = Mavlink_airside_encoder(MESSAGE_ID_GPS, &encoded_msg, (const uint8_t*) &global_position);
  */
-mavlink_encoding_status_t Mavlink_encoder(Message_IDs_t id, mavlink_message_t *message, const uint8_t *struct_ptr);
+mavlink_encoding_status_t Mavlink_airside_encoder(POGI_Message_IDs_t id, mavlink_message_t *message, const uint8_t *struct_ptr);
 
 
 int test__encode_then_decode(void);
