@@ -28,6 +28,7 @@ typedef enum {
 
 //airside encoder, Plane In Ground Out (PIGO)
 typedef enum {
+    MESSAGE_ID_EMPTY,
     MESSAGE_ID_GPS_LANDING_SPOT,
     MESSAGE_ID_GROUND_COMMAND,
     MESSAGE_ID_GIMBAL_CMD,
@@ -49,6 +50,7 @@ typedef enum {
 
 //airside decoder, Plane Out Ground In (POGI)
 typedef enum {
+    MESSAGE_ID_NONE,
     MESSAGE_ID_GPS,
     MESSAGE_ID_GIMBAL,
     MESSAGE_ID_ERROR_CODE,
@@ -62,6 +64,23 @@ typedef enum {
     MESSAGE_ID_CURRENT_WAYPOINT_INDEX,
     MESSAGE_ID_HOMEBASE_INITIALIZED,
 } POGI_Message_IDs_t;
+
+//-------------------------- Customized WARG Command Structs ---------------------------------------------------------------
+
+typedef struct PIGO_GPS_LANDING_SPOT_t {
+    int32_t latitude;
+    int32_t longitude;
+    int32_t altitude;
+    int32_t landingDirection;
+} PIGO_GPS_LANDING_SPOT_t;
+
+
+typedef struct Warg_Euler_Angle_t {
+    float yaw;
+    float pitch;
+    float roll;
+} Warg_Euler_Angle_t;
+
 
 //-------------------------- Prototypes ---------------------------------------------------------------
 
@@ -115,6 +134,6 @@ uint16_t custom_mavlink_msg__begin_takeoff_command_encode(uint8_t system_id, uin
 void custom_mavlink_msg__begin_takeoff_command_decode(const mavlink_message_t* message, mavlink_custom_cmd_takeoff_t* takeoff_command);
 uint16_t custom_fcn__calculate_crc(mavlink_message_t* msg, uint8_t crc_extra);
 
-
+POGI_Message_IDs_t Mavlink_airside_decoder_get_message_type(void);
 
 #endif //MAVLINKFUNCTIONS_HPP
