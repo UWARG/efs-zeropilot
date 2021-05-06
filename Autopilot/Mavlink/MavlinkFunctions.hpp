@@ -74,6 +74,36 @@ typedef struct PIGO_GPS_LANDING_SPOT_t {
     int32_t landingDirection;
 } PIGO_GPS_LANDING_SPOT_t;
 
+typedef struct PIGO_WAYPOINTS_t {
+    int32_t latitude;
+    int32_t longitude;
+    int32_t altitude;
+    int32_t turnRadius;
+    uint8_t waypointType;
+} PIGO_LOCATION_INFO_t;
+
+typedef struct PIGO_GIMBAL_t {
+    float pitch;
+    float yaw;
+}PIGO_GIMBAL_t;
+
+typedef struct PIGO_GROUND_COMMAND_t {
+    float heading;
+    float latestDistance;
+} PIGO_GROUND_COMMAND_t;
+
+
+typedef struct single_bool_cmd_t {
+    bool cmd;
+} single_bool_cmd_t;
+
+typedef struct one_byte_uint_cmd_t {
+    uint8_t cmd;
+} one_byte_uint_cmd_t;
+
+typedef struct four_bytes_int_cmd_t {
+    int32_t cmd;
+} four_bytes_int_cmd_t;
 
 typedef struct Warg_Euler_Angle_t {
     float yaw;

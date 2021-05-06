@@ -113,7 +113,8 @@ mavlink_decoding_status_t Mavlink_airside_decoder(int channel, uint8_t incomingB
                     }
                 }
                 break;
-
+//TODO after all cmds are implemented, give cmd ID to seperate the ones that uses the same mavlink encoding functions
+//TODO update the decoder to use the corresponsing cmd IDs
             case MAVLINK_MSG_ID_CAMERA_SETTINGS: // simple Warg cmd goes here - Pogi (plane out ground in)
                 {
                     mavlink_camera_settings_t warg_command;
@@ -274,28 +275,123 @@ mavlink_encoding_status_t Mavlink_airside_encoder(PIGO_Message_IDs_t msgID, mavl
         } 
         break;
 
+        case MESSAGE_ID_GROUND_COMMAND:
+        {
+            printf("reached here\n");
+            PIGO_GROUND_COMMAND_t* gnd_cmd = (PIGO_GROUND_COMMAND_t*) struct_ptr;
+
+            mavlink_camera_settings_t camera_setting;
+            camera_setting.time_boot_ms = 1; //4 bytes
+            camera_setting.mode_id = 1; // 1 byte
+            camera_setting.zoomLevel = gnd_cmd ->heading; //4 bytes
+            camera_setting.focusLevel = gnd_cmd ->latestDistance; // 4bytes
+
+            message_len = mavlink_msg_camera_settings_encode(system_id, component_id, &encoded_msg_original, &camera_setting);
+        }
+        break;
+
         case MESSAGE_ID_GIMBAL_CMD:
         {
-            /*
-            mavlink_attitude_t gimbal_command =
-            {
-                1, //time_boot_ms
+            printf("reached here\n");
+            PIGO_GIMBAL_t* gimbal_cmd = (PIGO_GIMBAL_t*) struct_ptr;
 
-                1, //roll
-                2, //pitch
-                3, //yaw
+            mavlink_attitude_t attitude_cmd;
+            attitude_cmd.time_boot_ms = 1;
+            attitude_cmd.roll = 1;
+            attitude_cmd.pitch = gimbal_cmd ->pitch;
+            attitude_cmd.yaw = gimbal_cmd ->yaw;
+            attitude_cmd.rollspeed = 1;
+            attitude_cmd.pitchspeed = 1;
+            attitude_cmd.yawspeed = 1;
 
-                4, // roll speed
-                5, // pitch speed
-                6, // yaw speed
-            }*/
-            message_len = mavlink_msg_attitude_encode(system_id, component_id, &encoded_msg_original, (mavlink_attitude_t*) struct_ptr);
+            message_len = mavlink_msg_attitude_encode(system_id, component_id, &encoded_msg_original, &attitude_cmd);
         }
+        break;
+
+        case MESSAGE_ID_BEGIN_LANDING:
+        case MESSAGE_ID_BEGIN_TAKEOFF:
+        case MESSAGE_ID_INITIALIZING_HOMEBASE:
+        {
+            single_bool_cmd_t* warg_cmd = (single_bool_cmd_t*) struct_ptr;
+
+            mavlink_camera_settings_t camera_setting;
+            camera_setting.time_boot_ms = 1; //4 bytes
+            camera_setting.mode_id = (uint8_t) warg_cmd ->cmd; // 1 byte
+            camera_setting.zoomLevel = 1; //4 bytes
+            camera_setting.focusLevel = 2; // 4bytes
+
+            message_len = mavlink_msg_camera_settings_encode(system_id, component_id, &encoded_msg_original, &camera_setting);
+        }
+        break;
+
+        case MESSAGE_ID_NUM_WAYPOINTS:
+        case MESSAGE_ID_HOLDING_ALTITUDE:
+        case MESSAGE_ID_HOLDING_TURN_RADIUS:
+        case MESSAGE_ID_PATH_MODIFY_NEXT_LD:
+        case MESSAGE_ID_PATH_MODIFY_PREV_LD:
+        case MESSAGE_ID_PATH_MODIFY_LD:
+        {
+            four_bytes_int_cmd_t* numWaypoint_cmd = (four_bytes_int_cmd_t*) struct_ptr;
+            printf("haha: %d\n",numWaypoint_cmd ->cmd);
+            mavlink_global_position_int_t global_position;
+            global_position.time_boot_ms = 1;
+            global_position.lat = numWaypoint_cmd ->cmd;
+            global_position.lon = 1;
+            global_position.alt = 1;
+            global_position.relative_alt = 1;
+            global_position.vx = 6;
+            global_position.vy = 7;
+            global_position.vz = 8;
+            global_position.hdg = 0;
+
+            message_len = mavlink_msg_global_position_int_encode(system_id, component_id, &encoded_msg_original, &global_position);
+            //message_len = mavlink_msg_global_position_int_encode(system_id, component_id, &encoded_msg_original, (mavlink_global_position_int_t*) struct_ptr);
+        } 
+        break;
+
+        case MESSAGE_ID_WAYPOINT_MODIFY_PATH_CMD:
+        case MESSAGE_ID_WAYPOINT_NEXT_DIRECTIONS_CMD:
+        case MESSAGE_ID_HOLDING_TURN_DIRECTION:
+        {
+            one_byte_uint_cmd_t* warg_cmd = (one_byte_uint_cmd_t*) struct_ptr;
+
+            mavlink_camera_settings_t camera_setting;
+            camera_setting.time_boot_ms = 1; //4 bytes
+            camera_setting.mode_id = warg_cmd ->cmd; // 1 byte
+            camera_setting.zoomLevel = 1; //4 bytes
+            camera_setting.focusLevel = 2; // 4bytes
+
+            message_len = mavlink_msg_camera_settings_encode(system_id, component_id, &encoded_msg_original, &camera_setting);
+        }
+        break;
+
+        case MESSAGE_ID_WAYPOINTS:
+        case MESSAGE_ID_HOMEBASE:
+        {
+            PIGO_WAYPOINTS_t* warg_waypoint_cmd = (PIGO_WAYPOINTS_t*) struct_ptr;
+
+            mavlink_global_position_int_t global_position;
+            global_position.time_boot_ms = 1;
+            global_position.lat = warg_waypoint_cmd ->latitude;
+            global_position.lon = warg_waypoint_cmd ->longitude;
+            global_position.alt = warg_waypoint_cmd ->altitude;
+            global_position.relative_alt = warg_waypoint_cmd ->turnRadius;
+            global_position.vx = (int16_t) warg_waypoint_cmd ->waypointType;
+            global_position.vy = 7;
+            global_position.vz = 8;
+            global_position.hdg = 9;
+
+            message_len = mavlink_msg_global_position_int_encode(system_id, component_id, &encoded_msg_original, &global_position);
+            //message_len = mavlink_msg_global_position_int_encode(system_id, component_id, &encoded_msg_original, (mavlink_global_position_int_t*) struct_ptr);
+        } 
         break;
 
         default:
             break;
     }
+
+        
+
 
     if (message_len == 0)
     {
@@ -405,12 +501,19 @@ int test__encode_then_decode(void)
         9 // hdg
     };
 
-    PIGO_GPS_LANDING_SPOT_t warg_GPS = 
+    PIGO_WAYPOINTS_t warg_GPS = 
     {
         2, //int32_t latitude;
         3, //int32_t longitude;
         4, //int32_t altitude;
-        5, //int32_t landingDirection;
+        5, //int32_t turnpoint;
+        9,
+    };
+
+    PIGO_GIMBAL_t cmd = 
+    {
+        9,
+        9,
     };
 
     mavlink_attitude_t gimbal_command =
@@ -431,15 +534,14 @@ int test__encode_then_decode(void)
         1,
     };
 
-    mavlink_custom_cmd_takeoff_t takeoff_command = 
-    {
-        1,
-    };
+
 
     mavlink_message_t encoded_msg;
 
     //uint8_t encoderStatus = Mavlink_airside_encoder(MESSAGE_ID_GPS_LANDING_SPOT, &encoded_msg, (const uint8_t*) &global_position);
-    uint8_t encoderStatus = Mavlink_airside_encoder(MESSAGE_ID_GPS_LANDING_SPOT, &encoded_msg, (const uint8_t*) &warg_GPS);
+    //uint8_t encoderStatus = Mavlink_airside_encoder(MESSAGE_ID_GPS_LANDING_SPOT, &encoded_msg, (const uint8_t*) &warg_GPS);
+    
+    uint8_t encoderStatus = Mavlink_airside_encoder(MESSAGE_ID_GIMBAL_CMD, &encoded_msg, (const uint8_t*) &cmd);
     //uint8_t encoderStatus = Mavlink_airside_encoder(MESSAGE_ID_EULER_ANGLE_PLANE, &encoded_msg, (const uint8_t*) &gimbal_command);
 
     if (encoderStatus == MAVLINK_ENCODING_FAIL)
