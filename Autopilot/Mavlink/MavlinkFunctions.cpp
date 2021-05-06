@@ -16,7 +16,7 @@
 #include "Mavlink2_lib/common/mavlink.h"
 #include "MavlinkFunctions.hpp"
 
-POGI_Message_IDs_t decoded_message_type = MESSAGE_ID_NONE;
+PIGO_Message_IDs_t decoded_message_type = MESSAGE_ID_NONE;
 
 
 mavlink_decoding_status_t Mavlink_airside_decoder(int channel, uint8_t incomingByte, uint8_t *telemetryData)
@@ -48,30 +48,135 @@ mavlink_decoding_status_t Mavlink_airside_decoder(int channel, uint8_t incomingB
                     mavlink_msg_global_position_int_decode(&decoded_msg, &global_position);
 
                     // the following are only for a demonstration of how to access the data from global_position
-                    //uint32_t timestamp_ms = global_position.time_boot_ms; /*< [ms] Timestamp (time since system boot).*/
-                    //int32_t latitude = global_position.lat; /*< [degE7] Latitude, expressed*/
-                    //int32_t longitude = global_position.lon; /*< [degE7] Longitude, expressed*/
-                    //int32_t altitude = global_position.alt; /*< [mm] Altitude (MSL). Note that virtually all GPS modules provide both WGS84 and MSL.*/
-                    //int32_t relative_altitude = global_position.relative_alt; /*< [mm] Altitude above ground*/
+                    uint32_t warg_ID = global_position.time_boot_ms; /*< [ms] Timestamp (time since system boot).*/
+                    int32_t latitude = global_position.lat; /*< [degE7] Latitude, expressed*/
+                    int32_t longitude = global_position.lon; /*< [degE7] Longitude, expressed*/
+                    int32_t altitude = global_position.alt; /*< [mm] Altitude (MSL). Note that virtually all GPS modules provide both WGS84 and MSL.*/
+                    int32_t relative_altitude = global_position.relative_alt; /*< [mm] Altitude above ground*/
                     //int16_t Vx = global_position.vx; /*< [cm/s] Ground X Speed (Latitude, positive north)*/
                     //int16_t Vy = global_position.vy; /*< [cm/s] Ground Y Speed (Longitude, positive east)*/
                     //int16_t Vz = global_position.vz; /*< [cm/s] Ground Z Speed (Altitude, positive down)*/
                     uint16_t Hdg = global_position.hdg; /*< [cdeg] Vehicle heading (yaw angle), 0.0..359.99 degrees. If unknown, set to: UINT16_MAX*/
                     
-                    // someone needs to change this to an actual GPS check, e.g. check for a valid range
-                    if (Hdg == 9) //to be changed
+                    switch(warg_ID)
                     {
-                        printf("valid data\n");
-                        memcpy((void*) telemetryData, (void*) &global_position, sizeof(mavlink_global_position_int_t));
-                        decoded_message_type = MESSAGE_ID_GPS;
-                        return MAVLINK_DECODING_OKAY;
-                    }
-                    else
-                    {
+                        case MESSAGE_ID_GPS_LANDING_SPOT:
+                            {
+                                PIGO_GPS_LANDING_SPOT_t landing_spot;
+                                landing_spot.latitude = latitude;
+                                landing_spot.longitude = longitude;
+                                landing_spot.altitude = altitude;
+                                landing_spot.landingDirection = relative_altitude;
+
+                                printf("valid data\n");
+                                memcpy((void*) telemetryData, (void*) &landing_spot, sizeof(PIGO_GPS_LANDING_SPOT_t));
+                                decoded_message_type = MESSAGE_ID_GPS_LANDING_SPOT;
+
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+                        case MESSAGE_ID_WAYPOINTS:
+                            {
+                                PIGO_WAYPOINTS_t waypoints;
+                                waypoints.latitude = latitude;
+                                waypoints.longitude = longitude;
+                                waypoints.altitude = altitude;
+                                waypoints.turnRadius = relative_altitude;
+                                waypoints.waypointType = Hdg;
+
+                                memcpy((void*) telemetryData, (void*) &waypoints, sizeof(PIGO_WAYPOINTS_t));
+                                decoded_message_type = MESSAGE_ID_WAYPOINTS;
+
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+                        case MESSAGE_ID_HOMEBASE:
+                            {
+                                PIGO_WAYPOINTS_t waypoints;
+                                waypoints.latitude = latitude;
+                                waypoints.longitude = longitude;
+                                waypoints.altitude = altitude;
+                                waypoints.turnRadius = relative_altitude;
+                                waypoints.waypointType = Hdg;
+
+                                memcpy((void*) telemetryData, (void*) &waypoints, sizeof(PIGO_WAYPOINTS_t));
+                                decoded_message_type = MESSAGE_ID_HOMEBASE;
+
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+
+                        case MESSAGE_ID_NUM_WAYPOINTS:
+                            {
+                                four_bytes_int_cmd_t command;
+                                command.cmd = latitude;
+
+                                memcpy((void*) telemetryData, (void*) &command, sizeof(four_bytes_int_cmd_t));
+                                decoded_message_type = MESSAGE_ID_NUM_WAYPOINTS;
+
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+                        case MESSAGE_ID_HOLDING_ALTITUDE:
+                            {
+                                four_bytes_int_cmd_t command;
+                                command.cmd = latitude;
+
+                                memcpy((void*) telemetryData, (void*) &command, sizeof(four_bytes_int_cmd_t));
+                                decoded_message_type = MESSAGE_ID_HOLDING_ALTITUDE;
+
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+                        case MESSAGE_ID_HOLDING_TURN_RADIUS:
+                            {
+                                four_bytes_int_cmd_t command;
+                                command.cmd = latitude;
+
+                                memcpy((void*) telemetryData, (void*) &command, sizeof(four_bytes_int_cmd_t));
+                                decoded_message_type = MESSAGE_ID_HOLDING_TURN_RADIUS;
+
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+                        case MESSAGE_ID_PATH_MODIFY_NEXT_LD:
+                            {
+                                four_bytes_int_cmd_t command;
+                                command.cmd = latitude;
+
+                                memcpy((void*) telemetryData, (void*) &command, sizeof(four_bytes_int_cmd_t));
+                                decoded_message_type = MESSAGE_ID_PATH_MODIFY_NEXT_LD;
+
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+                        case MESSAGE_ID_PATH_MODIFY_PREV_LD:
+                            {
+                                four_bytes_int_cmd_t command;
+                                command.cmd = latitude;
+
+                                memcpy((void*) telemetryData, (void*) &command, sizeof(four_bytes_int_cmd_t));
+                                decoded_message_type = MESSAGE_ID_PATH_MODIFY_PREV_LD;
+
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+                        case MESSAGE_ID_PATH_MODIFY_LD:
+                            {
+                                four_bytes_int_cmd_t command;
+                                command.cmd = latitude;
+
+                                memcpy((void*) telemetryData, (void*) &command, sizeof(four_bytes_int_cmd_t));
+                                decoded_message_type = MESSAGE_ID_PATH_MODIFY_LD;
+
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+
+                        default:
                         return MAVLINK_DECODING_FAIL;
                     }
                 }
-
                 break;
 
             case MAVLINK_MSG_ID_ATTITUDE: 
@@ -79,37 +184,45 @@ mavlink_decoding_status_t Mavlink_airside_decoder(int channel, uint8_t incomingB
                     mavlink_attitude_t gimbal_command;
 
                     mavlink_msg_attitude_decode(&decoded_msg, &gimbal_command);
-                    /*            
-                    uint32_t time_boot_ms; /< [ms] Timestamp (time since system boot)./
-                    float roll; /< [rad] Roll angle (-pi..+pi)/
-                    float pitch; /< [rad] Pitch angle (-pi..+pi)/
-                    float yaw; /< [rad] Yaw angle (-pi..+pi)/
-                    float rollspeed; /< [rad/s] Roll angular speed/
-                    float pitchspeed; /< [rad/s] Pitch angular speed/
-                    float yawspeed; /< [rad/s] Yaw angular speed/
-                    */
+                              
+                    uint32_t warg_gimbal_ID = gimbal_command.time_boot_ms; // cmd ID
+                    //float roll; /< [rad] Roll angle (-pi..+pi)/
+                    float cmdA = gimbal_command.pitch;
+                    float cmdB = gimbal_command.yaw; 
+                    //float rollspeed;
+                    //float pitchspeed; 
+                    //float yawspeed; 
+                    
+                    switch(warg_gimbal_ID)
+                    {
+                        case MESSAGE_ID_GROUND_CMD:
+                            {                 
+                                PIGO_GROUND_COMMAND_t command;
+                                command.heading = cmdA;
+                                command.latestDistance = cmdB;
 
-                    // to be changed
-                    if (gimbal_command.time_boot_ms == MESSAGE_ID_EULER_ANGLE_PLANE)
-                    {
-                        decoded_message_type = MESSAGE_ID_EULER_ANGLE_PLANE;
-                        Warg_Euler_Angle_t angle_command;
-                        angle_command.yaw = gimbal_command.yaw;
-                        angle_command.pitch = gimbal_command.pitch;
-                        angle_command.roll = gimbal_command.roll;
+                                memcpy((void*) telemetryData, (void*) &command, sizeof(PIGO_GROUND_COMMAND_t));
+                                decoded_message_type = MESSAGE_ID_GROUND_CMD;
 
-                        memcpy((void*) telemetryData, (void*) &angle_command, sizeof(Warg_Euler_Angle_t));
-                        return MAVLINK_DECODING_OKAY;
-                    }
-                    if (gimbal_command.time_boot_ms == MESSAGE_ID_EULER_ANGLE_CAM)
-                    {
-                        decoded_message_type = MESSAGE_ID_EULER_ANGLE_CAM;
-                        memcpy((void*) telemetryData, (void*) &gimbal_command, sizeof(mavlink_attitude_t));
-                        return MAVLINK_DECODING_OKAY;
-                    }
-                    else
-                    {
-                        return MAVLINK_DECODING_FAIL;
+                                return MAVLINK_DECODING_OKAY;                               
+                            }
+                            break;
+                        case MESSAGE_ID_GIMBAL_CMD:
+                            {
+                                PIGO_GIMBAL_t command;
+                                command.pitch = cmdA;
+                                command.yaw = cmdB;
+
+                                memcpy((void*) telemetryData, (void*) &command, sizeof(PIGO_GIMBAL_t));
+                                decoded_message_type = MESSAGE_ID_GIMBAL_CMD;
+
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+
+                        default:
+                            return MAVLINK_DECODING_FAIL;
+                            break;
                     }
                 }
                 break;
@@ -118,62 +231,92 @@ mavlink_decoding_status_t Mavlink_airside_decoder(int channel, uint8_t incomingB
             case MAVLINK_MSG_ID_CAMERA_SETTINGS: // simple Warg cmd goes here - Pogi (plane out ground in)
                 {
                     mavlink_camera_settings_t warg_command;
-                    //static inline void mavlink_msg_camera_settings_decode(const mavlink_message_t* msg, mavlink_camera_settings_t* camera_settings)
+                    //all simple commands sits under here
+
                     //typedef struct __mavlink_camera_settings_t {
-                    // uint32_t time_boot_ms;               
+                    uint32_t warg_cmd_ID = warg_command.time_boot_ms;         //command ID      
                     // uint8_t mode_id;
                     // float zoomLevel; 
-                    // float focusLevel;            //command ID
+                    // float focusLevel;            
                     //}) mavlink_camera_settings_t;
 
                     mavlink_msg_camera_settings_decode(&decoded_msg, &warg_command);
+                    printf("reached here decoding is LANDED\n");
 
-                    if (warg_command.focusLevel == 1.0) // errorCode
+                    switch(warg_cmd_ID)
                     {
-                        //mode_id carries the errorcode
-                        memcpy((void*) telemetryData, (void*) &warg_command, sizeof(mavlink_camera_settings_t));
-                        return MAVLINK_DECODING_OKAY;
-                    }
-                    if (warg_command.focusLevel == 2.0)
-                    {
-                        memcpy((void*) telemetryData, (void*) &warg_command, sizeof(mavlink_camera_settings_t));
-                        return MAVLINK_DECODING_OKAY;
-                    }
-                    if (warg_command.focusLevel == 3.0)
-                    {
-                        memcpy((void*) telemetryData, (void*) &warg_command, sizeof(mavlink_camera_settings_t));
-                        return MAVLINK_DECODING_OKAY;
-                    }
-                    if (warg_command.focusLevel == 4.0)
-                    {
-                        memcpy((void*) telemetryData, (void*) &warg_command, sizeof(mavlink_camera_settings_t));
-                        return MAVLINK_DECODING_OKAY;
-                    }
-                    if (warg_command.focusLevel == 5.0)
-                    {
-                        memcpy((void*) telemetryData, (void*) &warg_command, sizeof(mavlink_camera_settings_t));
-                        return MAVLINK_DECODING_OKAY;
-                    }
-                    if (warg_command.focusLevel == 1.0)
-                    {
-                        memcpy((void*) telemetryData, (void*) &warg_command, sizeof(mavlink_camera_settings_t));
-                        return MAVLINK_DECODING_OKAY;
-                    }
-                    if (warg_command.focusLevel == 1.0)
-                    {
-                        memcpy((void*) telemetryData, (void*) &warg_command, sizeof(mavlink_camera_settings_t));
-                        return MAVLINK_DECODING_OKAY;
-                    }
+                        case MESSAGE_ID_WAYPOINT_MODIFY_PATH_CMD:
+                            {
+                                decoded_message_type = MESSAGE_ID_WAYPOINT_MODIFY_PATH_CMD;
+                                one_byte_uint_cmd_t command;
+                                command.cmd = warg_command.mode_id;
 
-                    else
-                    {
-                        return MAVLINK_DECODING_FAIL;
+                                memcpy((void*) telemetryData, (void*) &command, sizeof(one_byte_uint_cmd_t));
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+                        case MESSAGE_ID_WAYPOINT_NEXT_DIRECTIONS_CMD:
+                            {
+                                decoded_message_type = MESSAGE_ID_WAYPOINT_NEXT_DIRECTIONS_CMD;
+                                one_byte_uint_cmd_t command;
+                                command.cmd = warg_command.mode_id;
+
+                                memcpy((void*) telemetryData, (void*) &command, sizeof(one_byte_uint_cmd_t));
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+                        case MESSAGE_ID_HOLDING_TURN_DIRECTION:
+                            {
+                                decoded_message_type = MESSAGE_ID_HOLDING_TURN_DIRECTION;
+                                one_byte_uint_cmd_t command;
+                                command.cmd = warg_command.mode_id;
+
+                                memcpy((void*) telemetryData, (void*) &command, sizeof(one_byte_uint_cmd_t));
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+
+                        case MESSAGE_ID_BEGIN_LANDING:
+                            {
+                                printf("reached here decoding is LANDED\n");
+                                decoded_message_type = MESSAGE_ID_BEGIN_LANDING;
+                                single_bool_cmd_t isLanded;
+                                isLanded.cmd = warg_command.mode_id;
+
+                                memcpy((void*) telemetryData, (void*) &isLanded, sizeof(single_bool_cmd_t));
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+                        case MESSAGE_ID_BEGIN_TAKEOFF:
+                            {
+                                decoded_message_type = MESSAGE_ID_BEGIN_TAKEOFF;
+                                single_bool_cmd_t isTakenoff;
+                                isTakenoff.cmd = warg_command.mode_id;
+
+                                memcpy((void*) telemetryData, (void*) &isTakenoff, sizeof(single_bool_cmd_t));
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+                        case MESSAGE_ID_INITIALIZING_HOMEBASE:
+                            {
+                                decoded_message_type = MESSAGE_ID_INITIALIZING_HOMEBASE;
+                                single_bool_cmd_t isInitialized;
+                                isInitialized.cmd = warg_command.mode_id;
+
+                                memcpy((void*) telemetryData, (void*) &isInitialized, sizeof(single_bool_cmd_t));
+                                return MAVLINK_DECODING_OKAY;
+                            }
+                            break;
+                        
+                        default:
+                            return MAVLINK_DECODING_FAIL;
+                            break;
                     }
 
                 }
                 break;
 
-            case MAVLINK_MSG_ID_SET_HOME_POSITION: // more of Warg cmd goes here
+            case MAVLINK_MSG_ID_SET_HOME_POSITION: // longer Warg cmd goes here
                 {
                     mavlink_set_home_position_t direction_command;
                     /*
@@ -195,39 +338,6 @@ mavlink_decoding_status_t Mavlink_airside_decoder(int channel, uint8_t incomingB
 
                     mavlink_msg_set_home_position_decode(&decoded_msg, &direction_command);
 
-                    if (direction_command.time_usec == 1) //homebase
-                    {
-                        memcpy((void*) telemetryData, (void*) &direction_command, sizeof(mavlink_set_home_position_t));
-                        return MAVLINK_DECODING_OKAY;
-                    }
-                    else if (direction_command.time_usec == 2) //waypoint
-                    {
-                        memcpy((void*) telemetryData, (void*) &direction_command, sizeof(mavlink_set_home_position_t));
-                        return MAVLINK_DECODING_OKAY;
-                    }
-                    else
-                    {
-                        return MAVLINK_DECODING_FAIL;
-                    }
-
-                }
-                break;
-            case MAVLINK_MSG_ID_TAKEOFF_CMD:
-                {
-                    mavlink_custom_cmd_takeoff_t takeoff_command;
-                    custom_mavlink_msg__begin_takeoff_command_decode(&decoded_msg, &takeoff_command);
-
-                    // to be changed
-                    if (takeoff_command.beginTakeoff == 1)
-                    {
-                        memcpy((void*) telemetryData, (void*) &takeoff_command, sizeof(mavlink_custom_cmd_takeoff_t));
-
-                        return MAVLINK_DECODING_OKAY;
-                    }
-                    else
-                    {
-                        return MAVLINK_DECODING_FAIL;
-                    }
                 }
                 break;
     
@@ -240,13 +350,13 @@ mavlink_decoding_status_t Mavlink_airside_decoder(int channel, uint8_t incomingB
 }
 
 
-POGI_Message_IDs_t Mavlink_airside_decoder_get_message_type(void)
+PIGO_Message_IDs_t Mavlink_airside_decoder_get_message_type(void)
 {
     return decoded_message_type;
 }
 
 
-mavlink_encoding_status_t Mavlink_airside_encoder(PIGO_Message_IDs_t msgID, mavlink_message_t *message, const uint8_t *struct_ptr) 
+mavlink_encoding_status_t Mavlink_airside_encoder(POGI_Message_IDs_t msgID, mavlink_message_t *message, const uint8_t *struct_ptr) 
 {
     uint8_t system_id = 1;
     uint8_t component_id = 1;
@@ -255,16 +365,16 @@ mavlink_encoding_status_t Mavlink_airside_encoder(PIGO_Message_IDs_t msgID, mavl
 
     switch(msgID)
     {
-        case MESSAGE_ID_GPS_LANDING_SPOT:
+        case MESSAGE_ID_GPS:
         {
-            PIGO_GPS_LANDING_SPOT_t* warg_GPS_cmd = (PIGO_GPS_LANDING_SPOT_t*) struct_ptr;
+            POGI_GPS_t* warg_GPS_cmd = (POGI_GPS_t*) struct_ptr;
 
             mavlink_global_position_int_t global_position;
-            global_position.time_boot_ms = 1;
+            global_position.time_boot_ms = MESSAGE_ID_GPS_LANDING_SPOT;
             global_position.lat = warg_GPS_cmd ->latitude;
             global_position.lon = warg_GPS_cmd ->longitude;
             global_position.alt = warg_GPS_cmd ->altitude;
-            global_position.relative_alt = warg_GPS_cmd ->landingDirection;
+            global_position.relative_alt = 4;
             global_position.vx = 6;
             global_position.vy = 7;
             global_position.vz = 8;
@@ -275,29 +385,15 @@ mavlink_encoding_status_t Mavlink_airside_encoder(PIGO_Message_IDs_t msgID, mavl
         } 
         break;
 
-        case MESSAGE_ID_GROUND_COMMAND:
+        case MESSAGE_ID_EULER_ANGLE_PLANE:
+        case MESSAGE_ID_EULER_ANGLE_CAM:
         {
             printf("reached here\n");
-            PIGO_GROUND_COMMAND_t* gnd_cmd = (PIGO_GROUND_COMMAND_t*) struct_ptr;
-
-            mavlink_camera_settings_t camera_setting;
-            camera_setting.time_boot_ms = 1; //4 bytes
-            camera_setting.mode_id = 1; // 1 byte
-            camera_setting.zoomLevel = gnd_cmd ->heading; //4 bytes
-            camera_setting.focusLevel = gnd_cmd ->latestDistance; // 4bytes
-
-            message_len = mavlink_msg_camera_settings_encode(system_id, component_id, &encoded_msg_original, &camera_setting);
-        }
-        break;
-
-        case MESSAGE_ID_GIMBAL_CMD:
-        {
-            printf("reached here\n");
-            PIGO_GIMBAL_t* gimbal_cmd = (PIGO_GIMBAL_t*) struct_ptr;
+            POGI_Euler_Angle_t* gimbal_cmd = (POGI_Euler_Angle_t*) struct_ptr;
 
             mavlink_attitude_t attitude_cmd;
-            attitude_cmd.time_boot_ms = 1;
-            attitude_cmd.roll = 1;
+            attitude_cmd.time_boot_ms = 1; //TODO use appropriate ID here
+            attitude_cmd.roll = gimbal_cmd ->roll;
             attitude_cmd.pitch = gimbal_cmd ->pitch;
             attitude_cmd.yaw = gimbal_cmd ->yaw;
             attitude_cmd.rollspeed = 1;
@@ -308,33 +404,29 @@ mavlink_encoding_status_t Mavlink_airside_encoder(PIGO_Message_IDs_t msgID, mavl
         }
         break;
 
-        case MESSAGE_ID_BEGIN_LANDING:
-        case MESSAGE_ID_BEGIN_TAKEOFF:
-        case MESSAGE_ID_INITIALIZING_HOMEBASE:
+        case MESSAGE_ID_IS_LANDED:
+        case MESSAGE_ID_HOMEBASE_INITIALIZED:
         {
             single_bool_cmd_t* warg_cmd = (single_bool_cmd_t*) struct_ptr;
 
             mavlink_camera_settings_t camera_setting;
-            camera_setting.time_boot_ms = 1; //4 bytes
+            camera_setting.time_boot_ms = MESSAGE_ID_BEGIN_LANDING; //TODO use appropriate ID here for decoder PIGO
             camera_setting.mode_id = (uint8_t) warg_cmd ->cmd; // 1 byte
-            camera_setting.zoomLevel = 1; //4 bytes
-            camera_setting.focusLevel = 2; // 4bytes
-
+            camera_setting.zoomLevel = 8; //4 bytes
+            camera_setting.focusLevel = 8; // 4bytes
+            printf(" encoded IS LANDED \n");
             message_len = mavlink_msg_camera_settings_encode(system_id, component_id, &encoded_msg_original, &camera_setting);
         }
         break;
 
-        case MESSAGE_ID_NUM_WAYPOINTS:
-        case MESSAGE_ID_HOLDING_ALTITUDE:
-        case MESSAGE_ID_HOLDING_TURN_RADIUS:
-        case MESSAGE_ID_PATH_MODIFY_NEXT_LD:
-        case MESSAGE_ID_PATH_MODIFY_PREV_LD:
-        case MESSAGE_ID_PATH_MODIFY_LD:
+        case MESSAGE_ID_AIR_SPEED:
+        case MESSAGE_ID_CURRENT_WAYPOINT_LD:
+        case MESSAGE_ID_CURRENT_WAYPOINT_INDEX:
         {
             four_bytes_int_cmd_t* numWaypoint_cmd = (four_bytes_int_cmd_t*) struct_ptr;
-            printf("haha: %d\n",numWaypoint_cmd ->cmd);
+
             mavlink_global_position_int_t global_position;
-            global_position.time_boot_ms = 1;
+            global_position.time_boot_ms = 1; //TODO  use appropriate ID here
             global_position.lat = numWaypoint_cmd ->cmd;
             global_position.lon = 1;
             global_position.alt = 1;
@@ -349,14 +441,14 @@ mavlink_encoding_status_t Mavlink_airside_encoder(PIGO_Message_IDs_t msgID, mavl
         } 
         break;
 
-        case MESSAGE_ID_WAYPOINT_MODIFY_PATH_CMD:
-        case MESSAGE_ID_WAYPOINT_NEXT_DIRECTIONS_CMD:
-        case MESSAGE_ID_HOLDING_TURN_DIRECTION:
+        case MESSAGE_ID_ERROR_CODE:
+        case MESSAGE_ID_EDITING_FLIGHT_PATH_ERROR_CODE:
+        case MESSAGE_ID_FLIGHT_PATH_FOLLOWING_ERROR_CODE:
         {
             one_byte_uint_cmd_t* warg_cmd = (one_byte_uint_cmd_t*) struct_ptr;
 
             mavlink_camera_settings_t camera_setting;
-            camera_setting.time_boot_ms = 1; //4 bytes
+            camera_setting.time_boot_ms = 1; //TODO use appripriate ID here
             camera_setting.mode_id = warg_cmd ->cmd; // 1 byte
             camera_setting.zoomLevel = 1; //4 bytes
             camera_setting.focusLevel = 2; // 4bytes
@@ -365,33 +457,9 @@ mavlink_encoding_status_t Mavlink_airside_encoder(PIGO_Message_IDs_t msgID, mavl
         }
         break;
 
-        case MESSAGE_ID_WAYPOINTS:
-        case MESSAGE_ID_HOMEBASE:
-        {
-            PIGO_WAYPOINTS_t* warg_waypoint_cmd = (PIGO_WAYPOINTS_t*) struct_ptr;
-
-            mavlink_global_position_int_t global_position;
-            global_position.time_boot_ms = 1;
-            global_position.lat = warg_waypoint_cmd ->latitude;
-            global_position.lon = warg_waypoint_cmd ->longitude;
-            global_position.alt = warg_waypoint_cmd ->altitude;
-            global_position.relative_alt = warg_waypoint_cmd ->turnRadius;
-            global_position.vx = (int16_t) warg_waypoint_cmd ->waypointType;
-            global_position.vy = 7;
-            global_position.vz = 8;
-            global_position.hdg = 9;
-
-            message_len = mavlink_msg_global_position_int_encode(system_id, component_id, &encoded_msg_original, &global_position);
-            //message_len = mavlink_msg_global_position_int_encode(system_id, component_id, &encoded_msg_original, (mavlink_global_position_int_t*) struct_ptr);
-        } 
-        break;
-
         default:
             break;
     }
-
-        
-
 
     if (message_len == 0)
     {
@@ -488,6 +556,7 @@ uint16_t custom_fcn__calculate_crc(mavlink_message_t* msg, uint8_t crc_extra)
 
 int test__encode_then_decode(void)
 {
+    /*
     mavlink_global_position_int_t global_position = 
     {
         1, // timestamp
@@ -500,7 +569,16 @@ int test__encode_then_decode(void)
         8, // z speed, positive down
         9 // hdg
     };
-
+    */
+   PIGO_GPS_LANDING_SPOT_t landing_spot = {
+       1,
+       2,
+       3,
+       4,
+   };
+   POGI_GPS_t GPS_Test = {
+       1,2,3,
+   };
     PIGO_WAYPOINTS_t warg_GPS = 
     {
         2, //int32_t latitude;
@@ -515,7 +593,7 @@ int test__encode_then_decode(void)
         9,
         9,
     };
-
+/*
     mavlink_attitude_t gimbal_command =
     {
         MESSAGE_ID_EULER_ANGLE_PLANE, //time_boot_ms
@@ -526,14 +604,23 @@ int test__encode_then_decode(void)
         0, // pitch speed
         0, // yaw speed
     };
-
-    Warg_Euler_Angle_t angle_command = 
+*/
+    POGI_Euler_Angle_t angle_command = 
     {
         3,
         2,
         1,
     };
 
+    one_byte_uint_cmd_t uint8_cmd = 
+    {
+        8,
+    };
+
+    single_bool_cmd_t bool_cmd = 
+    {
+        1,
+    };
 
 
     mavlink_message_t encoded_msg;
@@ -541,7 +628,7 @@ int test__encode_then_decode(void)
     //uint8_t encoderStatus = Mavlink_airside_encoder(MESSAGE_ID_GPS_LANDING_SPOT, &encoded_msg, (const uint8_t*) &global_position);
     //uint8_t encoderStatus = Mavlink_airside_encoder(MESSAGE_ID_GPS_LANDING_SPOT, &encoded_msg, (const uint8_t*) &warg_GPS);
     
-    uint8_t encoderStatus = Mavlink_airside_encoder(MESSAGE_ID_GIMBAL_CMD, &encoded_msg, (const uint8_t*) &cmd);
+    uint8_t encoderStatus = Mavlink_airside_encoder(MESSAGE_ID_GPS, &encoded_msg, (const uint8_t*) &landing_spot);
     //uint8_t encoderStatus = Mavlink_airside_encoder(MESSAGE_ID_EULER_ANGLE_PLANE, &encoded_msg, (const uint8_t*) &gimbal_command);
 
     if (encoderStatus == MAVLINK_ENCODING_FAIL)
@@ -551,10 +638,9 @@ int test__encode_then_decode(void)
     }
 
     //---------------------------------- decoding starts ---------------------------------- 
+
     mavlink_decoding_status_t decoderStatus = MAVLINK_DECODING_INCOMPLETE;
-    mavlink_global_position_int_t global_position_decoded;
-    mavlink_attitude_t gimbal_command_decoded;
-    mavlink_custom_cmd_takeoff_t takeoff_command_decoded;
+    //mavlink_attitude_t gimbal_command_decoded;
 
     char decoded_message_buffer[256]; //256 is the max payload length
 
@@ -566,34 +652,44 @@ int test__encode_then_decode(void)
         {
             //decoderStatus = Mavlink_airside_decoder(MAVLINK_COMM_0, ptr_in_byte[i], (uint8_t*) &global_position_decoded);
             decoderStatus = Mavlink_airside_decoder(MAVLINK_COMM_0, ptr_in_byte[i], (uint8_t*) &decoded_message_buffer);
+            
 
         }
     }
 
     if (decoderStatus == MAVLINK_DECODING_OKAY)
     {
-        POGI_Message_IDs_t message_type = Mavlink_airside_decoder_get_message_type();
+        printf("initial decoding okay\n");
+        PIGO_Message_IDs_t message_type = Mavlink_airside_decoder_get_message_type();
         int result = 1;
 
         switch (message_type)
         {
-            case MESSAGE_ID_GPS:
+            case MESSAGE_ID_GPS_LANDING_SPOT:
                 {
-                    memcpy(&global_position_decoded, &decoded_message_buffer, sizeof(mavlink_global_position_int_t));
-                    result = memcmp(&global_position_decoded, &global_position, sizeof(mavlink_global_position_int_t) );
+                    PIGO_GPS_LANDING_SPOT_t landing_spot_decoded;
+                    memcpy(&landing_spot_decoded, &decoded_message_buffer, sizeof(PIGO_GPS_LANDING_SPOT_t));
+                    result = memcmp(&landing_spot_decoded, &landing_spot, sizeof(PIGO_GPS_LANDING_SPOT_t) );
+
+                    //mavlink_global_position_int_t global_position_decoded;
+                    //memcpy(&global_position_decoded, &decoded_message_buffer, sizeof(mavlink_global_position_int_t));
+                    //result = memcmp(&global_position_decoded, &global_position, sizeof(mavlink_global_position_int_t) );
                 }
                 break;
 
-            case MESSAGE_ID_EULER_ANGLE_PLANE:
+            case MESSAGE_ID_GIMBAL_CMD:
                 {
-                    Warg_Euler_Angle_t angle_received;
-                    result = memcmp(&angle_received, &decoded_message_buffer, sizeof(Warg_Euler_Angle_t) );
+                    POGI_Euler_Angle_t angle_received;
+                    result = memcmp(&angle_received, &decoded_message_buffer, sizeof(POGI_Euler_Angle_t) );
                 }
                 break;
 
-            case MESSAGE_ID_ERROR_CODE:
+            case MESSAGE_ID_BEGIN_LANDING: //test for all one byte cmd
                 {
-                    result = memcmp(&global_position_decoded, &global_position, sizeof(mavlink_global_position_int_t) );
+                    printf("error code gets here\n");
+                    single_bool_cmd_t islanded;
+                    memcpy(&islanded, &decoded_message_buffer, sizeof(single_bool_cmd_t));
+                    result = memcmp(&islanded, &bool_cmd, sizeof(single_bool_cmd_t) );
                 }
                 break;
             default:
@@ -605,6 +701,9 @@ int test__encode_then_decode(void)
             printf("test passed!\n");
             return 1;
         }
+    }
+    else{
+        printf("decoding failed\n");
     }
     return 0;
 }
