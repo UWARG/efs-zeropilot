@@ -50,6 +50,7 @@ typedef enum {
 
 //airside encoder, Plane Out Ground In (POGI) Plane ----> Ground 
 typedef enum {
+    MESSAGE_ID_TIMESTAMP,
     MESSAGE_ID_GPS,
     MESSAGE_ID_ERROR_CODE,
     MESSAGE_ID_AIR_SPEED,
@@ -115,6 +116,10 @@ typedef struct POGI_GPS_t {
     int32_t longitude;
     int32_t altitude;
 } POGI_GPS_t;
+
+typedef struct POGI_Timestamp_t {
+    uint32_t timeStamp;
+} POGI_Timestamp_t;
 //-------------------------- Prototypes ---------------------------------------------------------------
 
 /**

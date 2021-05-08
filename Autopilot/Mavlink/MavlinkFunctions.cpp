@@ -182,6 +182,18 @@ mavlink_encoding_status_t Mavlink_airside_encoder(POGI_Message_IDs_t msgID, mavl
 
     switch(msgID)
     {
+        case MESSAGE_ID_TIMESTAMP:
+        {
+            POGI_Timestamp_t* timestamp_cmd = (POGI_Timestamp_t*) struct_ptr;
+
+            mavlink_global_position_int_t global_position;
+            global_position.time_boot_ms = MESSAGE_ID_GPS_LANDING_SPOT; //TODO set this to the correct ID
+            global_position.lat = timestamp_cmd ->timeStamp;
+
+            message_len = mavlink_msg_global_position_int_encode(system_id, component_id, &encoded_msg_original, &global_position);
+        } 
+        break;
+
         case MESSAGE_ID_GPS:
         {
             POGI_GPS_t* warg_GPS_cmd = (POGI_GPS_t*) struct_ptr;
