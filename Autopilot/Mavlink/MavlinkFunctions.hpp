@@ -81,14 +81,14 @@ typedef struct PIGO_WAYPOINTS_t { // same as homebase GPS struct
 } PIGO_LOCATION_INFO_t;
 
 
-typedef struct PIGO_GIMBAL_t {
-    float pitch;
-    float yaw;
+typedef struct PIGO_GIMBAL_t { // convert to float
+    int32_t pitch;
+    int32_t yaw;
 }PIGO_GIMBAL_t;
 
-typedef struct PIGO_GROUND_COMMAND_t {
-    float heading;
-    float latestDistance;
+typedef struct PIGO_GROUND_COMMAND_t { //convert to float
+    int32_t heading;
+    int32_t latestDistance;
 } PIGO_GROUND_COMMAND_t;
 
 
@@ -104,10 +104,10 @@ typedef struct four_bytes_int_cmd_t {
     int32_t cmd;
 } four_bytes_int_cmd_t;
 
-typedef struct POGI_Euler_Angle_t {
-    float yaw;
-    float pitch;
-    float roll;
+typedef struct POGI_Euler_Angle_t { // convert to float
+    int32_t yaw;
+    int32_t pitch;
+    int32_t roll;
 } POGI_Euler_Angle_t;
 
 typedef struct POGI_GPS_t {
