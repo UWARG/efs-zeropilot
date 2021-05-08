@@ -3,7 +3,6 @@
 * Author: Dhruv Rawat
 */
 
-#include "pathDatatypes.hpp"
 #include "TelemPathInterface.hpp"
 #include "waypointManager.hpp"
 #include <cstdint>
