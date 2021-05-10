@@ -13,15 +13,11 @@
 
 //Constants
 #define EARTH_RADIUS 6378.137
-#define MAX_PATH_APPROACH_ANGLE M_PI/2
+#define MAX_PATH_APPROACH_ANGLE ZP_PI/2
 
 // Reference Coordinates (University of Waterloo, Parking Lot C)
 #define REFERENCE_LONGITUDE -80.537331184
 #define REFERENCE_LATITUDE 43.467998128
-
-//Basic Mathematical Conversions
-#define deg2rad(angle_in_degrees) ((angle_in_degrees) * M_PI/180.0)
-#define rad2deg(angle_in_radians) ((angle_in_radians) * 180.0/M_PI)
 
 
 /*** INITIALIZATION ***/
@@ -240,10 +236,10 @@ void WaypointManager::get_coordinates(long double longitude, long double latitud
 float WaypointManager::get_distance(long double lat1, long double lon1, long double lat2, long double lon2) { // Parameters expected to be in degrees
     // Longitude and latitude stored in degrees
     // This calculation uses the Haversine formula
-    long double change_in_Lat = deg2rad(lat2 - lat1); //Converts change in latitude to radians
-    long double change_in_lon = deg2rad(lon2 - lon1); //Converts change in longitude to radians
+    long double change_in_Lat = DEG_TO_RAD(lat2 - lat1); //Converts change in latitude to radians
+    long double change_in_lon = DEG_TO_RAD(lon2 - lon1); //Converts change in longitude to radians
 
-    double haversine_ans = sin(change_in_Lat / 2) * sin(change_in_Lat / 2) + cos(deg2rad(lat1)) * cos(deg2rad(lat2)) * sin(change_in_lon / 2) * sin(change_in_lon / 2); // In kilometers
+    double haversine_ans = sin(change_in_Lat / 2) * sin(change_in_Lat / 2) + cos(DEG_TO_RAD(lat1)) * cos(DEG_TO_RAD(lat2)) * sin(change_in_lon / 2) * sin(change_in_lon / 2); // In kilometers
 
     if ((change_in_Lat >= 0 && change_in_lon >=0)||(change_in_Lat < 0 && change_in_lon < 0)){
         return EARTH_RADIUS * (2 * atan2(sqrt(haversine_ans),sqrt(1 - haversine_ans))) * 1000; //Multiply by 1000 to convert to metres
@@ -396,8 +392,8 @@ _WaypointStatus WaypointManager::start_circling(_WaypointManager_Data_In current
 
         // Gets current position
         float position[3]; 
-        position[0] = deg2rad(currentStatus.longitude);
-        position[1] = deg2rad(currentStatus.latitude);
+        position[0] = DEG_TO_RAD(currentStatus.longitude);
+        position[1] = DEG_TO_RAD(currentStatus.latitude);
         position[2] = (float) currentStatus.altitude;
 
         turnCenter[2] = turnDesiredAltitude;
@@ -418,21 +414,21 @@ _WaypointStatus WaypointManager::start_circling(_WaypointManager_Data_In current
 
         float angularDisplacement = turnRadius / (EARTH_RADIUS * 1000);
 
-        double turnCenterBearing_Radians = deg2rad(turnCenterBearing);
+        double turnCenterBearing_Radians = DEG_TO_RAD(turnCenterBearing);
 
         // Calculates latitude and longitude of end coordinates (Calculations taken from here: http://www.movable-type.co.uk/scripts/latlong.html#destPoint)
         turnCenter[1] = asin(sin(position[1]) * cos(angularDisplacement) + cos(position[1]) * sin(angularDisplacement) * cos(turnCenterBearing_Radians)); // latitude
         turnCenter[0] = position[0] + atan2(sin(turnCenterBearing_Radians) * sin(angularDisplacement) * cos(position[1]), cos(angularDisplacement) - sin(position[1]) * sin(turnCenter[1])); // Longitude
 
         #ifdef UNIT_TESTING
-            orbitCentreLong = rad2deg(turnCenter[0]);
-            orbitCentreLat = rad2deg(turnCenter[1]);
+            orbitCentreLong = RAD_TO_DEG(turnCenter[0]);
+            orbitCentreLat = RAD_TO_DEG(turnCenter[1]);
             orbitCentreAlt = turnCenter[2];
 
             // std::cout << "Check 1: Lat - " << orbitCentreLat << " " << orbitCentreLong << std::endl;
         #endif
 
-        get_coordinates(rad2deg(turnCenter[0]), rad2deg(turnCenter[1]), turnCenter);
+        get_coordinates(RAD_TO_DEG(turnCenter[0]), RAD_TO_DEG(turnCenter[1]), turnCenter);
     } else {
         inHold = false;
     }
@@ -510,7 +506,7 @@ void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* posit
     nextWaypointDirection[2] = (waypointAfterTargetCoordinates[2] - targetCoordinates[2])/norm2;
 
     // Required turning angle
-    float turningAngle = acos(-deg2rad(waypointDirection[0] * nextWaypointDirection[0] + waypointDirection[1] * nextWaypointDirection[1] + waypointDirection[2] * nextWaypointDirection[2]));
+    float turningAngle = acos(-DEG_TO_RAD(waypointDirection[0] * nextWaypointDirection[0] + waypointDirection[1] * nextWaypointDirection[1] + waypointDirection[2] * nextWaypointDirection[2]));
     // Calculates tangent factor that helps determine centre of turn 
     float tangentFactor = targetWaypoint->turnRadius/tan(turningAngle/2);
 
@@ -669,7 +665,7 @@ void WaypointManager::follow_last_line_segment(_PathData * currentWaypoint, floa
 }
 
 void WaypointManager::follow_orbit(float* position, float track) {
-    track = deg2rad(90 - track);
+    track = DEG_TO_RAD(90 - track);
 
     // Distance from centre of circle
     float orbitDistance = sqrt(pow(position[0] - turnCenter[0],2) + pow(position[1] - turnCenter[1],2));
@@ -677,18 +673,18 @@ void WaypointManager::follow_orbit(float* position, float track) {
 
     // Normalizes angles
     // First gets the angle between 0 and 2 pi
-    if (courseAngle - track >= 2 * M_PI) {
-        courseAngle = fmod(courseAngle, 2 * M_PI);
+    if (courseAngle - track >= 2 * ZP_PI) {
+        courseAngle = fmod(courseAngle, 2 * ZP_PI);
     } else if (courseAngle - track < 0.0) {
-        courseAngle = fmod(courseAngle, 2 * M_PI) + 2 * M_PI;
+        courseAngle = fmod(courseAngle, 2 * ZP_PI) + 2 * ZP_PI;
     }
     // Now ensures that courseAngle is between -pi and pi
-    if (courseAngle > M_PI && courseAngle <= 2 * M_PI) {
-        courseAngle -= 2 * M_PI;
+    if (courseAngle > ZP_PI && courseAngle <= 2 * ZP_PI) {
+        courseAngle -= 2 * ZP_PI;
     }
 
     // Desired track
-    int calcTrack = round(90 - rad2deg(courseAngle + turnDirection * (M_PI/2 + atan(k_gain[ORBIT_FOLLOW] * (orbitDistance - turnRadius)/turnRadius)))); //Track in degrees 
+    int calcTrack = round(90 - RAD_TO_DEG(courseAngle + turnDirection * (ZP_PI/2 + atan(k_gain[ORBIT_FOLLOW] * (orbitDistance - turnRadius)/turnRadius)))); //Track in degrees 
     
     // Normalizes track (keeps it between 0.0 and 259.9999)
     if (calcTrack >= 360.0) {
@@ -705,24 +701,24 @@ void WaypointManager::follow_orbit(float* position, float track) {
 }
 
 void WaypointManager::follow_straight_path(float* waypointDirection, float* targetWaypoint, float* position, float track) {
-    track = deg2rad(90 - track);//90 - track = track to cartesian track
+    track = DEG_TO_RAD(90 - track);//90 - track = track to cartesian track
     float courseAngle = atan2(waypointDirection[1], waypointDirection[0]); // (y,x) format
     
     // Normalizes angles
     // First gets the angle between 0 and 2 pi
-    if (courseAngle - track >= 2 * M_PI) {
-        courseAngle = fmod(courseAngle, 2 * M_PI);
+    if (courseAngle - track >= 2 * ZP_PI) {
+        courseAngle = fmod(courseAngle, 2 * ZP_PI);
     } else if (courseAngle - track < 0.0) {
-        courseAngle = fmod(courseAngle, 2 * M_PI) + 2 * M_PI;
+        courseAngle = fmod(courseAngle, 2 * ZP_PI) + 2 * ZP_PI;
     }
     // Now ensures that courseAngle is between -pi and pi
-    if (courseAngle > M_PI && courseAngle <= 2 * M_PI) {
-        courseAngle -= 2 * M_PI;
+    if (courseAngle > ZP_PI && courseAngle <= 2 * ZP_PI) {
+        courseAngle -= 2 * ZP_PI;
     }
 
     // Calculates desired track
     float pathError = -sin(courseAngle) * (position[0] - targetWaypoint[0]) + cos(courseAngle) * (position[1] - targetWaypoint[1]);
-    int calcTrack = 90 - rad2deg(courseAngle - MAX_PATH_APPROACH_ANGLE * 2/M_PI * atan(k_gain[PATH_FOLLOW] * pathError)); //Heading in degrees (magnetic) 
+    int calcTrack = 90 - RAD_TO_DEG(courseAngle - MAX_PATH_APPROACH_ANGLE * 2/ZP_PI * atan(k_gain[PATH_FOLLOW] * pathError)); //Heading in degrees (magnetic) 
     
     // Normalizes track (keeps it between 0.0 and 259.9999)
     if (calcTrack >= 360.0) {

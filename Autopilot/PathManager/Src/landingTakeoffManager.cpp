@@ -1,6 +1,8 @@
 #include "landingTakeoffManager.hpp"
 #include "vectorClass.hpp"
+
 #include <math.h>
+#include "MathConstants.hpp"
 
 double LandingTakeoffManager::changingAltitude(const SFOutput_t & input, const _PathData & aimingPoint, const _PathData & intersectionPoint, const _PathData & stoppingPoint)
 {
@@ -76,14 +78,14 @@ _LandingPath LandingTakeoffManager::createSlopeWaypoints(const Telemetry_PIGO_t 
     path.aimingPoint.altitude = input.stoppingAltitude; 
     
     //determining x and y of aiming point
-    double radianDirection = input.stoppingDirectionHeading * PI / 180.0; 
+    double radianDirection = DEG_TO_RAD(input.stoppingDirectionHeading); 
 
     //finding the x and y components of the rolling distance vector
     double stoppingDistX = sin(radianDirection) * DISTANCE_OF_LANDING; 
     double stoppingDistY = cos(radianDirection) * DISTANCE_OF_LANDING;
 
     //converting into x and y components in lat and lon
-    double metersPerDegLon = LATITUDE_LONGITUDE_CONVERSION_CONSTANT * cos(input.stoppingLatitude*PI/180)/360.0; 
+    double metersPerDegLon = LATITUDE_LONGITUDE_CONVERSION_CONSTANT * cos(DEG_TO_RAD(input.stoppingLatitude))/360.0; 
     double stoppingDistLon = stoppingDistX / metersPerDegLon; 
     double stoppingDistLat = stoppingDistY / METERS_PER_DEG_LAT; 
 
@@ -97,7 +99,7 @@ _LandingPath LandingTakeoffManager::createSlopeWaypoints(const Telemetry_PIGO_t 
     path.intersectionPoint.altitude = currentAltitude; 
 
     //determining the horizontal distance of intersection
-    double horizDist = (currentAltitude - path.aimingPoint.altitude) / tan(ANGLE_OF_LANDING * PI / 180.0);
+    double horizDist = (currentAltitude - path.aimingPoint.altitude) / tan(DEG_TO_RAD(ANGLE_OF_LANDING));
 
     //finding the x and y components of the horizDist vector
     double slopeDistX = sin(radianDirection) * horizDist; 
@@ -171,14 +173,14 @@ _PathData LandingTakeoffManager::createTakeoffWaypoint(double currentLatitude, d
 {
     _PathData desiredWaypoint;
     //retrieve radian direction of heading (starts from positive y axis)
-    double radianDirection = takeoffDirection * PI / 180.0;
+    double radianDirection = DEG_TO_RAD(takeoffDirection);
 
     //retrieve the horizontal and vertical components of takeoff distance
     double takeoffDistX = sin(radianDirection) * DISTANCE_OF_TAKEOFF; 
     double takeoffDistY = cos(radianDirection) * DISTANCE_OF_TAKEOFF; 
 
     //convert horizontal and vertical components into latitude and longitude
-    double metersPerDegLon = LATITUDE_LONGITUDE_CONVERSION_CONSTANT * cos(currentLatitude * PI/180)/360.0; 
+    double metersPerDegLon = LATITUDE_LONGITUDE_CONVERSION_CONSTANT * cos(DEG_TO_RAD(currentLatitude)) /360.0; 
     double takeoffDistLon = takeoffDistX / metersPerDegLon; 
     double takeoffDistLat = takeoffDistY / METERS_PER_DEG_LAT; 
 
