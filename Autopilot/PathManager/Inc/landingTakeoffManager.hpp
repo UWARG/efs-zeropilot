@@ -8,6 +8,7 @@
 #include "AutoSteer.hpp"
 #include "SensorFusion.hpp"
 #include "pathDatatypes.hpp"
+#include "TelemPathInterface.hpp"
 
 /************************
     LANDING CONSTANTS
@@ -59,7 +60,7 @@ struct _LandingTakeoffOutput //this structure is used to hold the outputs of eac
 
 
 class LandingTakeoffManager{
-    
+
     public:
 
         /******************
@@ -70,7 +71,7 @@ class LandingTakeoffManager{
             This function takes the horizontal position of the aircraft and determines the desired altitude
             Projects the position to the vertical plane relative to the aimingPoint, intersectionPoint, and stoppingPoint
             Takes the one of the horizontal coordinates, plug it into the equation of the slope, get an altitude
-            
+
             @param SFOutput_t * input - this variable will hold the sensor fusion data which is used to calculate current position
             @param _PathData * aimingPoint - this variable will hold the location of the aiming point
             @param _PathData * intersectionPoint - this variable will hold the location of the intersectionPoint
@@ -82,16 +83,16 @@ class LandingTakeoffManager{
 
         /*
             This function takes in if there is a package on board and returns an approach speed the aircraft should follow
-        
+
             @param bool * ifPackage - this boolean holds if there is a package on board the aircraft
 
             @return double - this function will return the desired approach speed for the aircraft
         */
         static double approachSpeed(bool ifPackage);
 
-        /* 
+        /*
             This function takes the stall speed and multiplies it by a constant to return a slow flight speed
-        
+
             @param bool * ifPackage - this boolean holds if there is a package on board the aircraft
 
             @return double - this function will return the slow flight speed for the aircraft
@@ -118,13 +119,13 @@ class LandingTakeoffManager{
             @return _LandingTakeoffOutput - this function will output a landing and takeoff output struct
         */
         static _LandingTakeoffOutput translateWaypointCommands(const _WaypointManager_Data_Out & outputData);
-    
+
         /******************
          * TAKEOFF FUNCTIONS
          *****************/
         /*
             This function returns the desired rotation speed limit, where the plane will transition from roll to climb
-            
+
             @param bool * ifPackage - this boolean holds if there is a package on board the aircraft
 
             @return double - this function will return the desired rotation speed for the aircraft
@@ -133,7 +134,7 @@ class LandingTakeoffManager{
 
         /*
             This function returns the desired climb speed to be maintained throughout the climb
-        
+
             @param bool * ifPackage - this boolean holds if there is a package on board the aircraft
 
             @return double - this function will return the desired climb speed for the aircraft
@@ -142,7 +143,7 @@ class LandingTakeoffManager{
         /*
             This function returns a waypoint that the plane should follow horizontally
             This waypoint does not have a vertical component, as max throttle is kept throughout the climb
-        
+
             @param long double * currentLatitude - this variable holds the current latitude value of the aircraft
             @param long double * currentLongitude - this variable holds the current longitude of the aircraft
             @param float * currentAltitude - this variable holds the current altitude of the aircraft
@@ -151,11 +152,11 @@ class LandingTakeoffManager{
             @return _PathData - this structure holds the climb point, which the plane will follow until it exits at a certain altitude
         */
         static _PathData createTakeoffWaypoint(double currentLatitude, double currentLongitude, float currentAltitude, float takeoffDirection);
-    
+
         /***********************************
         COMMON LANDING AND TAKEOFF FUNCTIONS
         ************************************/
-    
+
          /*
             This function translates landing takeoff data to output data
             Takes in a landingTakeoffOutput instance, translates its information into the 2 types of coordinated turn inputs

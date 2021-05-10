@@ -24,6 +24,6 @@ void SendPathData(POGI *data);
  * @param[out]   commands   Pointer to struct to recieve commands.
  * @return True if commands were recieved.
  */
-bool GetCommands(POGI *commands);
+bool GetTelemetryCommands(Telemetry_PIGO_t *commands);
 
 #endif

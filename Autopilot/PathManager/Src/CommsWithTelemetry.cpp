@@ -27,7 +27,7 @@ void SendPathData(POGI *data)
     //Allocate mail slot
     POGI *dataOut;
     dataOut = static_cast<POGI *>(osMailAlloc(telemDataMailQ, osWaitForever));
-    
+
     //Fill mail slot with data
     *dataOut = *data;
 
@@ -35,17 +35,17 @@ void SendPathData(POGI *data)
     osMailPut(telemDataMailQ, dataOut);*/
 }
 
-bool GetCommands(POGI *commands)
+bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
 {
     /*
-    //Try to get commands from mail queue 
+    //Try to get commands from mail queue
     osEvent event;
     POGI * commandsIn;
     event = osMailGet(commandsMailQ, 0);
     if(event.status == osEventMail)
     {
         commandsIn = static_cast<POGI *>(event.value.p);
-        
+
         //Keep the command and remove it from the queue
         *commands = *commandsIn;
         osMailFree(commandsMailQ, commandsIn);

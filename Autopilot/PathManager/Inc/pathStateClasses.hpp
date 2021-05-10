@@ -8,6 +8,7 @@
 #include "landingTakeoffManager.hpp"
 #include "pathDatatypes.hpp"
 #include "CommWithAttitudeManager.hpp"
+#include "CommsWithTelemetry.hpp"
 #include "SensorFusion.hpp"
 #include "AttitudePathInterface.hpp"
 
@@ -45,7 +46,7 @@ class commsWithTelemetry : public pathManagerState
         static pathManagerState& getInstance();
         static Telemetry_PIGO_t* GetTelemetryIncomingData(void) {return &_incomingData;}
     private:
-        commsWithTelemetry() {}
+        commsWithTelemetry() {CommWithTelemInit();}
         commsWithTelemetry(const commsWithTelemetry& other);
         commsWithTelemetry& operator =(const commsWithTelemetry& other);
         static Telemetry_PIGO_t _incomingData; // Stores the commands sent by telemetry for easy access by other states in the pathmanager
@@ -151,10 +152,10 @@ class cruisingState : public pathManagerState
         WaypointManager cruisingStateManager;
         int waypointIDArray[PATH_BUFFER_SIZE]; // Stores ids of the waypoints in the flight path in the order that they are executed
         static _WaypointManager_Data_In _inputdata;
-        static _WaypointManager_Data_Out _outputdata; 
+        static _WaypointManager_Data_Out _outputdata;
         static _CruisingState_Telemetry_Return _returnToGround;
         bool inHold = false;
-        bool goingHome = false;         
+        bool goingHome = false;
 };
 
 class landingTransitionStage : public pathManagerState
@@ -164,9 +165,9 @@ class landingTransitionStage : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-        
+
         static _LandingTakeoffOutput* getControlOutput(){return &output;}
-        static WaypointManager landingPath; 
+        static WaypointManager landingPath;
         static _WaypointStatus waypointStatus; //used to catch errors
         static _LandingPath path; //used to load in path
     private:
@@ -271,7 +272,7 @@ class coordinateTurnElevation : public pathManagerState
         static CoordinatedTurnInput_t turnInput;
         static AltitudeAirspeedInput_t altitudeAirspeedInput;
         static CoordinatedTurnAttitudeManagerCommands_t _rollandrudder;
-        static AltitudeAirspeedCommands_t _pitchandairspeed; 
+        static AltitudeAirspeedCommands_t _pitchandairspeed;
 };
 
 class fatalFailureMode : public pathManagerState
