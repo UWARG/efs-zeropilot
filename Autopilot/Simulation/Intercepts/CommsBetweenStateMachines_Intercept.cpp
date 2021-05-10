@@ -61,7 +61,9 @@ static void writeAttitudeCommandsToFile(CommandsForAM *commands)
 
     PathToAttComLog.open("DebugLogs/PathToAttComLog.txt", std::fstream::app);
 
-    PathToAttComLog << "{roll: " << commands->roll << ", pitch: " << commands->pitch << ", rudderPercent: " << commands->rudderPercent << ", throttlePercent:" << commands->throttlePercent << ", passbyData.rollPercent: " << commands->passbyData.rollPercent << ", passbyData.rollPassby: " << commands->passbyData.rollPassby << ", passbyData.pitchPercent: " << commands->passbyData.pitchPercent << ", passbyData.pitchPassby: " << commands->passbyData.pitchPassby << "}" << std::endl;
+    PathToAttComLog << std::boolalpha; // bools are printed as "true" and "false" rather than "1" and "0"
+
+    PathToAttComLog << "{roll: " << commands->roll << ", pitch: " << commands->pitch << ", rudderPercent: " << commands->rudderPercent << ", throttlePercent:" << commands->throttlePercent << ", passbyData.rollPercent: " << commands->passbyData.rollPercent << ", passbyData.rollPassby: " << commands->passbyData.rollPassby << ", passbyData.pitchPercent: " << commands->passbyData.pitchPercent << ", passbyData.pitchPassby: " << commands->passbyData.pitchPassby << ", passbyData.rudderPercent : " << commands->passbyData.rudderPercent << ", passbyData.rudderPassby: " << commands->passbyData.rudderPassby << ", passbyData.throttlePercent: " << commands->passbyData.throttlePercent << ", passbyData.throttlePassby: " << commands->passbyData.throttlePassby << "}" << std::endl << std::endl;
 
     PathToAttComLog.close();
 }
