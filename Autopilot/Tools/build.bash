@@ -151,6 +151,7 @@ elif [[ $RUN_SIMULATION == true ]]; then
         #clear any older simulation results
         cmake -E rm -r $BUILD_DIR/ActuatorCommands/* 2>/dev/null
         cmake -E rm -r $BUILD_DIR/SensorOutputs/* 2>/dev/null
+        cmake -E rm -r $BUILD_DIR/DebugLogs/* 2>/dev/null
         # Note that the program needs to be run from the build directory since it opens and closes files via relative paths.
         cmake -E chdir $BUILD_DIR\
         ./sim

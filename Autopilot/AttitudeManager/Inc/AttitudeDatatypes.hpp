@@ -22,27 +22,5 @@ typedef struct
 #define AILERON_OUT_CHANNEL 2
 #define THROTTLE_OUT_CHANNEL 3
 
-// New datatypes store the IMU and Airspeed data so SensorFusion and other modules
-// do not need to include "IMU.hpp" and "airspeed.hpp"
-struct IMU_Data_t
-{
-    float magx, magy, magz;
-    float accx, accy, accz;
-    float gyrx, gyry, gyrz;
-
-    bool isDataNew;
-    int sensorStatus;
-    float utcTime;
-};
-
-struct Airspeed_Data_t
-{
-    double airspeed;
-
-    int sensorStatus;
-    bool isDataNew;
-    float utcTime;
-};
-
 #endif
 

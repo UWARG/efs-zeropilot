@@ -4,13 +4,18 @@
  * Created: November 2020
  * Last Updated: December 2020 (Dhruv)
  */
+ 
 
 #ifndef WAYPOINT_MANAGER_H
 #define WAYPOINT_MANAGER_H
 
-#include <stdlib.h>
 #include <math.h>
+#ifndef  M_PI 
+    #define M_PI 3.1415926535897932384626433
+#endif
+
 #include <cstdint>
+#include <stdlib.h>
 
 #define PATH_BUFFER_SIZE 100
 
@@ -39,7 +44,6 @@ enum _HeadHomeStatus {HOME_TRUE = 0, HOME_FALSE, HOME_UNDEFINED_PARAMETER};
 /**
 * Structure stores information about the waypoints along our path to the destination and back.
 */
-
 struct _PathData {
     int waypointId;                   // Id of the waypoint
     _PathData * next;                 // Next waypoint
@@ -51,18 +55,20 @@ struct _PathData {
     _WaypointOutputType waypointType; 
 };
 
+
 /**
 * Structure contains the data that will be returned to the Path Manager state manager.
 * This data will be used by the PID and coordinated turn engine to determine the commands to be sent to the Attitude Manager.
 */
 struct _WaypointManager_Data_Out{
-    uint16_t desiredTrack;            // Desired track to stay on path
+    uint16_t desiredTrack;              // Desired track to stay on path
     int desiredAltitude;                // Desired altitude at next waypoint
     long double distanceToNextWaypoint; // Distance to the next waypoint (helps with airspeed PID)
     float radius;                       // Radius of turn if required
     int turnDirection;                  // Direction of turn -> -1 = CW (Right bank), 1 = CCW (Left bank). (Looking down from sky)
     _WaypointStatus errorCode;          // Contains error codes
     bool isDataNew;                     // Notifies PID modules if the data in this structure is new
+    int desiredAirspeed;
     uint32_t timeOfData;                // The time that the data in this structure was collected
     _WaypointOutputType out_type;       // Output type (determines which parameters are defined)
 };
@@ -70,13 +76,7 @@ struct _WaypointManager_Data_Out{
 class WaypointManager {
 public:
 
-    /**
-    * Constructor for this class
-    *
-    * @param[in] float relLat -> This is the relative latitude of the point that will be used as (0,0) when converting lat-long coordinates to cartesian coordiantes. 
-    * @param[in] float relLong -> This is the relative longitude of the point that will be used as (0,0) when converting lat-long coordinates to cartesian coordiantes.
-    */
-    WaypointManager(float relLat, float relLong); // Call this to get an instance of the class
+    WaypointManager();
     ~WaypointManager();
 
     /**
@@ -191,6 +191,11 @@ public:
     int get_id_of_current_index();
 
     /**
+     * @return if the homebase parameter is initialized
+     */ 
+    bool is_home_base_initialized();
+
+    /**
      * @return returns the _PathData pointer of the home base 
      */ 
     _PathData * get_home_base();
@@ -213,7 +218,7 @@ private:
     //Home base
     _PathData * homeBase;
 
-    // For calculating desired track
+    // For calculating desired track. This affects the sensitivity of the given desired tracks
     float k_gain[2] = {0.01, 1.0f};
 
     // Relative lat and long for coordinate calcilation

@@ -18,7 +18,7 @@
 
 #define CRUISING_SPEED  15   // In m/s. This is the speed the aircraft will remain at during regular flight.
 
-typedef struct
+struct CoordinatedTurnInput_t
 {
     /*
     By using currentHeadingTrack, the user can pass in whatever type of parameter they want to control
@@ -33,29 +33,29 @@ typedef struct
     float currentHeadingTrack;    // degrees
     float desiredHeadingTrack;    // degrees
     float accY;              // Y axis accelerometer reading from the IMU.
-}CoordinatedTurnInput_t;
+};
 
-typedef struct
+struct AltitudeAirspeedInput_t
 {
     float currentAltitude;   // in meters
     float desiredAltitude;   // in meters
     float currentAirspeed;
     float desiredAirspeed;
 
-}AltitudeAirspeedInput_t;
+};
 
-typedef struct
+struct CoordinatedTurnAttitudeManagerCommands_t
 {
     float requiredRoll;             // radians
     float requiredRudderPosition;   // percentage from -100 to 100
 
-}CoordinatedTurnAttitudeManagerCommands_t;
+};
 
-typedef struct
+struct AltitudeAirspeedCommands_t
 {
     float requiredPitch;        // radians
     float requiredThrottlePercent;     // in percentage
-}AltitudeAirspeedCommands_t;
+};
 
 
 /***********************************************************************************************************************

@@ -4,7 +4,7 @@
 #include "attitudeManager.hpp"
 #include "AttitudeDatatypes.hpp"
 
-#include "GetFromPathManager.hpp"
+#include "CommWithPathManager.hpp"
 #include "SensorFusion.hpp"
 #include "OutputMixing.hpp"
 #include "PID.hpp"
@@ -21,12 +21,12 @@ class fetchInstructionsMode : public attitudeState
         void execute(attitudeManager* attitudeMgr);
         void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
-        static PMCommands *GetPMInstructions(void) {return &_PMInstructions;}
+        static CommandsForAM *GetPMInstructions(void) {return &_PMInstructions;}
     private:
-        fetchInstructionsMode() {}
+        fetchInstructionsMode() {CommWithPMInit();}
         fetchInstructionsMode(const fetchInstructionsMode& other);
         fetchInstructionsMode& operator =(const fetchInstructionsMode& other);
-        static PMCommands _PMInstructions;
+        static CommandsForAM _PMInstructions;
 };
 
 class sensorFusionMode : public attitudeState
@@ -36,12 +36,12 @@ class sensorFusionMode : public attitudeState
         void execute(attitudeManager* attitudeMgr);
         void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
-        static SFAttitudeOutput_t *GetSFOutput(void) {return &_SFOutput;}
+        static SFOutput_t *GetSFOutput(void) {return &_SFOutput;}
     private:
         sensorFusionMode() {SF_Init();}
         sensorFusionMode(const sensorFusionMode& other);
         sensorFusionMode& operator =(const sensorFusionMode& other);
-        static SFAttitudeOutput_t _SFOutput;
+        static SFOutput_t _SFOutput;
 };
 
 class PIDloopMode : public attitudeState
