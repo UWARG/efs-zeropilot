@@ -4,11 +4,16 @@
  */
 
 #include "CommWithAttitudeManager.hpp"
+#include "CommWithPathManager.hpp"
 
 extern "C"
 {
 #include "cmsis_os.h"
 }
+
+//Set up a mail queue for sending commands to the attitude manager
+osMailQDef(commandsMailQ, PATH_ATTITUDE_MAIL_Q_SIZE, CommandsForAM);
+osMailQId commandsMailQ;
 
 void CommWithAMInit()
 {
@@ -32,27 +37,28 @@ void SendCommandsForAM(CommandsForAM *commands)
     *commandsOut = *commands;
 
     //Post mail slot to mail queue
-    osMailPut(commandsMailQ, commandsOut);
+    osStatus sendStatus = osMailPut(commandsMailQ, commandsOut);
 }
 
-bool GetAttitudeData(AttitudeData *data)
+
+bool GetCommands(CommandsForAM *commands)
 {
-    //Try to get data from mail queue
+    //Try to get commands from mail queue
     osEvent event;
-    AttitudeData * dataIn;
-    event = osMailGet(attitudeDataMailQ, 0);
+    CommandsForAM * commandsIn;
+    event = osMailGet(commandsMailQ, 0);
     if(event.status == osEventMail)
     {
-        dataIn = static_cast<AttitudeData *>(event.value.p);
+        commandsIn = static_cast<CommandsForAM *>(event.value.p);
         
-        //Keep the data and remove it from the queue
-        *data = *dataIn;
-        osMailFree(attitudeDataMailQ, dataIn);
+        //Keep the command and remove it from the queue
+        *commands = *commandsIn;
+        osMailFree(commandsMailQ, commandsIn);
         return true;
     }
     else
     {
-        //Indicate that no new data is available.
+        //Indicate that no new commands are available.
         return false;
     }
 }
