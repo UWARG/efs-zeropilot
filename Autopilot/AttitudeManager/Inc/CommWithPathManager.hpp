@@ -9,21 +9,21 @@
 #include "AttitudePathInterface.hpp"
 
 /**
- * Initiate communication with the path manager.
+ * Initiate sending of data to the path manager.
  */
-void CommWithPMInit();
+void CommFromAMToPMInit();
 
 /**
- * Send attitude/airspeed data to the path manager.
+ * Send attitude/airspeed data to the path manager. CommFromAMToPMInit must be called once before this function can be called.
  * @param[in]   data   Pointer to struct with data.
  */
-void SendAttitudeData(AttitudeData *data);
+void SendFromAMToPM(AttitudeData *data);
 
 /**
  * Retrieve commands from the path manager.
  * @param[out]   commands   Pointer to struct to recieve commands.
  * @return True if commands were recieved.
  */
-bool GetCommands(CommandsForAM *commands);
+bool GetFromPMToAM(CommandsForAM *commands);
 
 #endif

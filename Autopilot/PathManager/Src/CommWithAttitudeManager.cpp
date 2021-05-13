@@ -15,12 +15,12 @@ extern "C"
 osMailQDef(commandsMailQ, PATH_ATTITUDE_MAIL_Q_SIZE, CommandsForAM);
 osMailQId commandsMailQ;
 
-void CommWithAMInit()
+void CommFromPMToAMInit()
 {
     commandsMailQ = osMailCreate(osMailQ(commandsMailQ), NULL);
 }
 
-void SendCommandsForAM(CommandsForAM *commands)
+void SendFromPMToAM(CommandsForAM *commands)
 {
     //Remove previous command from mail queue if it exists
     osEvent event = osMailGet(commandsMailQ, 0);
@@ -41,7 +41,7 @@ void SendCommandsForAM(CommandsForAM *commands)
 }
 
 
-bool GetCommands(CommandsForAM *commands)
+bool GetFromPMToAM(CommandsForAM *commands)
 {
     //Try to get commands from mail queue
     osEvent event;

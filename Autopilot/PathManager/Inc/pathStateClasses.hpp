@@ -31,7 +31,7 @@ class commsWithAttitude : public pathManagerState
         static pathManagerState& getInstance();
         static AttitudeData* GetCommWithAttitudeData(void) { return &_receivedData; }
     private:
-        commsWithAttitude() { CommWithAMInit(); } // Initializes module
+        commsWithAttitude() { CommFromPMToAMInit(); } // Initializes module
         commsWithAttitude(const commsWithAttitude& other);
         commsWithAttitude& operator =(const commsWithAttitude& other);
         static AttitudeData _receivedData;

@@ -15,12 +15,12 @@ extern "C"
 osMailQDef(attitudeDataMailQ, PATH_ATTITUDE_MAIL_Q_SIZE, AttitudeData);
 osMailQId attitudeDataMailQ;
 
-void CommWithPMInit()
+void CommFromAMToPMInit()
 {
     attitudeDataMailQ = osMailCreate(osMailQ(attitudeDataMailQ), NULL);
 }
 
-void SendAttitudeData(AttitudeData *data)
+void SendFromAMToPM(AttitudeData *data)
 {
     //Remove previous data from mail queue if it exists
     osEvent event = osMailGet(attitudeDataMailQ, 0);
@@ -41,7 +41,7 @@ void SendAttitudeData(AttitudeData *data)
 }
 
 
-bool GetAttitudeData(AttitudeData *data)
+bool GetFromAMToPM(AttitudeData *data)
 {
     //Try to get data from mail queue
     osEvent event;
