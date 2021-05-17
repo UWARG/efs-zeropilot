@@ -1,5 +1,6 @@
 /**
- * Implements methods for communication with the path manager.
+ * Defines functions for sending data from the attitude manager to the path manager.
+ * Has function definitions used by both the attitude and path manager.
  * Author: Anthony Bertnyk
  */
 
@@ -13,31 +14,31 @@ extern "C"
 
 //Set up a mail queue for sending data to the path manager
 osMailQDef(attitudeDataMailQ, PATH_ATTITUDE_MAIL_Q_SIZE, AttitudeData);
-osMailQId attitudeDataMailQ;
+osMailQId attitudeDataMailQID;
 
 void CommFromAMToPMInit()
 {
-    attitudeDataMailQ = osMailCreate(osMailQ(attitudeDataMailQ), NULL);
+    attitudeDataMailQID = osMailCreate(osMailQ(attitudeDataMailQ), NULL);
 }
 
 void SendFromAMToPM(AttitudeData *data)
 {
     //Remove previous data from mail queue if it exists
-    osEvent event = osMailGet(attitudeDataMailQ, 0);
+    osEvent event = osMailGet(attitudeDataMailQID, 0);
     if(event.status == osEventMail)
     {
-        osMailFree(attitudeDataMailQ, static_cast<AttitudeData *>(event.value.p));
+        osMailFree(attitudeDataMailQID, static_cast<AttitudeData *>(event.value.p));
     }
 
     //Allocate mail slot
     AttitudeData *dataOut;
-    dataOut = static_cast<AttitudeData *>(osMailAlloc(attitudeDataMailQ, osWaitForever));
+    dataOut = static_cast<AttitudeData *>(osMailAlloc(attitudeDataMailQID, osWaitForever));
     
     //Fill mail slot with data
     *dataOut = *data;
 
     //Post mail slot to mail queue
-    osMailPut(attitudeDataMailQ, dataOut);
+    osMailPut(attitudeDataMailQID, dataOut);
 }
 
 
@@ -46,14 +47,14 @@ bool GetFromAMToPM(AttitudeData *data)
     //Try to get data from mail queue
     osEvent event;
     AttitudeData * dataIn;
-    event = osMailGet(attitudeDataMailQ, 0);
+    event = osMailGet(attitudeDataMailQID, 0);
     if(event.status == osEventMail)
     {
         dataIn = static_cast<AttitudeData *>(event.value.p);
         
         //Keep the data and remove it from the queue
         *data = *dataIn;
-        osMailFree(attitudeDataMailQ, dataIn);
+        osMailFree(attitudeDataMailQID, dataIn);
         return true;
     }
     else
