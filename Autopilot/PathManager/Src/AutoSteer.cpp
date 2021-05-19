@@ -6,17 +6,7 @@
 #include "PID.hpp"
 
 #include <cmath>
-
-/***********************************************************************************************************************
- * Definitions
- **********************************************************************************************************************/
-
-#ifndef M_PI
-    #define M_PI 3.14159265358979323846f
-#endif
-
-
-#define DEG_TO_RAD(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
+#include "MathConstants.hpp"
 
 /***********************************************************************************************************************
  * Variables
@@ -72,5 +62,5 @@ void AutoSteer_ComputeAltitudeAndAirspeed(AltitudeAirspeedInput_t *Input, Altitu
 
 static float GetRudderPercent(float bankAngle)
 {
-    return ((RUDDER_SCALING_FACTOR * bankAngle) / (M_PI / 2.0f)) * 100.0f;   // very simple for now. Experiments may give us a better formula. The PID will fix any discrepancy though
+    return ((RUDDER_SCALING_FACTOR * bankAngle) / (ZP_PI / 2.0f)) * 100.0f;   // very simple for now. Experiments may give us a better formula. The PID will fix any discrepancy though
 }
