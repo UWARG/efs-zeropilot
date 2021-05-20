@@ -17,7 +17,7 @@ modification, are permitted provided that the following conditions are met:
    display the following acknowledgement:
      This product includes software developed by Waterloo Aerial Robotics Group (WARG).
 
-4. Neither the name of the WARG nor the names of its
+4. Neither the name of WARG nor the names of its
    contributors may be used to endorse or promote products derived from
    this software without specific prior written permission.
 
