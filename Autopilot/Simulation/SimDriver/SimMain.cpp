@@ -1,5 +1,6 @@
 #include "attitudeManager.hpp"
 #include "pathManager.hpp"
+#include "pathStateClasses.hpp"
 
 #include <iostream>
 
@@ -7,7 +8,7 @@
  * Code
  **********************************************************************************************************************/
 
-#define NUM_SIMULATION_STEPS 1000
+#define NUM_SIMULATION_STEPS 10000
 
 /***********************************************************************************************************************
  * Code
@@ -18,6 +19,7 @@ int main(void)
 {
     pathManager pathmMng;
 	attitudeManager attMng;
+    pathmMng.setState(cruisingState::getInstance());
 
     PathMan::_Path_Manager_Cycle_Status pathManStatus;
     AttMan::_Attitude_Manager_Cycle_Status attManStatus;
