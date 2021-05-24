@@ -8,10 +8,19 @@
 
 #include <stdint.h>
 
+/** What UART interface the device is connected to */
+#define GPS_UART_INTERFACE 1
+
+/** Baudrate the gps communicates over by default */
+#define GPS_UART_BAUDRATE 9600
+
+/** How large to make the internal buffer for parsing messages. Should be the size
+ of the largest message we'll receive from the gps*/
+#define GPS_UART_BUFFER_SIZE 800
+
 #define NEO_M8 0
 
-typedef struct
-{
+struct GpsData_t{
     long double latitude;  // 8 Bytes
     long double longitude; // 8 Bytes
     float utcTime;     // 4 Bytes. Time in seconds since 00:00 (midnight)
@@ -21,15 +30,15 @@ typedef struct
     uint8_t numSatellites;    // 1 Byte
 	uint8_t fixStatus; //0 = No GPS, 1 = GPS fix, 2 = DGSP Fix, 3 = Estimated/Dead Recoking Fix
 
-    uint8_t sensorStatus; // 0 = no fix, 1 = gps fix, 2 = differential gps fix (DGPS) (other codes are possible)
+    uint8_t sensorStatus; // 0 = good, 1 = error
     bool dataIsNew; // true if data has been refreshed since the previous time GetResult was called, false otherwise.
-	bool timeIsValid;
+	bool timeIsNew;
 
 	//Added these so autopilot knows which data is new
 	bool ggaDataIsNew; //Position, altitude, time, and number of satellites
 	bool vtgDataIsNew; //Groundspeed and Heading
 
-} GpsData_t;
+};
 
 class Gps
 {
@@ -49,51 +58,74 @@ class Gps
         virtual void GetResult(GpsData_t *Data) = 0;
 };
 
-class NEOM8 : public Gps 
+class NEOM8 : public Gps
 {
 	public:
 		NEOM8(const NEOM8*) = delete;
 		static NEOM8* GetInstance();
 
 		/**
-         * Triggers interrupt for new GPS measurement - stores raw data in variables and returns right away
-         * */
+		 * Triggers interrupt for new GPS measurement - stores raw data in variables and returns right away
+		 * */
 		void BeginMeasuring() {}; //No need to call this to get data. Just call GetResult()
 
 		 /**GetResult should:
-         * 1. Reset dataIsNew flag
-         * 2. Transfers raw data from variables to struct
-         * 3. Updates utcTime and status values in struct as well
-         * */
+		 * 1. Reset dataIsNew flag
+		 * 2. Transfers raw data from variables to struct
+		 * 3. Updates utcTime and status values in struct as well
+		 * */
 		void GetResult(GpsData_t *Data);
+
+		/**
+		 * Returns the buffer used to receive GPS UART signals
+		 */
+		uint8_t* get_byte_collection_buffer();
+
+		/**
+		 * Goes through byte_collection_buffer, finds the messages we care about, and calls the appropriate parsing functions
+		 */
+		void parse_gpsData();
 
 	private:
 		//Constructor
 		NEOM8();
 
 		//Static instance
-		static NEOM8* gps_Instance;
+		static NEOM8* gpsInstance;
 
-		//Variables
-		bool isDataNew = false;
-		bool ggaDataNew = false;
-		bool vtgDataNew = false;
-		long double measuredLatitude, measuredLongitude;  // 8 Bytes
-		float measuredUtcTime;     // 4 Bytes. Time in seconds since 00:00 (midnight)
-		float measuredGroundSpeed; // in m/s
-		int measuredAltitude; // in m
-		uint16_t measuredHeading; // in degrees. Should be between 0-360 at all times, but using integer just in case
-		uint8_t measuredNumSatellites;  // 1 Byte
-		uint8_t gpsFixStatus;
-		bool dataAvailable = false;
+		// Buffers
+		uint8_t gga_buffer[GPS_UART_BUFFER_SIZE]; //buffer for pasing gga (positional packets)
+		uint8_t vtg_buffer[GPS_UART_BUFFER_SIZE]; //buffer for parsing vtg packets (velocity packets)
+		uint8_t uart_buffer[GPS_UART_BUFFER_SIZE]; //buffer for parsing vtg packets (velocity packets)
+		uint8_t byte_collection_buffer[GPS_UART_BUFFER_SIZE];
 
-		//Methods (Some code was transferred from PICpilot [https://github.com/UWARG/PICpilot])
-		bool is_check_sum_valid(char *);
-		uint8_t uint8_to_hex(unsigned int);
-		int ascii_to_hex(unsigned int);
-		void parse_gps_data();
-		void parse_vtg();
-		void parse_gga();
+		bool dataAvailable;
+		bool configured; //if the gps module has been initialized and configured
+		GpsData_t gpsData;
+
+		/**
+		 * Given an NMEA string starting after the $, verifies the integrity of the string
+		 * using the checksum
+		 * @param string
+		 * @return True if string is a valid gps string, false otherwise
+		 */
+		bool is_check_sum_valid(uint8_t* string);
+
+		/**
+		 * Methods used for simple conversions when parsing NMEA messages
+		 */
+		uint8_t uint8_to_hex(unsigned int checkSumHalf);
+		uint8_t ascii_to_hex(uint8_t asciiSymbol);
+
+		/**
+		 * Parses the VTG NMEA message and populates the GpsData_t sruct
+		 */
+		void parse_vtg(uint8_t* data);
+
+		/**
+		 * Parses the GGA NMEA message and populates the GpsData_t sruct
+		 */
+		void parse_gga(uint8_t* data);
 
 };
 
