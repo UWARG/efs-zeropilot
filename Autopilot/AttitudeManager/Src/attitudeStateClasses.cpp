@@ -6,7 +6,7 @@
 
 float OutputMixingMode::_channelOut[4];
 CommandsForAM fetchInstructionsMode::_PMInstructions;
-SFOutput_t sensorFusionMode::_SFOutput;
+// SFOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t PIDloopMode::_PidOutput;
 
 /***********************************************************************************************************************
@@ -20,7 +20,7 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 
     // The support is also here for sending stuff to Path manager, but there's nothing I need to send atm.
 
-    attitudeMgr->setState(sensorFusionMode::getInstance());
+    // attitudeMgr->setState(sensorFusionMode::getInstance());
 
 }
 
@@ -30,24 +30,28 @@ attitudeState& fetchInstructionsMode::getInstance()
     return singleton;
 }
 
+/*
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
 {
     SFError_t _SFError = SF_GetResult(&_SFOutput);
 
     attitudeMgr->setState(PIDloopMode::getInstance());
 }
+*/
 
+/*
 attitudeState& sensorFusionMode::getInstance()
 {
     static sensorFusionMode singleton;
     return singleton;
 }
+*/
 
 void PIDloopMode::execute(attitudeManager* attitudeMgr)
 {
 
     CommandsForAM *PMInstructions = fetchInstructionsMode::GetPMInstructions();
-    SFOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
+    // SFOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
 
     //executes PID's to acheive desired roll, pitch angle
     //if manual control is needed, use loaded in percents instead!
@@ -57,7 +61,7 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     }
     else
     {
-        _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->pitch, SFOutput->pitchRate);
+        // _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->pitch, SFOutput->pitchRate);
     }
 
     if(PMInstructions->passbyData.rollPassby)
@@ -66,7 +70,7 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     }
     else
     {
-        _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->roll, SFOutput->rollRate);
+        // _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->roll, SFOutput->rollRate);
     }
 
     if(PMInstructions->passbyData.rudderPassby)

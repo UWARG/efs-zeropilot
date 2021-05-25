@@ -179,13 +179,13 @@ void attitudeManagerExecute(void const * argument)
   /* Infinite loop */
   while(1)
   {
-    //TickType_t xLastWakeTime = xTaskGetTickCount();
-    //vTaskDelayUntil(&xLastWakeTime, PERIOD_ATTITUDEMANAGER_MS);
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, PERIOD_ATTITUDEMANAGER_MS);
     //AttitudeManagerInterfaceExecute();
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
     //HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
     //HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
-    osDelay(100);
+    // osDelay(100);
     //HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
   }
   /* USER CODE END attitudeManagerExecute */
@@ -204,10 +204,10 @@ void pathManagerExecute(void const * argument)
   /* Infinite loop */
   while(1)
   {
-    //TickType_t xLastWakeTime = xTaskGetTickCount();
-    //vTaskDelayUntil(&xLastWakeTime, PERIOD_PATHMANAGER_MS);
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, PERIOD_PATHMANAGER_MS);
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-    osDelay(200);
+    // osDelay(200);
     //PathManagerInterfaceExecute();
   }
   
@@ -227,11 +227,11 @@ void StartTelemetryRun(void const * argument)
   /* Infinite loop */
   while(1)
   {
-    //TickType_t xLastWakeTime = xTaskGetTickCount();
-    //vTaskDelayUntil(&xLastWakeTime, PERIOD_TELEMETRY_MS);
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, PERIOD_TELEMETRY_MS);
     //TelemetryManagerInterfaceExecute();
     HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
-    osDelay(300);
+    // osDelay(300);
   }
   
   /* USER CODE END StartTelemetryRun */
