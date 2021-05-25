@@ -56,6 +56,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "AttitudeManagerInterface.h"
+#include "PathManagerInterface.h"
+#include "telemetryManagerInterface.h"
 
 /* USER CODE END Includes */
 
@@ -76,20 +79,25 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
+static const int PERIOD_ATTITUDEMANAGER_MS = 20;
+static const int PERIOD_PATHMANAGER_MS = 10; //TO CONFIRM
+static const int PERIOD_TELEMETRY_MS = 10; //TO CONFIRM
 
 /* USER CODE END Variables */
-osThreadId defaultTaskHandle;
+osThreadId attitudeManagerHandle;
 osThreadId InterchipHandle;
-osThreadId AttitudeHandle;
+osThreadId pathManagerHandle;
+osThreadId telemetryRunHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void const * argument);
+void attitudeManagerExecute(void const * argument);
 extern void Interchip_Run(void const * argument);
-extern void Attitude_Run(void const * argument);
+void pathManagerExecute(void const * argument);
+void StartTelemetryRun(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -136,17 +144,21 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* definition and creation of attitudeManager */
+  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 128);
+  attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of Interchip */
   osThreadDef(Interchip, Interchip_Run, osPriorityNormal, 0, 128);
   InterchipHandle = osThreadCreate(osThread(Interchip), NULL);
 
-  /* definition and creation of Attitude */
-  osThreadDef(Attitude, Attitude_Run, osPriorityNormal, 0, 128);
-  AttitudeHandle = osThreadCreate(osThread(Attitude), NULL);
+  /* definition and creation of pathManager */
+  osThreadDef(pathManager, pathManagerExecute, osPriorityBelowNormal, 0, 128);
+  pathManagerHandle = osThreadCreate(osThread(pathManager), NULL);
+
+  /* definition and creation of telemetryRun */
+  osThreadDef(telemetryRun, StartTelemetryRun, osPriorityBelowNormal, 0, 128);
+  telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -154,22 +166,75 @@ void MX_FREERTOS_Init(void) {
 
 }
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_attitudeManagerExecute */
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the attitudeManager thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+/* USER CODE END Header_attitudeManagerExecute */
+void attitudeManagerExecute(void const * argument)
 {
-  /* USER CODE BEGIN StartDefaultTask */
+  /* USER CODE BEGIN attitudeManagerExecute */
   /* Infinite loop */
-  for(;;)
+  while(1)
   {
-    osDelay(1);
+    //TickType_t xLastWakeTime = xTaskGetTickCount();
+    //vTaskDelayUntil(&xLastWakeTime, PERIOD_ATTITUDEMANAGER_MS);
+    //AttitudeManagerInterfaceExecute();
+    HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+    //HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+    //HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+    osDelay(100);
+    //HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
   }
-  /* USER CODE END StartDefaultTask */
+  /* USER CODE END attitudeManagerExecute */
+}
+
+/* USER CODE BEGIN Header_pathManagerExecute */
+/**
+* @brief Function implementing the pathManager thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_pathManagerExecute */
+void pathManagerExecute(void const * argument)
+{
+  /* USER CODE BEGIN pathManagerExecute */
+  /* Infinite loop */
+  while(1)
+  {
+    //TickType_t xLastWakeTime = xTaskGetTickCount();
+    //vTaskDelayUntil(&xLastWakeTime, PERIOD_PATHMANAGER_MS);
+    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+    osDelay(200);
+    //PathManagerInterfaceExecute();
+  }
+  
+  /* USER CODE END pathManagerExecute */
+}
+
+/* USER CODE BEGIN Header_StartTelemetryRun */
+/**
+* @brief Function implementing the telemetryRun thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTelemetryRun */
+void StartTelemetryRun(void const * argument)
+{
+  /* USER CODE BEGIN StartTelemetryRun */
+  /* Infinite loop */
+  while(1)
+  {
+    //TickType_t xLastWakeTime = xTaskGetTickCount();
+    //vTaskDelayUntil(&xLastWakeTime, PERIOD_TELEMETRY_MS);
+    //TelemetryManagerInterfaceExecute();
+    HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+    osDelay(300);
+  }
+  
+  /* USER CODE END StartTelemetryRun */
 }
 
 /* Private application code --------------------------------------------------*/

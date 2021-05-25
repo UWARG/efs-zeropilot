@@ -37,7 +37,7 @@ int16_t *Interchip_GetPWM(void)
 }
 
 
-void Interchip_SetPWM(int16_t data[]) {
+void Interchip_SetPWM(int16_t *data) {
   osMutexWait(Interchip_MutexHandle, 0);
   for (uint8_t i = 0; i < 12; i++) {
     dataTX->PWM[i] = data[i];
