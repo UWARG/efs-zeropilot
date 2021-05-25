@@ -163,7 +163,6 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/OutputMixing.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/SensorFusion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MadgwickAHRS.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/fetchSensorMeasurementsMode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/mul.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/tran.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/inv.c
@@ -171,7 +170,6 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
   )
 
   set(ATTITUDE_MANAGER_MODULES_UNIT_TEST_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/AttitudeManager/Test_SensorFusion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/AttitudeManager/Test_OutputMixing.cpp
   )
 
@@ -180,14 +178,40 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
 #########
 
+######### Path manager fsm
+
+  set(PATH_MANAGER_FSM_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathStateClasses.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/waypointManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingState.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingTakeoffManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Src/vectorClass.cpp
+  )
+
+  set(PATH_MANAGER_FSM_UNIT_TEST_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_PathManager_Fsm.cpp
+  )
+
+  add_executable(pathManagerFsm ${PATH_MANAGER_FSM_SOURCES} ${PATH_MANAGER_FSM_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
+  target_link_libraries(pathManagerFsm ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
+
+#########
+
 ######### Path manager modules
 
   set(PATH_MANAGER_MODULES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/waypointManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingState.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingTakeoffManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Src/vectorClass.cpp
   )
 
   set(PATH_MANAGER_MODULES_UNIT_TEST_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/Test_WaypointManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_WaypointManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_CruisingState.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/LandingTakeoffManager/Test_Landing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/LandingTakeoffManager/Test_Takeoff.cpp
   )
 
   add_executable(pathManagerModules ${PATH_MANAGER_MODULES_SOURCES} ${PATH_MANAGER_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
@@ -254,44 +278,63 @@ elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
   set(CMAKE_CXX_STANDARD 11)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if( NOT EXISTS "${SIM_ROOT_DIR}/GeneratedCCode/Headers")
+  message( FATAL_ERROR "Evenin buddy. So looks like you've got an issue here. 1 of 2 things happened. First potential issue is you've forgotten to copy the unzipped GeneratedCCode directory into the Infinion folder, go and do that if you haven't. If that's done then here's your problem: see, when Simulink generates code for you it will name one of the directories inside the GeneratedCCode directory after the current matlab version. Cmake can't keep up with that as things change over the years so you're going to have to rename the R2021a (or whatever version your'e at) to be Headers. Anyway, I'll leave you alone now. Good luck with your cool simulation, I can only imagine what sort of crazy shit you're trying to get working :D." )
+endif()
 
   include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../Common/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
 
     ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw
-    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/extern/include
-    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/rtw/c/src
-    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/rtw/c/src/ext_mode/common
-    ${SIM_ROOT_DIR}/GeneratedCCode/R2020a/simulink/include
+    ${SIM_ROOT_DIR}/GeneratedCCode/Headers/extern/include
+    ${SIM_ROOT_DIR}/GeneratedCCode/Headers/rtw/c/src
+    ${SIM_ROOT_DIR}/GeneratedCCode/Headers/rtw/c/src/ext_mode/common
+    ${SIM_ROOT_DIR}/GeneratedCCode/Headers/simulink/include
   )
 
   add_custom_target(make-ActuatorCommand-dir ALL
   COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/ActuatorCommands")
   add_custom_target(make-SensorOutput-dir ALL
   COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/SensorOutputs")
+  add_custom_target(make-DebugLogs-dir ALL
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/DebugLogs")
 
+  set(SIM_MAIN
+    ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/SimDriver/SimMain.cpp
+  )
 
-  set(ATTITUDE_MANAGER_SIM_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/SimDriver/main.cpp
+  set(PATH_MANAGER_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathStateClasses.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/waypointManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingTakeoffManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingState.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/AutoSteer.cpp
+  )
+
+  set(ATTITUDE_MANAGER_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/OutputMixing.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/SensorFusion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MadgwickAHRS.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/fetchSensorMeasurementsMode.cpp
+  )
+
+  set(OTHER_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/PID.cpp
   )
 
   set(AUTOPILOT_INTERCEPT_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/Intercepts/GetFromPathManager_Intercept.cpp
-    )
+    ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/Intercepts/CommsBetweenStateMachines_Intercept.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Simulation/Intercepts/CommsWithTelemetry_intercept_user.cpp
+  )
 
   set(ZERO_PILOT_HOOK_SOURCES
-  ${SIM_ROOT_DIR}/ZeroPilotSwHooks/SendToSafetyIntercept.cpp
-  ${SIM_ROOT_DIR}/ZeroPilotSwHooks/AirspeedSensorIntercept.cpp
-  ${SIM_ROOT_DIR}/ZeroPilotSwHooks/IMUSensorIntercept.cpp
+    ${SIM_ROOT_DIR}/ZeroPilotSwHooks/SensorFusionIntercept.cpp
+    ${SIM_ROOT_DIR}/ZeroPilotSwHooks/SendToSafetyIntercept.cpp
   )
 
   set(SIMULINK_GENERATED_SOURCES
@@ -302,9 +345,13 @@ elseif(${KIND_OF_BUILD} STREQUAL "SIMULATION")
   ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw/rtGetInf.cpp
   )
 
-  add_executable(sim ${ATTITUDE_MANAGER_SIM_SOURCES} ${AUTOPILOT_INTERCEPT_SOURCES} ${ZERO_PILOT_HOOK_SOURCES} ${SIMULINK_GENERATED_SOURCES})
+  # Libraries
+  add_subdirectory(DataStructures)
+
+
+  add_executable(sim ${SIM_MAIN} ${PATH_MANAGER_SOURCES} ${ATTITUDE_MANAGER_SOURCES} ${AUTOPILOT_INTERCEPT_SOURCES} ${ZERO_PILOT_HOOK_SOURCES} ${OTHER_SOURCES} ${SIMULINK_GENERATED_SOURCES})
 
   # Link with the math library
-  target_link_libraries(sim m)
+  target_link_libraries(sim m DataStructures)
 
 endif()

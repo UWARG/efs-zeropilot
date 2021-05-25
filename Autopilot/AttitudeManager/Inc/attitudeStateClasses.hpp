@@ -4,39 +4,15 @@
 #include "attitudeManager.hpp"
 #include "AttitudeDatatypes.hpp"
 
-#include "GetFromPathManager.hpp"
+#include "CommWithPathManager.hpp"
 #include "SensorFusion.hpp"
 #include "OutputMixing.hpp"
 #include "PID.hpp"
 #include "SendInstructionsToSafety.hpp"
-#include "IMU.hpp"
-#include "airspeed.hpp"
-#include "fetchSensorMeasurementsMode.hpp"
 
-/***********************************************************************************************************************
- * Definitions
- **********************************************************************************************************************/
-
-#ifdef SIMULATION
-
-#define IMU_CLASS SimulatedIMU
-#define AIRSPEED_CLASS SimulatedAirspeed
-
-#elif defined(UNIT_TESTING)
-
-#define IMU_CLASS MockIMU
-#define AIRSPEED_CLASS MockAirspeed
-
-#else
-
-#define IMU_CLASS ICM20602  // TODO to be replaced with the real classes once the sensor drivers are built
-#define AIRSPEED_CLASS dummyairspeed
-
-#endif
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
-
 
 class fetchInstructionsMode : public attitudeState
 {
@@ -45,31 +21,12 @@ class fetchInstructionsMode : public attitudeState
         void execute(attitudeManager* attitudeMgr);
         void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
-        static PMCommands *GetPMInstructions(void) {return &_PMInstructions;}
+        static CommandsForAM *GetPMInstructions(void) {return &_PMInstructions;}
     private:
-        fetchInstructionsMode() {}
+        fetchInstructionsMode() {CommFromAMToPMInit();}
         fetchInstructionsMode(const fetchInstructionsMode& other);
         fetchInstructionsMode& operator =(const fetchInstructionsMode& other);
-        static PMCommands _PMInstructions;
-};
-
-class fetchSensorMeasurementsMode : public attitudeState
-{
-    public:
-        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
-        void execute(attitudeManager* attitudeMgr);
-        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
-        static attitudeState& getInstance();
-        static IMU_Data_t *GetIMUOutput(void) {return &_imudata;}
-        static Airspeed_Data_t *GetAirspeedOutput(void) {return &_airspeeddata;}
-    private:
-        fetchSensorMeasurementsMode();
-        fetchSensorMeasurementsMode(const fetchSensorMeasurementsMode& other);
-        fetchSensorMeasurementsMode& operator =(const fetchSensorMeasurementsMode& other);
-        static IMU_Data_t _imudata;
-        static Airspeed_Data_t _airspeeddata;
-        IMU_CLASS *ImuSens;
-        AIRSPEED_CLASS *AirspeedSens;
+        static CommandsForAM _PMInstructions;
 };
 
 class sensorFusionMode : public attitudeState
@@ -81,7 +38,7 @@ class sensorFusionMode : public attitudeState
         static attitudeState& getInstance();
         static SFOutput_t *GetSFOutput(void) {return &_SFOutput;}
     private:
-        sensorFusionMode() {}
+        sensorFusionMode() {SF_Init();}
         sensorFusionMode(const sensorFusionMode& other);
         sensorFusionMode& operator =(const sensorFusionMode& other);
         static SFOutput_t _SFOutput;
@@ -129,7 +86,7 @@ class sendToSafetyMode : public attitudeState
         void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
     private:
-        sendToSafetyMode() {SendToSafety_Init();} // Calls C-style initialization function 
+        sendToSafetyMode() {SendToSafety_Init();} // Calls C-style initialization function
         sendToSafetyMode(const sendToSafetyMode& other);
         sendToSafetyMode& operator =(const sendToSafetyMode& other);
 };

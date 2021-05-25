@@ -10,11 +10,11 @@
 #include "altimeter.hpp"
 #include "airspeed.hpp"
 
-struct SFAttitudeOutput_t{
+typedef struct {
     float roll, pitch, yaw; //rad
     float rollRate, pitchRate, yawRate; //rad/s
     float airspeed; //m/s
-};
+} SFAttitudeOutput_t ;
 
 struct SFPositionOutput_t{
     float altitude; //m
@@ -39,7 +39,7 @@ static airspeed *airspeedObj;
 static SFIterationData_t iterData;
 static SFOutput_t SFOutput;
 
-void SensorFusion_Init(void)
+void SF_Init(void)
 {
 #ifdef TARGET_BUILD
 
