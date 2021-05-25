@@ -79,9 +79,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-static const int PERIOD_ATTITUDEMANAGER_MS = 20;
-static const int PERIOD_PATHMANAGER_MS = 10; //TO CONFIRM
-static const int PERIOD_TELEMETRY_MS = 10; //TO CONFIRM
+static const int PERIOD_ATTITUDEMANAGER_MS = 200;
+static const int PERIOD_PATHMANAGER_MS = 100; //TO CONFIRM
+static const int PERIOD_TELEMETRY_MS = 100; //TO CONFIRM
 
 /* USER CODE END Variables */
 osThreadId attitudeManagerHandle;
