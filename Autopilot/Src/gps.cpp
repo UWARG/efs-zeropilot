@@ -1,13 +1,13 @@
 /*
  *  Author: Dhruv Rawat
- * 
+ *
  *  This code controls our GPS sensor and ensures we get samples at around 1 Hz.
- * 
- *  Future development: 
+ *
+ *  Future development:
  *      - Configure GPS to increase baud rate from 9600 and reduce the amount of NMEA messages sent to just GGA and VTG
  *      - Make the GGA and VTG messages use GP instead of GN
- * 
- *  Parsing algorithms taken from the custom WARG PicPilot software. 
+ *
+ *  Parsing algorithms taken from the custom WARG PicPilot software.
  */
 
 #include <gps.hpp>
@@ -103,7 +103,6 @@ NEOM8::NEOM8() : gpsData {},
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	NEOM8 * neoM8N = NEOM8::GetInstance();
 
-	neoM8N->parse_gpsData();
 
 	HAL_UART_Receive_DMA(&huart4, neoM8N->get_byte_collection_buffer(), GPS_UART_BUFFER_SIZE);
 }
@@ -111,7 +110,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 uint8_t* NEOM8::get_byte_collection_buffer() {
 	return byte_collection_buffer;
 }
-
 
 bool NEOM8::is_check_sum_valid(uint8_t* string){
     uint16_t i = 0;
@@ -154,8 +152,6 @@ uint8_t NEOM8::ascii_to_hex(uint8_t asciiSymbol) {
 void NEOM8::parse_gpsData() {
 	static bool currently_parsing = false;
 	static uint16_t buffer_index = 0;
-	int b = 0;
-	int c = 0;
 
 	for (int i = 0; i < GPS_UART_BUFFER_SIZE; i++) {
 		if (byte_collection_buffer[i] == '$') { //Beginning of Packet
@@ -165,11 +161,9 @@ void NEOM8::parse_gpsData() {
 			 if (strncmp((char*) GPS_GGA_MESSAGE, (char*) uart_buffer, 5) == 0){
 				memcpy(gga_buffer, uart_buffer, GPS_UART_BUFFER_SIZE);
 				gpsData.ggaDataIsNew = true;
-				b += 10;
 			 } else if (strncmp((char*) GPS_VTG_MESSAGE, (char*) uart_buffer, 5) == 0){
 				memcpy(vtg_buffer, uart_buffer, GPS_UART_BUFFER_SIZE);
 				gpsData.vtgDataIsNew = true;
-				c += 20;
 			 }
 			 currently_parsing = false;
 
@@ -421,6 +415,9 @@ void NEOM8::parse_gga(uint8_t* data) {
 }
 
 void NEOM8::GetResult(GpsData_t * Data) {
+
+	parse_gpsData();
+
 	if (dataAvailable) {
 		Data->dataIsNew = gpsData.dataIsNew;
 		Data->ggaDataIsNew = gpsData.ggaDataIsNew;

@@ -47,7 +47,7 @@ class Gps
 		* Begins the process of collecting the sensor's data.
 		* This is a non blocking function that returns right away.
 		*/
-        virtual void BeginMeasuring(void) = 0;
+//        virtual void BeginMeasuring(void) = 0;
 
 		/**
 		* Gets the information about the aircraft's position (See GpsData_t struct).
@@ -58,16 +58,14 @@ class Gps
         virtual void GetResult(GpsData_t *Data) = 0;
 };
 
+/*
+ * GPS spews data without us needing to ask for it
+ */
 class NEOM8 : public Gps
 {
 	public:
 		NEOM8(const NEOM8*) = delete;
 		static NEOM8* GetInstance();
-
-		/**
-		 * Triggers interrupt for new GPS measurement - stores raw data in variables and returns right away
-		 * */
-		void BeginMeasuring() {}; //No need to call this to get data. Just call GetResult()
 
 		 /**GetResult should:
 		 * 1. Reset dataIsNew flag
@@ -80,11 +78,6 @@ class NEOM8 : public Gps
 		 * Returns the buffer used to receive GPS UART signals
 		 */
 		uint8_t* get_byte_collection_buffer();
-
-		/**
-		 * Goes through byte_collection_buffer, finds the messages we care about, and calls the appropriate parsing functions
-		 */
-		void parse_gpsData();
 
 	private:
 		//Constructor
@@ -126,6 +119,11 @@ class NEOM8 : public Gps
 		 * Parses the GGA NMEA message and populates the GpsData_t sruct
 		 */
 		void parse_gga(uint8_t* data);
+
+		/**
+		 * Goes through byte_collection_buffer, finds the messages we care about, and calls the appropriate parsing functions
+		 */
+		void parse_gpsData();
 
 };
 
