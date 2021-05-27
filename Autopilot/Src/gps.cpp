@@ -76,7 +76,8 @@ NEOM8* NEOM8::GetInstance() {
 
 NEOM8::NEOM8() : gpsData {},
 				 configured {false},
-				 dataAvailable {false} {
+				 dataAvailable {false},
+				 uartDataIsNew {false} {
 
 //	const uint8_t CFG_NMEA[16] = { 0x17, 0x20, 0b00011000, 0x40, 0x08, 0x01, 0x00, 0x00, 0x00, 0b01110110, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00 };
 //	HAL_UART_Transmit_DMA(&huart4, (uint8_t*) CFG_NMEA, sizeof(CFG_NMEA));
@@ -103,12 +104,17 @@ NEOM8::NEOM8() : gpsData {},
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	NEOM8 * neoM8N = NEOM8::GetInstance();
 
+	neoM8N->set_uart_data_is_new(true);
 
 	HAL_UART_Receive_DMA(&huart4, neoM8N->get_byte_collection_buffer(), GPS_UART_BUFFER_SIZE);
 }
 
 uint8_t* NEOM8::get_byte_collection_buffer() {
 	return byte_collection_buffer;
+}
+
+void NEOM8::set_uart_data_is_new(bool val) {
+	uartDataIsNew = val;
 }
 
 bool NEOM8::is_check_sum_valid(uint8_t* string){
@@ -416,7 +422,10 @@ void NEOM8::parse_gga(uint8_t* data) {
 
 void NEOM8::GetResult(GpsData_t * Data) {
 
-	parse_gpsData();
+	if (uartDataIsNew) {
+		parse_gpsData();
+		uartDataIsNew = false;
+	}
 
 	if (dataAvailable) {
 		Data->dataIsNew = gpsData.dataIsNew;
