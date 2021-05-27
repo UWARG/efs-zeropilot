@@ -75,24 +75,28 @@ NEOM8* NEOM8::GetInstance() {
 }
 
 NEOM8::NEOM8() : gpsData {},
-				 configured {false},
-				 dataAvailable {false},
-				 uartDataIsNew {false} {
+		 configured {false},
+		 dataAvailable {false},
+		 uartDataIsNew {false} {
 
-//	const uint8_t CFG_NMEA[16] = { 0x17, 0x20, 0b00011000, 0x40, 0x08, 0x01, 0x00, 0x00, 0x00, 0b01110110, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00 };
-//	HAL_UART_Transmit_DMA(&huart4, (uint8_t*) CFG_NMEA, sizeof(CFG_NMEA));
-//
-//	HAL_UART_Transmit_DMA(&huart4, (uint8_t*) PUBX_CONFIG_NMEA, sizeof(PUBX_CONFIG_NMEA));
-//
-//	//	const uint8_t CFG_UART[21] = { 0x06, 0x00, 0x01, 0x00, 0b00000000, 0b00000000, 0x00, 0x00, 0b11000000, 0b00001000, 0x00, 0x01, 0b11000010, 0x00, 0x00, 0b00000010, 0x00, 0b00000010, 0x00, 0x00, 0x00 };
-//	//	HAL_UART_Transmit_DMA(&huart4, CFG_UART, sizeof(CFG_UART));
-//
-//	HAL_UART_Transmit_DMA(&huart4, (uint8_t*) PMTK_SET_NMEA_UPDATE_10HZ, sizeof(PMTK_SET_NMEA_UPDATE_10HZ));
-//
-//	HAL_UART_Transmit_DMA(&huart4, (uint8_t*) PMTK_API_SET_FIX_CTL_5HZ, sizeof(PMTK_API_SET_FIX_CTL_5HZ));
-//
-//	HAL_UART_Transmit_DMA(&huart4, (uint8_t*) PMTK_ENABLE_WAAS, sizeof(PMTK_ENABLE_WAAS));
+// Could not actually talk to GPS, so making a proper configuration will need to be done at a later time. 
+// The following code is the stuff I wanted to send
+#if 0
+	const uint8_t CFG_NMEA[16] = { 0x17, 0x20, 0b00011000, 0x40, 0x08, 0x01, 0x00, 0x00, 0x00, 0b01110110, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00 };
+	HAL_UART_Transmit_DMA(&huart4, (uint8_t*) CFG_NMEA, sizeof(CFG_NMEA));
 
+	HAL_UART_Transmit_DMA(&huart4, (uint8_t*) PUBX_CONFIG_NMEA, sizeof(PUBX_CONFIG_NMEA));
+
+	//	const uint8_t CFG_UART[21] = { 0x06, 0x00, 0x01, 0x00, 0b00000000, 0b00000000, 0x00, 0x00, 0b11000000, 0b00001000, 0x00, 0x01, 0b11000010, 0x00, 0x00, 0b00000010, 0x00, 0b00000010, 0x00, 0x00, 0x00 };
+	//	HAL_UART_Transmit_DMA(&huart4, CFG_UART, sizeof(CFG_UART));
+
+	HAL_UART_Transmit_DMA(&huart4, (uint8_t*) PMTK_SET_NMEA_UPDATE_10HZ, sizeof(PMTK_SET_NMEA_UPDATE_10HZ));
+
+	HAL_UART_Transmit_DMA(&huart4, (uint8_t*) PMTK_API_SET_FIX_CTL_5HZ, sizeof(PMTK_API_SET_FIX_CTL_5HZ));
+
+	HAL_UART_Transmit_DMA(&huart4, (uint8_t*) PMTK_ENABLE_WAAS, sizeof(PMTK_ENABLE_WAAS));
+#endif
+			 
 	configured = true;
 
 	HAL_UART_Receive_DMA(&huart4, byte_collection_buffer, GPS_UART_BUFFER_SIZE);
