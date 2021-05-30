@@ -61,6 +61,7 @@
 #include "PathManagerInterface.h"
 #include "telemetryManagerInterface.h"
 #include "sensorFusionInterface.hpp"
+#include "SensorFusion.hpp"
 
 /* USER CODE END Includes */
 
@@ -255,7 +256,7 @@ void SensorFusionExecute(void const * argument) {
   while (1) {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_SENSORFUSION_MS);
-    SensorFusionInterfaceExecute();
+    struct SFError_t err = SensorFusionInterfaceExecute();
     HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
   }
 

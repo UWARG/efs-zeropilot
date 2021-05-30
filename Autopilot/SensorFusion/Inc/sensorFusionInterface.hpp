@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-void SensorFusionInterfaceExecute(void);
+struct SFError_t SensorFusionInterfaceExecute(void);
 
 
 #ifdef __cplusplus

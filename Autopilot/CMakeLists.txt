@@ -231,6 +231,12 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
 #########
 
+#########  SensorFusion manager
+
+set(SENSORFUSION_MODULES_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/SensorFusion.cpp
+  )  
+
 ######### Vector Class
 
   set(VECTOR_CLASS_SOURCES
