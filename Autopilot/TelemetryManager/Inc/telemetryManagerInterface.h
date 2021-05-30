@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-void TelemetryManagerInterfaceExecute(void) {}
+void TelemetryManagerInterfaceExecute(void);
 
 
 #ifdef __cplusplus

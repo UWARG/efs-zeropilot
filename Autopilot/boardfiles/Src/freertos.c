@@ -56,7 +56,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "AttitudeManagerInterface.h"
+#include "attitudeManagerInterface.hpp"
 #include "PathManagerInterface.h"
 #include "telemetryManagerInterface.h"
 
@@ -81,7 +81,7 @@
 /* USER CODE BEGIN Variables */
 
 // The period for which each of the threads are called
-static const int PERIOD_ATTITUDEMANAGER_MS = 200;
+static const int PERIOD_ATTITUDEMANAGER_MS = 100;
 static const int PERIOD_PATHMANAGER_MS = 100; //TO CONFIRM
 static const int PERIOD_TELEMETRY_MS = 100; //TO CONFIRM
 
@@ -90,6 +90,7 @@ osThreadId attitudeManagerHandle;
 osThreadId InterchipHandle;
 osThreadId pathManagerHandle;
 osThreadId telemetryRunHandle;
+osThreadId sensorFusionHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -162,6 +163,8 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(telemetryRun, StartTelemetryRun, osPriorityBelowNormal, 0, 128);
   telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
 
+  /* definition and creation of sensorFusionRun */
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -209,8 +212,7 @@ void pathManagerExecute(void const * argument)
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_PATHMANAGER_MS);
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-    // osDelay(200);
-    //PathManagerInterfaceExecute();
+    PathManagerInterfaceExecute();
   }
   
   /* USER CODE END pathManagerExecute */
@@ -231,7 +233,7 @@ void StartTelemetryRun(void const * argument)
   {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_TELEMETRY_MS);
-    //TelemetryManagerInterfaceExecute();
+    TelemetryManagerInterfaceExecute();
     HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
     // osDelay(300);
   }

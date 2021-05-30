@@ -148,7 +148,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
   set(ATTITUDE_MANAGER_FSM_UNIT_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/AttitudeManager/Test_Fsm.cpp
-  )
+  )                                                                                                                                                                                                                                                                                                                                                                                              
 
   add_executable(attitudeManagerFSM ${ATTITUDE_MANAGER_FSM_SOURCES} ${ATTITUDE_MANAGER_FSM_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
   target_link_libraries(attitudeManagerFSM ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
