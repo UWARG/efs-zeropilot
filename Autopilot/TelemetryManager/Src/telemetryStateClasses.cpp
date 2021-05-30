@@ -29,7 +29,7 @@ telemetryState& initialMode::getInstance()
 void obtainDataMode::execute(telemetryManager* telemetryMgr)
 {
     //obtain data from ground
-    //Receive_Data(); //Receives data in MavLink form from the XBEE
+    Receive_Data(); //Receives data in MavLink form from the XBEE
 
     //State change:
     if(telemetryMgr -> fatalFail)
@@ -73,8 +73,8 @@ telemetryState& decodeDataMode::getInstance()
 void passToPathMode::execute(telemetryManager* telemetryMgr)
 {
     //pass data to path manager
-    GetTelemData(TelemToPMData * data); //Receive data from Telemetry namager outgoing mail queue
-    SendCommandsForPM(TelemToPMData * commands); //Send it off to the inbox for PathManager
+    GetTelemData(PIGO *data); //Receive data from Telemetry namager outgoing mail queue
+    SendCommandsForPM(PIGO *data); //Send it off to the inbox for PathManager
 
     //State change:
     if(telemetryMgr -> fatalFail)
@@ -96,7 +96,7 @@ telemetryState& passToPathMode::getInstance()
 void readFromPathMode::execute(telemetryManager* telemetryMgr)
 {
     //read data out of path manager
-    //Will need to implement this
+    GetCommands(POGI *data)
 
     //State change:
     if(telemetryMgr -> fatalFail)
@@ -217,6 +217,7 @@ void sendDataMode::execute(telemetryManager* telemetryMgr)
 {
     //send data to ground
     //Not sure if this state is needed. From what I understand FREERTOS is calling the function to send down data.
+    Send_Data();
 
     //State change:
     if(telemetryMgr -> fatalFail)
