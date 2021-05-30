@@ -7,7 +7,8 @@
 #define SENSORFUSION_HPP
 
 //Frequency of SF calculations in Hz
-constexpr int SF_FREQ = 512;
+// constexpr int SF_FREQ = 512;
+const int SF_FREQ = 512;
 
 // -1 = FAILED
 // 0 = SUCCESS
@@ -88,37 +89,37 @@ void SF_Init(void);
 /**
  * Generates fused sensor data. Should be called at a constant rate defined by SF_FREQ after SF_Init has been called once.
  */ 
-SFError_t SF_GenerateNewResult();
+struct SFError_t SF_GenerateNewResult();
 
 /**
  * Get latest fused sensor data. Can be called any time data is needed after SF_init has been called once. Waits until the output struct is not being accessed by another task.
  * @param [out] output Output struct for fused data.
  * @return Error struct.
  */ 
-SFError_t SF_GetResult(SFOutput_t *SFoutput);
+struct SFError_t SF_GetResult(struct SFOutput_t *SFoutput);
 
 /**
  * Get raw IMU data. Can be called any time raw data is needed.
  * @return IMU struct.
  */ 
-IMU_Data_t SF_GetRawIMU();
+struct IMU_Data_t SF_GetRawIMU();
 
 /**
  * Get raw Airspeed data. Can be called any time raw data is needed.
  * @return Airspeed struct.
  */ 
-Airspeed_Data_t SF_GetRawAirspeed();
+struct Airspeed_Data_t SF_GetRawAirspeed();
 
 /**
  * Get raw GPS data. Can be called any time raw data is needed.
  * @return GPS struct.
  */ 
-Gps_Data_t SF_GetRawGPS();
+struct Gps_Data_t SF_GetRawGPS();
 
 /**
  * Get raw Altimeter data. Can be called any time raw data is needed.
  * @return Altimeter struct.
  */ 
-Altimeter_Data_t SF_GetRawAltimeter();
+struct Altimeter_Data_t SF_GetRawAltimeter();
 
 #endif

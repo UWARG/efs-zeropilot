@@ -1,7 +1,7 @@
 #ifndef SENSORFUSIONINTERFACE_H
 #define SENSORFUSIONINTERFACE_H
 
-#include "SensorFusion.hpp";
+#include "SensorFusion.hpp"
 
 #ifdef __cplusplus
 extern "C" {

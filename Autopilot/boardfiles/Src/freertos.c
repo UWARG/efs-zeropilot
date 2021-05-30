@@ -50,6 +50,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "FreeRTOS.h"
+#include "portmacro.h"
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
@@ -59,6 +60,7 @@
 #include "attitudeManagerInterface.hpp"
 #include "PathManagerInterface.h"
 #include "telemetryManagerInterface.h"
+#include "sensorFusionInterface.hpp"
 
 /* USER CODE END Includes */
 
@@ -84,6 +86,7 @@
 static const int PERIOD_ATTITUDEMANAGER_MS = 100;
 static const int PERIOD_PATHMANAGER_MS = 100; //TO CONFIRM
 static const int PERIOD_TELEMETRY_MS = 100; //TO CONFIRM
+static const int PERIOD_SENSORFUSION_MS = 200; //TO CONFIRM
 
 /* USER CODE END Variables */ 
 osThreadId attitudeManagerHandle;
@@ -101,6 +104,7 @@ void attitudeManagerExecute(void const * argument);
 extern void Interchip_Run(void const * argument);
 void pathManagerExecute(void const * argument);
 void StartTelemetryRun(void const * argument);
+void SensorFusionExecute(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -162,6 +166,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of telemetryRun */
   osThreadDef(telemetryRun, StartTelemetryRun, osPriorityBelowNormal, 0, 128);
   telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
+
+   /* definition and creation of sensorFusionRun */
+   osThreadDef(sensorFusionRun, SensorFusionExecute, osPriorityBelowNormal, 0, 128);
+   sensorFusionHandle = osThreadCreate(osThread(sensorFusionRun), NULL);
 
   /* definition and creation of sensorFusionRun */
 
@@ -235,10 +243,23 @@ void StartTelemetryRun(void const * argument)
     vTaskDelayUntil(&xLastWakeTime, PERIOD_TELEMETRY_MS);
     TelemetryManagerInterfaceExecute();
     HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
-    // osDelay(300);
   }
   
   /* USER CODE END StartTelemetryRun */
+}
+
+void SensorFusionExecute(void const * argument) {
+  /* USER CODE BEGIN SensorFusionExecute */
+  /* Infinite loop */
+
+  while (1) {
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, PERIOD_SENSORFUSION_MS);
+    SensorFusionInterfaceExecute();
+    HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+  }
+
+  /* USER CODE END SensorFusionExecute */
 }
 
 /* Private application code --------------------------------------------------*/
