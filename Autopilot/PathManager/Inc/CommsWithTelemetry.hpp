@@ -17,13 +17,13 @@ void CommWithTelemInit();
  * Send path manager data to telemetry.
  * @param[in]   data   Pointer to struct with data.
  */
-void SendPathData(DataForTelem *data);
+void SendPathData(POGI *data);
 
 /**
  * Retrieve commands from the path manager.
  * @param[out]   commands   Pointer to struct to recieve commands.
  * @return True if commands were recieved.
  */
-bool GetCommands(TelemToPMData *commands);
+bool GetCommands(PIGO *commands);
 
 #endif

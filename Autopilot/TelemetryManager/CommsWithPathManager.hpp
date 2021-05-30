@@ -3,8 +3,8 @@
  * Author: Anthony Bertnyk, Messed with by Gordon Fountain to use in Telemetry
  */
 
-#ifndef TELEM_TO_PATH_MANAGER_HPP
-#define TELEM_TO_PATH_MANAGER_HPP
+#ifndef COMMS_WITH_PATH_MANAGER_HPP
+#define COMMS_WITH_PATH_MANAGER_HPP
 
 #include "TelemPathInterface.hpp"
 
@@ -17,13 +17,13 @@ void CommWithPMInit();
  * Send commands to the path manager.
  * @param[in]   commands   Pointer to struct with commands.
  */
-void SendCommandsForPM(TelemToPMData *commands);
+void SendCommandsForPM(PIGO *commands);
 
 /**
  * Retrieve data from telemetry.
  * @param[out]   data   Pointer to struct to recieve data.
  * @return True if data was recieved.
  */
-bool GetTelemData(TelemToPMData *data);
+bool GetTelemData(PIGO *data);
 
 #endif

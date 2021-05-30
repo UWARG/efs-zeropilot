@@ -15,18 +15,18 @@ void CommWithTelemInit()
     telemDataMailQ = osMailCreate(osMailQ(telemDataMailQ), NULL);
 }
 
-void SendPathData(DataForTelem *data)
+void SendPathData(POGI *data)
 {
     //Remove previous data from mail queue if it exists
     osEvent event = osMailGet(telemDataMailQ, 0);
     if(event.status == osEventMail)
     {
-        osMailFree(telemDataMailQ, static_cast<DataForTelem *>(event.value.p));
+        osMailFree(telemDataMailQ, static_cast<POGI *>(event.value.p));
     }
 
     //Allocate mail slot
-    DataForTelem *dataOut;
-    dataOut = static_cast<DataForTelem *>(osMailAlloc(telemDataMailQ, osWaitForever));
+    POGI *dataOut;
+    dataOut = static_cast<POGI *>(osMailAlloc(telemDataMailQ, osWaitForever));
     
     //Fill mail slot with data
     *dataOut = *data;
@@ -35,15 +35,15 @@ void SendPathData(DataForTelem *data)
     osMailPut(telemDataMailQ, dataOut);
 }
 
-bool GetCommands(TelemToPMData *commands)
+bool GetCommands(PIGO *commands)
 {
     //Try to get commands from mail queue
     osEvent event;
-    TelemToPMData * commandsIn;
+    PIGO * commandsIn;
     event = osMailGet(commandsMailQ, 0);
     if(event.status == osEventMail)
     {
-        commandsIn = static_cast<TelemToPMData *>(event.value.p);
+        commandsIn = static_cast<PIGO *>(event.value.p);
         
         //Keep the command and remove it from the queue
         *commands = *commandsIn;

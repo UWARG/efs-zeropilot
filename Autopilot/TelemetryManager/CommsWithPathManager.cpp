@@ -3,7 +3,7 @@
  * Author: Anthony Bertnyk, messed with by Gordon Fountain to co-opt for Telemetry
  */
 
-#include "TelemToPathManager.hpp"
+#include "CommsWithPathManager.hpp"
 
 extern "C"
 {
@@ -15,18 +15,18 @@ void CommWithPMInit()
     commandsMailQ = osMailCreate(osMailQ(commandsMailQ), NULL);
 }
 
-void SendCommandsForPM(TelemToPMData *commands)
+void SendCommandsForPM(PIGO *commands)
 {
     //Remove previous command from mail queue if it exists
     osEvent event = osMailGet(commandsMailQ, 0);
     if(event.status == osEventMail)
     {
-        osMailFree(commandsMailQ, static_cast<TelemToPMData *>(event.value.p));
+        osMailFree(commandsMailQ, static_cast<PIGO *>(event.value.p));
     }
 
     //Allocate mail slot
-    TelemToPMData *commandsOut;
-    commandsOut = static_cast<TelemToPMData *>(osMailAlloc(commandsMailQ, osWaitForever));
+    PIGO *commandsOut;
+    commandsOut = static_cast<PIGO *>(osMailAlloc(commandsMailQ, osWaitForever));
     
     //Fill mail slot with data
     *commandsOut = *commands;
@@ -35,15 +35,15 @@ void SendCommandsForPM(TelemToPMData *commands)
     osMailPut(commandsMailQ, commandsOut);
 }
 
-bool GetTelemData(TelemToPMData *data)
+bool GetTelemData(PIGO *data)
 {
     //Try to get data from mail queue
     osEvent event;
-    TelemToPMData * dataIn;
+    POGI * dataIn;
     event = osMailGet(telemDataMailQ, 0);
     if(event.status == osEventMail)
     {
-        dataIn = static_cast<TelemToPMData *>(event.value.p);
+        dataIn = static_cast<PIGO *>(event.value.p);
         
         //Keep the data and remove it from the queue
         *data = *dataIn;
