@@ -27,7 +27,6 @@ void SendPathData(POGI *data)
     //Allocate mail slot
     POGI *dataOut;
     dataOut = static_cast<POGI *>(osMailAlloc(telemDataMailQ, osWaitForever));
-
     //Fill mail slot with data
     *dataOut = *data;
 
