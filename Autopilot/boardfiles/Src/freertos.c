@@ -243,7 +243,7 @@ void StartTelemetryRun(void const * argument)
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_TELEMETRY_MS);
     TelemetryManagerInterfaceExecute();
-    HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+    // HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
   }
   
   /* USER CODE END StartTelemetryRun */
