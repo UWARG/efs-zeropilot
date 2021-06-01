@@ -33,8 +33,8 @@ void CommWithAMInit()
 void SendCommandsForAM(CommandsForAM *commands)
 {
     //hard coding commands for testing
-    commandsForAM.roll = 0;
-    commandsForAM.pitch = 0.1;
+    commandsForAM.roll = 0.3;
+    commandsForAM.pitch = 0;
     commandsForAM.rudderPercent = 0;
     commandsForAM.throttlePercent = 100;
     commandsForAM.passbyData.pitchPassby=false;
