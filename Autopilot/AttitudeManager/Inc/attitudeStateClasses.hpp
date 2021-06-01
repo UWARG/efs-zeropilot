@@ -56,8 +56,8 @@ class PIDloopMode : public attitudeState
         PIDloopMode() {}
         PIDloopMode(const PIDloopMode& other);
         PIDloopMode& operator =(const PIDloopMode& other);
-        PIDController _rollPid{60, -40, 0.25, 0.1,-100, 100}; //80, -10, 0.03, 0.1,-100, 100
-        PIDController _pitchPid{-160, 90, -0.09, 0.1, -100, 100}; //-330, 70, -0.09, 0.1, -100, 100
+        PIDController _rollPid{60, -50, 0.3, 0.1,-100, 100}; //60, -50, 0.3, 0.1,-100, 100
+        PIDController _pitchPid{-100, 90, -0.09, 0.1, -100, 100}; //-100, 90, -0.09, 0.1, -100, 100
         static PID_Output_t _PidOutput;
 };
 
