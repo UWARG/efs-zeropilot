@@ -57,11 +57,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "attitudeManagerInterface.hpp"
+#include "attitudeManagerInterface.h"
 #include "PathManagerInterface.h"
 #include "telemetryManagerInterface.h"
-#include "sensorFusionInterface.hpp"
-#include "SensorFusion.hpp"
+#include "sensorFusionInterface.h"
 
 /* USER CODE END Includes */
 
@@ -84,10 +83,12 @@
 /* USER CODE BEGIN Variables */
 
 // The period for which each of the threads are called
+
+// TODO: Confirm the period at which each of the threads are to be run and update them
 static const int PERIOD_ATTITUDEMANAGER_MS = 100;
-static const int PERIOD_PATHMANAGER_MS = 100; //TO CONFIRM
-static const int PERIOD_TELEMETRY_MS = 100; //TO CONFIRM
-static const int PERIOD_SENSORFUSION_MS = 200; //TO CONFIRM
+static const int PERIOD_PATHMANAGER_MS = 100; 
+static const int PERIOD_TELEMETRY_MS = 100; 
+static const int PERIOD_SENSORFUSION_MS = 200; 
 
 /* USER CODE END Variables */ 
 osThreadId attitudeManagerHandle;

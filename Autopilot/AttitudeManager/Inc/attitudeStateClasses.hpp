@@ -29,7 +29,7 @@ class fetchInstructionsMode : public attitudeState
         static CommandsForAM _PMInstructions;
 };
 
-/*
+
 
 class sensorFusionMode : public attitudeState
 {
@@ -45,7 +45,7 @@ class sensorFusionMode : public attitudeState
         sensorFusionMode& operator =(const sensorFusionMode& other);
         static SFOutput_t _SFOutput;
 };
-*/
+
 
 class PIDloopMode : public attitudeState
 {

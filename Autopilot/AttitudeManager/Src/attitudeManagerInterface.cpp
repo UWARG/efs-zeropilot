@@ -1,5 +1,5 @@
 
-#include "attitudeManagerInterface.hpp"
+#include "attitudeManagerInterface.h"
 #include "attitudeManager.hpp"
 
 static attitudeManager attMng;

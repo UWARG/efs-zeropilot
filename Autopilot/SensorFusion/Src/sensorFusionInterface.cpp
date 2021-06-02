@@ -1,4 +1,4 @@
-#include "sensorFusionInterface.hpp"
+#include "sensorFusionInterface.h"
 #include "SensorFusion.hpp"
 
 struct SFError_t SensorFusionInterfaceExecute(void) {
