@@ -40,14 +40,14 @@ bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
     //Try to get commands from mail queue
     osEvent event;
     POGI * commandsIn;
-    event = osMailGet(commandsMailQ, 0);
+    event = osMailGet(PMcommandsMailQ, 0);
     if(event.status == osEventMail)
     {
         commandsIn = static_cast<POGI *>(event.value.p);
 
         //Keep the command and remove it from the queue
         *commands = *commandsIn;
-        osMailFree(commandsMailQ, commandsIn);
+        osMailFree(PMcommandsMailQ, commandsIn);
         return true;
     }
     else
