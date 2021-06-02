@@ -12,13 +12,13 @@ extern "C"
 
 void CommWithTelemInit()
 {
-    //telemDataMailQ = osMailCreate(osMailQ(telemDataMailQ), NULL);
+    telemDataMailQ = osMailCreate(osMailQ(telemDataMailQ), NULL);
 }
 
 void SendPathData(POGI *data)
 {
     //Remove previous data from mail queue if it exists
-    /*osEvent event = osMailGet(telemDataMailQ, 0);
+    osEvent event = osMailGet(telemDataMailQ, 0);
     if(event.status == osEventMail)
     {
         osMailFree(telemDataMailQ, static_cast<POGI *>(event.value.p));
@@ -31,12 +31,12 @@ void SendPathData(POGI *data)
     *dataOut = *data;
 
     //Post mail slot to mail queue
-    osMailPut(telemDataMailQ, dataOut);*/
+    osMailPut(telemDataMailQ, dataOut);
 }
 
 bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
 {
-    /*
+    
     //Try to get commands from mail queue
     osEvent event;
     POGI * commandsIn;
@@ -55,6 +55,6 @@ bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
         //Indicate that no new commands are available.
         return false;
     }
-    */
+    
     return true;
 }

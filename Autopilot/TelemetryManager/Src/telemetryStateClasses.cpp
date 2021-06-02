@@ -3,16 +3,17 @@
 * Implementing Telem Comms: Gordon Fountain
 */
 
+#include "TelemPathInterface.hpp"
 #include "telemetryStateClasses.hpp"
 #include "xbee.hpp"
-#include "TelemToPathManager.hpp"
-#include "PathManagerToTelem.hpp"
+#include "CommsWithPathManager.hpp"
+#include "CommsWithTelemetry.hpp"
 
 void initialMode::execute(telemetryManager* telemetryMgr)
 {
     //initial mode
     //Initialize mail queue to send data to Path Manager:
-    CommWithPMInit();
+    TelemCommWithPMInit();
     //Initializa mail queue to receive Path Manager data:
     //CommWithTelemInit(); is the one for Path manager to send data to telem. May need the implementation to check the mail queue.
 
@@ -29,7 +30,7 @@ telemetryState& initialMode::getInstance()
 void obtainDataMode::execute(telemetryManager* telemetryMgr)
 {
     //obtain data from ground
-    Receive_Data(); //Receives data in MavLink form from the XBEE
+    Receive_GS_Data(); //Receives data in MavLink form from the XBEE
 
     //State change:
     if(telemetryMgr -> fatalFail)
@@ -73,8 +74,8 @@ telemetryState& decodeDataMode::getInstance()
 void passToPathMode::execute(telemetryManager* telemetryMgr)
 {
     //pass data to path manager
-    GetTelemData(PIGO *data); //Receive data from Telemetry namager outgoing mail queue
-    SendCommandsForPM(PIGO *data); //Send it off to the inbox for PathManager
+    GetTelemData(data); //Receive data from Telemetry namager outgoing mail queue
+    SendCommandsForPM(data); //Send it off to the inbox for PathManager
 
     //State change:
     if(telemetryMgr -> fatalFail)
@@ -96,7 +97,7 @@ telemetryState& passToPathMode::getInstance()
 void readFromPathMode::execute(telemetryManager* telemetryMgr)
 {
     //read data out of path manager
-    GetCommands(POGI *data)
+    GetTelemData(data);
 
     //State change:
     if(telemetryMgr -> fatalFail)
@@ -217,7 +218,7 @@ void sendDataMode::execute(telemetryManager* telemetryMgr)
 {
     //send data to ground
     //Not sure if this state is needed. From what I understand FREERTOS is calling the function to send down data.
-    Send_Data();
+    Send_GS_Data();
 
     //State change:
     if(telemetryMgr -> fatalFail)

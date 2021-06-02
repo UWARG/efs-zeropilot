@@ -20,7 +20,7 @@ class XBEE{
         /**
          * Triggers interrupt for new data retrieval by telemManager - stores raw data in variables and returns right away
          * */
-        virtual void Receive_Data() = 0; 
+        virtual void Receive_GS_Data() = 0; 
 
         /**GetResult should:
          * 1. Reset newInput flag
@@ -31,7 +31,7 @@ class XBEE{
 
         /*Interrupt to send data to ground       
         */
-        virtual void Send_Data() = 0; //Only touched by FREERTOS
+        virtual void Send_GS_Data() = 0; //Only touched by FREERTOS
 
         /*SendResult should:
          * 1. Reset newOutput flag
