@@ -196,12 +196,8 @@ void attitudeManagerExecute(void const * argument)
   {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_ATTITUDEMANAGER_MS);
-    //AttitudeManagerInterfaceExecute();
+    AttitudeManagerInterfaceExecute();
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-    //HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-    //HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
-    // osDelay(100);
-    //HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
   }
   /* USER CODE END attitudeManagerExecute */
 }
@@ -244,7 +240,6 @@ void StartTelemetryRun(void const * argument)
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_TELEMETRY_MS);
     TelemetryManagerInterfaceExecute();
-    // HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
   }
   
   /* USER CODE END StartTelemetryRun */
@@ -258,7 +253,6 @@ void SensorFusionExecute(void const * argument) {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_SENSORFUSION_MS);
     struct SFError_t err = SensorFusionInterfaceExecute();
-    HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
   }
 
   /* USER CODE END SensorFusionExecute */
