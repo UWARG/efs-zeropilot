@@ -36,6 +36,15 @@ extern "C"
 
 const char PATH_ATTITUDE_MAIL_Q_SIZE = 1;
 
+//Set up a mail queue for sending commands to the attitude manager
+extern osMailQDef(commandsMailQ, PATH_ATTITUDE_MAIL_Q_SIZE, CommandsForAM);
+extern osMailQId commandsMailQ;
+
+
+//Set up a mail queue for sending data to the path manager
+extern osMailQDef(attitudeDataMailQ, PATH_ATTITUDE_MAIL_Q_SIZE, AttitudeData);
+extern osMailQId attitudeDataMailQ;
+
 #endif
 
 #endif

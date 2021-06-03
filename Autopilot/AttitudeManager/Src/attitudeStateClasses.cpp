@@ -15,7 +15,7 @@ PID_Output_t PIDloopMode::_PidOutput;
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {
 
-    GetFromPMToAM(&_PMInstructions);
+    GetCommands(&_PMInstructions);
 
     // The support is also here for sending stuff to Path manager, but there's nothing I need to send atm.
 
