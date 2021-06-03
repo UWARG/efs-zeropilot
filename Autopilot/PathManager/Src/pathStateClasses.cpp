@@ -67,7 +67,7 @@ _WaypointManager_Data_Out landingTouchdownStage::waypointOutput;
 void commsWithAttitude::execute(pathManager* pathMgr)
 {
 
-    bool newDataAvailable = GetFromAMToPM(&_receivedData); // Gets attitude manager data
+    bool newDataAvailable = GetAttitudeData(&_receivedData); // Gets attitude manager data
 
     // Gets data used to populate CommandsForAM struct
     CoordinatedTurnAttitudeManagerCommands_t * turnCommands = coordinateTurnElevation::GetRollAndRudder();
@@ -79,7 +79,7 @@ void commsWithAttitude::execute(pathManager* pathMgr)
     toSend.rudderPercent = turnCommands->requiredRudderPosition;
     toSend.throttlePercent = altCommands->requiredThrottlePercent;
 
-    SendFromPMToAM(&toSend); // Sends commands to attitude manager
+    SendCommandsForAM(&toSend); // Sends commands to attitude manager
 
     pathMgr->setState(commsWithTelemetry::getInstance());
 }
