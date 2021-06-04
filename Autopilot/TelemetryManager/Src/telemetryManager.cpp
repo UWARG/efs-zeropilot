@@ -18,15 +18,15 @@ void telemetryManager::setState(telemetryState& newState) //set state function
     //detects and changes the status of the manager
     if(*currentState==obtainDataMode::getInstance())
     {
-        status=COMPLETED_CYCLE;
+        status=telemMan::COMPLETED_CYCLE;
     }
     else if(*currentState==failureMode::getInstance())
     {
-        status=FAILURE_MODE;
+        status=telemMan::FAILURE_MODE;
     }
     else
     {
-        status=IN_CYCLE;
+        status=telemMan::IN_CYCLE;
     }
     currentState -> enter(this);
 }
