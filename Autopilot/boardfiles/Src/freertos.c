@@ -50,6 +50,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "FreeRTOS.h"
+#include "Interchip_A.h"
 #include "portmacro.h"
 #include "task.h"
 #include "main.h"
@@ -89,6 +90,9 @@ static const int PERIOD_ATTITUDEMANAGER_MS = 100;
 static const int PERIOD_PATHMANAGER_MS = 100; 
 static const int PERIOD_TELEMETRY_MS = 100; 
 static const int PERIOD_SENSORFUSION_MS = 200; 
+static const int PERIOD_INTERCHIP_MS = 100;
+
+static bool catastrophicFailure = false;
 
 /* USER CODE END Variables */ 
 osThreadId attitudeManagerHandle;
@@ -107,6 +111,7 @@ extern void Interchip_Run(void const * argument);
 void pathManagerExecute(void const * argument);
 void StartTelemetryRun(void const * argument);
 void SensorFusionExecute(void const * argument);
+void InterchipRunExecute(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -158,8 +163,8 @@ void MX_FREERTOS_Init(void) {
   attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of Interchip */
-  osThreadDef(Interchip, Interchip_Run, osPriorityNormal, 0, 128);
-  InterchipHandle = osThreadCreate(osThread(Interchip), NULL);
+  osThreadDef(interchip, InterchipRunExecute, osPriorityNormal, 0, 128);
+  InterchipHandle = osThreadCreate(osThread(interchip), NULL);
 
   /* definition and creation of pathManager */
   osThreadDef(pathManager, pathManagerExecute, osPriorityBelowNormal, 0, 128);
@@ -170,8 +175,9 @@ void MX_FREERTOS_Init(void) {
   telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
 
    /* definition and creation of sensorFusionRun */
-   osThreadDef(sensorFusionRun, SensorFusionExecute, osPriorityBelowNormal, 0, 128);
-   sensorFusionHandle = osThreadCreate(osThread(sensorFusionRun), NULL);
+  osThreadDef(sensorFusionRun, SensorFusionExecute, osPriorityBelowNormal, 0, 128);
+  sensorFusionHandle = osThreadCreate(osThread(sensorFusionRun), NULL);
+
 
   /* definition and creation of sensorFusionRun */
 
@@ -196,7 +202,10 @@ void attitudeManagerExecute(void const * argument)
   {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_ATTITUDEMANAGER_MS);
-    AttitudeManagerInterfaceExecute();
+    bool status = AttitudeManagerInterfaceExecute();
+    if (!status) {
+      catastrophicFailure = true;
+    }
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
   }
   /* USER CODE END attitudeManagerExecute */
@@ -218,7 +227,10 @@ void pathManagerExecute(void const * argument)
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_PATHMANAGER_MS);
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-    PathManagerInterfaceExecute();
+    bool status = PathManagerInterfaceExecute();
+    if (!status) {
+      catastrophicFailure = true;
+    }
   }
   
   /* USER CODE END pathManagerExecute */
@@ -239,7 +251,10 @@ void StartTelemetryRun(void const * argument)
   {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_TELEMETRY_MS);
-    TelemetryManagerInterfaceExecute();
+    bool status = TelemetryManagerInterfaceExecute();
+    if (!status) {
+      catastrophicFailure = true;
+    }
   }
   
   /* USER CODE END StartTelemetryRun */
@@ -256,6 +271,14 @@ void SensorFusionExecute(void const * argument) {
   }
 
   /* USER CODE END SensorFusionExecute */
+}
+
+void InterchipRunExecute(void const * argument) {
+  while (1) {
+    if (!catastrophicFailure) {
+      Interchip_Run(argument);
+    }
+  }  
 }
 
 /* Private application code --------------------------------------------------*/
