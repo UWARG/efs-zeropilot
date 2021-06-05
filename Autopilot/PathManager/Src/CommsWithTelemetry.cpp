@@ -46,6 +46,7 @@ bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
         commandsIn = static_cast<POGI *>(event.value.p);
 
         //Keep the command and remove it from the queue
+        POGI * commands;
         *commands = *commandsIn;
         osMailFree(PMcommandsMailQ, commandsIn);
         return true;

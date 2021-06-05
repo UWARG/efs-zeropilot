@@ -142,56 +142,6 @@ telemetryState& analyzeDataMode::getInstance()
     return singleton;
 }
 
-void reportMode::execute(telemetryManager* telemetryMgr)
-{
-    //form report based on the the variables dataValid, dataError, and cycleCounter
-    if(telemetryMgr -> dataValid)
-    {
-        telemetryMgr -> cycleCounter = 0;
-        //detect if data contains error, load into bool dataError (error=true, no error=false)
-        if(telemetryMgr -> dataError)
-        {
-            //form an error report
-            telemetryMgr -> regularReport = false;
-        }
-        else
-        {
-            //form a regular report
-            telemetryMgr -> regularReport = true;
-        }
-    }
-    else
-    {
-        telemetryMgr -> cycleCounter++;
-        if(telemetryMgr -> cycleCounter >= 5) //if data invalid more than 5 times, send error report
-        {
-            //form an error report
-            telemetryMgr -> regularReport = false;
-        }
-        else
-        {
-            //form a regular report
-            telemetryMgr -> regularReport = true;
-        }
-    }
-
-    //State change:
-    if(telemetryMgr -> fatalFail)
-    {
-        telemetryMgr -> setState(failureMode::getInstance());
-    }
-    else
-    {
-        telemetryMgr -> setState(encodeDataMode::getInstance());
-    }
-}
-
-telemetryState& reportMode::getInstance()
-{
-    static reportMode singleton;
-    return singleton;
-}
-
 void encodeDataMode::execute(telemetryManager* telemetryMgr)
 {
     //encode data with mavlink (Jingting's function)
