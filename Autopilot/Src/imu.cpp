@@ -192,7 +192,7 @@ void BMX160::Bmx160WriteReg(uint8_t reg, uint8_t val)
     HAL_GPIO_WritePin(GPIOG, GPIO_PIN_10, GPIO_PIN_RESET);  // assert slave select
     HAL_SPI_TransmitReceive_IT(&hspi1, tx, rx, 2);
 
-    HAL_Delay(100); // writes only happen in config. Allow some time for the writes to complete before moving on to the next write
+    HAL_Delay(20); // writes only happen in config. Allow some time for the writes to complete before moving on to the next write
 }
 
 void BMX160::Bmx160ReadReg(uint8_t const regAddr, uint8_t *pData, uint8_t len)
