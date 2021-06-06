@@ -60,10 +60,12 @@ constexpr float ACC_RANGE_8_FACTOR = 4.09f;    // LSB/mg
 extern SPI_HandleTypeDef hspi1;
 
 /***********************************************************************************************************************
- * Static variables
+ * Static variables and static helper function prototypes
  **********************************************************************************************************************/
 
-bool BMX160::dataIsNew;
+static bool dataIsNew;
+static void AssertSlaveSelect(void);
+static void DeassertSlaveSelect(void);
 
 /***********************************************************************************************************************
  * Public methods
@@ -82,7 +84,7 @@ void BMX160::Begin_Measuring(void)
 
 void BMX160::GetResult(IMUData_t &Data)
 {
-    if (! BMX160::dataIsNew)
+    if (! dataIsNew)
     {
         Data.isDataNew = false;
         return;
@@ -90,15 +92,15 @@ void BMX160::GetResult(IMUData_t &Data)
 
     int16_t *intImuDataPtr = (int16_t *) &(rawImuData[1]); // first byte is garbage. It's just what was on the line when we asked the IMU for data, which it started sending as of the second byte.
 
-    int16_t magx = *(&(intImuDataPtr[0]));
-    int16_t magy = *(&(intImuDataPtr[1]));
-    int16_t magz = *(&(intImuDataPtr[2]));
-    int16_t gyrx = *(&(intImuDataPtr[4])); // missing 3 is not a mistake, there is a field here named RHall which has something to do with the magnetometer. But I can't quite figure that out yet.
-    int16_t gyry = *(&(intImuDataPtr[5]));
-    int16_t gyrz = *(&(intImuDataPtr[6]));
-    int16_t accx = *(&(intImuDataPtr[7]));
-    int16_t accy = *(&(intImuDataPtr[8]));
-    int16_t accz = *(&(intImuDataPtr[9]));
+    int16_t magx = intImuDataPtr[0];
+    int16_t magy = intImuDataPtr[1];
+    int16_t magz = intImuDataPtr[2];
+    int16_t gyrx = intImuDataPtr[4]; // missing 3 is not a mistake, there is a field here named RHall which has something to do with the magnetometer. But I can't quite figure that out yet.
+    int16_t gyry = intImuDataPtr[5];
+    int16_t gyrz = intImuDataPtr[6];
+    int16_t accx = intImuDataPtr[7];
+    int16_t accy = intImuDataPtr[8];
+    int16_t accz = intImuDataPtr[9];
 
     Data.magx = static_cast<float> (magx);
     Data.magy = static_cast<float> (magy);
@@ -113,7 +115,7 @@ void BMX160::GetResult(IMUData_t &Data)
     Data.isDataNew = true;
     Data.sensorStatus = 0;
 
-    BMX160::dataIsNew = false;
+    dataIsNew = false;
 }
 
 /***********************************************************************************************************************
@@ -129,7 +131,7 @@ BMX160::BMX160()
     ConfigGyro();
     ConfigMag();
 
-    BMX160::dataIsNew = false;
+    dataIsNew = false;
 }
 
 void BMX160::SetAllPowerModesToNormal()
@@ -144,7 +146,8 @@ void BMX160::ConfigAcc()
 {
 
     Bmx160WriteReg(ACC_RANGE_REG, ACC_RANGE_8G);
-    Bmx160WriteReg(ACC_CONF_REG, ACC_ODR_800_OSR4);}
+    Bmx160WriteReg(ACC_CONF_REG, ACC_ODR_800_OSR4);
+}
 
 
 void BMX160::ConfigGyro()
@@ -189,7 +192,8 @@ void BMX160::Bmx160WriteReg(uint8_t reg, uint8_t val)
     uint8_t rx[2] = { 0, 0 }; // we don't care about what gets sent back to us in write mode
     uint8_t tx[2] = { static_cast<uint8_t> (reg | BMX160_WRITE_BIT), val }; // Set first bit to 0
 
-    HAL_GPIO_WritePin(GPIOG, GPIO_PIN_10, GPIO_PIN_RESET);  // assert slave select
+    AssertSlaveSelect();
+
     HAL_SPI_TransmitReceive_IT(&hspi1, tx, rx, 2);
 
     HAL_Delay(20); // writes only happen in config. Allow some time for the writes to complete before moving on to the next write
@@ -201,19 +205,30 @@ void BMX160::Bmx160ReadReg(uint8_t const regAddr, uint8_t *pData, uint8_t len)
 
     tx[0] = static_cast<uint8_t> (regAddr | BMX160_READ_BIT);
 
-    HAL_GPIO_WritePin(GPIOG, GPIO_PIN_10, GPIO_PIN_RESET);  // assert slave select
+    AssertSlaveSelect();
+    
     HAL_SPI_TransmitReceive_IT(&hspi1, tx, pData, (len + 1));
 }
 
 /***********************************************************************************************************************
- * Interrupt Callbacks
+ * Interrupt Callbacks and static helpers functions
  **********************************************************************************************************************/
 
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 {
     (void) hspi; // tells the compiler "hey! we're not gonna use this garbage" and saves us an unused argument warning.
 
-    HAL_GPIO_WritePin(GPIOG, GPIO_PIN_10, GPIO_PIN_SET);  // deassert slave select
+    DeassertSlaveSelect();
 
-    BMX160::dataIsNew = true;
+    dataIsNew = true;
+}
+
+static void AssertSlaveSelect(void)
+{
+    HAL_GPIO_WritePin(GPIOG, GPIO_PIN_10, GPIO_PIN_RESET);
+}
+
+static void DeassertSlaveSelect(void)
+{
+    HAL_GPIO_WritePin(GPIOG, GPIO_PIN_10, GPIO_PIN_SET);
 }

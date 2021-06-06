@@ -65,13 +65,6 @@ class BMX160: public IMU{
         void Begin_Measuring();
         void GetResult(IMUData_t &Data);
 
-        /**
-        * USERS SHOULD NEVER TOUCH THIS VARIABLE.
-        * It exists exclusively for use by an ISR internal to the module.
-        * Tampering with it from a higher level voids all guarantees made by this module.
-        * */
-        static bool dataIsNew;
-
     private:
 
         BMX160();
