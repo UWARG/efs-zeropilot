@@ -6,7 +6,7 @@ static Interchip_AtoS_Packet *dataTX;
 static Interchip_StoA_Packet *dataRX;
 osMutexId Interchip_MutexHandle;
 
-void Interchip_Run(void const *argument) {
+void Interchip_Run() {
   dataRX = malloc(sizeof(Interchip_StoA_Packet));
   dataTX = malloc(sizeof(Interchip_AtoS_Packet));
 

@@ -19,6 +19,6 @@ bool AttitudeManagerInterfaceExecute(void)
                 return false;
             }
 
-        } while(attManStatus != AttMan::COMPLETED_CYCLE);
-        return true;
+    } while(attManStatus != AttMan::COMPLETED_CYCLE);
+    return true;
 }

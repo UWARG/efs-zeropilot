@@ -50,6 +50,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "FreeRTOS.h"
+#include "Interchip_A.h"
 #include "portmacro.h"
 #include "task.h"
 #include "main.h"
@@ -89,6 +90,7 @@ static const int PERIOD_ATTITUDEMANAGER_MS = 100;
 static const int PERIOD_PATHMANAGER_MS = 100; 
 static const int PERIOD_TELEMETRY_MS = 100; 
 static const int PERIOD_SENSORFUSION_MS = 200; 
+static const int PERIOD_INTERCHIP_MS = 100;
 
 static bool catastrophicFailure = false;
 
@@ -98,6 +100,7 @@ osThreadId InterchipHandle;
 osThreadId pathManagerHandle;
 osThreadId telemetryRunHandle;
 osThreadId sensorFusionHandle;
+osThreadId test;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -105,10 +108,12 @@ osThreadId sensorFusionHandle;
 /* USER CODE END FunctionPrototypes */
 
 void attitudeManagerExecute(void const * argument);
-extern void Interchip_Run(void const * argument);
+extern void Interchip_Run();
 void pathManagerExecute(void const * argument);
 void StartTelemetryRun(void const * argument);
 void SensorFusionExecute(void const * argument);
+void InterchipRunExecute(void const * argument);
+void testExecute(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -160,20 +165,24 @@ void MX_FREERTOS_Init(void) {
   attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of Interchip */
-  osThreadDef(Interchip, Interchip_Run, osPriorityNormal, 0, 128);
-  InterchipHandle = osThreadCreate(osThread(Interchip), NULL);
+  osThreadDef(interchip, InterchipRunExecute, osPriorityNormal, 0, 128);
+  InterchipHandle = osThreadCreate(osThread(interchip), NULL);
 
   /* definition and creation of pathManager */
-  osThreadDef(pathManager, pathManagerExecute, osPriorityBelowNormal, 0, 128);
+  osThreadDef(pathManager, pathManagerExecute, osPriorityNormal, 0, 128);
   pathManagerHandle = osThreadCreate(osThread(pathManager), NULL);
 
   /* definition and creation of telemetryRun */
-  osThreadDef(telemetryRun, StartTelemetryRun, osPriorityBelowNormal, 0, 128);
+  osThreadDef(telemetryRun, StartTelemetryRun, osPriorityNormal, 0, 128);
   telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
 
    /* definition and creation of sensorFusionRun */
-   osThreadDef(sensorFusionRun, SensorFusionExecute, osPriorityBelowNormal, 0, 128);
-   sensorFusionHandle = osThreadCreate(osThread(sensorFusionRun), NULL);
+  osThreadDef(sensorFusionRun, SensorFusionExecute, osPriorityNormal, 0, 128);
+  sensorFusionHandle = osThreadCreate(osThread(sensorFusionRun), NULL);
+
+  osThreadDef(testThread, testExecute, osPriorityNormal, 0, 128);
+  test = osThreadCreate(osThread(testThread), NULL);
+
 
   /* definition and creation of sensorFusionRun */
 
@@ -199,7 +208,6 @@ void attitudeManagerExecute(void const * argument)
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_ATTITUDEMANAGER_MS);
     bool status = AttitudeManagerInterfaceExecute();
-
     if (!status) {
       catastrophicFailure = true;
     }
@@ -228,7 +236,6 @@ void pathManagerExecute(void const * argument)
       catastrophicFailure = true;
     }
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-
   }
   
   /* USER CODE END pathManagerExecute */
@@ -253,6 +260,7 @@ void StartTelemetryRun(void const * argument)
     if (!status) {
       catastrophicFailure = true;
     }
+    HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
   }
   
   /* USER CODE END StartTelemetryRun */
@@ -269,6 +277,26 @@ void SensorFusionExecute(void const * argument) {
   }
 
   /* USER CODE END SensorFusionExecute */
+}
+
+void InterchipRunExecute(void const * argument) {
+  while (1) {
+    if (!catastrophicFailure) {
+      Interchip_Run(argument);
+    }
+  }  
+}
+
+void testExecute(void const * argument) {
+  while (1) {
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, PERIOD_TELEMETRY_MS);
+
+    if (catastrophicFailure) {
+      Interchip_Run();
+    }
+    
+  }
 }
 
 /* Private application code --------------------------------------------------*/

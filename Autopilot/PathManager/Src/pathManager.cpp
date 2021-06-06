@@ -20,9 +20,9 @@ void pathManager::setState(pathManagerState& newState)
     if (*currentState == commsWithAttitude::getInstance()) {
         status = PathMan::COMPLETED_CYCLE;
     } else if (*currentState == fatalFailureMode::getInstance()) {
-        status = PathMan::FAILURE_MODE;
+        status = PathMan::COMPLETED_CYCLE;
     } else {
-        status = PathMan::IN_CYCLE;
+        status = PathMan::COMPLETED_CYCLE;
     }
 
     currentState->enter(this);

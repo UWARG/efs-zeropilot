@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-void Interchip_Run(void const *argument);
+void Interchip_Run();
 int16_t *Interchip_GetPWM(void);
 void Interchip_SetPWM(int16_t *data);
 uint16_t Interchip_GetAutonomousLevel(void);
