@@ -12,13 +12,13 @@
  * Variables
  **********************************************************************************************************************/
 
-static PIDController bankPid{1, 0, 0, 0, -MAX_BANK_ANGLE, MAX_BANK_ANGLE}; // PID gains need to be tuned
+static PIDController bankPid{100, 0, 0, 0, -MAX_BANK_ANGLE, MAX_BANK_ANGLE}; // PID gains need to be tuned
 
-static PIDController rudderPid{1, 0, 0, 0, -100, 100}; // PID gains need to be tuned
+static PIDController rudderPid{100, 0, 0, 0, -100, 100}; // PID gains need to be tuned
 
-static PIDController pitchPid{5, 0, 5, 1, -MAX_PITCH_ANGLE, MAX_PITCH_ANGLE}; // PID gains need to be tuned
+static PIDController pitchPid{0, 0, 0, 1, -MAX_PITCH_ANGLE, MAX_PITCH_ANGLE}; // PID gains need to be tuned
 
-static PIDController altitudePid{-10, 0, 0, 0, 0, 100}; //PID gains need to be tuned
+static PIDController altitudePid{0, 0, 0, 0, 0, 100}; //PID gains need to be tuned
 
 static const float RUDDER_SCALING_FACTOR = 0.0f; // should be experimentally determined
 

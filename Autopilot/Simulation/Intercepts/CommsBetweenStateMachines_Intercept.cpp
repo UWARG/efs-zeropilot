@@ -32,18 +32,14 @@ void CommWithAMInit()
 
 void SendCommandsForAM(CommandsForAM *commands)
 {
-    //hard coding commands for testing
-    commandsForAM.roll = 0.3;
-    commandsForAM.pitch = 0;
-    commandsForAM.rudderPercent = 0;
-    commandsForAM.throttlePercent = 100;
-    commandsForAM.passbyData.pitchPassby=false;
-    commandsForAM.passbyData.rollPassby=false;
-    commandsForAM.passbyData.throttlePassby=false;
-    commandsForAM.passbyData.rudderPassby=false;
-    writeAttitudeCommandsToFile(&commandsForAM);
-    //commandsForAM = *commands;
-    //writeAttitudeCommandsToFile(commands);
+
+    commands->throttlePercent = 100;
+    commands->passbyData.pitchPassby=false;
+    commands->passbyData.rollPassby=false;
+    commands->passbyData.throttlePassby=false;
+    commands->passbyData.rudderPassby=false;
+    commandsForAM = *commands;
+    writeAttitudeCommandsToFile(commands);
 }
 
 bool GetAttitudeData(AttitudeData *data)

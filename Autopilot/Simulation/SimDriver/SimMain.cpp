@@ -8,7 +8,7 @@
  * Code
  **********************************************************************************************************************/
 
-#define NUM_SIMULATION_STEPS 10000
+#define NUM_SIMULATION_STEPS 1000
 
 /***********************************************************************************************************************
  * Code
@@ -18,6 +18,7 @@
 int main(void)
 {
     pathManager pathmMng;
+    pathmMng.stage = CRUISING;
 	attitudeManager attMng;
     pathmMng.setState(cruisingState::getInstance());
 
