@@ -4,7 +4,7 @@
 static telemetryManager telemMng;
 telemMan::_Telemetry_Manager_Cycle_Status telemManStatus;
 
-void TelemetryManagerInterfaceExecute(void) {
+bool TelemetryManagerInterfaceExecute(void) {
 
     do {
         telemMng.execute();
@@ -12,6 +12,8 @@ void TelemetryManagerInterfaceExecute(void) {
 
         if (telemManStatus == telemMan::FAILURE_MODE) {
             // Something is quite wrong, need to switch over to safety
+            return false;
         }
     } while (telemManStatus != telemMan::COMPLETED_CYCLE);
+    return true;
 }

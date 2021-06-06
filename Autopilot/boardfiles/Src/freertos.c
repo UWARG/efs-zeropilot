@@ -90,6 +90,8 @@ static const int PERIOD_PATHMANAGER_MS = 100;
 static const int PERIOD_TELEMETRY_MS = 100; 
 static const int PERIOD_SENSORFUSION_MS = 200; 
 
+static bool catastrophicFailure = false;
+
 /* USER CODE END Variables */ 
 osThreadId attitudeManagerHandle;
 osThreadId InterchipHandle;
@@ -196,7 +198,11 @@ void attitudeManagerExecute(void const * argument)
   {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_ATTITUDEMANAGER_MS);
-    AttitudeManagerInterfaceExecute();
+    bool status = AttitudeManagerInterfaceExecute();
+
+    if (!status) {
+      catastrophicFailure = true;
+    }
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
   }
   /* USER CODE END attitudeManagerExecute */
@@ -217,8 +223,12 @@ void pathManagerExecute(void const * argument)
   {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_PATHMANAGER_MS);
+    bool status = PathManagerInterfaceExecute();
+    if (!status) {
+      catastrophicFailure = true;
+    }
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-    PathManagerInterfaceExecute();
+
   }
   
   /* USER CODE END pathManagerExecute */
@@ -239,7 +249,10 @@ void StartTelemetryRun(void const * argument)
   {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_TELEMETRY_MS);
-    TelemetryManagerInterfaceExecute();
+    bool status = TelemetryManagerInterfaceExecute();
+    if (!status) {
+      catastrophicFailure = true;
+    }
   }
   
   /* USER CODE END StartTelemetryRun */

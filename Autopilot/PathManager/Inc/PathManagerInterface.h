@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-void PathManagerInterfaceExecute(void);
+bool PathManagerInterfaceExecute(void);
 
 
 #ifdef __cplusplus
