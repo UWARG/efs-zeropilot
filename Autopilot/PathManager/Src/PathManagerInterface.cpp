@@ -7,8 +7,7 @@ PathMan::_Path_Manager_Cycle_Status pathManStatus;
 
 bool PathManagerInterfaceExecute(void) {
 
-    do
-        {
+    do {
             pathMng.execute();
             pathManStatus = pathMng.getStatus();
 

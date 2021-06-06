@@ -167,15 +167,15 @@ void MX_FREERTOS_Init(void) {
   InterchipHandle = osThreadCreate(osThread(interchip), NULL);
 
   /* definition and creation of pathManager */
-  osThreadDef(pathManager, pathManagerExecute, osPriorityBelowNormal, 0, 128);
+  osThreadDef(pathManager, pathManagerExecute, osPriorityNormal, 0, 128);
   pathManagerHandle = osThreadCreate(osThread(pathManager), NULL);
 
   /* definition and creation of telemetryRun */
-  osThreadDef(telemetryRun, StartTelemetryRun, osPriorityBelowNormal, 0, 128);
+  osThreadDef(telemetryRun, StartTelemetryRun, osPriorityNormal, 0, 128);
   telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
 
    /* definition and creation of sensorFusionRun */
-  osThreadDef(sensorFusionRun, SensorFusionExecute, osPriorityBelowNormal, 0, 128);
+  osThreadDef(sensorFusionRun, SensorFusionExecute, osPriorityNormal, 0, 128);
   sensorFusionHandle = osThreadCreate(osThread(sensorFusionRun), NULL);
 
 
