@@ -13,11 +13,11 @@ const int SF_FREQ = 512;
 // -1 = FAILED
 // 0 = SUCCESS
 // 1 = Old Data
-struct SFError_t{
+typedef struct {
     int errorCode;
-};
+} SFError_t;
 
-struct SFOutput_t {
+typedef struct {
     float roll, pitch, yaw; //rad
     float rollRate, pitchRate, yawRate; //rad/s
     float airspeed; //m/s
@@ -29,10 +29,10 @@ struct SFOutput_t {
     float longitudeSpeed; //m/s
     double track; // degrees
     double heading; //degrees
-};
+} SFOutput_t;
 
 //Following structs store the raw sensor data so other modules can have direct access to them without including sensor header files
-struct IMU_Data_t
+typedef struct
 {
     float magx, magy, magz;
     float accx, accy, accz;
@@ -41,25 +41,25 @@ struct IMU_Data_t
     bool isDataNew; 
     int sensorStatus; 
     float utcTime; 
-};
+} IMU_Data_t;
 
-struct Airspeed_Data_t
+typedef struct 
 {
     double airspeed;        
 
     int sensorStatus;       
     bool isDataNew;         
     float utcTime;          
-};
+} Airspeed_Data_t;
 
-struct Gps_Data_t
+typedef struct
 {
     long double latitude;  // 8 Bytes
     long double longitude; // 8 Bytes
     float utcTime;     // 4 Bytes. Time in seconds since 00:00 (midnight)
     float groundSpeed; // in m/s
-    int altitude; // in m
     short heading; // in degrees. Should be between 0-360 at all times, but using integer just in case
+    int altitude; // in m
     char numSatellites;    // 1 Byte
     char fixStatus; //0 = No GPS, 1 = GPS fix, 2 = DGSP Fix, 3 = Estimated/Dead Recoking Fix
 
@@ -70,16 +70,16 @@ struct Gps_Data_t
     //Added these so autopilot knows which data is new
     bool ggaDataIsNew; //Position, altitude, time, and number of satellites
     bool vtgDataIsNew; //Groundspeed and Heading
-};
+}  Gps_Data_t;
 
-struct Altimeter_Data_t {
+typedef struct  {
 
     float pressure, altitude, temp;
 
     bool isDataNew; 
     int status; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
     int utcTime; //Last time GetResult was called
-};
+} Altimeter_Data_t;
 
 /**
  * Initialize sensor fusion.
@@ -89,37 +89,37 @@ void SF_Init(void);
 /**
  * Generates fused sensor data. Should be called at a constant rate defined by SF_FREQ after SF_Init has been called once.
  */ 
-struct SFError_t SF_GenerateNewResult();
+SFError_t SF_GenerateNewResult();
 
 /**
  * Get latest fused sensor data. Can be called any time data is needed after SF_init has been called once. Waits until the output struct is not being accessed by another task.
  * @param [out] output Output struct for fused data.
  * @return Error struct.
  */ 
-struct SFError_t SF_GetResult(struct SFOutput_t *SFoutput);
+SFError_t SF_GetResult(SFOutput_t *SFoutput);
 
 /**
  * Get raw IMU data. Can be called any time raw data is needed.
  * @return IMU struct.
  */ 
-struct IMU_Data_t SF_GetRawIMU();
+IMU_Data_t SF_GetRawIMU();
 
 /**
  * Get raw Airspeed data. Can be called any time raw data is needed.
  * @return Airspeed struct.
  */ 
-struct Airspeed_Data_t SF_GetRawAirspeed();
+Airspeed_Data_t SF_GetRawAirspeed();
 
 /**
  * Get raw GPS data. Can be called any time raw data is needed.
  * @return GPS struct.
  */ 
-struct Gps_Data_t SF_GetRawGPS();
+Gps_Data_t SF_GetRawGPS();
 
 /**
  * Get raw Altimeter data. Can be called any time raw data is needed.
  * @return Altimeter struct.
  */ 
-struct Altimeter_Data_t SF_GetRawAltimeter();
+Altimeter_Data_t SF_GetRawAltimeter();
 
 #endif

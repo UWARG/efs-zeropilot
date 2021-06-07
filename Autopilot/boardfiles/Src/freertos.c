@@ -273,7 +273,7 @@ void SensorFusionExecute(void const * argument) {
   while (1) {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_SENSORFUSION_MS);
-    struct SFError_t err = SensorFusionInterfaceExecute();
+    SFError_t err = SensorFusionInterfaceExecute();
   }
 
   /* USER CODE END SensorFusionExecute */
