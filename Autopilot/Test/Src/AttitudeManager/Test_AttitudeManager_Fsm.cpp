@@ -23,6 +23,9 @@ using ::testing::Test;
 /***********************************************************************************************************************
  * Test Fixtures
  **********************************************************************************************************************/
+
+FAKE_VOID_FUNC(CommFromAMToPMInit);
+FAKE_VALUE_FUNC(bool, GetFromPMToAM, CommandsForAM*);
 FAKE_VOID_FUNC(CommWithPMInit);
 FAKE_VALUE_FUNC(bool, GetCommands, CommandsForAM * );
 FAKE_VOID_FUNC(SendToSafety_Init);
@@ -47,6 +50,8 @@ class AttitudeManagerFSM : public ::testing::Test
 
 		virtual void SetUp()
 		{
+			RESET_FAKE(GetFromPMToAM);
+			RESET_FAKE(CommFromAMToPMInit);
 			RESET_FAKE(GetCommands);
 			RESET_FAKE(SendToSafety_Init);
 			RESET_FAKE(OutputMixing_Execute);

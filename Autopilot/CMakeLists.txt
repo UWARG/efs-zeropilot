@@ -147,7 +147,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
   )
 
   set(ATTITUDE_MANAGER_FSM_UNIT_TEST_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/AttitudeManager/Test_Fsm.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/AttitudeManager/Test_AttitudeManager_Fsm.cpp
   )
 
   add_executable(attitudeManagerFSM ${ATTITUDE_MANAGER_FSM_SOURCES} ${ATTITUDE_MANAGER_FSM_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
@@ -221,7 +221,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
   )
 
   set(TELEMETRY_MANAGER_FSM_UNIT_TEST_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/TelemetryManager/Test_TelemetryFSM.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/TelemetryManager/Test_TelemetryManager_Fsm.cpp
   )
 
   add_executable(telemetryManagerFSM ${TELEMETRY_MANAGER_FSM_SOURCES} ${TELEMETRY_MANAGER_FSM_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
