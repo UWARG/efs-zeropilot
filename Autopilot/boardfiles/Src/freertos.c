@@ -270,8 +270,11 @@ void sensorFusionExecute(void const * argument) {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_SENSORFUSION_MS);
     SFError_t err = SensorFusionInterfaceExecute();
+    if (err.errorCode == -1) {
+      catastrophicFailure = true;
+    }
   }
-
+  
   /* USER CODE END SensorFusionExecute */
 }
 
