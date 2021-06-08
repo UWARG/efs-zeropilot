@@ -56,7 +56,6 @@
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
-#include "wwdg.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -148,7 +147,6 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM10_Init();
   MX_TIM11_Init();
-  MX_WWDG_Init();
   MX_CRC_Init();
   MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
