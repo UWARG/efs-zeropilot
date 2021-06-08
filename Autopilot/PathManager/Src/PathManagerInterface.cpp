@@ -13,7 +13,6 @@ bool PathManagerInterfaceExecute(void) {
 
             if (pathManStatus == PathMan::FAILURE_MODE)
             {
-                return false;
                 // Something is quite wrong, need to switch over to safety
                 return false;
             }

@@ -3,6 +3,7 @@
   ******************************************************************************
   * File Name          : freertos.c
   * Description        : Code for freertos applications
+  * Authors            : Anthony Berbari, Sahil Kale, Dhruv Upadhyay
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -61,7 +62,7 @@
 #include "attitudeManagerInterface.h"
 #include "PathManagerInterface.h"
 #include "telemetryManagerInterface.h"
-#include "sensorFusionInterface.h"
+#include "sensorFusionInterface.hpp"
 
 /* USER CODE END Includes */
 
@@ -100,7 +101,6 @@ osThreadId InterchipHandle;
 osThreadId pathManagerHandle;
 osThreadId telemetryRunHandle;
 osThreadId sensorFusionHandle;
-osThreadId test;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -110,10 +110,9 @@ osThreadId test;
 void attitudeManagerExecute(void const * argument);
 extern void Interchip_Run();
 void pathManagerExecute(void const * argument);
-void StartTelemetryRun(void const * argument);
-void SensorFusionExecute(void const * argument);
-void InterchipRunExecute(void const * argument);
-void testExecute(void const * argument);
+void telemetryRunExecute(void const * argument);
+void sensorFusionExecute(void const * argument);
+void interchipRunExecute(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -165,7 +164,7 @@ void MX_FREERTOS_Init(void) {
   attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of Interchip */
-  osThreadDef(interchip, InterchipRunExecute, osPriorityNormal, 0, 128);
+  osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 0, 128);
   InterchipHandle = osThreadCreate(osThread(interchip), NULL);
 
   /* definition and creation of pathManager */
@@ -173,15 +172,12 @@ void MX_FREERTOS_Init(void) {
   pathManagerHandle = osThreadCreate(osThread(pathManager), NULL);
 
   /* definition and creation of telemetryRun */
-  osThreadDef(telemetryRun, StartTelemetryRun, osPriorityNormal, 0, 128);
+  osThreadDef(telemetryRun, telemetryRunExecute, osPriorityNormal, 0, 128);
   telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
 
    /* definition and creation of sensorFusionRun */
-  osThreadDef(sensorFusionRun, SensorFusionExecute, osPriorityNormal, 0, 128);
+  osThreadDef(sensorFusionRun, sensorFusionExecute, osPriorityNormal, 0, 128);
   sensorFusionHandle = osThreadCreate(osThread(sensorFusionRun), NULL);
-
-  osThreadDef(testThread, testExecute, osPriorityNormal, 0, 128);
-  test = osThreadCreate(osThread(testThread), NULL);
 
 
   /* definition and creation of sensorFusionRun */
@@ -248,7 +244,7 @@ void pathManagerExecute(void const * argument)
 * @retval None
 */
 /* USER CODE END Header_StartTelemetryRun */
-void StartTelemetryRun(void const * argument)
+void telemetryRunExecute(void const * argument)
 {
   /* USER CODE BEGIN StartTelemetryRun */
   /* Infinite loop */
@@ -266,7 +262,7 @@ void StartTelemetryRun(void const * argument)
   /* USER CODE END StartTelemetryRun */
 }
 
-void SensorFusionExecute(void const * argument) {
+void sensorFusionExecute(void const * argument) {
   /* USER CODE BEGIN SensorFusionExecute */
   /* Infinite loop */
 
@@ -279,24 +275,12 @@ void SensorFusionExecute(void const * argument) {
   /* USER CODE END SensorFusionExecute */
 }
 
-void InterchipRunExecute(void const * argument) {
+void interchipRunExecute(void const * argument) {
   while (1) {
     if (!catastrophicFailure) {
       Interchip_Run(argument);
     }
   }  
-}
-
-void testExecute(void const * argument) {
-  while (1) {
-    TickType_t xLastWakeTime = xTaskGetTickCount();
-    vTaskDelayUntil(&xLastWakeTime, PERIOD_TELEMETRY_MS);
-
-    if (catastrophicFailure) {
-      Interchip_Run();
-    }
-    
-  }
 }
 
 /* Private application code --------------------------------------------------*/

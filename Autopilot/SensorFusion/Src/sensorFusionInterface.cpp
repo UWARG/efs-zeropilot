@@ -1,4 +1,4 @@
-#include "sensorFusionInterface.h"
+#include "sensorFusionInterface.hpp"
 #include "SensorFusion.hpp"
 
 SFError_t SensorFusionInterfaceExecute(void) {
