@@ -32,6 +32,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
     AttitudeManager/Inc
     PathManager/Inc
     TelemetryManager/Inc
+    SensorFusion/Inc
   )
 
   # Add ARM math directory for linker to find
@@ -45,8 +46,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
   add_subdirectory(DataStructures)
 
   file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/Src/*.c boardfiles/Src/*.c)
-  file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp PathManager/Src/*.cpp TelemetryManager/Src/*.cpp)
-
+file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp PathManager/Src/*.cpp TelemetryManager/Src/*.cpp SensorFusion/Src/*.cpp)
   if(NOT NUCLEO)
     set(STARTUP_ASM startup_stm32f765xx.s)
     set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F765ZGTx_FLASH.ld)
@@ -118,6 +118,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Inc
   )
 
   # Let cmake know where to find all the find<Package>.cmake files
@@ -228,6 +229,12 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
   target_link_libraries(telemetryManagerFSM ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
 
 #########
+
+#########  SensorFusion manager
+
+set(SENSORFUSION_MODULES_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/SensorFusion.cpp
+  )  
 
 ######### Vector Class
 
