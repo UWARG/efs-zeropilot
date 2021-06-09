@@ -25,6 +25,9 @@ using ::testing::Test;
  * Test Fixtures
  **********************************************************************************************************************/
 
+FAKE_VOID_FUNC(CommFromPMToAMInit);
+FAKE_VOID_FUNC(SendFromPMToAM, CommandsForAM*);
+FAKE_VALUE_FUNC(bool, GetFromAMToPM, AttitudeData*);
 FAKE_VALUE_FUNC(SFError_t, SF_GetResult, SFOutput_t *);
 FAKE_VALUE_FUNC(IMU_Data_t, SF_GetRawIMU);
 FAKE_VOID_FUNC(AutoSteer_Init);
@@ -42,6 +45,9 @@ class PathManagerFSM : public ::testing::Test
 
 		virtual void SetUp()
 		{
+			RESET_FAKE(CommFromPMToAMInit);
+			RESET_FAKE(SendFromPMToAM);
+			RESET_FAKE(GetFromAMToPM);
 			RESET_FAKE(SF_GetResult);
 			RESET_FAKE(SF_GetRawIMU);
 			RESET_FAKE(AutoSteer_Init);
