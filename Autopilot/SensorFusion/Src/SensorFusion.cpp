@@ -114,13 +114,13 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspee
     // Checks if magnetometer values are not a number (NAN) and converts them to zero if they are (ensures Madgwick does not break)
     // NOTE TO FUTURE DEVELOPERS: At the time of making, our IMU did not have a magnetometer (so for now we set the values to NAN). 
     // If your IMU does have one, you can remove this
-    if (isnan(imudata->magx)) {
+    if (std::isnan(imudata->magx)) {
         imudata->magx = 0.0f;
     }
-    if (isnan(imudata->magy)) {
+    if (std::isnan(imudata->magy)) {
         imudata->magy = 0.0f;
     }
-    if (isnan(imudata->magz)) {
+    if (std::isnan(imudata->magz)) {
         imudata->magz = 0.0f;
     }
 
