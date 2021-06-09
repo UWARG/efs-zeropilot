@@ -30,7 +30,6 @@ class fetchInstructionsMode : public attitudeState
 };
 
 
-
 class sensorFusionMode : public attitudeState
 {
     public:

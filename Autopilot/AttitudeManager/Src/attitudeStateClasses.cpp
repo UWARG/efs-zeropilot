@@ -38,8 +38,6 @@ void sensorFusionMode::execute(attitudeManager* attitudeMgr)
     attitudeMgr->setState(PIDloopMode::getInstance());
 }
 
-
-
 attitudeState& sensorFusionMode::getInstance()
 {
     static sensorFusionMode singleton;
