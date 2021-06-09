@@ -54,6 +54,7 @@
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
+#include "FreeRTOSConfig.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
