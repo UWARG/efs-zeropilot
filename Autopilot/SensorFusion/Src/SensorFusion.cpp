@@ -6,7 +6,7 @@
 */
 #include "SensorFusion.hpp"
 #include "MadgwickAHRS.h"
-#include <math.h>
+#include <cmath>
 #include "imu.hpp"
 #include "gps.hpp"
 #include "altimeter.hpp"
