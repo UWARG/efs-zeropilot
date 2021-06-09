@@ -1,6 +1,6 @@
 //Provides skeleton IMU definitions for testing sensor fusion
 
-#include "IMU.hpp"
+#include "imu.hpp"
 
 TestIMU* TestIMU::GetInstance()
 {
