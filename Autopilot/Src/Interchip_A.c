@@ -6,7 +6,7 @@ static Interchip_AtoS_Packet *dataTX;
 static Interchip_StoA_Packet *dataRX;
 osMutexId Interchip_MutexHandle;
 
-void Interchip_Run(void const *argument) {
+void Interchip_Run() {
   dataRX = malloc(sizeof(Interchip_StoA_Packet));
   dataTX = malloc(sizeof(Interchip_AtoS_Packet));
 
@@ -37,7 +37,7 @@ int16_t *Interchip_GetPWM(void)
 }
 
 
-void Interchip_SetPWM(int16_t data[]) {
+void Interchip_SetPWM(int16_t *data) {
   osMutexWait(Interchip_MutexHandle, 0);
   for (uint8_t i = 0; i < 12; i++) {
     dataTX->PWM[i] = data[i];

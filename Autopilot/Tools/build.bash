@@ -71,6 +71,15 @@ if [[ $RUN_UNIT_TESTS == true ]]; then
     echo ""
     echo ""
 
+    die() {
+        echo ""
+        echo "Unit test build FAILED!"
+        exit $1
+    }
+
+    # If any command should return error, go to die
+    trap 'die $?' ERR
+
     BUILD_DIR="testBuild"
 
     if [[ $CLEAN == true ]]; then

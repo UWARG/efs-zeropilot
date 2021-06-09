@@ -10,6 +10,15 @@
 #include "altimeter.hpp"
 #include "airspeed.hpp"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    #include "CControlFunctions.h"
+#ifdef __cplusplus
+}
+#endif
+
 typedef struct {
     float roll, pitch, yaw; //rad
     float rollRate, pitchRate, yawRate; //rad/s
@@ -43,10 +52,11 @@ void SF_Init(void)
 {
 #ifdef TARGET_BUILD
 
-  imuObj = ICM20602::GetInstance();
+  imuObj = &BMX160::getInstance();
   gpsObj = NEOM8::GetInstance();
-  altimeterObj = MS5637::GetInstance();
-  airspeedObj = dummyairspeed::GetInstance();
+  //Waiting for definitions
+  //altimeterObj = MS5637::GetInstance();
+  //airspeedObj = dummyairspeed::GetInstance();
 
 #elif defined(TEST_BUILD)
 
@@ -412,7 +422,6 @@ IMU_Data_t SF_GetRawIMU()
     imuOutput.magx = imuData.magx;
     imuOutput.magy = imuData.magy;
     imuOutput.magz = imuData.magz;
-    imuOutput.utcTime = imuData.utcTime;
     imuOutput.isDataNew = imuData.isDataNew;
     imuOutput.sensorStatus = imuData.sensorStatus;
 
