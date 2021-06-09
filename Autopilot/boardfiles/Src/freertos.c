@@ -91,7 +91,7 @@ static const int PERIOD_ATTITUDEMANAGER_MS = 100;
 static const int PERIOD_PATHMANAGER_MS = 100; 
 static const int PERIOD_TELEMETRY_MS = 100; 
 static const int PERIOD_SENSORFUSION_MS = 200; 
-static const int PERIOD_INTERCHIP_MS = 100;
+static const int PERIOD_INTERCHIP_MS = 20;
 
 static bool catastrophicFailure = false;
 
@@ -256,6 +256,7 @@ void telemetryRunExecute(void const * argument)
     if (!status) {
       catastrophicFailure = true;
     }
+    HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
   }
   
   /* USER CODE END StartTelemetryRun */
@@ -272,7 +273,6 @@ void sensorFusionExecute(void const * argument) {
     if (err.errorCode == -1) {
       catastrophicFailure = true;
     }
-    HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
 
   }
   
@@ -281,8 +281,10 @@ void sensorFusionExecute(void const * argument) {
 
 void interchipRunExecute(void const * argument) {
   while (1) {
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, PERIOD_INTERCHIP_MS);
     if (!catastrophicFailure) {
-      Interchip_Run(argument);
+      Interchip_Run();
     }
   }  
 }
