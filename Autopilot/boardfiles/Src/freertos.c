@@ -3,6 +3,7 @@
   ******************************************************************************
   * File Name          : freertos.c
   * Description        : Code for freertos applications
+  * Authors            : Anthony Berbari, Sahil Kale, Dhruv Upadhyay
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -50,12 +51,18 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "FreeRTOS.h"
+#include "Interchip_A.h"
+#include "portmacro.h"
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "attitudeManagerInterface.h"
+#include "PathManagerInterface.h"
+#include "telemetryManagerInterface.h"
+#include "sensorFusionInterface.hpp"
 
 /* USER CODE END Includes */
 
@@ -77,19 +84,35 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 
-/* USER CODE END Variables */
-osThreadId defaultTaskHandle;
+// The period for which each of the threads are called
+
+// TODO: Confirm the period at which each of the threads are to be run and update them
+static const int PERIOD_ATTITUDEMANAGER_MS = 100;
+static const int PERIOD_PATHMANAGER_MS = 100; 
+static const int PERIOD_TELEMETRY_MS = 100; 
+static const int PERIOD_SENSORFUSION_MS = 200; 
+static const int PERIOD_INTERCHIP_MS = 20;
+
+static bool catastrophicFailure = false;
+
+/* USER CODE END Variables */ 
+osThreadId attitudeManagerHandle;
 osThreadId InterchipHandle;
-osThreadId AttitudeHandle;
+osThreadId pathManagerHandle;
+osThreadId telemetryRunHandle;
+osThreadId sensorFusionHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void const * argument);
-extern void Interchip_Run(void const * argument);
-extern void Attitude_Run(void const * argument);
+void attitudeManagerExecute(void const * argument);
+extern void Interchip_Run();
+void pathManagerExecute(void const * argument);
+void telemetryRunExecute(void const * argument);
+void sensorFusionExecute(void const * argument);
+void interchipRunExecute(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -136,17 +159,28 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* definition and creation of attitudeManager */
+  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 128);
+  attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of Interchip */
-  osThreadDef(Interchip, Interchip_Run, osPriorityNormal, 0, 128);
-  InterchipHandle = osThreadCreate(osThread(Interchip), NULL);
+  osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 0, 128);
+  InterchipHandle = osThreadCreate(osThread(interchip), NULL);
 
-  /* definition and creation of Attitude */
-  osThreadDef(Attitude, Attitude_Run, osPriorityNormal, 0, 128);
-  AttitudeHandle = osThreadCreate(osThread(Attitude), NULL);
+  /* definition and creation of pathManager */
+  osThreadDef(pathManager, pathManagerExecute, osPriorityNormal, 0, 128);
+  pathManagerHandle = osThreadCreate(osThread(pathManager), NULL);
+
+  /* definition and creation of telemetryRun */
+  osThreadDef(telemetryRun, telemetryRunExecute, osPriorityNormal, 0, 128);
+  telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
+
+   /* definition and creation of sensorFusionRun */
+  osThreadDef(sensorFusionRun, sensorFusionExecute, osPriorityNormal, 0, 128);
+  sensorFusionHandle = osThreadCreate(osThread(sensorFusionRun), NULL);
+
+
+  /* definition and creation of sensorFusionRun */
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -154,22 +188,105 @@ void MX_FREERTOS_Init(void) {
 
 }
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_attitudeManagerExecute */
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the attitudeManager thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+/* USER CODE END Header_attitudeManagerExecute */
+void attitudeManagerExecute(void const * argument)
 {
-  /* USER CODE BEGIN StartDefaultTask */
+  /* USER CODE BEGIN attitudeManagerExecute */
   /* Infinite loop */
-  for(;;)
+  while(1)
   {
-    osDelay(1);
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, PERIOD_ATTITUDEMANAGER_MS);
+    bool status = AttitudeManagerInterfaceExecute();
+    if (!status) {
+      catastrophicFailure = true;
+    }
+    HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
   }
-  /* USER CODE END StartDefaultTask */
+  /* USER CODE END attitudeManagerExecute */
+}
+
+/* USER CODE BEGIN Header_pathManagerExecute */
+/**
+* @brief Function implementing the pathManager thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_pathManagerExecute */
+void pathManagerExecute(void const * argument)
+{
+  /* USER CODE BEGIN pathManagerExecute */
+  /* Infinite loop */
+  while(1)
+  {
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, PERIOD_PATHMANAGER_MS);
+    bool status = PathManagerInterfaceExecute();
+    if (!status) {
+      catastrophicFailure = true;
+    }
+    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+  }
+  
+  /* USER CODE END pathManagerExecute */
+}
+
+/* USER CODE BEGIN Header_StartTelemetryRun */
+/**
+* @brief Function implementing the telemetryRun thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTelemetryRun */
+void telemetryRunExecute(void const * argument)
+{
+  /* USER CODE BEGIN StartTelemetryRun */
+  /* Infinite loop */
+  while(1)
+  {
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, PERIOD_TELEMETRY_MS);
+    bool status = TelemetryManagerInterfaceExecute();
+    if (!status) {
+      catastrophicFailure = true;
+    }
+    HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+  }
+  
+  /* USER CODE END StartTelemetryRun */
+}
+
+void sensorFusionExecute(void const * argument) {
+  /* USER CODE BEGIN SensorFusionExecute */
+  /* Infinite loop */
+
+  while (1) {
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, PERIOD_SENSORFUSION_MS);
+    SFError_t err = SensorFusionInterfaceExecute();
+    if (err.errorCode == -1) {
+      catastrophicFailure = true;
+    }
+
+  }
+  
+  /* USER CODE END SensorFusionExecute */
+}
+
+void interchipRunExecute(void const * argument) {
+  while (1) {
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, PERIOD_INTERCHIP_MS);
+    if (!catastrophicFailure) {
+      Interchip_Run();
+    }
+  }  
 }
 
 /* Private application code --------------------------------------------------*/

@@ -1,5 +1,6 @@
 #include "SendInstructionsToSafety.hpp"
 #include "Interchip_A.h"
+#include <cstdint>
 #define PWM_CHANNELS 12
 
 static int16_t pwmPercentages[PWM_CHANNELS] = {0};

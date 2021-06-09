@@ -86,4 +86,36 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMU_Data_t *imudata, Airspe
     return SFError;
 }
 
+void SF_Init() {
 
+}
+
+SFError_t SF_GenerateNewResult() {
+    SFError_t toReturn;
+    return toReturn;
+}
+
+SFError_t SF_GetResult(SFOutput_t *SFoutput) {
+    SFError_t toReturn;
+    return toReturn; 
+}
+
+IMU_Data_t SF_GetRawIMU(){
+    IMU_Data_t toReturn;
+    return toReturn;
+}
+
+Airspeed_Data_t SF_GetRawAirspeed() {
+    Airspeed_Data_t toReturn;
+    return toReturn;
+}
+
+Gps_Data_t SF_GetRawGPS() {
+    Gps_Data_t toReturn;
+    return toReturn;
+}
+
+Altimeter_Data_t SF_GetRawAltimeter() {
+    Altimeter_Data_t toReturn;
+    return toReturn;
+}
