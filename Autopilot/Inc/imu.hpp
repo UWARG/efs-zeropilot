@@ -84,4 +84,18 @@ class BMX160: public IMU{
 
 };
 
+#ifdef UNIT_TESTING
+
+class TestIMU : public IMU {
+    public:
+        static TestIMU* GetInstance();
+
+        void Begin_Measuring();
+
+        void GetResult(IMUData_t &Data);
+
+};
+
+#endif
+
 #endif

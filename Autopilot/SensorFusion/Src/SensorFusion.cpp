@@ -1,6 +1,8 @@
 /*
-* Sensor Fusion Algorithms - uses Madgwick/Kalmann/etc. tbd PLEASE EDIT THIS AND ADD MORE INFO :))))))))) 
-* Author: Lucy Gong, Dhruv Rawat
+* Sensor Fusion Algorithms
+* Madgwick is used for estimating attitude.
+* A custom Kalmann filter is used along with the estimated attitude to estimate position.
+* Author: Lucy Gong, Dhruv Rawat, Anthony Bertnyk
 */
 #include "SensorFusion.hpp"
 #include "MadgwickAHRS.h"
@@ -58,12 +60,11 @@ void SF_Init(void)
   //altimeterObj = MS5637::GetInstance();
   //airspeedObj = dummyairspeed::GetInstance();
 
-#elif defined(TEST_BUILD)
-
+#elif defined(UNIT_TESTING)
   imuObj = TestIMU::GetInstance();
   gpsObj = TestGps::GetInstance();
-  altimeterObj = TestAltimeter::GetInstance();
-  airspeedObj = TestAirspeed::GetInstance();
+  //altimeterObj = TestAltimeter::GetInstance();
+  //airspeedObj = TestAirspeed::GetInstance();
 #endif
 }
 
@@ -89,9 +90,11 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspee
     float imu_RollRate = 0;
     float imu_PitchRate = 0;
     float imu_YawRate = 0;
+    
+    //Airspeed checks are temporarily disabled until an airspeed driver is implemented
 
     //Abort if both sensors are busy or failed data collection
-    if(imudata->sensorStatus != 0 || airspeeddata->sensorStatus != 0)
+    if(imudata->sensorStatus != 0 ) // || airspeeddata->sensorStatus != 0)
     {  
 
         /************************************************************************************************
@@ -104,7 +107,7 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspee
     }
 
     //Check if data is old
-    if(!imudata->isDataNew || !airspeeddata->isDataNew){
+    if(!imudata->isDataNew){ // || !airspeeddata->isDataNew){
         SFError.errorCode = 1;
     }
 
@@ -364,8 +367,6 @@ SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterd
     return SFError;
 }
 
-#include <iostream>
-
 SFError_t SF_GenerateNewResult()
 {
     SFError_t SFError;
@@ -375,10 +376,10 @@ SFError_t SF_GenerateNewResult()
     GpsData_t GpsData;
     AltimeterData_t altimeterData;
     airspeedData_t airspeedData;
-    //imuData = imuObj->getResult();
-    //GpsData = gpsObj->getResult();
-    //altimeterData = altimeterObj->getResult();
-    //airspeedData = airspeedObj->getResult();
+    imuObj->GetResult(imuData);
+    gpsObj->GetResult(&GpsData);
+    //altimeterObj->GetResult(altimeterData);
+    //airspeedObj->GetResult(airspeedData);
 
     SFAttitudeOutput_t attitudeOutput;
     SFPositionOutput_t positionOutput;
@@ -401,7 +402,7 @@ SFError_t SF_GetResult(SFOutput_t *output)
     SFError_t SFError;
     SFError.errorCode = 0;
 
-    output = &SFOutput;
+    *output = SFOutput;
 
     return SFError;
 }
