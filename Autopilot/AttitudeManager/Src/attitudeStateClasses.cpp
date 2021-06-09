@@ -30,7 +30,6 @@ attitudeState& fetchInstructionsMode::getInstance()
     return singleton;
 }
 
-
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
 {
     SFError_t _SFError = SF_GetResult(&_SFOutput);
@@ -43,7 +42,6 @@ attitudeState& sensorFusionMode::getInstance()
     static sensorFusionMode singleton;
     return singleton;
 }
-
 
 void PIDloopMode::execute(attitudeManager* attitudeMgr)
 {
