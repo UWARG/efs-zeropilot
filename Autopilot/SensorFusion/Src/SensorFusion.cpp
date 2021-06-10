@@ -27,7 +27,7 @@ typedef struct {
     float airspeed; //m/s
 } SFAttitudeOutput_t ;
 
-struct SFPositionOutput_t{
+struct SFPathOutput_t{
     float altitude; //m
     float rateOfClimb; //m/s
     long double latitude; //Decimal degrees
@@ -151,14 +151,14 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspee
     return SFError;
 }
 
-SFError_t SF_GetPosition(SFPositionOutput_t *Output, AltimeterData_t *altimeterdata, GpsData_t *gpsdata, IMUData_t *imudata, SFAttitudeOutput_t *attitudedata,  SFIterationData_t *iterdata)
+SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata, GpsData_t *gpsdata, IMUData_t *imudata, SFAttitudeOutput_t *attitudedata,  SFIterationData_t *iterdata)
 {
 
     //Error output
     SFError_t SFError;
     SFError.errorCode = 0;
 
-    float freq = 512;
+    float freq = SF_FREQ;
     float dt = 1/freq;
 
     /* Time Update */
@@ -382,12 +382,12 @@ SFError_t SF_GenerateNewResult()
     //airspeedObj->GetResult(airspeedData);
 
     SFAttitudeOutput_t attitudeOutput;
-    SFPositionOutput_t positionOutput;
+    SFPathOutput_t pathOutput;
 
     SFError = SF_GetAttitude(&attitudeOutput, &imuData, &airspeedData);
     if(SFError.errorCode != 0) return SFError;
 
-    SFError = SF_GetPosition(&positionOutput, &altimeterData, &GpsData, &imuData, &attitudeOutput, &iterData);
+    SFError = SF_GetPosition(&pathOutput, &altimeterData, &GpsData, &imuData, &attitudeOutput, &iterData);
     if(SFError.errorCode != 0) return SFError;
 
     SFOutput.pitch = attitudeOutput.pitch;

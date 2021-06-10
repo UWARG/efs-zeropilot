@@ -168,8 +168,8 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/tran.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/inv.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/lup.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/TestIMU.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/TestGps.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_IMU.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_GPS.cpp
   )
 
   set(ATTITUDE_MANAGER_MODULES_UNIT_TEST_SOURCES
@@ -240,23 +240,23 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
 #########  SensorFusion manager
 
-set(SENSORFUSION_MODULES_SOURCES
+set(SENSOR_FUSION_MODULES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Src/SensorFusion.cpp
   )  
 
-  set(SENSORFUSION_MODULES_UNIT_TEST_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/Test_SF.cpp
+  set(SENSOR_FUSION_MODULES_UNIT_TEST_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_SF.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MadgwickAHRS.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/mul.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/tran.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/inv.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/lup.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/TestIMU.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/TestGps.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_IMU.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_GPS.cpp
   )
 
-  add_executable(sensorfusionModules ${SENSORFUSION_MODULES_SOURCES} ${SENSORFUSION_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
-  target_link_libraries(sensorfusionModules ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
+  add_executable(sensorFusionModules ${SENSOR_FUSION_MODULES_SOURCES} ${SENSOR_FUSION_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
+  target_link_libraries(sensorFusionModules ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
 
 ######### Vector Class
 

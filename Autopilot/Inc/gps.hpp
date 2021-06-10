@@ -135,8 +135,7 @@ class NEOM8 : public Gps
 
 class TestGps : public Gps {
     public:
-        static TestGps* GetInstance(){
-}
+        static TestGps* GetInstance(){}
 
         void Begin_Measuring();
         void GetResult(GpsData_t *Data);
