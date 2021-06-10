@@ -117,9 +117,14 @@ telemetryState& readFromPathMode::getInstance()
 
 void analyzeDataMode::execute(telemetryManager* telemetryMgr)
 {
-    //set the dataValid here
-    //not sure how to validate yet, guessing void function with dataValid flag to throw
-
+    
+    telemetryMgr->dataValid = 1;
+    telemetryMgr->dataValid &= sizeof(&_PMData) == 19;
+    for(int i = 0; i < sizeof(&_PMData); i++) {
+        telemetryMgr->dataValid &= &_PMData[i] != NULL;
+    }
+    
+    
     if(telemetryMgr ->dataValid)
     {
         //check for dataError, set it
