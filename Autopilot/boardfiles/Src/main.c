@@ -149,6 +149,7 @@ int main(void)
   MX_TIM11_Init();
   MX_CRC_Init();
   MX_I2C2_Init();
+  MX_SPI6_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
