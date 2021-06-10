@@ -44,7 +44,7 @@ uint16_t Interchip_GetAutonomousLevel(void) {
 }
 
 // called during the SPI TxRx interrupt
-void InterchipTxRxInterrupt() {
+void InterchipTxRxCallback() {
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 	dataNew = true;
 }

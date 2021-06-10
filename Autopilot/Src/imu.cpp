@@ -1,5 +1,4 @@
 #include "imu.hpp"
-#include "Interchip_A.h"
 
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_spi.h"
@@ -215,19 +214,10 @@ void BMX160::Bmx160ReadReg(uint8_t const regAddr, uint8_t *pData, uint8_t len)
  * Interrupt Callbacks and static helpers functions
  **********************************************************************************************************************/
 
-void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
-{
-    //(void) hspi; // tells the compiler "hey! we're not gonna use this garbage" and saves us an unused argument warning.
-
-    if(hspi == &hspi1) {
-        DeassertSlaveSelect();
+void ImuTxRxCallback() {
+    DeassertSlaveSelect();
 
         dataIsNew = true;
-    } else {
-        InterchipTxRxInterrupt();
-    }
-
-    
 }
 
 static void AssertSlaveSelect(void)

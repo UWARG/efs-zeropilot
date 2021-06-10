@@ -84,4 +84,6 @@ class BMX160: public IMU{
 
 };
 
+void ImuTxRxCallback();
+
 #endif
