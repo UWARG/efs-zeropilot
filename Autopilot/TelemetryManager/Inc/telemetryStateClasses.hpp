@@ -5,6 +5,10 @@
 #pragma once
 #include "telemetryStateManager.hpp"
 #include "telemetryManager.hpp"
+#include "xbee.hpp"
+#include "CommsWithPathManager.hpp"
+#include "CommsWithTelemetry.hpp"
+#include "TelemPathInterface.hpp"
 
 //each state's classes
 class initialMode: public telemetryState

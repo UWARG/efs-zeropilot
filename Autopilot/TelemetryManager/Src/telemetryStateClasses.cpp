@@ -3,11 +3,11 @@
 * Implementing Telem Comms: Gordon Fountain
 */
 
-#include "TelemPathInterface.hpp"
 #include "telemetryStateClasses.hpp"
-#include "xbee.hpp"
-#include "CommsWithPathManager.hpp"
-#include "CommsWithTelemetry.hpp"
+
+
+Telemetry_PIGO_t commsWithPathManager::_PMData;
+POGI xbee::_GSData;
 
 void initialMode::execute(telemetryManager* telemetryMgr)
 {
@@ -30,7 +30,7 @@ telemetryState& initialMode::getInstance()
 void obtainDataMode::execute(telemetryManager* telemetryMgr)
 {
     //obtain data from ground
-    Receive_GS_Data(); //Receives data in MavLink form from the XBEE
+    //Receive_GS_Data(); //Receives data in MavLink form from the XBEE
 
     //State change:
     if(telemetryMgr -> fatalFail)
@@ -74,7 +74,7 @@ telemetryState& decodeDataMode::getInstance()
 void passToPathMode::execute(telemetryManager* telemetryMgr)
 {
     //pass decoded data to path manager
-    SendCommandsForPM(data); //Send it off to the inbox for PathManager
+    SendCommandsForPM(_PMData); //Send it off to the inbox for PathManager
     
     //State change:
     if(telemetryMgr -> fatalFail)
@@ -96,7 +96,7 @@ telemetryState& passToPathMode::getInstance()
 void readFromPathMode::execute(telemetryManager* telemetryMgr)
 {
     //read data out of path manager
-    GetTelemData(data);
+    //GetTelemData(data);
 
     //State change:
     if(telemetryMgr -> fatalFail)
@@ -167,7 +167,7 @@ void sendDataMode::execute(telemetryManager* telemetryMgr)
 {
     //send data to ground
     //Not sure if this state is needed. From what I understand FREERTOS is calling the function to send down data.
-    Send_GS_Data();
+    Send_GS_Data(&_GSData);
 
     //State change:
     if(telemetryMgr -> fatalFail)
