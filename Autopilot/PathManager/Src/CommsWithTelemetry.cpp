@@ -10,6 +10,10 @@ extern "C"
 #include "cmsis_os.h"
 }
 
+//Set up a mail queue for sending commands to the attitude manager
+osMailQDef(commandsMailQ, PATH_TELEM_MAIL_Q_SIZE, dataOut);
+osMailQId commandsMailQID;
+
 void CommWithTelemInit()
 {
     telemDataMailQ = osMailCreate(osMailQ(telemDataMailQ), NULL);

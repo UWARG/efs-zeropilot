@@ -10,6 +10,9 @@ extern "C"
 #include "cmsis_os.h"
 }
 
+osMailQDef(commandsMailQ, PATH_TELEM_MAIL_Q_SIZE, commandsOut);
+osMailQId commandsMailQID;
+
 void TelemCommWithPMInit()
 {
     commandsMailQ = osMailCreate(osMailQ(commandsMailQ), NULL);
