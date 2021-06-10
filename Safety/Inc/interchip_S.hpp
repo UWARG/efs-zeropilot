@@ -1,16 +1,20 @@
-#if 0
-#include "stm32f0xx_hal.h"
-#include "../../Common/Inc/Interchip.h"
-#include "../boardfiles/Inc/spi.h"
+#ifndef INC_INTERCHIP_HPP_
+#define INC_INTERCHIP_HPP_
 
-#ifndef INTERCHIP_S_HPP
-#define INTERCHIP_S_HPP
+typedef struct {
+	int16_t PWM[12];
+	uint16_t safetyLevel;
+} Interchip_Packet;    //Safety to Autopilot packet
 
-int16_t Interchip_Init(Interchip_StoA_Packet*, Interchip_AtoS_Packet*);
-int16_t Interchip_TxRx(SPI_HandleTypeDef *hspi);
+void sendReceiveData();
 
-int16_t *Interchip_GetPWM(void);
-void Interchip_SetAutonomousLevel(uint16_t data);
+int16_t getPWM(int8_t index);
 
-#endif
-#endif
+uint16_t getSafetyLevel();
+void setSafetyLevel(uint16_t level);
+
+bool isDataNew();
+
+void testSetup();
+
+#endif /* INC_INTERCHIP_HPP_ */
