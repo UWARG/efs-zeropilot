@@ -167,7 +167,7 @@ void sendDataMode::execute(telemetryManager* telemetryMgr)
 {
     //send data to ground
     //Not sure if this state is needed. From what I understand FREERTOS is calling the function to send down data.
-    Send_GS_Data(&_GSData);
+    //Send_GS_Data(&_GSData);
 
     //State change:
     if(telemetryMgr -> fatalFail)
