@@ -5,7 +5,7 @@ static volatile Interchip_Packet rxData;
 static volatile Interchip_Packet txData;
 static volatile bool dataNew;
 
-// Get the pwm signal that has been .
+// Get the pwm signal that has been recieved.
 int16_t getPWM(int8_t index) {
 	dataNew = false;
 	return rxData.PWM[index];
@@ -21,14 +21,18 @@ void setSafetyLevel(uint16_t level) {
 	txData.safetyLevel = level;
 }
 
+// return whether the data is new.
 bool isDataNew() {
 	return dataNew;
 }
 
+// Starts interchip interrupt. Call this once, not in a loop, each interchip callback
+// sets up another interrupt.
 void sendReceiveData() {
 	HAL_SPI_TransmitReceive_IT(&hspi1,(uint8_t *)&txData,(uint8_t *)&rxData, sizeof(Interchip_Packet));
 }
 
+// used to populate the interchip packet with fake data.
 void testSetup() {
 	txData.PWM[0] = 1;
 	txData.PWM[1] = 2;
@@ -45,7 +49,7 @@ void testSetup() {
 	txData.safetyLevel = 13; 
 }
 
-
+// spi callback that starts up another interrupt.
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef* hspi) {
 	// Start Listening after the previous exchange.
 	HAL_SPI_TransmitReceive_IT(&hspi1,(uint8_t *)&txData,(uint8_t *)&rxData, sizeof(Interchip_Packet));

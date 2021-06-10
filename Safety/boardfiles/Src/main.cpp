@@ -163,7 +163,7 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
 
-  testSetup();
+  //testSetup();
 
 
   // start the IC in interrupt mode

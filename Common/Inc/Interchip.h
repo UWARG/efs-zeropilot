@@ -1,6 +1,5 @@
 /*
 * Interchip packets
-* Packets should be a multiple of 16 bits
 */
 #ifndef INTERCHIP_H
 #define INTERCHIP_H
