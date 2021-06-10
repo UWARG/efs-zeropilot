@@ -3,6 +3,7 @@
 */
 
 #pragma once
+
 #include "telemetryStateManager.hpp"
 #include "telemetryManager.hpp"
 #include "xbee.hpp"

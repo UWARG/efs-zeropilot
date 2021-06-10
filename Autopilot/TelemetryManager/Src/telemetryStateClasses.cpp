@@ -6,8 +6,8 @@
 #include "telemetryStateClasses.hpp"
 
 
-Telemetry_PIGO_t commsWithPathManager::_PMData;
-POGI xbee::_GSData;
+Telemetry_PIGO_t _PMData;
+POGI GSData;
 
 void initialMode::execute(telemetryManager* telemetryMgr)
 {
