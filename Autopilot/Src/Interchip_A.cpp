@@ -6,17 +6,15 @@ static volatile Interchip_Packet rxData;
 static volatile Interchip_Packet txData;
 static volatile bool dataNew;
 
+// freertos run function
 void Interchip_Run() {
-  HAL_GPIO_WritePin(GPIOG, GPIO_PIN_0, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-	HAL_StatusTypeDef result = HAL_SPI_TransmitReceive_IT(&hspi6,(uint8_t *)&txData,(uint8_t *)&rxData, sizeof(Interchip_Packet));
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+	HAL_StatusTypeDef result = HAL_SPI_TransmitReceive_IT(&hspi6,(uint8_t *)&txData,(uint8_t *)&rxData, 26);
 }
 
 void Interchip_Init() {
-
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOG, GPIO_PIN_0, GPIO_PIN_SET);
-
+  // the rest of this program is just for like,
   txData.safetyLevel = 14;
   txData.PWM[0] = 15;
 	txData.PWM[1] = 16;
@@ -32,35 +30,32 @@ void Interchip_Init() {
 	txData.PWM[11] = 26;
 }
 
-// Public Functions to get and set data
 
-int16_t* Interchip_GetPWM(void) 
-{ 
-  return txData.PWM; 
+// Sets a PWM channel
+void Interchip_SetPWM(int index,int data) {
+	HAL_GPIO_TogglePin(LED1_GPIO_Port,LED1_Pin);
+	txData.PWM[index] = (int16_t) data;
 }
 
-
-void Interchip_SetPWM(int16_t *data) {
-  txData.PWM = data;
-}
-
-
+// returns the safetyLevel
 uint16_t Interchip_GetAutonomousLevel(void) {
   dataNew = false;
   return rxData.safetyLevel; 
 }
 
+// set the safetyLevel
 void Interchip_SetAutonomousLevel(uint16_t data) {
   //this shouldnt exist but it was defined so I'll support it
   rxData.safetyLevel = data;
 }
 
+// called during the SPI TxRx interrupt
 void InterchipTxRxInterrupt() {
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOG, GPIO_PIN_0, GPIO_PIN_RESET);
 	dataNew = true;
 }
 
+// returns the dataNew variables state
 uint8_t InterchipIsDataNew() {
 	if (dataNew) {
 		return 1;

@@ -22,7 +22,7 @@ SendToSafety_error_t SendToSafety_Execute(int channel, int percent)
     //TODO: Add in something that can update the error code if required
     //THIS IS TOP LEVEL PRIORITY ONCE INTERCHIP IS WRITTEN!!
     pwmPercentages[channel] = percent;
-
-    Interchip_SetPWM(pwmPercentages);
+    Interchip_SetPWM(channel, percent);
+    
     return error;
 }

@@ -10,16 +10,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct {
-	uint16_t safetyLevel;
-	int16_t* PWM;
-} Interchip_Packet;   
+ 
 
 void Interchip_Init();
 void Interchip_Run();
-int16_t *Interchip_GetPWM(void);
-void Interchip_SetPWM(int16_t *data);
+void Interchip_SetPWM(int index,int data);
 uint16_t Interchip_GetAutonomousLevel(void);
 void Interchip_SetAutonomousLevel(uint16_t data);
 void InterchipTxRxInterrupt();
