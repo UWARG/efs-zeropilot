@@ -74,7 +74,7 @@ telemetryState& decodeDataMode::getInstance()
 void passToPathMode::execute(telemetryManager* telemetryMgr)
 {
     //pass decoded data to path manager
-    SendCommandsForPM(_PMData); //Send it off to the inbox for PathManager
+    SendCommandsForPM(&_PMData); //Send it off to the inbox for PathManager
     
     //State change:
     if(telemetryMgr -> fatalFail)
