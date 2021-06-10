@@ -120,9 +120,25 @@ void analyzeDataMode::execute(telemetryManager* telemetryMgr)
     
     telemetryMgr->dataValid = 1;
     telemetryMgr->dataValid &= sizeof(&_PMData) == 19;
-    for(int i = 0; i < sizeof(&_PMData); i++) {
-        telemetryMgr->dataValid &= &_PMData[i] != NULL;
-    }
+    telemetryMgr->dataValid &= &_PMData.beginLanding != NULL;
+    telemetryMgr->dataValid &= &_PMData.beginTakeoff != NULL;
+    telemetryMgr->dataValid &= &_PMData.holdingAltitude != NULL;
+    telemetryMgr->dataValid &= &_PMData.holdingTurnDirection != NULL;
+    telemetryMgr->dataValid &= &_PMData.holdingTurnRadius != NULL;
+    telemetryMgr->dataValid &= &_PMData.homebase != NULL;
+    telemetryMgr->dataValid &= &_PMData.initializingHomeBase != NULL;
+    telemetryMgr->dataValid &= &_PMData.modifyId != NULL;
+    telemetryMgr->dataValid &= &_PMData.nextId != NULL;
+    telemetryMgr->dataValid &= &_PMData.numWaypoints != NULL;
+    telemetryMgr->dataValid &= &_PMData.prevId != NULL;
+    telemetryMgr->dataValid &= &_PMData.stoppingAltitude != NULL;
+    telemetryMgr->dataValid &= &_PMData.stoppingDirectionHeading != NULL;
+    telemetryMgr->dataValid &= &_PMData.stoppingLatitude != NULL;
+    telemetryMgr->dataValid &= &_PMData.stoppingLongitude != NULL;
+    telemetryMgr->dataValid &= &_PMData.takeoffDirectionHeading != NULL;
+    telemetryMgr->dataValid &= &_PMData.waypointModifyFlightPathCommand != NULL;
+    telemetryMgr->dataValid &= &_PMData.waypointNextDirectionsCommand != NULL;
+    telemetryMgr->dataValid &= &_PMData.waypoints != NULL;
     
     
     if(telemetryMgr ->dataValid)
