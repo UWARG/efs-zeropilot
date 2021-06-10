@@ -1,8 +1,0 @@
-Interchip.cpp:16:6:bool setPWM(int8_t, int16_t)	16	static
-Interchip.cpp:23:9:int16_t getPWM(int8_t)	16	static
-Interchip.cpp:28:10:uint16_t getSafetyLevel()	4	static
-Interchip.cpp:33:6:bool isDataNew()	4	static
-Interchip.cpp:37:6:bool sendRecieveData()	16	static
-Interchip.cpp:69:6:void init()	8	static
-Interchip.cpp:75:6:void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef*)	16	static
-Interchip.cpp:84:6:void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef*)	16	static
