@@ -175,7 +175,7 @@ int main(void)
   pwm.setup();
   safety_controller_init();
 
-  sendReceiveData();
+  interchipInit();
 
 
   /* USER CODE END 2 */

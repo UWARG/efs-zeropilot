@@ -3,7 +3,7 @@
 #define INC_INTERCHIP_HPP_
 
 
-void sendReceiveData();
+void interchipInit();
 
 int16_t getPWM(int8_t index);
 

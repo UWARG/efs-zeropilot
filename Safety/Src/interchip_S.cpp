@@ -28,7 +28,7 @@ bool isDataNew() {
 
 // Starts interchip interrupt. Call this once, not in a loop, each interchip callback
 // sets up another interrupt.
-void sendReceiveData() {
+void interchipInit() {
 	HAL_SPI_TransmitReceive_IT(&hspi1,(uint8_t *)&txData,(uint8_t *)&rxData, sizeof(Interchip_Packet));
 }
 
