@@ -43,12 +43,6 @@ uint16_t Interchip_GetAutonomousLevel(void) {
   return rxData.safetyLevel; 
 }
 
-// set the safetyLevel
-void Interchip_SetAutonomousLevel(uint16_t data) {
-  //this shouldnt exist but it was defined so I'll support it
-  rxData.safetyLevel = data;
-}
-
 // called during the SPI TxRx interrupt
 void InterchipTxRxInterrupt() {
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);

@@ -16,7 +16,6 @@ void Interchip_Init();
 void Interchip_Run();
 void Interchip_SetPWM(int index,int data);
 uint16_t Interchip_GetAutonomousLevel(void);
-void Interchip_SetAutonomousLevel(uint16_t data);
 void InterchipTxRxInterrupt();
 uint8_t InterchipIsDataNew();
 
