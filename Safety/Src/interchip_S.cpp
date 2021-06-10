@@ -1,5 +1,5 @@
 #include "spi.h"
-#include "Interchip_S.hpp"
+#include "interchip_S.hpp"
 
 static volatile Interchip_Packet rxData;
 static volatile Interchip_Packet txData;
