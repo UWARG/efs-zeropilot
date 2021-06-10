@@ -175,6 +175,7 @@ int main(void)
   pwm.setup();
   safety_controller_init();
 
+  testSetup();
   interchipInit();
 
 

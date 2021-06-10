@@ -5,7 +5,7 @@
 
 void interchipInit();
 
-int16_t getPWM(int8_t index);
+volatile int16_t* getPWM();
 
 uint16_t getSafetyLevel();
 void setSafetyLevel(uint16_t level);

@@ -6,9 +6,9 @@ static volatile Interchip_Packet txData;
 static volatile bool dataNew;
 
 // Get the pwm signal that has been recieved.
-int16_t getPWM(int8_t index) {
+volatile int16_t* getPWM() {
 	dataNew = false;
-	return rxData.PWM[index];
+	return rxData.PWM;
 }
 
 // Get the safety level that is currently being sent out.
