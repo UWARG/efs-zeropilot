@@ -120,25 +120,25 @@ void analyzeDataMode::execute(telemetryManager* telemetryMgr)
     
     telemetryMgr->dataValid = 1;
     telemetryMgr->dataValid &= sizeof(&_PMData) == 19;
-    telemetryMgr->dataValid &= &_PMData.beginLanding != NULL;
-    telemetryMgr->dataValid &= &_PMData.beginTakeoff != NULL;
-    telemetryMgr->dataValid &= &_PMData.holdingAltitude != NULL;
-    telemetryMgr->dataValid &= &_PMData.holdingTurnDirection != NULL;
-    telemetryMgr->dataValid &= &_PMData.holdingTurnRadius != NULL;
-    telemetryMgr->dataValid &= &_PMData.homebase != NULL;
-    telemetryMgr->dataValid &= &_PMData.initializingHomeBase != NULL;
-    telemetryMgr->dataValid &= &_PMData.modifyId != NULL;
-    telemetryMgr->dataValid &= &_PMData.nextId != NULL;
-    telemetryMgr->dataValid &= &_PMData.numWaypoints != NULL;
-    telemetryMgr->dataValid &= &_PMData.prevId != NULL;
-    telemetryMgr->dataValid &= &_PMData.stoppingAltitude != NULL;
-    telemetryMgr->dataValid &= &_PMData.stoppingDirectionHeading != NULL;
-    telemetryMgr->dataValid &= &_PMData.stoppingLatitude != NULL;
-    telemetryMgr->dataValid &= &_PMData.stoppingLongitude != NULL;
-    telemetryMgr->dataValid &= &_PMData.takeoffDirectionHeading != NULL;
-    telemetryMgr->dataValid &= &_PMData.waypointModifyFlightPathCommand != NULL;
-    telemetryMgr->dataValid &= &_PMData.waypointNextDirectionsCommand != NULL;
-    telemetryMgr->dataValid &= &_PMData.waypoints != NULL;
+    telemetryMgr->dataValid &= &_PMData.beginLanding != nullptr;
+    telemetryMgr->dataValid &= &_PMData.beginTakeoff != nullptr;
+    telemetryMgr->dataValid &= &_PMData.holdingAltitude != nullptr;
+    telemetryMgr->dataValid &= &_PMData.holdingTurnDirection != nullptr;
+    telemetryMgr->dataValid &= &_PMData.holdingTurnRadius != nullptr;
+    telemetryMgr->dataValid &= &_PMData.homebase != nullptr;
+    telemetryMgr->dataValid &= &_PMData.initializingHomeBase != nullptr;
+    telemetryMgr->dataValid &= &_PMData.modifyId != nullptr;
+    telemetryMgr->dataValid &= &_PMData.nextId != nullptr;
+    telemetryMgr->dataValid &= &_PMData.numWaypoints != nullptr;
+    telemetryMgr->dataValid &= &_PMData.prevId != nullptr;
+    telemetryMgr->dataValid &= &_PMData.stoppingAltitude != nullptr;
+    telemetryMgr->dataValid &= &_PMData.stoppingDirectionHeading != nullptr;
+    telemetryMgr->dataValid &= &_PMData.stoppingLatitude != nullptr;
+    telemetryMgr->dataValid &= &_PMData.stoppingLongitude != nullptr;
+    telemetryMgr->dataValid &= &_PMData.takeoffDirectionHeading != nullptr;
+    telemetryMgr->dataValid &= &_PMData.waypointModifyFlightPathCommand != nullptr;
+    telemetryMgr->dataValid &= &_PMData.waypointNextDirectionsCommand != nullptr;
+    telemetryMgr->dataValid &= &_PMData.waypoints != nullptr;
     
     
     if(telemetryMgr ->dataValid)
