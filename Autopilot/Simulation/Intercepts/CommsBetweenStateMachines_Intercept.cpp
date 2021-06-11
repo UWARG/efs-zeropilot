@@ -33,7 +33,6 @@ void CommWithAMInit()
 void SendCommandsForAM(CommandsForAM *commands)
 {
 
-    commands->throttlePercent = 100;
     commands->passbyData.pitchPassby=false;
     commands->passbyData.rollPassby=false;
     commands->passbyData.throttlePassby=false;
