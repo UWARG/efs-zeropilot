@@ -13,11 +13,11 @@
 **/
 
 
-#include <cstdint>
-
 
 #ifndef AIRSPEED_HPP
 #define AIRSPEED_HPP
+
+#include <cstdint>
 
 /*
     Currently there is only one airspeed sensor used, if this is 
@@ -34,7 +34,7 @@ struct airspeedData_t
     float utcTime;          // 4 Bytes. Time in seconds since 00:00 
 };
 
-class airspeed {
+class Airspeed {
     public:
         /**
          *  Triggers interrupt for new airspeed measurement - stores 
@@ -58,7 +58,7 @@ class airspeed {
  * Derived classes
  **********************************************************************************************************************/
 
-class MPXV7002DP : public airspeed {
+class MPXV7002DP : public Airspeed {
     public:
         MPXV7002DP(const MPXV7002DP*) = delete;
         static MPXV7002DP* GetInstance();
@@ -110,28 +110,8 @@ class MPXV7002DP : public airspeed {
         
 };
 
-class dummyairspeed: public airspeed{
-    public:
-        static dummyairspeed* GetInstance(); //Adding this early so the build works
 
-        /**
-         *  Triggers interrupt for new airspeed measurement - stores 
-         *  raw data in variables and returns right away
-         * */
-        void Begin_Measuring() {}; 
 
-        /**GetResult should:
-         *  1. Transfer raw data from variables to struct
-         *  2. Update utcTime and status values in struct as well
-         *  
-         *
-         *  Potentially:
-         *  ensure that data acquired makes sense, has been
-         *  gathered recently within reason (past 10s?)
-         * */
-        void GetResult(airspeedData_t &Data) {};
-
-};
 
 #ifdef UNIT_TESTING
 #include "airspeed_Mock.hpp"
