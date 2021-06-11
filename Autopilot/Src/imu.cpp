@@ -45,7 +45,7 @@
 #define MAG_IF_3_DATA_MODE 0x02
 #define MAG_IF_2_DATA_MODE 0x4C
 #define MAG_IF_1_DATA_MODE 0x42
-#define MAG_REFRESH_50_HZ 0x07  // TODO mag should refresh at 200 Hz as well, but I cant seem to get that to work.
+#define MAG_REFRESH_50_HZ 0x07  // TODO mag should refresh at 200 Hz as well, but I cant seem to G that to work.
 #define MAG_SLEEP_MODE 0x01
 
 #define MAX_BUFF_SIZE 21
