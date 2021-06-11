@@ -44,6 +44,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "interchip_S.hpp"
 
 /* USER CODE BEGIN Includes */
 
@@ -162,6 +163,8 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
 
+  //testSetup();
+
 
   // start the IC in interrupt mode
 
@@ -171,6 +174,10 @@ int main(void)
   PWMChannel pwm;
   pwm.setup();
   safety_controller_init();
+
+  testSetup();
+  interchipInit();
+
 
   /* USER CODE END 2 */
 
