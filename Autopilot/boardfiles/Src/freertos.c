@@ -51,6 +51,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "FreeRTOS.h"
+#include "Interchip_A.h"
+#include "portmacro.h"
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
@@ -98,6 +100,7 @@ osThreadId attitudeManagerHandle;
 osThreadId InterchipHandle;
 osThreadId pathManagerHandle;
 osThreadId telemetryRunHandle;
+osThreadId sensorFusionHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -105,9 +108,10 @@ osThreadId telemetryRunHandle;
 /* USER CODE END FunctionPrototypes */
 
 void attitudeManagerExecute(void const * argument);
-extern void Interchip_Run(void const * argument);
 void pathManagerExecute(void const * argument);
-void StartTelemetryRun(void const * argument);
+void telemetryRunExecute(void const * argument);
+void sensorFusionExecute(void const * argument);
+void interchipRunExecute(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -159,16 +163,23 @@ void MX_FREERTOS_Init(void) {
   attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of Interchip */
-  osThreadDef(Interchip, Interchip_Run, osPriorityNormal, 0, 128);
-  InterchipHandle = osThreadCreate(osThread(Interchip), NULL);
+  osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 0, 128);
+  InterchipHandle = osThreadCreate(osThread(interchip), NULL);
 
   /* definition and creation of pathManager */
-  osThreadDef(pathManager, pathManagerExecute, osPriorityBelowNormal, 0, 128);
+  osThreadDef(pathManager, pathManagerExecute, osPriorityNormal, 0, 128);
   pathManagerHandle = osThreadCreate(osThread(pathManager), NULL);
 
   /* definition and creation of telemetryRun */
-  osThreadDef(telemetryRun, StartTelemetryRun, osPriorityBelowNormal, 0, 128);
+  osThreadDef(telemetryRun, telemetryRunExecute, osPriorityNormal, 0, 128);
   telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
+
+   /* definition and creation of sensorFusionRun */
+  osThreadDef(sensorFusionRun, sensorFusionExecute, osPriorityNormal, 0, 128);
+  sensorFusionHandle = osThreadCreate(osThread(sensorFusionRun), NULL);
+
+
+  /* definition and creation of sensorFusionRun */
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -232,7 +243,7 @@ void pathManagerExecute(void const * argument)
 * @retval None
 */
 /* USER CODE END Header_StartTelemetryRun */
-void StartTelemetryRun(void const * argument)
+void telemetryRunExecute(void const * argument)
 {
   /* USER CODE BEGIN StartTelemetryRun */
   /* Infinite loop */
@@ -250,9 +261,39 @@ void StartTelemetryRun(void const * argument)
   /* USER CODE END StartTelemetryRun */
 }
 
+void sensorFusionExecute(void const * argument) {
+  /* USER CODE BEGIN SensorFusionExecute */
+  /* Infinite loop */
+
+  while (1) {
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, PERIOD_SENSORFUSION_MS);
+    SFError_t err = SensorFusionInterfaceExecute();
+    if (err.errorCode == -1) {
+      catastrophicFailure = true;
+    }
+
+  }
+
+  /* USER CODE END SensorFusionExecute */
+}
+
+void interchipRunExecute(void const * argument) {
+  Interchip_Init();
+  while (1) {
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, PERIOD_INTERCHIP_MS);
+    if (!catastrophicFailure) {
+      Interchip_Run();
+    }
+    //HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+  }
+}
+
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
