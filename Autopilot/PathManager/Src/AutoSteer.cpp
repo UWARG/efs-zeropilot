@@ -12,15 +12,15 @@
  * Variables
  **********************************************************************************************************************/
 
-static PIDController bankPid{100, 0, 0, 0, -MAX_BANK_ANGLE, MAX_BANK_ANGLE}; // PID gains need to be tuned
+static PIDController bankPid{1, 3, 45, 5, -MAX_BANK_ANGLE, MAX_BANK_ANGLE}; // PID gains need to be tuned
 
-static PIDController rudderPid{100, 0, 0, 0, -100, 100}; // PID gains need to be tuned
+static PIDController rudderPid{1.5, 0, 20, 0, -100, 100}; // PID gains need to be tuned
 
-static PIDController pitchPid{0, 0, 0, 1, -MAX_PITCH_ANGLE, MAX_PITCH_ANGLE}; // PID gains need to be tuned
+static PIDController pitchPid{0.04, 0, 50, 0, -MAX_PITCH_ANGLE, MAX_PITCH_ANGLE}; // PID gains need to be tuned
 
-static PIDController altitudePid{0, 0, 0, 0, 0, 100}; //PID gains need to be tuned
+static PIDController altitudePid{25, 0, 200, 0, 0, 100}; //PID gains need to be tuned
 
-static const float RUDDER_SCALING_FACTOR = 0.0f; // should be experimentally determined
+static const float RUDDER_SCALING_FACTOR = 0.5f; // should be experimentally determined
 
 /***********************************************************************************************************************
  * Prototypes
@@ -39,12 +39,24 @@ void AutoSteer_Init(void)
 
 void AutoSteer_ComputeCoordinatedTurn(CoordinatedTurnInput_t *Input, CoordinatedTurnAttitudeManagerCommands_t *AttManCommands)
 {
-    float bankAngle = bankPid.execute(Input->desiredHeadingTrack, Input->currentHeadingTrack);
+    //normalizing the difference in heading for the PID 
+    float directionError = Input->currentHeadingTrack - Input->desiredHeadingTrack;
+
+    if(directionError<=(-180))
+    {
+        directionError += 360;
+    }
+    else if(directionError>180)
+    {
+        directionError -= 360;
+    }
+
+    float bankAngle = bankPid.execute(0, directionError);
     float rudderSetPoint = GetRudderPercent(bankAngle);
 
-    float rudderCorrection = -1.0f * rudderPid.execute(0.0f, Input->accY);  // when accY is 0, the turn is coordinated. The multiplication by -1 comes from the way the axis is defined on the accelerometer.
+    float rudderCorrection = -1.0f * rudderPid.execute(0.0f, bankAngle);  // when accY is 0, the turn is coordinated. The multiplication by -1 comes from the way the axis is defined on the accelerometer.
 
-    float rudderPercent = rudderSetPoint + rudderCorrection;
+    float rudderPercent = rudderCorrection;
 
     AttManCommands->requiredRoll = DEG_TO_RAD(bankAngle);
     AttManCommands->requiredRudderPosition = rudderPercent;
@@ -53,10 +65,11 @@ void AutoSteer_ComputeCoordinatedTurn(CoordinatedTurnInput_t *Input, Coordinated
 
 void AutoSteer_ComputeAltitudeAndAirspeed(AltitudeAirspeedInput_t *Input, AltitudeAirspeedCommands_t *AttManCommands)
 {
-    float pitchAngle = pitchPid.execute(Input->desiredAirspeed, Input->currentAirspeed);
+    float pitchAngle =-1*pitchPid.execute(Input->desiredAirspeed, Input->currentAirspeed);
 
-    AttManCommands->requiredPitch = DEG_TO_RAD(pitchAngle);
     AttManCommands->requiredThrottlePercent = altitudePid.execute(Input->desiredAltitude, Input->currentAltitude);
+    AttManCommands->requiredPitch = DEG_TO_RAD(pitchAngle*AttManCommands->requiredThrottlePercent/100.0);
+    
 
 }
 

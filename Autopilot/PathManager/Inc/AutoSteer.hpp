@@ -13,7 +13,7 @@
 #define MAX_BANK_ANGLE 30    // In degrees. This value limits how fast we can achieve a desired heading change. (See confluence docs on this module.)
                              // Increasing it means we can make faster turns, but makes the aircraft harder to control.
 
-#define MAX_PITCH_ANGLE 30   // In degrees. This value limits how fast we can climb or descend.
+#define MAX_PITCH_ANGLE 15   // In degrees. This value limits how fast we can climb or descend.
                              // Increasing it means we can get to the target altitude faster, but it means we might risk having control problems or some sort of stall.
 
 #define CRUISING_SPEED  15   // In m/s. This is the speed the aircraft will remain at during regular flight.
