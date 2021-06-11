@@ -132,6 +132,15 @@ class NEOM8 : public Gps
 
 #ifdef UNIT_TESTING
 #include "gpsMock.hpp"
+
+class TestGps : public Gps {
+    public:
+        static TestGps* GetInstance(){}
+
+        void Begin_Measuring();
+        void GetResult(GpsData_t *Data);
+};
+
 #endif
 
 #ifdef SIMULATION
