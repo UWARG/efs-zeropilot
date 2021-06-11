@@ -63,6 +63,7 @@
 #include "PathManagerInterface.h"
 #include "telemetryManagerInterface.h"
 #include "sensorFusionInterface.hpp"
+#include "IMUInterface.h"
 
 /* USER CODE END Includes */
 
@@ -92,6 +93,7 @@ static const int PERIOD_PATHMANAGER_MS = 100;
 static const int PERIOD_TELEMETRY_MS = 100; 
 static const int PERIOD_SENSORFUSION_MS = 200; 
 static const int PERIOD_INTERCHIP_MS = 20;
+static const int PERIOD_IMU_MS = 5; // Needs to be called at 200 Hz. 
 
 static volatile bool catastrophicFailure = false;
 
@@ -101,6 +103,7 @@ osThreadId InterchipHandle;
 osThreadId pathManagerHandle;
 osThreadId telemetryRunHandle;
 osThreadId sensorFusionHandle;
+osThreadId IMUHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -111,6 +114,7 @@ void attitudeManagerExecute(void const * argument);
 void pathManagerExecute(void const * argument);
 void telemetryRunExecute(void const * argument);
 void sensorFusionExecute(void const * argument);
+void IMUExecute(void const * argument);
 void interchipRunExecute(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -177,6 +181,10 @@ void MX_FREERTOS_Init(void) {
    /* definition and creation of sensorFusionRun */
   osThreadDef(sensorFusionRun, sensorFusionExecute, osPriorityNormal, 0, 128);
   sensorFusionHandle = osThreadCreate(osThread(sensorFusionRun), NULL);
+
+  /* definition and creation of IMURun */
+  osThreadDef(IMURun, IMUExecute, osPriorityNormal, 0, 128);
+  IMUHandle = osThreadCreate(osThread(IMURun), NULL);
 
 
   /* definition and creation of sensorFusionRun */
@@ -255,7 +263,6 @@ void telemetryRunExecute(void const * argument)
     if (!status) {
       catastrophicFailure = true;
     }
-    HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
   }
   
   /* USER CODE END StartTelemetryRun */
@@ -278,8 +285,11 @@ void sensorFusionExecute(void const * argument) {
   /* USER CODE END SensorFusionExecute */
 }
 
+
 void interchipRunExecute(void const * argument) {
-  Interchip_Init();
+  /* USER CODE BEGIN interchipRunExecute */
+  /* Infinite loop */
+
   while (1) {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_INTERCHIP_MS);
@@ -288,6 +298,22 @@ void interchipRunExecute(void const * argument) {
     }
     //HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
   }  
+
+  /* USER CODE END interchipRunExecute */
+}
+
+void IMUExecute(void const * argument) {
+  while (1) {
+    /* USER CODE BEGIN IMUExecute */
+    /* Infinite loop */
+
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, PERIOD_IMU_MS);
+    IMUInterfaceExecute();
+    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+  }
+
+  /* USER CODE END IMUExecute
 }
 
 /* Private application code --------------------------------------------------*/

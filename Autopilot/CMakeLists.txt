@@ -34,6 +34,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
     TelemetryManager/Inc
     CControl/Inc
     SensorFusion/Inc
+    IMU/Inc
   )
 
   # Add ARM math directory for linker to find
@@ -121,6 +122,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc/
     ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/IMU/Inc
   )
 
   # Let cmake know where to find all the find<Package>.cmake files
