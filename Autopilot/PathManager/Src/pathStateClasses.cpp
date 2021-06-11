@@ -144,11 +144,13 @@ void resetVariables::execute(pathManager* pathMgr)
     {
         resetPassby(&landingTransitionStage::getControlOutput()->controlDetails);
         pathMgr->setState(landingTransitionStage::getInstance());
+        return;
     }
     if(commsWithTelemetry::GetTelemetryIncomingData()->beginTakeoff)
     {
         resetPassby(&takeoffRollStage::getControlOutput()->controlDetails);
         pathMgr->setState(takeoffRollStage::getInstance());
+        return;
     }
 
     //if the enums for landing state, set to each landing state
@@ -333,6 +335,7 @@ LANDING STATE FUNCTIONS
 
 void landingTransitionStage::execute(pathManager* pathMgr)
 {
+    pathMgr->stage = TRANSITION;
     //load in sensor fusion data and telemtry data into input structure
     input.telemetryData = commsWithTelemetry::GetTelemetryIncomingData();
     input.sensorOutput = sensorFusion::GetSFOutput();
@@ -589,6 +592,7 @@ TAKEOFF STATE FUNCTIONS
 
 void takeoffRollStage::execute(pathManager* pathMgr)
 {
+    pathMgr->stage = ROLL;
     //load in sensor fusion data and telemtry data into input structure
     input.telemetryData = commsWithTelemetry::GetTelemetryIncomingData();
     input.sensorOutput = sensorFusion::GetSFOutput();
