@@ -32,7 +32,7 @@ MPXV7002DP* MPXV7002DP::GetInstance() {
 uint16_t MPXV7002DP::GetAverage() {
 	uint16_t avg = 0;
 	for(int i = 0; i < 10; i++) {
-		HAL_ADC_PollForConversion(&hadc3, 50);
+		HAL_ADC_PollForConversion(&hadc3, 10);
 		uint16_t val = HAL_ADC_GetValue(&hadc3);
 		avg += val;
 	}
