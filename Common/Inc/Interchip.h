@@ -8,5 +8,4 @@ typedef struct {
 	uint16_t safetyLevel;
 	int16_t PWM[12];
 } Interchip_Packet;  
-
 #endif
