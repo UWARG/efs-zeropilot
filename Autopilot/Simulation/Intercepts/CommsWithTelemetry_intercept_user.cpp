@@ -5,7 +5,7 @@
 * Variables
 ********************************************************************/
 
-static Telemetry_PIGO_t userPigo[100];
+static Telemetry_PIGO_t userPigo[1000];
 static int index = 0;
 
 /********************************************************************
@@ -43,8 +43,8 @@ bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
     userPigo[index].waypoints[2].longitude = -155.000;
     userPigo[index].waypoints[2].latitude = 21.322000;
     userPigo[index].waypoints[2].turnRadius = 100;
-/*
-    if(index=5)
+
+    if(index==500)
     {
         userPigo[index].beginLanding = true;
         userPigo[index].stoppingAltitude = 0;
@@ -53,8 +53,12 @@ bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
         userPigo[index].stoppingLatitude = 21.3200;
     }
 
+    if(index==700)
+    {
+        
+    }
+
   
-    */
     *commands = userPigo[index];
 
     index++;
