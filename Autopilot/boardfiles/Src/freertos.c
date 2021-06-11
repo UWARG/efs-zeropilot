@@ -93,7 +93,7 @@ static const int PERIOD_TELEMETRY_MS = 100;
 static const int PERIOD_SENSORFUSION_MS = 200; 
 static const int PERIOD_INTERCHIP_MS = 20;
 
-static bool catastrophicFailure = false;
+static volatile bool catastrophicFailure = false;
 
 /* USER CODE END Variables */ 
 osThreadId attitudeManagerHandle;
@@ -108,7 +108,6 @@ osThreadId sensorFusionHandle;
 /* USER CODE END FunctionPrototypes */
 
 void attitudeManagerExecute(void const * argument);
-extern void Interchip_Run();
 void pathManagerExecute(void const * argument);
 void telemetryRunExecute(void const * argument);
 void sensorFusionExecute(void const * argument);
@@ -280,12 +279,14 @@ void sensorFusionExecute(void const * argument) {
 }
 
 void interchipRunExecute(void const * argument) {
+  Interchip_Init();
   while (1) {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_INTERCHIP_MS);
     if (!catastrophicFailure) {
       Interchip_Run();
     }
+    //HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
   }  
 }
 
