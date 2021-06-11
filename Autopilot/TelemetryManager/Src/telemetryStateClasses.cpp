@@ -6,8 +6,8 @@
 #include "telemetryStateClasses.hpp"
 
 
-Telemetry_PIGO_t _PMData;
-POGI GSData;
+static Telemetry_PIGO_t _PMData;
+static Telemetry_POGI_t _GSData;
 
 void initialMode::execute(telemetryManager* telemetryMgr)
 {

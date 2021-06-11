@@ -25,7 +25,7 @@ struct Telemetry_Waypoint_Data_t {
 
 
 //Data for path manager to send to telemetry.
-typedef struct POGI{
+typedef struct Telemetry_POGI_t{
 	int errorCode; //Code for specified errors
 	double gpsLattitude,gpsLongitude,curAltitude; //Current gps position and altitude
 	float curAirspeed; //Airspeed data
@@ -35,7 +35,7 @@ typedef struct POGI{
 	uint8_t editingFlightPathErrorCode,flightPathFollowingErrorCode; //Flight path error codes
 	uint8_t currentWaypointId, currentWaypointIndex; //current waypoint data
 	bool homeBaseInit; //is home base initialized
-} POGI;
+} Telemetry_POGI_t;
 
 struct Telemetry_PIGO_t {
     /* Parameters for the waypoint manager (crusingState) */
