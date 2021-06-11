@@ -82,6 +82,7 @@ const char PATH_TELEM_MAIL_Q_SIZE = 1;
 extern osMailQDef(PMcommandsMailQ, PATH_TELEM_MAIL_Q_SIZE, Telemetry_PIGO_t);
 extern osMailQId PMcommandsMailQ;
 
+
 //Set up a mail queue for sending data to telemetry
 extern osMailQDef(telemDataMailQ, PATH_TELEM_MAIL_Q_SIZE, POGI);
 extern osMailQId telemDataMailQ;
