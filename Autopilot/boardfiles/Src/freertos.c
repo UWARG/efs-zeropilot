@@ -87,10 +87,10 @@
 // The period for which each of the threads are called
 
 // TODO: Confirm the period at which each of the threads are to be run and update them
-static const int PERIOD_ATTITUDEMANAGER_MS = 100;
-static const int PERIOD_PATHMANAGER_MS = 100; 
+static const int PERIOD_ATTITUDEMANAGER_MS = 5;
+static const int PERIOD_PATHMANAGER_MS = 5; // imu atm
 static const int PERIOD_TELEMETRY_MS = 100; 
-static const int PERIOD_SENSORFUSION_MS = 200; 
+static const int PERIOD_SENSORFUSION_MS = 5;
 static const int PERIOD_INTERCHIP_MS = 20;
 
 static volatile bool catastrophicFailure = false;
@@ -139,6 +139,9 @@ void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackTy
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
+  PathManagerInterfaceInit();
+  SensorFusionInterfaceInit();
+
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -159,20 +162,20 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of attitudeManager */
-  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 128);
-  attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
+  //osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 128);
+  //attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of Interchip */
-  osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 0, 128);
-  InterchipHandle = osThreadCreate(osThread(interchip), NULL);
+  //osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 0, 128);
+  //InterchipHandle = osThreadCreate(osThread(interchip), NULL);
 
   /* definition and creation of pathManager */
   osThreadDef(pathManager, pathManagerExecute, osPriorityNormal, 0, 128);
   pathManagerHandle = osThreadCreate(osThread(pathManager), NULL);
 
   /* definition and creation of telemetryRun */
-  osThreadDef(telemetryRun, telemetryRunExecute, osPriorityNormal, 0, 128);
-  telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
+  //osThreadDef(telemetryRun, telemetryRunExecute, osPriorityNormal, 0, 128);
+  //telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
 
    /* definition and creation of sensorFusionRun */
   osThreadDef(sensorFusionRun, sensorFusionExecute, osPriorityNormal, 0, 128);

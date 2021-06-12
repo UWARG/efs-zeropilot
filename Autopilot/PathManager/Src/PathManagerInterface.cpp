@@ -1,22 +1,18 @@
 #include "PathManagerInterface.h"
-#include "pathManager.hpp"
+#include "imu.hpp"
 
-static pathManager pathMng;
-PathMan::_Path_Manager_Cycle_Status pathManStatus;
+void PathManagerInterfaceInit(void) 
+{
+    static IMU &imuobj = BMX160::getInstance();
+    imuobj.Begin_Measuring();
 
+}
 
-bool PathManagerInterfaceExecute(void) {
+bool PathManagerInterfaceExecute(void) 
+{
+    static IMU &imuobj = BMX160::getInstance();
 
-    do {
-            pathMng.execute();
-            pathManStatus = pathMng.getStatus();
+    imuobj.Begin_Measuring();
 
-            if (pathManStatus == PathMan::FAILURE_MODE)
-            {
-                // Something is quite wrong, need to switch over to safety
-                return false;
-            }
-
-    } while(pathManStatus != PathMan::COMPLETED_CYCLE);
     return true;
 }
