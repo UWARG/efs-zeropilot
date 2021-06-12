@@ -74,6 +74,8 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
+#define STACK_SIZE_1_KB 250
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -141,6 +143,7 @@ void MX_FREERTOS_Init(void) {
 
   PathManagerInterfaceInit();
   SensorFusionInterfaceInit();
+  Interchip_Init();
 
   /* USER CODE END Init */
 
@@ -162,15 +165,15 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of attitudeManager */
-  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 128);
+  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 1, STACK_SIZE_1_KB);
   attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of Interchip */
-  //osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 0, 128);
-  //InterchipHandle = osThreadCreate(osThread(interchip), NULL);
+  osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 1, STACK_SIZE_1_KB);
+  InterchipHandle = osThreadCreate(osThread(interchip), NULL);
 
   /* definition and creation of pathManager */
-  osThreadDef(pathManager, pathManagerExecute, osPriorityNormal, 0, 128);
+  osThreadDef(pathManager, pathManagerExecute, osPriorityNormal, 1, STACK_SIZE_1_KB);
   pathManagerHandle = osThreadCreate(osThread(pathManager), NULL);
 
   /* definition and creation of telemetryRun */
@@ -178,7 +181,7 @@ void MX_FREERTOS_Init(void) {
   //telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
 
    /* definition and creation of sensorFusionRun */
-  osThreadDef(sensorFusionRun, sensorFusionExecute, osPriorityNormal, 0, 128);
+  osThreadDef(sensorFusionRun, sensorFusionExecute, osPriorityNormal, 1, STACK_SIZE_1_KB);
   sensorFusionHandle = osThreadCreate(osThread(sensorFusionRun), NULL);
 
 

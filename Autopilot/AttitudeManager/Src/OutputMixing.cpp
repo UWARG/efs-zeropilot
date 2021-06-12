@@ -23,6 +23,8 @@
 static int checkInputValidity(PID_Output_t *PidOutput);
 static void constrainOutput(float *channelOut);
 
+static float map(float num, float minInput, float maxInput, float minOutput, float maxOutput);
+
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
@@ -47,6 +49,19 @@ OutputMixing_error_t OutputMixing_Execute(PID_Output_t *PidOutput, float *channe
     channelOut[THROTTLE_OUT_CHANNEL] = PidOutput->throttlePercent;
 
     constrainOutput(channelOut);
+
+#ifdef TARGET_BUILD
+
+    float adjustedAileron = map(channelOut[AILERON_OUT_CHANNEL], -100, 100, 0, 100);
+    float adjustedElevator = map(channelOut[ELEVATOR_OUT_CHANNEL], -100, 100, 0, 100);
+
+    channelOut[ELEVATOR_OUT_CHANNEL] = adjustedElevator;
+    channelOut[AILERON_OUT_CHANNEL] = adjustedAileron;
+
+#endif
+
+
+
 
 	return error;
 }
@@ -85,3 +100,9 @@ static void constrainOutput(float *channelOut)
 		}
 	}
 }
+
+static float map(float num, float minInput, float maxInput, float minOutput, float maxOutput)
+{
+    return minOutput + ((num - minInput) * ((maxOutput - minOutput) / (maxInput - minInput)));
+}
+

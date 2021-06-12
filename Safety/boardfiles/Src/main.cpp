@@ -175,8 +175,12 @@ int main(void)
   pwm.setup();
   safety_controller_init();
 
-  testSetup();
   interchipInit();
+
+
+  HAL_NVIC_SetPriority(TIM15_IRQn, 1, 0);
+  HAL_NVIC_SetPriority(SPI1_IRQn, 0, 0);
+
 
 
   /* USER CODE END 2 */
@@ -190,6 +194,7 @@ int main(void)
   /* USER CODE BEGIN 3 */
 
     safety_run(pwm, ppm);
+    HAL_Delay(1);
 
   }
   /* USER CODE END 3 */
