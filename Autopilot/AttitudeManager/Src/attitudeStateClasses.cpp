@@ -16,7 +16,14 @@ PID_Output_t PIDloopMode::_PidOutput;
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {
 
-    GetFromPMToAM(&_PMInstructions);
+    //GetFromPMToAM(&_PMInstructions);
+
+    _PMInstructions.roll = 0;
+    _PMInstructions.pitch = 0;
+
+    _PMInstructions.passbyData.pitchPassby = false;
+    _PMInstructions.passbyData.rollPassby = false;
+
 
     // The support is also here for sending stuff to Path manager, but there's nothing I need to send atm.
 

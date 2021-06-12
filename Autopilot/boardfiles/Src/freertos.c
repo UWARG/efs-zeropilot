@@ -162,8 +162,8 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of attitudeManager */
-  //osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 128);
-  //attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
+  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 128);
+  attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of Interchip */
   //osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 0, 128);
