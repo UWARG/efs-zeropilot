@@ -84,11 +84,6 @@ void BMX160::Begin_Measuring(void)
 
 void BMX160::GetResult(IMUData_t &Data)
 {
-    if (! dataIsNew)
-    {
-        Data.isDataNew = false;
-        return;
-    }
 
     int16_t *intImuDataPtr = (int16_t *) &(rawImuData[1]); // first byte is garbage. It's just what was on the line when we asked the IMU for data, which it started sending as of the second byte.
 
@@ -111,6 +106,12 @@ void BMX160::GetResult(IMUData_t &Data)
     Data.gyrx = static_cast<float> (gyrx) / GYRO_RANGE_1000_FACTOR;
     Data.gyry = static_cast<float> (gyry) / GYRO_RANGE_1000_FACTOR;
     Data.gyrz = static_cast<float> (gyrz) / GYRO_RANGE_1000_FACTOR;
+
+    if (! dataIsNew)
+    {
+        Data.isDataNew = false;
+        return;
+    }
 
     Data.isDataNew = true;
     Data.sensorStatus = 0;
