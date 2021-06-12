@@ -46,7 +46,7 @@ struct SFIterationData_t{
 static IMU *imuObj;
 static Gps *gpsObj;
 static Altimeter *altimeterObj;
-static Airspeed *airspeedObj;
+static airspeed *airspeedObj;
 static SFIterationData_t iterData;
 static SFOutput_t SFOutput;
 

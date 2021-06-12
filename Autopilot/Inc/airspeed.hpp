@@ -34,7 +34,7 @@ struct airspeedData_t
     float utcTime;          // 4 Bytes. Time in seconds since 00:00 
 };
 
-class Airspeed {
+class airspeed {
     public:
         /**
          *  Triggers interrupt for new airspeed measurement - stores 
@@ -58,7 +58,7 @@ class Airspeed {
  * Derived classes
  **********************************************************************************************************************/
 
-class MPXV7002DP : public Airspeed {
+class MPXV7002DP : public airspeed {
     public:
         MPXV7002DP(const MPXV7002DP*) = delete;
         static MPXV7002DP* GetInstance();
