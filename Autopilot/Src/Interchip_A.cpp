@@ -16,18 +16,18 @@ void Interchip_Init() {
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
   // the rest of this program is just for like,
   txData.safetyLevel = 14;
-  txData.PWM[0] = 15;
-	txData.PWM[1] = 16;
-	txData.PWM[2] = 17;
-	txData.PWM[3] = 18;
-	txData.PWM[4] = 19;
-	txData.PWM[5] = 20;
-	txData.PWM[6] = 21;
-	txData.PWM[7] = 22;
-	txData.PWM[8] = 23;
-	txData.PWM[9] = 24;
-	txData.PWM[10] = 25;
-	txData.PWM[11] = 26;
+  txData.PWM[0] = 0;
+	txData.PWM[1] = 0;
+	txData.PWM[2] = 0;
+	txData.PWM[3] = 0;
+	txData.PWM[4] = 0;
+	txData.PWM[5] = 0;
+	txData.PWM[6] = 0;
+	txData.PWM[7] = 0;
+	txData.PWM[8] = 0;
+	txData.PWM[9] = 0;
+	txData.PWM[10] = 0;
+	txData.PWM[11] = 0;
 }
 
 
