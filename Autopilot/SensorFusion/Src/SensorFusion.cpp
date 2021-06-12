@@ -473,22 +473,17 @@ SFError_t SF_GenerateNewResult()
     SFError.errorCode = 0;
     
     IMUData_t imuData;
-    GpsData_t GpsData;
-    AltimeterData_t altimeterData;
-    airspeedData_t airspeedData;
+
     imuObj->GetResult(imuData);
-    gpsObj->GetResult(&GpsData);
-    //altimeterObj->GetResult(altimeterData);
-    //airspeedObj->GetResult(airspeedData);
+    
+    imuData.magx = NAN;
+    imuData.magy = NAN;
+    imuData.magz = NAN;
 
     SFAttitudeOutput_t attitudeOutput;
-    SFPathOutput_t pathOutput;
+    airspeedData_t airspeedData = {0};
 
     SFError = SF_GetAttitude(&attitudeOutput, &imuData, &airspeedData);
-    if(SFError.errorCode != 0) return SFError;
-
-    SFError = SF_GetPosition(&pathOutput, &altimeterData, &GpsData, &imuData, &attitudeOutput, &iterData);
-    if(SFError.errorCode != 0) return SFError;
 
     SFOutput.pitch = attitudeOutput.pitch;
     SFOutput.roll = attitudeOutput.roll;
@@ -516,7 +511,7 @@ SFError_t SF_GetResult(SFOutput_t *output)
 IMU_Data_t SF_GetRawIMU()
 {
     IMUData_t imuData;
-    //imuData = imuObj->getResult();
+    imuObj->GetResult(imuData);
 
     IMU_Data_t imuOutput;
 
