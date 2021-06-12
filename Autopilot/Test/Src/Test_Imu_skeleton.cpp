@@ -4,7 +4,7 @@
 #include "mpu9255.h"
 
 #include "IMU_Mock.hpp"
-#include "IMU.hpp"
+#include "imu.hpp"
 
 using namespace std;
 using ::testing::Test;

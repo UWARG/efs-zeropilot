@@ -57,6 +57,8 @@ class airspeed {
 
 class dummyairspeed: public airspeed{
     public:
+        static dummyairspeed* GetInstance(); //Adding this early so the build works
+
         /**
          *  Triggers interrupt for new airspeed measurement - stores 
          *  raw data in variables and returns right away

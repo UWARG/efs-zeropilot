@@ -1,16 +1,26 @@
-#if 0
-#include "stm32f0xx_hal.h"
 #include "../../Common/Inc/Interchip.h"
-#include "../boardfiles/Inc/spi.h"
+#ifndef INC_INTERCHIP_HPP_
+#define INC_INTERCHIP_HPP_
 
-#ifndef INTERCHIP_S_HPP
-#define INTERCHIP_S_HPP
 
-int16_t Interchip_Init(Interchip_StoA_Packet*, Interchip_AtoS_Packet*);
-int16_t Interchip_TxRx(SPI_HandleTypeDef *hspi);
+// Starts interchip interrupt. Call this once, not in a loop, each interchip callback
+// sets up another interrupt.
+void interchipInit();
 
-int16_t *Interchip_GetPWM(void);
-void Interchip_SetAutonomousLevel(uint16_t data);
+// Get the pwm signals that have been recieved. The length of the array returned will 
+// always be 12.
+volatile int16_t* getPWM();
 
-#endif
-#endif
+// Get the safety level that is currently being sent out.
+uint16_t getSafetyLevel();
+
+// Set the safety level that is currently being sent out.
+void setSafetyLevel(uint16_t level);
+
+// Return whether the data is new.
+bool isDataNew();
+
+// used to populate the interchip packet with fake data.
+void testSetup();
+
+#endif /* INC_INTERCHIP_HPP_ */

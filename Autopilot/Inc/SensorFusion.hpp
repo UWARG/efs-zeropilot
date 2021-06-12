@@ -2,6 +2,14 @@
  * Sensor Fusion - Converts raw sensor data into human readable formatted structs
  * Author: Lucy Gong, Dhruv Rawat, Anthony Bertnyk
  */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    #include "CControlFunctions.h"
+#ifdef __cplusplus
+}
+#endif
 
 #ifndef SENSORFUSION_HPP
 #define SENSORFUSION_HPP
@@ -80,6 +88,7 @@ typedef struct  {
     int status; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
     int utcTime; //Last time GetResult was called
 } Altimeter_Data_t;
+
 
 /**
  * Initialize sensor fusion.

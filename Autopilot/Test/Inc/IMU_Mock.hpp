@@ -3,7 +3,7 @@
 
 #include <gmock/gmock.h> // Brings in gMock
 
-#include "IMU.hpp"
+#include "imu.hpp"
 
 
 class MockIMU : public IMU {
