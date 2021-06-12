@@ -94,10 +94,7 @@ static const int PERIOD_TELEMETRY_MS = 100;
 static const int PERIOD_SENSORFUSION_MS = 200; 
 static const int PERIOD_INTERCHIP_MS = 20;
 static const int PERIOD_IMU_MS = 5; // Needs to be called at 200 Hz. 
-<<<<<<< HEAD
 const int STACK_SIZE_1_KB = 1000;
-=======
->>>>>>> 0ff3564e76c7f3968660694fd8fff9116f30a9cd
 
 static volatile bool catastrophicFailure = false;
 
@@ -167,27 +164,27 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of attitudeManager */
-  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, STACK_SIZE_1_KB);
+  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 1, STACK_SIZE_1_KB);
   attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of Interchip */
-  osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 0, STACK_SIZE_1_KB);
+  osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 1, STACK_SIZE_1_KB);
   InterchipHandle = osThreadCreate(osThread(interchip), NULL);
 
   /* definition and creation of pathManager */
-  osThreadDef(pathManager, pathManagerExecute, osPriorityNormal, 0, STACK_SIZE_1_KB);
+  osThreadDef(pathManager, pathManagerExecute, osPriorityNormal, 1, STACK_SIZE_1_KB);
   pathManagerHandle = osThreadCreate(osThread(pathManager), NULL);
 
   /* definition and creation of telemetryRun */
-  osThreadDef(telemetryRun, telemetryRunExecute, osPriorityNormal, 0, STACK_SIZE_1_KB);
+  osThreadDef(telemetryRun, telemetryRunExecute, osPriorityNormal, 1, STACK_SIZE_1_KB);
   telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
 
    /* definition and creation of sensorFusionRun */
-  osThreadDef(sensorFusionRun, sensorFusionExecute, osPriorityNormal, 0, STACK_SIZE_1_KB);
+  osThreadDef(sensorFusionRun, sensorFusionExecute, osPriorityNormal, 1, STACK_SIZE_1_KB);
   sensorFusionHandle = osThreadCreate(osThread(sensorFusionRun), NULL);
 
   /* definition and creation of IMURun */
-  osThreadDef(IMURun, IMUExecute, osPriorityNormal, 0, STACK_SIZE_1_KB);
+  osThreadDef(IMURun, IMUExecute, osPriorityNormal, 1, STACK_SIZE_1_KB);
   IMUHandle = osThreadCreate(osThread(IMURun), NULL);
 
 
@@ -293,6 +290,7 @@ void sensorFusionExecute(void const * argument) {
 void interchipRunExecute(void const * argument) {
   /* USER CODE BEGIN interchipRunExecute */
   /* Infinite loop */
+  Interchip_Run();
 
   while (1) {
     TickType_t xLastWakeTime = xTaskGetTickCount();
@@ -317,11 +315,7 @@ void IMUExecute(void const * argument) {
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
   }
 
-<<<<<<< HEAD
   /* USER CODE END IMUExecute */
-=======
-  /* USER CODE END IMUExecute
->>>>>>> 0ff3564e76c7f3968660694fd8fff9116f30a9cd
 }
 
 /* Private application code --------------------------------------------------*/
