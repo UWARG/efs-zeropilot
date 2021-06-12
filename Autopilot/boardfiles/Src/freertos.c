@@ -94,7 +94,10 @@ static const int PERIOD_TELEMETRY_MS = 100;
 static const int PERIOD_SENSORFUSION_MS = 200; 
 static const int PERIOD_INTERCHIP_MS = 20;
 static const int PERIOD_IMU_MS = 5; // Needs to be called at 200 Hz. 
+<<<<<<< HEAD
 const int STACK_SIZE_1_KB = 1000;
+=======
+>>>>>>> 0ff3564e76c7f3968660694fd8fff9116f30a9cd
 
 static volatile bool catastrophicFailure = false;
 
@@ -314,7 +317,11 @@ void IMUExecute(void const * argument) {
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
   }
 
+<<<<<<< HEAD
   /* USER CODE END IMUExecute */
+=======
+  /* USER CODE END IMUExecute
+>>>>>>> 0ff3564e76c7f3968660694fd8fff9116f30a9cd
 }
 
 /* Private application code --------------------------------------------------*/
