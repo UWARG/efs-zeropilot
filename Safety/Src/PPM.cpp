@@ -139,5 +139,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 			ppm_values[index] = pulseLength;
 			index++;
 		}
+
 	}
+
 }
