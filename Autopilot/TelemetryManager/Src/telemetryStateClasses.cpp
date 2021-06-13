@@ -14,8 +14,7 @@ void initialMode::execute(telemetryManager* telemetryMgr)
     //initial mode
     //Initialize mail queue to send data to Path Manager:
     TelemCommWithPMInit();
-    //Initializa mail queue to receive Path Manager data:
-    //CommWithTelemInit(); is the one for Path manager to send data to telem. May need the implementation to check the mail queue.
+    //Initializa mail queue to receive Path Manager data
 
     //State change:
     telemetryMgr -> setState(obtainDataMode::getInstance());
@@ -30,7 +29,7 @@ telemetryState& initialMode::getInstance()
 void obtainDataMode::execute(telemetryManager* telemetryMgr)
 {
     //obtain data from ground
-    //Receive_GS_Data(); //Receives data in MavLink form from the XBEE
+    XBEE::Receive_GS_Data(); //Receives data in MavLink form from the XBEE
 
     //State change:
     if(telemetryMgr -> fatalFail)

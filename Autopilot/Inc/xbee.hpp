@@ -8,30 +8,29 @@
 
 #include "TelemPathInterface.hpp" //Holds structs for sent and received data
 
-//Ask Dhruv R (Elias) about UART stuff (Or ask our lord FREERTOS in the sky)
 
 class XBEE{
     public:
         /**
          * Initializes XBEE
          * */
-        virtual void Init() = 0; 
+        static void Init(); 
 
         /**
          * Triggers interrupt for new data retrieval by telemManager - stores raw data in variables and returns right away
          * */
-        virtual void Receive_GS_Data() = 0; 
+        static void Receive_GS_Data(); 
 
         /**GetResult should:
          * 1. Reset newInput flag
          * 2. Transfers raw data from variables to struct
          * 3. Updates utcTime and status values in struct as well
          * */
-        virtual void GetResult(Telemetry_PIGO_t *data) = 0; //Switch to MavLink data (ask Jingting how to feed to Xbee)
+        static void GetResult(Telemetry_PIGO_t *data); //Switch to MavLink data (ask Jingting how to feed to Xbee)
 
         /*Interrupt to send data to ground       
         */
-        virtual void Send_GS_Data() = 0; //Only touched by FREERTOS
+        static void Send_GS_Data(); //Only touched by FREERTOS
 
         /*SendResult should:
          * 1. Reset newOutput flag
@@ -39,7 +38,7 @@ class XBEE{
          * 3. Updates utcTime and status values in struct as well
          * 4. Wait for FREERTOS to call the Send_Data function
         */
-        virtual void SendResult(Telemetry_POGI_t* data) = 0;
+        static void SendResult(Telemetry_POGI_t* data);
 };
 
 #endif
