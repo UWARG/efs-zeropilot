@@ -39,7 +39,7 @@ class XBEE{
          * 3. Updates utcTime and status values in struct as well
          * 4. Wait for FREERTOS to call the Send_Data function
         */
-        virtual void SendResult(POGI* Data) = 0;
+        virtual void SendResult(Telemetry_POGI_t* Data) = 0;
 };
 
 #endif

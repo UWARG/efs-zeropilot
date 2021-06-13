@@ -25,7 +25,7 @@ struct Telemetry_Waypoint_Data_t {
 
 
 //Data for path manager to send to telemetry.
-typedef struct Telemetry_POGI_t{
+struct Telemetry_POGI_t{
 	int errorCode; //Code for specified errors
 	double gpsLattitude,gpsLongitude,curAltitude; //Current gps position and altitude
 	float curAirspeed; //Airspeed data
