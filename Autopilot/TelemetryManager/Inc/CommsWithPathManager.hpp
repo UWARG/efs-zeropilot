@@ -24,6 +24,6 @@ void SendCommandsForPM(Telemetry_PIGO_t *commands);
  * @param[out]   data   Pointer to struct to recieve data.
  * @return True if data was recieved.
  */
-bool GetTelemData(POGI *data);
+bool GetTelemData(Telemetry_POGI_t *data);
 
 #endif

@@ -38,7 +38,7 @@ void SendCommandsForPM(Telemetry_PIGO_t *commands)
     osMailPut(commandsMailQ, commandsOut);
 }
 
-bool GetTelemData(POGI *data)
+bool GetTelemData(Telemetry_POGI_t *data)
 {
     
     //Try to get data from mail queue

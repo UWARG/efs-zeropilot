@@ -19,7 +19,7 @@ void CommWithTelemInit()
     telemDataMailQ = osMailCreate(osMailQ(telemDataMailQ), NULL);
 }
 
-void SendPathData(POGI *data)
+void SendPathData(Telemetry_POGI_t *data)
 {
     //Remove previous data from mail queue if it exists
     osEvent event = osMailGet(telemDataMailQ, 0);
