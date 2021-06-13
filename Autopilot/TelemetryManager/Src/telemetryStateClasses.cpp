@@ -153,7 +153,7 @@ void analyzeDataMode::execute(telemetryManager* telemetryMgr)
     }
     else
     {
-        telemetryMgr -> setState(reportMode::getInstance());
+        telemetryMgr -> setState(analyzeDataMode::getInstance());
     }
 }
 

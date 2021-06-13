@@ -71,20 +71,10 @@ TEST(TelemetryManagerFSM, readToAnalyze){ //testing transition from readFromPath
     EXPECT_EQ(*(telemetryMng.getCurrentState()), analyzeDataMode::getInstance());
 }
 
-TEST(TelemetryManagerFSM, analyzeToReport){ //testing transition from analyzeDataMode to reportMode
+TEST(TelemetryManagerFSM, analyzeToEncode){ //testing transition from analyzeDataMode to reportMode
     /***SETUP***/
     telemetryManager telemetryMng;
     telemetryMng.setState(analyzeDataMode::getInstance());
-    /***STEPTHROUGH***/
-    telemetryMng.execute();
-    /***ASSERTS***/
-    EXPECT_EQ(*(telemetryMng.getCurrentState()), reportMode::getInstance());
-}
-
-TEST(TelemetryManagerFSM, reportToEncode){ //testing transition from reportMode to encodeDataMode
-    /***SETUP***/
-    telemetryManager telemetryMng;
-    telemetryMng.setState(reportMode::getInstance());
     /***STEPTHROUGH***/
     telemetryMng.execute();
     /***ASSERTS***/
@@ -128,7 +118,7 @@ TEST(TelemetryManagerFSM, sendToInitialThroughDataValid){//testing if statements
     telemetryManager telemetryMng;
     telemetryMng.dataError=true;
     telemetryMng.dataValid=true;
-    telemetryMng.setState(reportMode::getInstance());
+    telemetryMng.setState(analyzeDataMode::getInstance());
     telemetryMng.execute(); //this execute allows the machine to set the regularReport variable using if statements in reportMode class
     telemetryMng.setState(sendDataMode::getInstance());
     /***STEPTHROUGH***/
@@ -142,7 +132,7 @@ TEST(TelemetryManagerFSM, sendToObtainThroughDataValid){//testing if statements 
     telemetryManager telemetryMng;
     telemetryMng.dataError=false;
     telemetryMng.dataValid=true;
-    telemetryMng.setState(reportMode::getInstance());
+    telemetryMng.setState(analyzeDataMode::getInstance());
     telemetryMng.execute(); //this execute allows the machine to set the regularReport variable using if statements in reportMode class
     telemetryMng.setState(sendDataMode::getInstance());
     /***STEPTHROUGH***/
@@ -156,7 +146,7 @@ TEST(TelemetryManagerFSM, sendToInitialThroughDataInvalid){//testing if statemen
     telemetryManager telemetryMng;
     telemetryMng.cycleCounter=5;
     telemetryMng.dataValid=false;
-    telemetryMng.setState(reportMode::getInstance());
+    telemetryMng.setState(analyzeDataMode::getInstance());
     telemetryMng.execute(); //this execute allows the machine to set the regularReport variable using if statements in reportMode class
     telemetryMng.setState(sendDataMode::getInstance());
     /***STEPTHROUGH***/
@@ -169,7 +159,7 @@ TEST(TelemetryManagerFSM, sendToObtainThroughDataInvalid){//testing if statement
     /***SETUP***/
     telemetryManager telemetryMng;
     telemetryMng.dataValid=false;
-    telemetryMng.setState(reportMode::getInstance());
+    telemetryMng.setState(analyzeDataMode::getInstance());
     telemetryMng.execute(); //this execute allows the machine to set the regularReport variable using if statements in reportMode class
     telemetryMng.setState(sendDataMode::getInstance());
     /***STEPTHROUGH***/
@@ -229,17 +219,6 @@ TEST(TelemetryManagerFSM, analyzeFail){
     /***SETUP***/
     telemetryManager telemetryMng;
     telemetryMng.setState(analyzeDataMode::getInstance());
-    telemetryMng.fatalFail=true;
-    /***STEPTHROUGH***/
-    telemetryMng.execute();
-    /***ASSERTS***/
-    EXPECT_EQ(*(telemetryMng.getCurrentState()), failureMode::getInstance());
-}
-
-TEST(TelemetryManagerFSM, reportFail){ 
-    /***SETUP***/
-    telemetryManager telemetryMng;
-    telemetryMng.setState(reportMode::getInstance());
     telemetryMng.fatalFail=true;
     /***STEPTHROUGH***/
     telemetryMng.execute();
