@@ -27,7 +27,7 @@ class XBEE{
          * 2. Transfers raw data from variables to struct
          * 3. Updates utcTime and status values in struct as well
          * */
-        virtual void GetResult(Telemetry_PIGO_t *Data) = 0; //Switch to MavLink data (ask Jingting how to feed to Xbee)
+        virtual void GetResult(Telemetry_PIGO_t *data) = 0; //Switch to MavLink data (ask Jingting how to feed to Xbee)
 
         /*Interrupt to send data to ground       
         */
@@ -39,7 +39,7 @@ class XBEE{
          * 3. Updates utcTime and status values in struct as well
          * 4. Wait for FREERTOS to call the Send_Data function
         */
-        virtual void SendResult(Telemetry_POGI_t* Data) = 0;
+        virtual void SendResult(Telemetry_POGI_t* data) = 0;
 };
 
 #endif

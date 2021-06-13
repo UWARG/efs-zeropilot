@@ -35,7 +35,7 @@ struct Telemetry_POGI_t{
 	uint8_t editingFlightPathErrorCode,flightPathFollowingErrorCode; //Flight path error codes
 	uint8_t currentWaypointId, currentWaypointIndex; //current waypoint data
 	bool homeBaseInit; //is home base initialized
-} Telemetry_POGI_t;
+};
 
 struct Telemetry_PIGO_t {
     /* Parameters for the waypoint manager (crusingState) */
