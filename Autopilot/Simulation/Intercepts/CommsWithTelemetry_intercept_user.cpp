@@ -43,7 +43,7 @@ bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
     userPigo[index].waypoints[2].longitude = -155.000;
     userPigo[index].waypoints[2].latitude = 21.322000;
     userPigo[index].waypoints[2].turnRadius = 100;
-
+/*
     if(index==500)
     {
         userPigo[index].beginLanding = true;
@@ -58,7 +58,7 @@ bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
         
     }
 
-  
+*/
     *commands = userPigo[index];
 
     index++;
