@@ -24,7 +24,6 @@ class initialMode: public telemetryState
         initialMode(){}
         initialMode(const initialMode& other);
         initialMode& operator =(const initialMode& other);
-        void TelemCommWithPMInit();
 };
 
 class obtainDataMode: public telemetryState
@@ -67,7 +66,6 @@ class passToPathMode: public telemetryState
         passToPathMode(){}
         passToPathMode(const passToPathMode& other);
         passToPathMode& operator =(const passToPathMode& other);
-        void SendCommandsForPM(Telemetry_PIGO_t _PMData);
 };
 
 class readFromPathMode: public telemetryState
