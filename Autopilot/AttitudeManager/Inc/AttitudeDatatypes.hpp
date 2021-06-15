@@ -16,7 +16,7 @@ typedef struct
     #define R_TAIL_OUT_CHANNEL 1
 #else
     #define ELEVATOR_OUT_CHANNEL 0
-    #define RUDDER_OUT_CHANNEL 6
+    #define RUDDER_OUT_CHANNEL 3
 #endif
 
 #define AILERON_OUT_CHANNEL 1
