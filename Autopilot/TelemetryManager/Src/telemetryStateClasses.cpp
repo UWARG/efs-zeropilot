@@ -29,7 +29,7 @@ telemetryState& initialMode::getInstance()
 void obtainDataMode::execute(telemetryManager* telemetryMgr)
 {
     //obtain data from ground
-    XBEE::Receive_GS_Data(); //Receives data in MavLink form from the XBEE
+    ZPXBEbee.Receive_GS_Data(); //Receives data in MavLink form from the XBEE
 
     //State change:
     if(telemetryMgr -> fatalFail)

@@ -38,6 +38,7 @@ class obtainDataMode: public telemetryState
         obtainDataMode(){}
         obtainDataMode(const obtainDataMode& other);
         obtainDataMode& operator =(const obtainDataMode& other);
+        XBEE ZPXbee;
 };
 
 class decodeDataMode: public telemetryState

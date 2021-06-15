@@ -24,12 +24,12 @@ void SendCommandsForPM(Telemetry_PIGO_t *commands)
     osEvent event = osMailGet(commandsMailQ, 0);
     if(event.status == osEventMail)
     {
-        osMailFree(commandsMailQ, static_cast<PIGO *>(event.value.p));
+        osMailFree(commandsMailQ, static_cast<Telemetry_PIGO_t *>(event.value.p));
     }
 
     //Allocate mail slot
-    PIGO *commandsOut;
-    commandsOut = static_cast<PIGO *>(osMailAlloc(commandsMailQ, osWaitForever));
+    Telemetry_PIGO_t *commandsOut;
+    commandsOut = static_cast<Telemetry_PIGO_t *>(osMailAlloc(commandsMailQ, osWaitForever));
 
     //Fill mail slot with data
     *commandsOut = *commands;
@@ -43,11 +43,11 @@ bool GetTelemData(Telemetry_POGI_t *data)
     
     //Try to get data from mail queue
     osEvent event;
-    POGI * dataIn;
+    Telemetry_POGI_t * dataIn;
     event = osMailGet(telemDataMailQ, 0);
     if(event.status == osEventMail)
     {
-        dataIn = static_cast<PIGO *>(event.value.p);
+        dataIn = static_cast<Telemetry_PIGO_t *>(event.value.p);
 
         //Keep the data and remove it from the queue
         *data = *dataIn;
