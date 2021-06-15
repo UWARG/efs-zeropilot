@@ -5,7 +5,7 @@
 * Author: Lucy Gong, Dhruv Rawat, Anthony Bertnyk
 */
 #include "SensorFusion.hpp"
-#include "MadgwickAHRS.h"
+#include "MahonyAHRS.h"
 #include <cmath>
 #include "imu.hpp"
 #include "gps.hpp"
@@ -124,7 +124,7 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspee
         imudata->magz = 0.0f;
     }
 
-    MadgwickAHRSupdate(imudata->gyrx, imudata->gyry, imudata->gyrz, imudata->accx, imudata->accy, imudata->accz, imudata->magx, imudata->magy, imudata->magz);
+    MahonyAHRSupdateIMU(imudata->gyrx, imudata->gyry, imudata->gyrz, imudata->accx, imudata->accy, imudata->accz);
 
     //Convert quaternion output to angles (in deg)
     imu_RollAngle = atan2f(q0 * q1 + q2 * q3, 0.5f - q1 * q1 - q2 * q2) * 57.29578f;
@@ -132,18 +132,18 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspee
     imu_YawAngle = atan2f(q1 * q2 + q0 * q3, 0.5f - q2 * q2 - q3 * q3) * 57.29578f + 180.0f;
 
     //Convert rate of change of quaternion to angular velocity (in deg/s)
-    imu_RollRate = atan2f(qDot1 * qDot2 + qDot3 * qDot4, 0.5f - qDot2 * qDot2 - qDot3 * qDot3) * 57.29578f;
-    imu_PitchRate = asinf(-2.0f * (qDot2 * qDot4 - qDot1 * qDot3)) * 57.29578f;
-    imu_YawRate = atan2f(qDot2 * qDot3 + qDot1 * qDot4, 0.5f - qDot3 * qDot3 - qDot4 * qDot4) * 57.29578f + 180.0f;
+    //imu_RollRate = atan2f(qDot1 * qDot2 + qDot3 * qDot4, 0.5f - qDot2 * qDot2 - qDot3 * qDot3) * 57.29578f;
+    //imu_PitchRate = asinf(-2.0f * (qDot2 * qDot4 - qDot1 * qDot3)) * 57.29578f;
+    //imu_YawRate = atan2f(qDot2 * qDot3 + qDot1 * qDot4, 0.5f - qDot3 * qDot3 - qDot4 * qDot4) * 57.29578f + 180.0f;
 
     //Transfer Fused IMU data into SF Output struct
     Output->pitch = imu_PitchAngle;
     Output->roll = imu_RollAngle;
     Output->yaw = imu_YawAngle;
 
-    Output->pitchRate = imu_PitchRate;
-    Output->rollRate = imu_RollRate;
-    Output->yawRate = imu_YawRate;
+    //Output->pitchRate = imu_PitchRate;
+    //Output->rollRate = imu_RollRate;
+    //Output->yawRate = imu_YawRate;
 
     //Transfer airspeed data
     Output->airspeed = airspeeddata->airspeed;
@@ -385,8 +385,8 @@ SFError_t SF_GenerateNewResult()
 
     SFError = SF_GetAttitude(&attitudeOutput, &imuData, &airspeedData);
 
-    SFOutput.pitch = attitudeOutput.pitch;
-    SFOutput.roll = attitudeOutput.roll;
+    SFOutput.pitch = (-1) * attitudeOutput.pitch;
+    SFOutput.roll = (-1) * attitudeOutput.roll;
     SFOutput.yaw = attitudeOutput.yaw;
 
     return SFError;

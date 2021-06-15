@@ -28,13 +28,20 @@ void safety_controller_init()
 
 void safety_run(PWMChannel &pwm, PPMChannel &ppm)
 {
+
+    // For the second flight test, AutoPilot only controls elevator and aileron.
     if(AutoPilotEngaged(ppm))
     {
          volatile int16_t *AutoPilotPwmChannel = getPWM();
 
-        for(int channel = 0; channel < 8; channel++)
+        for(int channel = 0; channel < 2; channel++)
         {
             setPWMChannel(pwm, channel, static_cast<uint32_t> (AutoPilotPwmChannel[channel]));
+        }
+        
+        for(int channel = 2; channel < 8; channel++)
+        {
+            setPWMChannel(pwm, channel, (uint32_t) getPPM(ppm, channel));
         }
     }
     else
