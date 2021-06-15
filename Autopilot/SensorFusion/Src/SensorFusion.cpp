@@ -191,9 +191,9 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspee
     Output->roll = imu_RollAngle;
     Output->yaw = imu_YawAngle;
 
-    Output->pitchRate = imu_PitchRate;
-    Output->rollRate = imu_RollRate;
-    Output->yawRate = imu_YawRate;
+    //Output->pitchRate = imu_PitchRate;
+    //Output->rollRate = imu_RollRate;
+    //Output->yawRate = imu_YawRate;
 
     //Transfer airspeed data
     Output->airspeed = airspeeddata->airspeed;
@@ -485,8 +485,8 @@ SFError_t SF_GenerateNewResult()
 
     SFError = SF_GetAttitude(&attitudeOutput, &imuData, &airspeedData);
 
-    SFOutput.pitch = attitudeOutput.pitch;
-    SFOutput.roll = attitudeOutput.roll;
+    SFOutput.pitch = (-1) * attitudeOutput.pitch;
+    SFOutput.roll = (-1) * attitudeOutput.roll;
     SFOutput.yaw = attitudeOutput.yaw;
     SFOutput.altitude = pathOutput.altitude;
     SFOutput.rateOfClimb = pathOutput.rateOfClimb;
