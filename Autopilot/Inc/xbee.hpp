@@ -11,10 +11,10 @@
 
 class XBEE{
     public:
-        /**
-         * Initializes XBEE
-         * */
-        static void Init(); 
+        static XBEE& getInstance();
+
+        //make it a singleton by deleting constructor
+        XBEE(const XBEE*) = delete;
 
         /**
          * Triggers interrupt for new data retrieval by telemManager - stores raw data in variables and returns right away
@@ -39,6 +39,9 @@ class XBEE{
          * 4. Wait for FREERTOS to call the Send_Data function
         */
         static void SendResult(Telemetry_POGI_t* data);
+    
+    private:
+        XBEE();
 };
 
 #endif
