@@ -17,24 +17,24 @@ TimeStampingPOGI::TimeStampingPOGI(){
 //just typical singleton stuff
 
 //Allocates and initializes the static data member pointer (not the object itself)
-TimeStampingPOGI* TimeStampingPOGI::s_Instance = nullptr;
+timeStampingPOGI* timeStampingPOGI::s_Instance = NULL;
 
 //creates the instance if it doesnt exist & returns the pointer to the instance
-TimeStampingPOGI* TimeStampingPOGI::GetInstance(){
+timeStampingPOGI* timeStampingPOGI::GetInstance(){
 
-    if(s_Instance == nullptr){
-        s_Instance = new TimeStampingPOGI();
+    if(s_Instance == NULL){
+        s_Instance = new timeStampingPOGI();
     }
 
     return s_Instance;
 }
 
 
-void TimeStampingPOGI::setGPSTime(GpsData_t* gpsData){
+void timeStampingPOGI::setGPSTime(GpsData_t* gpsData){
 
     //check if its new and set the recentUTCTime to it
     if (gpsData->timeIsNew){
-        __HAL_TIM_SET_COUNTER(&htim12, 0);
+        __HAL_TIM_SET_COUNTER(&htim4, 0);
         recentUTCTime = gpsData->utcTime;
     }
 
@@ -42,10 +42,9 @@ void TimeStampingPOGI::setGPSTime(GpsData_t* gpsData){
 
 
 //call this to receive the milliseconds since midnight (in UTC)
-uint32_t TimeStampingPOGI::getUTCTimeMS(){
-
-    return (recentUTCTime * 1000) + __HAL_TIM_GET_COUNTER(&htim12);
-
+uint32_t timeStampingPOGI::getUTCTimeMS(){
+    
+    return (recentUTCTime*1000) + __HAL_TIM_GET_COUNTER(&htim4);
 }
 
 
