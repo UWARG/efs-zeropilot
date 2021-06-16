@@ -18,8 +18,6 @@ using ::testing::Test;
 // FAKE_VALUE_FUNC(SFError_t, SF_GetResult, SFOutput_t *);
 // FAKE_VALUE_FUNC(IMU_Data_t, SF_GetRawIMU);
 
-
-
 class TelemetryManagerFSM : public ::testing::Test
 {
 	public:
