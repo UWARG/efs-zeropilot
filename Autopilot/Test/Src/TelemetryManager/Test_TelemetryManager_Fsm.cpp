@@ -17,12 +17,6 @@ using ::testing::Test;
 // FAKE_VALUE_FUNC(bool, GetFromAMToPM, AttitudeData*);
 // FAKE_VALUE_FUNC(SFError_t, SF_GetResult, SFOutput_t *);
 // FAKE_VALUE_FUNC(IMU_Data_t, SF_GetRawIMU);
-// FAKE_VOID_FUNC(AutoSteer_Init);
-// FAKE_VOID_FUNC(CommWithAMInit);
-// FAKE_VOID_FUNC(SendCommandsForAM, CommandsForAM*);
-// FAKE_VOID_FUNC(CommWithTelemInit);
-// FAKE_VALUE_FUNC(bool, GetTelemetryCommands, Telemetry_PIGO_t*);
-// FAKE_VALUE_FUNC(bool, GetAttitudeData, AttitudeData*);
 
 class TelemetryManagerFSM : public ::testing::Test
 {
