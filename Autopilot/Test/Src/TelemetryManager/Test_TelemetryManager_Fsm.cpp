@@ -23,9 +23,6 @@ using ::testing::Test;
 // FAKE_VOID_FUNC(CommWithTelemInit);
 // FAKE_VALUE_FUNC(bool, GetTelemetryCommands, Telemetry_PIGO_t*);
 // FAKE_VALUE_FUNC(bool, GetAttitudeData, AttitudeData*);
-// FAKE_VOID_FUNC(AutoSteer_ComputeCoordinatedTurn, CoordinatedTurnInput_t*, CoordinatedTurnAttitudeManagerCommands_t*);
-// FAKE_VOID_FUNC(AutoSteer_ComputeAltitudeAndAirspeed, AltitudeAirspeedInput_t*, AltitudeAirspeedCommands_t*);
-
 
 class TelemetryManagerFSM : public ::testing::Test
 {
@@ -33,14 +30,6 @@ class TelemetryManagerFSM : public ::testing::Test
 
 		virtual void SetUp()
 		{
-			// RESET_FAKE(InitialStateIsInitialMode);
-			// RESET_FAKE(SendFromPMToAM);
-			// RESET_FAKE(GetFromAMToPM);
-			// RESET_FAKE(SF_GetResult);
-			// RESET_FAKE(SF_GetRawIMU);
-			// RESET_FAKE(AutoSteer_Init);
-			// RESET_FAKE(CommWithAMInit);
-			// RESET_FAKE(SendCommandsForAM);
 			// RESET_FAKE(GetAttitudeData);
 			// RESET_FAKE(AutoSteer_ComputeCoordinatedTurn);
 			// RESET_FAKE(AutoSteer_ComputeAltitudeAndAirspeed);
