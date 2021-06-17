@@ -67,6 +67,21 @@ static bool dataIsNew;
 static void AssertSlaveSelect(void);
 static void DeassertSlaveSelect(void);
 
+
+/********************TEMPORARY FOR DATA COLLECTION*****************************************/
+static int16_t accXLog[2000];
+static int16_t accYLog[2000];
+static int16_t accZLog[2000];
+
+static int16_t gyrXLog[2000];
+static int16_t gyrYLog[2000];
+static int16_t gyrZLog[2000];
+
+static uint16_t index;
+static uint8_t cnter;
+
+/********************TEMPORARY FOR DATA COLLECTION*****************************************/
+
 /***********************************************************************************************************************
  * Public methods
  ***********************************************************************:D**********************************************/
@@ -106,6 +121,27 @@ void BMX160::GetResult(IMUData_t &Data)
     Data.gyrx = (static_cast<float> (gyrx) / GYRO_RANGE_1000_FACTOR) - ImuCalibrationFinal.gyrx;
     Data.gyry = (static_cast<float> (gyry) / GYRO_RANGE_1000_FACTOR) - ImuCalibrationFinal.gyry;
     Data.gyrz = (static_cast<float> (gyrz) / GYRO_RANGE_1000_FACTOR) - ImuCalibrationFinal.gyrz;
+
+/********************TEMPORARY FOR DATA COLLECTION*****************************************/
+    
+    cnter ++;
+
+    if( (cnter == 200) && (index < 2000) )
+    {
+        cnter = 0;
+
+        accXLog[index] = accx;
+        accYLog[index] = accy;
+        accZLog[index] = accz;
+
+        gyrXLog[index] = gyrx;
+        gyrYLog[index] = gyry;
+        gyrZLog[index] = gyrz;
+
+        index ++;
+    }
+
+/********************TEMPORARY FOR DATA COLLECTION*****************************************/
 
     if (! dataIsNew)
     {

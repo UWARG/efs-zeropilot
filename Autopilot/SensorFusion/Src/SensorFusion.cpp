@@ -498,12 +498,38 @@ SFError_t SF_GenerateNewResult()
     return SFError;
 }
 
+
+/********************TEMPORARY FOR DATA COLLECTION*****************************************/
+static float rollLog[2000];
+static float pitchLog[2000];
+
+static uint16_t index;
+static uint8_t cnter;
+
+/********************TEMPORARY FOR DATA COLLECTION*****************************************/
+
+
 SFError_t SF_GetResult(SFOutput_t *output)
 {
     SFError_t SFError;
     SFError.errorCode = 0;
 
     *output = SFOutput;
+
+/********************TEMPORARY FOR DATA COLLECTION*****************************************/
+    cnter ++;
+
+    if( (cnter == 200) && (index < 2000) )
+    {
+        cnter = 0;
+
+        rollLog[index] = SFOutput.roll;
+        pitchLog[index] = SFOutput.pitch;
+
+        index ++;
+    }
+
+/********************TEMPORARY FOR DATA COLLECTION*****************************************/
 
     return SFError;
 }
