@@ -23,7 +23,7 @@ class telemetryManager
         bool dataError;
         bool regularReport; //for convinience
         bool fatalFail = false; //any point in the states, set this variable to transition to failed state
-        int cycleCounter = 0;
+        int failCycleCounter = 0;
         telemMan::_Telemetry_Manager_Cycle_Status getStatus() {return status;}
     private:
         telemetryState* currentState; //state of the manager
