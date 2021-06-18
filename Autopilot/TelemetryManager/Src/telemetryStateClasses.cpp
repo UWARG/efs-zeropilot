@@ -127,16 +127,16 @@ void analyzeDataMode::execute(telemetryManager* telemetryMgr)
         telemetryMgr->dataValid &= (_PMData.homebase.waypointType == 0 || _PMData.homebase.waypointType == 1 || _PMData.homebase.waypointType == 2);
     }
     telemetryMgr->dataValid &= _PMData.modifyId > 0;
-    telemetryMgr->dataValid &= _PMData.nextId > 0;
-    telemetryMgr->dataValid &= _PMData.prevId > 0;
+    telemetryMgr->dataValid &= _PMData.nextId > 0 && _PWData.nextId < 360;
+    telemetryMgr->dataValid &= _PMData.prevId > 0 && _PWData.prevId < 360;
     telemetryMgr->dataValid &= _PMData.stoppingAltitude >= 0;
-    telemetryMgr->dataValid &= _PMData.stoppingDirectionHeading >= 0;
-    telemetryMgr->dataValid &= _PMData.stoppingLatitude >= 0;
-    telemetryMgr->dataValid &= _PMData.stoppingLongitude >= 0;
+    telemetryMgr->dataValid &= _PMData.stoppingDirectionHeading >= 0 && _PWData.stoppingDirectionHeading < 360;
+    telemetryMgr->dataValid &= _PMData.stoppingLatitude >= 0 && _PWData.stoppingLatitude < 360;
+    telemetryMgr->dataValid &= _PMData.stoppingLongitude >= 0 && _PWData.stoppingLongitude < 360;
     telemetryMgr->dataValid &= _PMData.takeoffDirectionHeading >= 0;
     telemetryMgr->dataValid &= _PMData.waypointModifyFlightPathCommand > 0 && _PMData.waypointModifyFlightPathCommand <= 6;
     telemetryMgr->dataValid &= _PMData.waypointNextDirectionsCommand > 0 && _PMData.waypointNextDirectionsCommand <= 2;
-    if((_PMData.waypoints == 0 && _PMData.waypoints != nullptr) || _PMData.waypoints < 0) {
+    if((_PMData.numWaypoints == 0 && _PMData.waypoints != nullptr) || _PMData.waypoints < 0) {
         telemetryMgr->dataValid = false;
     }
     else if(_PMData.waypoints > 0 && _PMData.waypoints == nullptr) {

@@ -33,6 +33,7 @@ class obtainDataMode: public telemetryState
         void execute(telemetryManager* telemetryMgr);
         void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
         static telemetryState& getInstance();
+	static XBEE& getInstance();
 
     private:
         obtainDataMode(){}
