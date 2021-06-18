@@ -79,3 +79,5 @@ cmake-build-*/
 
 # Simulation
 **/SimulationBuild/**
+
+.idea/
