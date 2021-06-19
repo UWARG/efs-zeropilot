@@ -94,11 +94,8 @@ void commsWithTelemetry::execute(pathManager* pathMgr)
 {
     GetTelemetryCommands(&_incomingData);
 
-    static float gimbalPercentPitch = getPitchPercent(_incomingData.gimbalPitch);
-    static float gimbalPercentYaw = getYawPercent(_incomingData.gimbalYaw);
-
-    Interchip_SetPWM(3, gimbalPercentPitch);
-    Interchip_SetPWM(7, gimbalPercentYaw);
+    setPitchPercent(_incomingData.gimbalPitch);
+    setYawPercent(_incomingData.gimbalYaw);
 
     if(pathMgr->isError)
     {

@@ -6,5 +6,9 @@
 #ifndef GIMBAL_HPP
 #define GIMBAL_HPP
 
-float getPitchPercent();
-float getYawPercent();
+#include <stdint.h>
+
+void setPitchPercent();
+void setYawPercent();
+
+#endif

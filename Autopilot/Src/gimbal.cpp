@@ -8,16 +8,16 @@
 static const float gimbalMaxPitch = 3.14159;
 static const float gimbalMaxYaw = 3.14159/2;
 
-float getPitchPercent(float pitchTarget) {
+void setPitchPercent(float pitchTarget) {
     // returns target pitch as a percentage of the gimbal
     float gimbalPercentPitch = 100 * pitchTarget / gimbalMaxPitch;
     if(gimbalPercentPitch > 100) {
         gimbalPercentPitch = 100;
     }
-    return gimbalPercentPitch
+    Interchip_SetPWM(3, gimbalPercentPitch);
 }
 
-float getYawPercent(float yawTarget){
+void setYawPercent(float yawTarget){
     // returns target yaw as a percentage of the gimbal
     float gimbalPercentYaw = 50 + 50 * yawTarget / gimbalMaxYaw;
     if(gimbalPercentYaw < 0){
@@ -25,5 +25,5 @@ float getYawPercent(float yawTarget){
     }else if(gimbalPercentYaw > 100){
         gimbalPercentYaw = 100;
     }
-    return gimbalPercentYaw
+    Interchip_SetPWM(7, gimbalPercentYaw);
 }
