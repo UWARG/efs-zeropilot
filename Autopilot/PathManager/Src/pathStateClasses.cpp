@@ -94,40 +94,8 @@ void commsWithTelemetry::execute(pathManager* pathMgr)
 {
     GetTelemetryCommands(&_incomingData);
 
-    // incoming angles are radians
-    static float gimbalMaxPitch = 3.14159;
-    static float gimbalMaxYaw = 3.14159/2;
-    // pitch 0 = straight ahead
-    // yaw pi/2 = straight ahead.
-    static float gimbalTargetPitch = _incomingData.gimbalPitch;
-    static float gimbalTargetYaw = _incomingData.gimbalYaw;
-
-    // max rotation 0 -> pi radians on the motors.
-    // servo dead band width of 4 microseconds
-    // pulse period of 20ms
-    // Pulse width 500-2500
-    // duty ratio 0.5 - 2.5 ms
-
-
-    // these can be changed depending on the airframe reference.
-    float gimbalPercentPitch = 100 * gimbalTargetPitch /gimbalMaxPitch;
-
-    // gimbalPercentYaw has
-    float gimbalPercentYaw = 50 + 50 * gimbalTargetYaw / gimbalMaxYaw;
-    // gimbalTargetYaw goes between pi/2 and -pi/2 (both extremes).
-    // ie gimbalTargetYaw -pi/2, then gimbalPercentYaw = 50 - 50*1 = 0% (full left)
-    // if gimbalTargetYaw = pi/2, then gimbalPercentYaw = 50 + 50*1 = 100% (full right)
-
-    // setting soft limits
-    if(gimbalPercentPitch > 100) {
-        gimbalPercentPitch = 100;
-    }
-
-    if(gimbalPercentYaw < 0){
-        gimbalPercentYaw = 0;
-    }else if(gimbalPercentYaw > 100){
-        gimbalPercentYaw = 100;
-    }
+    static float gimbalPercentPitch = getPitchPercent(_incomingData.gimbalPitch);
+    static float gimbalPercentYaw = getYawPercent(_incomingData.gimbalYaw);
 
     Interchip_SetPWM(3, gimbalPercentPitch);
     Interchip_SetPWM(7, gimbalPercentYaw);
