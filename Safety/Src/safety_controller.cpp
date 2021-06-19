@@ -37,13 +37,13 @@ void safety_run(PWMChannel &pwm, PPMChannel &ppm)
         // only elevator controlled by AutoPilot
         setPWMChannel(pwm, 0, (uint32_t) getPPM(ppm, 0));
         setPWMChannel(pwm, 1, static_cast<uint32_t> (AutoPilotPwmChannel[1]));
-        setPWMChannel(pwm, 3, static_cast<uint32_t> (AutopilotPwmChannel[3]));
+        setPWMChannel(pwm, 3, static_cast<uint32_t> (AutoPilotPwmChannel[3]));
         setPWMChannel(pwm, 7, static_cast<uint32_t> (AutoPilotPwmChannel[7]));
 
-        setPWMChannel(pwm, 2, (uint32_t) getPPM(ppm, channel));
-        setPWMChannel(pwm, 4, (uint32_t) getPPM(ppm, channel));
-        setPWMChannel(pwm, 5, (uint32_t) getPPM(ppm, channel));
-        setPWMChannel(pwm, 6, (uint32_t) getPPM(ppm, channel));
+        setPWMChannel(pwm, 2, (uint32_t) getPPM(ppm, 2));
+        setPWMChannel(pwm, 4, (uint32_t) getPPM(ppm, 4));
+        setPWMChannel(pwm, 5, (uint32_t) getPPM(ppm, 5));
+        setPWMChannel(pwm, 6, (uint32_t) getPPM(ppm, 6));
     }
     else
     {
