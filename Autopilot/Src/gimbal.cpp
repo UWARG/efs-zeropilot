@@ -3,7 +3,7 @@
 //
 
 #include "Interchip_A.h"
-#include <gimbal.hpp>
+#include "gimbal.hpp"
 
 static const float gimbalMaxPitch = 3.14159;
 static const float gimbalMaxYaw = 3.14159/2;
