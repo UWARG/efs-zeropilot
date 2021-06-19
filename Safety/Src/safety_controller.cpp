@@ -30,7 +30,14 @@ void safety_run(PWMChannel &pwm, PPMChannel &ppm)
 {
 
     // TODO: add grabber control which is ppm either > or < 50 (open or close).
-        // note that this servo can be set to not be at max rotation (to prevent burnout).
+        // note that this servo need not be at max rotation (to prevent burnout).
+    int grabber_rx_channel = 0;
+    int grabber_pwm_channel = 9;
+    if (getPPM(ppm, grabber_rx_channel)>50){
+        setPWMChannel(pwm, grabber_pwm_channel, 75);
+    } else {
+        setPWMChannel(pwm, grabber_pwm_channel, 25);
+    }
     // For the second flight test, AutoPilot only controls elevator and aileron.
     if(AutoPilotEngaged(ppm))
     {
