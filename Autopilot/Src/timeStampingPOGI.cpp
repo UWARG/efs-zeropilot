@@ -1,5 +1,5 @@
 
-#include "TimeStampingPOGI.hpp"
+#include "timeStampingPOGI.hpp"
 #include "tim.h"
 #include "stm32f7xx_hal_tim.h"
 
