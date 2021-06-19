@@ -124,7 +124,7 @@ void sendToSafetyMode::execute(attitudeManager* attitudeMgr)
 {
     SendToSafety_error_t ErrorStruct;
     float *channelOut = OutputMixingMode::GetChannelOut();
-    for(int channel = 0; channel < 4; channel++) //change this to 4
+    for(int channel = 0; channel < 8; channel++) //we use up to 7
     {
         ErrorStruct = SendToSafety_Execute(channel, channelOut[channel]);
         if(ErrorStruct.errorCode == 1)
