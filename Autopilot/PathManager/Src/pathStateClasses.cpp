@@ -96,7 +96,9 @@ void commsWithTelemetry::execute(pathManager* pathMgr)
 
     // incoming angles are radians
     static float gimbalMaxPitch = 3.14159;
-    static float gimbalMaxYaw = 3.14159;
+    static float gimbalMaxYaw = 3.14159/2;
+    // pitch 0 = straight ahead
+    // yaw pi/2 = straight ahead.
     static float gimbalTargetPitch = _incomingData.gimbalPitch;
     static float gimbalTargetYaw = _incomingData.gimbalYaw;
 
@@ -107,27 +109,24 @@ void commsWithTelemetry::execute(pathManager* pathMgr)
     // duty ratio 0.5 - 2.5 ms
 
 
-    // these can be changed depending on the airframe.
+    // these can be changed depending on the airframe reference.
     float gimbalPercentPitch = 100 * gimbalTargetPitch /gimbalMaxPitch;
-    float gimbalPercentYaw = 100 * gimbalTargetYaw / gimbalMaxYaw;
 
+    float gimbalPercentYaw = 50 + 100 * gimbalTargetYaw / gimbalMaxYaw;
+
+    // setting soft limits
     if(gimbalPercentPitch > 100) {
         gimbalPercentPitch = 100;
     }
-    if(gimbalPercentYaw > 100) {
+
+    if(gimbalPercentYaw < 0){
+        gimbalPercentYaw = 0;
+    }else if(gimablPercentYaw > 100){
         gimbalPercentYaw = 100;
     }
 
     Interchip_A::Interchip_SetPWM(3, gimbalPercentPitch);
     Interchip_A::Interchip_SetPWM(7, gimbalPercentYaw);
-
-    // use 3 & 7 on command void Interchip_SetPWM(int index,int data);
-    // this is just 0 = 0% rotation, 100 = 100% rotation.
-
-    //_incomingData from TelemPathInterface.hpp
-    // calculate pwm from &_incomingData
-    // comms with attitude getter
-    // add new vals for servos for attitude manager
 
     if(pathMgr->isError)
     {
