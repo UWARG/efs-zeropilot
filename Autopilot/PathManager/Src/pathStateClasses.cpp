@@ -121,12 +121,12 @@ void commsWithTelemetry::execute(pathManager* pathMgr)
 
     if(gimbalPercentYaw < 0){
         gimbalPercentYaw = 0;
-    }else if(gimablPercentYaw > 100){
+    }else if(gimbalPercentYaw > 100){
         gimbalPercentYaw = 100;
     }
 
-    Interchip_A::Interchip_SetPWM(3, gimbalPercentPitch);
-    Interchip_A::Interchip_SetPWM(7, gimbalPercentYaw);
+    Interchip_SetPWM(3, gimbalPercentPitch);
+    Interchip_SetPWM(7, gimbalPercentYaw);
 
     if(pathMgr->isError)
     {
