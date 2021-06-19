@@ -126,7 +126,7 @@ void BMX160::GetResult(IMUData_t &Data)
     
     cnter ++;
 
-    if( (cnter == 200) && (index < 2000) )
+    if( (cnter == 50) && (index < 2000) )
     {
         cnter = 0;
 

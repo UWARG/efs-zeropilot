@@ -35,8 +35,8 @@ void safety_run(PWMChannel &pwm, PPMChannel &ppm)
          volatile int16_t *AutoPilotPwmChannel = getPWM();
 
         // only elevator controlled by AutoPilot
-        setPWMChannel(pwm, 0, static_cast<uint32_t> (AutoPilotPwmChannel[0]));
-        setPWMChannel(pwm, 1, (uint32_t) getPPM(ppm, 1));
+        setPWMChannel(pwm, 0, (uint32_t) getPPM(ppm, 0));
+        setPWMChannel(pwm, 1, static_cast<uint32_t> (AutoPilotPwmChannel[1]));
 
         for(int channel = 2; channel < 8; channel++)
         {
