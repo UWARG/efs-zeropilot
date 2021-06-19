@@ -95,12 +95,36 @@ void commsWithTelemetry::execute(pathManager* pathMgr)
 {
     GetFromTMToPM(&_incomingData);
 
-    /**
-     * 
-     * NEED TO SET THE OUTPUT STRUCT
-     * 
-     */
 
+
+    // Populate outgoing struct
+
+    // Get relevant data
+    Gps_Data_t gpsData = SF_GetRawGPS();
+    Altimeter_Data_t altData = SF_GetRawAltimeter();
+    Airspeed_Data_t airspData = SF_GetRawAirspeed();
+    SFOutput_t * sensFusionOutput = sensorFusion::GetSFOutput(); 
+    _CruisingState_Telemetry_Return* cruisingStateReturn = cruisingState::GetErrorCodes();
+
+    // Populate struct
+    _outgoingData.errorCode = true == pathMgr->isError;
+    _outgoingData.gpsLattitude = gpsData.latitude;
+    _outgoingData.gpsLongitude = gpsData.longitude;
+    _outgoingData.curAltitude = altData.altitude;
+    _outgoingData.curAirspeed = airspData.airspeed;
+    _outgoingData.roll = nullptr != sensFusionOutput ? sensFusionOutput->roll : 0;
+    _outgoingData.pitch = nullptr != sensFusionOutput ? sensFusionOutput->pitch : 0;
+    _outgoingData.yaw = nullptr != sensFusionOutput ? sensFusionOutput->yaw : 0;
+    _outgoingData.camRoll = 0; // No way of measuring
+    _outgoingData.camPitch = 0; // No way of measuring
+    _outgoingData.camYaw = 0; // No way of measuring
+    _outgoingData.editingFlightPathErrorCode = nullptr != cruisingStateReturn ? (uint8_t) cruisingStateReturn->editingFlightPathErrorCode : 0;
+    _outgoingData.flightPathFollowingErrorCode = nullptr != cruisingStateReturn ? (uint8_t) cruisingStateReturn->pathFollowingErrorCode : 0;
+    _outgoingData.currentWaypointId = nullptr != cruisingStateReturn ? cruisingStateReturn->currentWaypointId : 0;
+    _outgoingData.currentWaypointIndex = nullptr != cruisingStateReturn ? cruisingStateReturn->currentWaypointIndex : 0;
+    _outgoingData.homeBaseInit = nullptr != cruisingStateReturn ? cruisingStateReturn->homeBaseInitialized : 0;
+
+    // Send data out
     SendFromPMToTM(&_outgoingData);
 
     if(pathMgr->isError)
