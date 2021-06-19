@@ -63,8 +63,14 @@ struct Telemetry_PIGO_t {
     double stoppingLatitude;
     float stoppingAltitude;
     float takeoffDirectionHeading;
-    // Struct for stopping point gps coordinates
 
+    // Gimbal Commands
+    float gimbalPitch;
+    float gimbalYaw;
+
+    // Ground Commands
+    float groundCommandsHeading;
+    float latestDistance;
 };
 
 //RTOS stuff that the cpp files need

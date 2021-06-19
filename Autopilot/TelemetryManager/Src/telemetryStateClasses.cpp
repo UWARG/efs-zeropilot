@@ -15,10 +15,6 @@ Telemetry_PIGO_t decodeDataMode::_decodedPMData;
 Telemetry_POGI_t readFromPathMode::_rawGSData;
 Telemetry_POGI_t encodeDataMode::_encodedGSData; // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
 
-#ifdef UNIT_TESTING
-    XBEE* obtainDataMode::ZPXbee;
-#endif
-
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
@@ -143,13 +139,20 @@ telemetryState& readFromPathMode::getInstance()
     return singleton;
 }
 
+#include <iostream>
+using namespace std;
+
 void analyzeDataMode::execute(telemetryManager* telemetryMgr)
 {
     // Get decoded data 
     Telemetry_PIGO_t* pmData = decodeDataMode::getDecodedPMData(); 
 
+    /*********
+     *  TODO, CLEAN THIS UP
+     *********/ 
+
     // Evaluate if the received data is valid
-    telemetryMgr->dataValid = 1;
+    telemetryMgr->dataValid = true;
     telemetryMgr->dataValid &= pmData->holdingAltitude >= 20;
     telemetryMgr->dataValid &= pmData->holdingTurnDirection == 1 || pmData->holdingTurnDirection == 0;
     telemetryMgr->dataValid &= pmData->holdingTurnRadius > 10;
@@ -170,13 +173,28 @@ void analyzeDataMode::execute(telemetryManager* telemetryMgr)
     if((pmData->numWaypoints == 0 && pmData->waypoints != nullptr) || pmData->numWaypoints < 0 || (pmData->numWaypoints > 0 && pmData->waypoints == nullptr)) {
         telemetryMgr->dataValid = false;
     }
-    
+    telemetryMgr->dataValid &= pmData->gimbalPitch >= 0 && pmData->gimbalPitch <= ZP_PI;
+    telemetryMgr->dataValid &= (pmData->gimbalYaw >= -1 * ZP_PI/2) && pmData->gimbalYaw <= ZP_PI/2;
+    telemetryMgr->dataValid &= pmData->groundCommandsHeading >= 0 && pmData->groundCommandsHeading < 360;
+    telemetryMgr->dataValid &= pmData->latestDistance >= 0;
+
     if(telemetryMgr->dataValid) {
         telemetryMgr->failCycleCounter = 0;
+        if (telemetryMgr->dataError) {
+            telemetryMgr->regularReport = false;
+        } else {
+            telemetryMgr->regularReport = true;
+        }
     }
     else {
         telemetryMgr->failCycleCounter++;
-        if(telemetryMgr->failCycleCounter++ > 50) {
+        telemetryMgr->regularReport = false;
+
+        if (telemetryMgr->failCycleCounter < 5) {
+            telemetryMgr->regularReport = true;
+        }
+
+        if(telemetryMgr->failCycleCounter > 50) {
             telemetryMgr->fatalFail = true;
         }
     }
@@ -188,7 +206,7 @@ void analyzeDataMode::execute(telemetryManager* telemetryMgr)
     }
     else
     {
-        telemetryMgr->setState(analyzeDataMode::getInstance());
+        telemetryMgr->setState(encodeDataMode::getInstance());
     }
 }
 

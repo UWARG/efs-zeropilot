@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "fff.h"
 
-#include <SensorFusion.hpp>
+#include "SensorFusion.hpp"
 
 using namespace std;
 using ::testing::Test;
