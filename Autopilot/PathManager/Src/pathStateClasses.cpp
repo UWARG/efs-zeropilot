@@ -94,6 +94,41 @@ void commsWithTelemetry::execute(pathManager* pathMgr)
 {
     GetTelemetryCommands(&_incomingData);
 
+    // incoming angles are radians
+    static float gimbalMaxPitch = 3.14159;
+    static float gimbalMaxYaw = 3.14159;
+    static float gimbalTargetPitch = _incomingData.gimbalPitch;
+    static float gimbalTargetYaw = _incomingData.gimbalYaw;
+
+    // max rotation 0 -> pi radians on the motors.
+    // servo dead band width of 4 microseconds
+    // pulse period of 20ms
+    // Pulse width 500-2500
+    // duty ratio 0.5 - 2.5 ms
+
+
+    // these can be changed depending on the airframe.
+    float gimbalPercentPitch = 100 * gimbalTargetPitch /gimbalMaxPitch;
+    float gimbalPercentYaw = 100 * gimbalTargetYaw / gimbalMaxYaw;
+
+    if(gimbalPercentPitch > 100) {
+        gimbalPercentPitch = 100;
+    }
+    if(gimbalPercentYaw > 100) {
+        gimbalPercentYaw = 100;
+    }
+
+    Interchip_A::Interchip_SetPWM(3, gimbalPercentPitch);
+    Interchip_A::Interchip_SetPWM(7, gimbalPercentYaw);
+
+    // use 3 & 7 on command void Interchip_SetPWM(int index,int data);
+    // this is just 0 = 0% rotation, 100 = 100% rotation.
+
+    //_incomingData from TelemPathInterface.hpp
+    // calculate pwm from &_incomingData
+    // comms with attitude getter
+    // add new vals for servos for attitude manager
+
     if(pathMgr->isError)
     {
         pathMgr->setState(fatalFailureMode::getInstance());
