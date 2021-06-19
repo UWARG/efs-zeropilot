@@ -34,7 +34,7 @@ void TimeStampingPOGI::setGPSTime(GpsData_t* gpsData){
 
     //check if its new and set the recentUTCTime to it
     if (gpsData->timeIsNew){
-        __HAL_TIM_SET_COUNTER(&htim4, 0);
+        __HAL_TIM_SET_COUNTER(&htim12, 0);
         recentUTCTime = gpsData->utcTime;
     }
 
@@ -44,7 +44,7 @@ void TimeStampingPOGI::setGPSTime(GpsData_t* gpsData){
 //call this to receive the milliseconds since midnight (in UTC)
 uint32_t TimeStampingPOGI::getUTCTimeMS(){
 
-    return (recentUTCTime * 1000) + __HAL_TIM_GET_COUNTER(&htim4);
+    return (recentUTCTime * 1000) + __HAL_TIM_GET_COUNTER(&htim12);
 
 }
 
