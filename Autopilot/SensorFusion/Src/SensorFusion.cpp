@@ -392,7 +392,7 @@ SFError_t SF_GenerateNewResult()
     return SFError;
 }
 
-
+#ifdef TARGET_BUILD
 /********************TEMPORARY FOR DATA COLLECTION*****************************************/
 static float rollLog[2000];
 static float pitchLog[2000];
@@ -401,7 +401,7 @@ static uint16_t index;
 static uint8_t cnter;
 
 /********************TEMPORARY FOR DATA COLLECTION*****************************************/
-
+#endif
 
 SFError_t SF_GetResult(SFOutput_t *output)
 {
@@ -410,6 +410,7 @@ SFError_t SF_GetResult(SFOutput_t *output)
 
     *output = SFOutput;
 
+#ifdef TARGET_BUILD
 /********************TEMPORARY FOR DATA COLLECTION*****************************************/
     cnter ++;
 
@@ -424,6 +425,7 @@ SFError_t SF_GetResult(SFOutput_t *output)
     }
 
 /********************TEMPORARY FOR DATA COLLECTION*****************************************/
+#endif
 
     return SFError;
 }
