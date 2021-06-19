@@ -112,7 +112,11 @@ void commsWithTelemetry::execute(pathManager* pathMgr)
     // these can be changed depending on the airframe reference.
     float gimbalPercentPitch = 100 * gimbalTargetPitch /gimbalMaxPitch;
 
-    float gimbalPercentYaw = 50 + 100 * gimbalTargetYaw / gimbalMaxYaw;
+    // gimbalPercentYaw has
+    float gimbalPercentYaw = 50 + 50 * gimbalTargetYaw / gimbalMaxYaw;
+    // gimbalTargetYaw goes between pi/2 and -pi/2 (both extremes).
+    // ie gimbalTargetYaw -pi/2, then gimbalPercentYaw = 50 - 50*1 = 0% (full left)
+    // if gimbalTargetYaw = pi/2, then gimbalPercentYaw = 50 + 50*1 = 100% (full right)
 
     // setting soft limits
     if(gimbalPercentPitch > 100) {
