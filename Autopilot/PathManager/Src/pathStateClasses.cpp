@@ -5,6 +5,7 @@
  **********************************************************************************************************************/
 
 Telemetry_PIGO_t commsWithTelemetry::_incomingData;
+Telemetry_POGI_t commsWithTelemetry::_outgoingData;
 _CruisingState_Telemetry_Return cruisingState::_returnToGround;
 _WaypointManager_Data_In cruisingState::_inputdata;
 _WaypointManager_Data_Out cruisingState::_outputdata;
@@ -92,7 +93,15 @@ pathManagerState& commsWithAttitude::getInstance()
 
 void commsWithTelemetry::execute(pathManager* pathMgr)
 {
-    GetTelemetryCommands(&_incomingData);
+    GetFromTMToPM(&_incomingData);
+
+    /**
+     * 
+     * NEED TO SET THE OUTPUT STRUCT
+     * 
+     */
+
+    SendFromPMToTM(&_outgoingData);
 
     if(pathMgr->isError)
     {

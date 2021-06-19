@@ -11,19 +11,19 @@
 /**
  * Initiate communication with telemetry.
  */
-void CommWithTelemInit();
+void CommFromPMToTMInit();
 
 /**
  * Send path manager data to telemetry.
  * @param[in]   data   Pointer to struct with data.
  */
-void SendPathData(Telemetry_POGI_t *data);
+void SendFromPMToTM(Telemetry_POGI_t *commands);
 
 /**
  * Retrieve commands from the path manager.
  * @param[out]   commands   Pointer to struct to recieve commands.
  * @return True if commands were recieved.
  */
-bool GetTelemetryCommands(Telemetry_PIGO_t *commands);
+bool GetFromPMToTM(Telemetry_POGI_t *commands);
 
 #endif

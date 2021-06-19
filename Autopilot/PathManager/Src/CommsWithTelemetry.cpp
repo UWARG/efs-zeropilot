@@ -10,49 +10,50 @@ extern "C"
 #include "cmsis_os.h"
 }
 
-//Set up a mail queue for sending commands to the attitude manager
-osMailQDef(commandsMailQ, PATH_TELEM_MAIL_Q_SIZE, dataOut);
-osMailQId commandsMailQID;
+//Set up a mail queue for sending data to telemetry
+osMailQDef(telemDataMailQ, PATH_TELEM_MAIL_Q_SIZE, Telemetry_POGI_t);
+osMailQId telemDataMailQID;
 
-void CommWithTelemInit()
+void CommFromPMToTMInit()
 {
-    telemDataMailQ = osMailCreate(osMailQ(telemDataMailQ), NULL);
+    telemDataMailQID = osMailCreate(osMailQ(telemDataMailQ), NULL);
 }
 
-void SendPathData(Telemetry_POGI_t *data)
+// Send data from path manager to telemetry manager
+void SendFromPMToTM(Telemetry_POGI_t *commands)
 {
     //Remove previous data from mail queue if it exists
-    osEvent event = osMailGet(telemDataMailQ, 0);
+    osEvent event = osMailGet(telemDataMailQID, 0);
     if(event.status == osEventMail)
     {
-        osMailFree(telemDataMailQ, static_cast<Telemetry_POGI_t *>(event.value.p));
+        osMailFree(telemDataMailQID, static_cast<Telemetry_POGI_t *>(event.value.p));
     }
 
     //Allocate mail slot
-    Telemetry_POGI_t *dataOut;
-    dataOut = static_cast<Telemetry_POGI_t *>(osMailAlloc(telemDataMailQ, osWaitForever));
+    Telemetry_POGI_t *commandsOut;
+    commandsOut = static_cast<Telemetry_POGI_t *>(osMailAlloc(telemDataMailQID, osWaitForever));
     //Fill mail slot with data
-    *dataOut = *data;
+    *commandsOut = *commands;
 
     //Post mail slot to mail queue
-    osMailPut(telemDataMailQ, dataOut);
+    osMailPut(telemDataMailQID, commandsOut);
 }
 
-bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
+// Get data from telemetry manager
+bool GetFromPMToTM(Telemetry_POGI_t *commands)
 {
     
     //Try to get commands from mail queue
     osEvent event;
     Telemetry_POGI_t * commandsIn;
-    event = osMailGet(PMcommandsMailQ, 0);
+    event = osMailGet(telemDataMailQID, 0);
     if(event.status == osEventMail)
     {
         commandsIn = static_cast<Telemetry_POGI_t *>(event.value.p);
 
         //Keep the command and remove it from the queue
-        Telemetry_POGI_t * commands;
         *commands = *commandsIn;
-        osMailFree(PMcommandsMailQ, commandsIn);
+        osMailFree(telemDataMailQID, commandsIn);
         return true;
     }
     else
@@ -63,3 +64,4 @@ bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
     
     return true;
 }
+
