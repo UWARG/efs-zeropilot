@@ -519,7 +519,7 @@ SFError_t SF_GetResult(SFOutput_t *output)
 /********************TEMPORARY FOR DATA COLLECTION*****************************************/
     cnter ++;
 
-    if( (cnter == 200) && (index < 2000) )
+    if( (cnter == 50) && (index < 2000) )
     {
         cnter = 0;
 
