@@ -67,7 +67,7 @@ static bool dataIsNew;
 static void AssertSlaveSelect(void);
 static void DeassertSlaveSelect(void);
 
-
+#ifdef TARGET_BUILD
 /********************TEMPORARY FOR DATA COLLECTION*****************************************/
 static int16_t accXLog[2000];
 static int16_t accYLog[2000];
@@ -81,6 +81,7 @@ static uint16_t index;
 static uint8_t cnter;
 
 /********************TEMPORARY FOR DATA COLLECTION*****************************************/
+#endif
 
 /***********************************************************************************************************************
  * Public methods
@@ -122,6 +123,8 @@ void BMX160::GetResult(IMUData_t &Data)
     Data.gyry = (static_cast<float> (gyry) / GYRO_RANGE_1000_FACTOR) - ImuCalibrationFinal.gyry;
     Data.gyrz = (static_cast<float> (gyrz) / GYRO_RANGE_1000_FACTOR) - ImuCalibrationFinal.gyrz;
 
+#ifdef TARGET_BUILD
+
 /********************TEMPORARY FOR DATA COLLECTION*****************************************/
     
     cnter ++;
@@ -142,7 +145,8 @@ void BMX160::GetResult(IMUData_t &Data)
     }
 
 /********************TEMPORARY FOR DATA COLLECTION*****************************************/
-
+#endif
+    
     if (! dataIsNew)
     {
         Data.isDataNew = false;

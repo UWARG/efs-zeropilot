@@ -251,6 +251,10 @@ set(SENSOR_FUSION_MODULES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/tran.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/inv.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/lup.c
+  )  
+
+  set(SENSOR_FUSION_MODULES_UNIT_TEST_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_SF.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_IMU.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_GPS.cpp
   )
