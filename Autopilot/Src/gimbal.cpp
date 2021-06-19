@@ -4,9 +4,10 @@
 
 #include "Interchip_A.h"
 #include "gimbal.hpp"
+#include "MathConstants.hpp"
 
-static const float gimbalMaxPitch = 3.14159;
-static const float gimbalMaxYaw = 3.14159/2;
+static const float gimbalMaxPitch = ZP_PI;
+static const float gimbalMaxYaw = ZP_PI/2;
 
 void setPitchPercent(float pitchTarget) {
     // returns target pitch as a percentage of the gimbal
