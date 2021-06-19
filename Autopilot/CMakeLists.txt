@@ -163,7 +163,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
   set(ATTITUDE_MANAGER_MODULES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/OutputMixing.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Src/SensorFusion.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MadgwickAHRS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MahonyAHRS.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/mul.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/tran.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/inv.c
@@ -246,7 +246,7 @@ set(SENSOR_FUSION_MODULES_SOURCES
 
   set(SENSOR_FUSION_MODULES_UNIT_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_SF.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MadgwickAHRS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MahonyAHRS.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/mul.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/tran.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/inv.c
@@ -343,7 +343,7 @@ endif()
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/OutputMixing.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MadgwickAHRS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MahonyAHRS.cpp
   )
 
   set(OTHER_SOURCES

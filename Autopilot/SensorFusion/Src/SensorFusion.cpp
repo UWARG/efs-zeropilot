@@ -5,8 +5,9 @@
 * Author: Lucy Gong, Dhruv Rawat, Anthony Bertnyk
 */
 #include "SensorFusion.hpp"
-#include "MadgwickAHRS.h"
+#include "MahonyAHRS.h"
 #include <cmath>
+#include "MathConstants.hpp"
 #include "imu.hpp"
 #include "gps.hpp"
 #include "altimeter.hpp"
@@ -50,22 +51,38 @@ static airspeed *airspeedObj;
 static SFIterationData_t iterData;
 static SFOutput_t SFOutput;
 
+static double REF_LAT;
+static double REF_LONG;
+static bool gpsIsSet = false;
+
+const int HIGH_COVAR = 10000;
+
 void SF_Init(void)
 {
 #ifdef TARGET_BUILD
 
-  imuObj = &BMX160::getInstance();
-  gpsObj = NEOM8::GetInstance();
-  //Waiting for definitions
-  //altimeterObj = MS5637::GetInstance();
-  //airspeedObj = dummyairspeed::GetInstance();
+    imuObj = &BMX160::getInstance();
+    gpsObj = NEOM8::GetInstance();
+    //Waiting for definitions
+    //altimeterObj = MS5637::GetInstance();
+    //airspeedObj = dummyairspeed::GetInstance();
 
 #elif defined(UNIT_TESTING)
-  imuObj = TestIMU::GetInstance();
-  gpsObj = TestGps::GetInstance();
-  //altimeterObj = TestAltimeter::GetInstance();
-  //airspeedObj = TestAirspeed::GetInstance();
+    imuObj = TestIMU::GetInstance();
+    gpsObj = TestGps::GetInstance();
+    //altimeterObj = TestAltimeter::GetInstance();
+    //airspeedObj = TestAirspeed::GetInstance();
 #endif
+
+    //Set initial state to be unknown
+    for(int i = 0; i < NUM_KALMAN_VALUES; i++) iterData.prevX[0] = 0;
+    iterData.prevX[0] = 0;
+    iterData.prevX[2] = 0;
+    iterData.prevX[4] = 0;
+    for(int i = 0; i < NUM_KALMAN_VALUES*NUM_KALMAN_VALUES; i++) iterData.prevP[0] = 0;
+    iterData.prevP[0] = 100000;
+    iterData.prevP[2*NUM_KALMAN_VALUES+2] = 100000;
+    iterData.prevP[4*NUM_KALMAN_VALUES+4] = 100000;
 }
 
 void localToGlobalAccel(IMUData_t *imudata, float *u)
@@ -73,6 +90,36 @@ void localToGlobalAccel(IMUData_t *imudata, float *u)
     u[0] = imudata->accy; //Vertical acceleration
     u[1] = imudata->accx; //Latitudinal acceleration
     u[2] = imudata->accz; //Longitudinal acceleration
+}
+
+//Map gps position to xy coords using the reference location as the origin.
+//wikipedia.org/wiki/Geographic_coordinate_system
+double * gpsToCartesian(double lat, double lng){
+    const double RAD_LAT = REF_LAT*ZP_PI/180;
+    static double xy[2] = {0};
+
+    //Latitude
+    xy[0] = (lat - REF_LAT) * (111132.92 - 559.82*cos(2*RAD_LAT) + 1.175*cos(4*RAD_LAT) - 0.0023*cos(6*RAD_LAT));
+
+    //Longitude
+    xy[1] = (lng - REF_LONG) * (111412.84*cos(RAD_LAT) - 93.5*cos(3*RAD_LAT) + 0.118*cos(5*RAD_LAT));
+
+
+    return xy;
+}
+
+double * cartesianToGPS(double x, double y){
+    const double RAD_LAT = REF_LAT*ZP_PI/180;
+    static double latLong[2] = {0};
+
+    //Latitude
+    latLong[0] = x / (111132.92 - 559.82*cos(2*RAD_LAT) + 1.175*cos(4*RAD_LAT) - 0.0023*cos(6*RAD_LAT)) + REF_LAT;
+
+    //Longitude
+    latLong[1] = y / (111412.84*cos(RAD_LAT) - 93.5*cos(3*RAD_LAT) + 0.118*cos(5*RAD_LAT)) + REF_LONG;
+
+
+    return latLong;
 }
 
 SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspeedData_t *airspeeddata) {
@@ -124,7 +171,7 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspee
         imudata->magz = 0.0f;
     }
 
-    MadgwickAHRSupdate(imudata->gyrx, imudata->gyry, imudata->gyrz, imudata->accx, imudata->accy, imudata->accz, imudata->magx, imudata->magy, imudata->magz);
+    MahonyAHRSupdate(imudata->gyrx, imudata->gyry, imudata->gyrz, imudata->accx, imudata->accy, imudata->accz, imudata->magx, imudata->magy, imudata->magz);
 
     //Convert quaternion output to angles (in deg)
     imu_RollAngle = atan2f(q0 * q1 + q2 * q3, 0.5f - q1 * q1 - q2 * q2) * 57.29578f;
@@ -132,9 +179,9 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspee
     imu_YawAngle = atan2f(q1 * q2 + q0 * q3, 0.5f - q2 * q2 - q3 * q3) * 57.29578f + 180.0f;
 
     //Convert rate of change of quaternion to angular velocity (in deg/s)
-    imu_RollRate = atan2f(qDot1 * qDot2 + qDot3 * qDot4, 0.5f - qDot2 * qDot2 - qDot3 * qDot3) * 57.29578f;
-    imu_PitchRate = asinf(-2.0f * (qDot2 * qDot4 - qDot1 * qDot3)) * 57.29578f;
-    imu_YawRate = atan2f(qDot2 * qDot3 + qDot1 * qDot4, 0.5f - qDot3 * qDot3 - qDot4 * qDot4) * 57.29578f + 180.0f;
+    //imu_RollRate = atan2f(qDot1 * qDot2 + qDot3 * qDot4, 0.5f - qDot2 * qDot2 - qDot3 * qDot3) * 57.29578f;
+    //imu_PitchRate = asinf(-2.0f * (qDot2 * qDot4 - qDot1 * qDot3)) * 57.29578f;
+    //imu_YawRate = atan2f(qDot2 * qDot3 + qDot1 * qDot4, 0.5f - qDot3 * qDot3 - qDot4 * qDot4) * 57.29578f + 180.0f;
 
     //Transfer Fused IMU data into SF Output struct
     Output->pitch = imu_PitchAngle;
@@ -153,6 +200,29 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspee
 
 SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata, GpsData_t *gpsdata, IMUData_t *imudata, SFAttitudeOutput_t *attitudedata,  SFIterationData_t *iterdata)
 {
+    //Set currently unused sensors to zero
+    altimeterdata->altitude = 0;
+    imudata->accx = 0;
+    imudata->accy = 0;
+    imudata->accz = 0;
+
+    double baroCovar = HIGH_COVAR+1;
+    double gpsCovar;
+    if(gpsdata->dataIsNew && gpsdata->numSatellites >= 3)
+    {
+        gpsCovar = 2;
+        if(!gpsIsSet)
+        {
+            //Set a reference position to help convert between gps data formats.
+            REF_LAT = gpsdata->latitude;
+            REF_LONG = gpsdata->longitude;
+            gpsIsSet;
+        }
+    }
+    else
+    {
+        gpsCovar = HIGH_COVAR+1;
+    }
 
     //Error output
     SFError_t SFError;
@@ -228,14 +298,14 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
 
     float q[DIM*DIM]=
     {
-        0.3, 0,   0,   0,   0,   0,
-        0,   0.5, 0,   0,   0,   0,
-        0,   0,   0.4, 0,   0,   0,
-        0,   0,   0,   0.5, 0,   0,
-        0,   0,   0,   0,   0.4, 0,
-        0,   0,   0,   0,   0,   0.5
+        5.0, 0,   0,   0,   0,   0,
+        0,   5.0, 0,   0,   0,   0,
+        0,   0,   5.0, 0,   0,   0,
+        0,   0,   0,   5.0, 0,   0,
+        0,   0,   0,   0,   5.0, 0,
+        0,   0,   0,   0,   0,   5.0
     };
-    
+
     //Calculate error covariance: p = f*prevP*transpose(f) + q
 
     float fMultPrevP[DIM*DIM];
@@ -254,7 +324,7 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
 
     //Defines for Kalman gain
     
-    const int16_t NUM_MEASUREMENTS = 4;
+    const int16_t NUM_MEASUREMENTS = 7;
 
     float k[DIM*NUM_MEASUREMENTS];
 
@@ -263,26 +333,34 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
         1, 0, 0, 0, 0, 0,
         1, 0, 0, 0, 0, 0,
         0, 0, 1, 0, 0, 0,
-        0, 0, 0, 0, 1, 0
+        0, 0, 0, 0, 1, 0,
+        0, 1, 0, 0, 0, 0,
+        0, 0, 0, 1, 0, 0,
+        0, 0, 0, 0, 0, 1
     };
-    
-    int16_t baroCovar = 1;
-    int16_t gpsCovar;
-    if(gpsdata->numSatellites >= 3)
-    {
-        gpsCovar = 1 + pow(gpsdata->numSatellites, -0.5);
+    //Force sensors to be completely ignored when the covariance is high
+    if(baroCovar >= HIGH_COVAR){
+        h[0] = 0;
     }
-    else
+    if(gpsCovar >= HIGH_COVAR)
     {
-        gpsCovar = 1000;
+        h[DIM] = 0;
+        h[2*DIM+2] = 0;
+        h[3*DIM+4] = 0;
+        h[4*DIM+1] = 0;
+        h[5*DIM+3] = 0;
+        h[6*DIM+5] = 0;
     }
 
-    float r[NUM_MEASUREMENTS*DIM]
+    float r[NUM_MEASUREMENTS*NUM_MEASUREMENTS]
     {
-        baroCovar, 0,         0,         0,
-        0,         gpsCovar,  0,         0,
-        0,         0,         gpsCovar,  0,
-        0,         0,         0,         gpsCovar
+        baroCovar, 0,               0,              0,              0,          0,         0,  
+        0,         gpsCovar*100,    0,              0,              0,          0,         0,
+        0,         0,               gpsCovar*100,   0,              0,          0,         0,
+        0,         0,               0,              gpsCovar*100,   0,          0,         0,
+        0,         0,               0,              0,              HIGH_COVAR, 0,         0,
+        0,         0,               0,              0,              0,          gpsCovar,  0,
+        0,         0,               0,              0,              0,          0,         gpsCovar
     };
 
     //Calculate Kalman gain: k = p*transpose(h) * (h*p*transpose(h) + r)^-1
@@ -309,12 +387,17 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
 
     //Defines for updating estimate
 
+    double * xyPos = gpsToCartesian(gpsdata->latitude, gpsdata->longitude);
+
     float z[NUM_MEASUREMENTS*1]=
     {
         altimeterdata->altitude,
         gpsdata->altitude,
-        gpsdata->latitude,
-        gpsdata->longitude
+        xyPos[0], //Latitude
+        xyPos[1], //Longitude
+        0, //Vertical speed (Currently unused)
+        gpsdata->groundSpeed * cos(gpsdata->heading*ZP_PI/180), //North speed
+        gpsdata->groundSpeed * sin(gpsdata->heading*ZP_PI/180) //East speed
     };
 
     //Update estimate: newX = x + k*(z - h*x)
@@ -357,9 +440,11 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
 
     /*Output*/
 
+    double * latLongOut = cartesianToGPS(x[2], x[4]);
+
     Output->altitude = x[0];
-    Output->latitude = x[2];
-    Output->longitude = x[4];
+    Output->latitude = latLongOut[0];
+    Output->longitude = latLongOut[1];
 
     for (int i = 0; i < DIM*1; i++) iterdata->prevX[i] = newX[i];
     for (int i = 0; i < DIM*DIM; i++) iterdata->prevP[i] = newP[i];
@@ -393,6 +478,12 @@ SFError_t SF_GenerateNewResult()
     SFOutput.pitch = attitudeOutput.pitch;
     SFOutput.roll = attitudeOutput.roll;
     SFOutput.yaw = attitudeOutput.yaw;
+    SFOutput.altitude = pathOutput.altitude;
+    SFOutput.rateOfClimb = pathOutput.rateOfClimb;
+    SFOutput.latitude = pathOutput.latitude;
+    SFOutput.latitudeSpeed = pathOutput.latitudeSpeed;
+    SFOutput.longitude = pathOutput.longitude;
+    SFOutput.longitudeSpeed = pathOutput.longitudeSpeed;
 
     return SFError;
 }
