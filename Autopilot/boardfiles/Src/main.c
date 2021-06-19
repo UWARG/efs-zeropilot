@@ -61,7 +61,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "altimeter.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -159,9 +159,11 @@ int main(void)
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init();
+  //MX_FREERTOS_Init();
   /* Start scheduler */
-  osKernelStart();
+  //osKernelStart();
+
+  Altimeter& altimeterObj = MPL3115A2::getInstance();
 
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
@@ -169,6 +171,8 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+
+    altimeterObj.Begin_Measuring();
 
     /* USER CODE BEGIN 3 */
   }
