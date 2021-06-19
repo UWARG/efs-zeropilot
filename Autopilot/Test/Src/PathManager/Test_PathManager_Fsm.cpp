@@ -33,11 +33,13 @@ FAKE_VALUE_FUNC(IMU_Data_t, SF_GetRawIMU);
 FAKE_VOID_FUNC(AutoSteer_Init);
 FAKE_VOID_FUNC(CommWithAMInit);
 FAKE_VOID_FUNC(SendCommandsForAM, CommandsForAM*);
-FAKE_VOID_FUNC(CommWithTelemInit);
-FAKE_VALUE_FUNC(bool, GetTelemetryCommands, Telemetry_PIGO_t*);
 FAKE_VALUE_FUNC(bool, GetAttitudeData, AttitudeData*);
 FAKE_VOID_FUNC(AutoSteer_ComputeCoordinatedTurn, CoordinatedTurnInput_t*, CoordinatedTurnAttitudeManagerCommands_t*);
 FAKE_VOID_FUNC(AutoSteer_ComputeAltitudeAndAirspeed, AltitudeAirspeedInput_t*, AltitudeAirspeedCommands_t*);
+FAKE_VOID_FUNC(CommFromPMToTMInit);
+FAKE_VALUE_FUNC(bool, GetFromTMToPM, Telemetry_PIGO_t*);
+FAKE_VOID_FUNC(CommFromTMToPMInit);
+FAKE_VOID_FUNC(SendFromPMToTM, Telemetry_POGI_t*);
 
 class PathManagerFSM : public ::testing::Test
 {
@@ -56,6 +58,10 @@ class PathManagerFSM : public ::testing::Test
 			RESET_FAKE(GetAttitudeData);
 			RESET_FAKE(AutoSteer_ComputeCoordinatedTurn);
 			RESET_FAKE(AutoSteer_ComputeAltitudeAndAirspeed);
+			RESET_FAKE(GetFromTMToPM);
+			RESET_FAKE(SendFromPMToTM);
+			RESET_FAKE(CommFromPMToTMInit);
+			RESET_FAKE(CommFromTMToPMInit);
 		}
 
 		virtual void TearDown()

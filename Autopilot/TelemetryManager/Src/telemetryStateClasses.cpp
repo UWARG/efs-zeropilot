@@ -1,6 +1,6 @@
 /*
 * Author: Nixon Chan
-* Implementing Telem Comms: Gordon Fountain
+* Implementing Telem Comms: Gordon Fountain, Dhruv Rawat
 */
 
 #include "telemetryStateClasses.hpp"
@@ -14,6 +14,10 @@ Telemetry_PIGO_t decodeDataMode::_decodedPMData;
 
 Telemetry_POGI_t readFromPathMode::_rawGSData;
 Telemetry_POGI_t encodeDataMode::_encodedGSData; // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
+
+#ifdef UNIT_TESTING
+    XBEE* obtainDataMode::ZPXbee;
+#endif
 
 /***********************************************************************************************************************
  * Code

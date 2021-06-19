@@ -36,12 +36,26 @@ class obtainDataMode: public telemetryState
         // Static getter to receive _rawPMData
         static Telemetry_PIGO_t* getRawPMData(void) { return &_rawPMData; } // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
 
+        #ifdef UNIT_TESTING
+            static XBEE* getXBEE(void) { return ZPXbee; }
+        #endif
+
     private:
-        obtainDataMode(){ ZPXbee = XBEE::getInstance(); }
+        obtainDataMode(){ 
+            #ifndef UNIT_TESTING
+                ZPXbee = XBEE::getInstance(); 
+            #endif
+                
+        }
         obtainDataMode(const obtainDataMode& other);
         obtainDataMode& operator =(const obtainDataMode& other);
         
-        XBEE* ZPXbee;
+        #ifndef UNIT_TESTING
+            XBEE* ZPXbee;
+        #else
+            static XBEE* ZPXbee;
+        #endif
+
         // Some static array to hold the received data. Name it _rawPMData
         static Telemetry_PIGO_t _rawPMData; // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
 };
@@ -150,7 +164,13 @@ class sendDataMode: public telemetryState
         static telemetryState& getInstance();
 
     private:
-        sendDataMode(){ ZPXbee = XBEE::getInstance(); }
+        sendDataMode(){ 
+            #ifndef UNIT_TESTING
+                ZPXbee = XBEE::getInstance(); 
+            #else 
+                ZPXbee = obtainDataMode::getXBEE(); 
+            #endif
+        }
         sendDataMode(const sendDataMode& other);
         sendDataMode& operator =(const sendDataMode& other);
 

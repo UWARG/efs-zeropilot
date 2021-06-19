@@ -10,26 +10,30 @@
 
 class XBEE {
     public:
-        static XBEE* getInstance();
-
-        //make it a singleton by deleting constructor
-        XBEE(const XBEE*) = delete;
+        #ifdef UNIT_TESTING
+            XBEE();
+        #else    
+            static XBEE* getInstance();
+            
+            //make it a singleton by deleting constructor
+            XBEE(const XBEE*) = delete;
+        #endif        
 
         /**
          * Triggers interrupt for new data retrieval by telemManager - stores raw data in variables and returns right away
          * */
-        void Receive_GS_Data(); 
+        virtual void Receive_GS_Data(); 
 
         /**GetResult should:
          * 1. Reset newInput flag
          * 2. Transfers raw data from variables to struct
          * 3. Updates utcTime and status values in struct as well
          * */
-        static void GetResult(Telemetry_PIGO_t *data); //Switch to MavLink data (ask Jingting how to feed to Xbee)
+        virtual void GetResult(Telemetry_PIGO_t *data); //Switch to MavLink data (ask Jingting how to feed to Xbee)
 
         /*Interrupt to send data to ground       
         */
-        void Send_GS_Data(); //Only touched by FREERTOS
+        virtual void Send_GS_Data(); //Only touched by FREERTOS
 
         /*SendResult should:
          * 1. Reset newOutput flag
@@ -37,10 +41,12 @@ class XBEE {
          * 3. Updates utcTime and status values in struct as well
          * 4. Wait for FREERTOS to call the Send_Data function
         */
-        static void SendResult(Telemetry_POGI_t* data);
+        virtual void SendResult(Telemetry_POGI_t* data);
     
     private:
-        XBEE();
+        #ifndef UNIT_TESTING
+            XBEE();
+        #endif
 
         static XBEE* xbeeInstance;
 };

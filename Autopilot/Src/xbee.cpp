@@ -16,6 +16,9 @@ void XBEE::Receive_GS_Data() {}
 
 void XBEE::Send_GS_Data() {}
 
+void XBEE::GetResult(Telemetry_PIGO_t *data) {}
+
+void XBEE::SendResult(Telemetry_POGI_t* data) {}
 
 
 

@@ -3,20 +3,29 @@
 */
 
 #include <gtest/gtest.h>
+#include <fff.h>
 
 #include "telemetryManager.hpp"
 #include "telemetryStateClasses.hpp"
+#include "CommsWithPathManager.hpp"
+#include "CommsWithTelemetry.hpp"
+#include "xbee.hpp"
 
 
 using namespace std; 
 using ::testing::Test;
 
 
-// FAKE_VOID_FUNC(CommFromPMToTelemInit);
-// FAKE_VOID_FUNC(SendFromPMToTelem, CommandsForAM*);
-// FAKE_VALUE_FUNC(bool, GetFromAMToPM, AttitudeData*);
-// FAKE_VALUE_FUNC(SFError_t, SF_GetResult, SFOutput_t *);
-// FAKE_VALUE_FUNC(IMU_Data_t, SF_GetRawIMU);
+FAKE_VOID_FUNC(CommFromTMToPMInit);
+FAKE_VOID_FUNC(CommFromPMToTMInit);
+FAKE_VOID_FUNC(SendFromTMToPM, Telemetry_PIGO_t*);
+FAKE_VALUE_FUNC(bool, GetFromPMToTM, Telemetry_POGI_t*);
+
+class MockXBEE : public XBEE {
+    public:
+        using XBEE::Send_GS_Data;
+        using XBEE::Receive_GS_Data;
+};
 
 class TelemetryManagerFSM : public ::testing::Test
 {
@@ -24,9 +33,10 @@ class TelemetryManagerFSM : public ::testing::Test
 
 		virtual void SetUp()
 		{
-			// RESET_FAKE(GetAttitudeData);
-			// RESET_FAKE(AutoSteer_ComputeCoordinatedTurn);
-			// RESET_FAKE(AutoSteer_ComputeAltitudeAndAirspeed);
+			RESET_FAKE(CommFromTMToPMInit);
+			RESET_FAKE(CommFromPMToTMInit);
+			RESET_FAKE(SendFromTMToPM);
+            RESET_FAKE(GetFromPMToTM);
 		}
 
 		virtual void TearDown()
@@ -170,7 +180,7 @@ TEST(TelemetryManagerFSM, sendToObtainThroughDataValid){//testing if statements 
 TEST(TelemetryManagerFSM, sendToInitialThroughDataInvalid){//testing if statements and functionality
     /***SETUP***/
     telemetryManager telemetryMng;
-    telemetryMng.cycleCounter=5;
+    telemetryMng.failCycleCounter=5;
     telemetryMng.dataValid=false;
     telemetryMng.setState(analyzeDataMode::getInstance());
     telemetryMng.execute(); //this execute allows the machine to set the regularReport variable using if statements in reportMode class

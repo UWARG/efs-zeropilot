@@ -23,7 +23,6 @@ struct Telemetry_Waypoint_Data_t {
     uint8_t waypointType; // 0 = Path follow, 1 = Orbit, 2 = Hold
 };
 
-
 //Data for path manager to send to telemetry.
 struct Telemetry_POGI_t{
 	int errorCode; //Code for specified errors
