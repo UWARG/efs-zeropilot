@@ -1,6 +1,5 @@
 /*
-* Author: Nixon Chan
-* Implementing Telem Comms: Gordon Fountain, Dhruv Rawat
+* Author: Nixon Chan, Gordon Fountain, Dhruv Rawat
 */
 
 #include "telemetryStateClasses.hpp"
@@ -138,9 +137,6 @@ telemetryState& readFromPathMode::getInstance()
     static readFromPathMode singleton;
     return singleton;
 }
-
-#include <iostream>
-using namespace std;
 
 void analyzeDataMode::execute(telemetryManager* telemetryMgr)
 {
