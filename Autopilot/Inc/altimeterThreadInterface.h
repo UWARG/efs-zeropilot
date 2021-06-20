@@ -1,5 +1,5 @@
 #ifndef ALTIMETER_THREAD_INTERFACE_H
-#define IMU_THREAD_INTERFACE_H
+#define ALTIMETER_THREAD_INTERFACE_H
 
 #ifdef __cplusplus
 extern "C" {
