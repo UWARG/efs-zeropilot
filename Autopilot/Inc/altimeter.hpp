@@ -76,7 +76,12 @@ class MPL3115A2 : public Altimeter {
         
         MPL3115A2();
 
+        void ConfigAltimeter(void);
+
+        void Calibrate(void);
+
         union AltimeterAltitudeRepresentation rawAltimeter;
+        float altimeterCalibrationFinal;
 };
 
 #endif

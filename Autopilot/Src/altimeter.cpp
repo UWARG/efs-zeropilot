@@ -3,13 +3,14 @@
 #include "stm32f7xx_hal.h"
 #include "stm32f7xx_hal_i2c.h"
 
+#include <algorithm>
 
 /***********************************************************************************************************************
  * Definitions
  **********************************************************************************************************************/
 
 #define I2C_BUS 1
-#define ALTIMETER_SLAVE_ADDRESS 0x60
+#define LEFT_SHIFTED_ALTIMETER_SLAVE_ADDRESS 0xC0 // actual slave address is 0x60. But for whatever reason, the cubeMX drivers don't left shift the address so I have to do that myself
 #define ALT_CTRL_REG1 0x26
 #define ALT_OUT_P_MSB_REG 0x01
 #define STANDBY_MODE_8_OS 0x98
@@ -17,6 +18,11 @@
 
 #define MEM_SIZE_1_B 1
 
+/***********************************************************************************************************************
+ * Static variables
+ **********************************************************************************************************************/
+
+static bool dataIsNew;
 
 /***********************************************************************************************************************
  * HAL SPI handle
@@ -36,26 +42,23 @@ Altimeter& MPL3115A2::getInstance()
 
 void MPL3115A2::Begin_Measuring(void)
 {
-
-    HAL_I2C_Mem_Read(&hi2c4, ALTIMETER_SLAVE_ADDRESS, ALT_OUT_P_MSB_REG, MEM_SIZE_1_B, &(rawAltimeter.byte[0]), 3, 1000);
-
+    HAL_I2C_Mem_Read(&hi2c4, LEFT_SHIFTED_ALTIMETER_SLAVE_ADDRESS, ALT_OUT_P_MSB_REG, MEM_SIZE_1_B, rawAltimeter.byte, 1, 10);
 }
+
+static float dataLog[100];
 
 void MPL3115A2::GetResult(AltimeterData_t &Data)
 {
+    static int j = 0;
+
+    std::reverse(rawAltimeter.byte, rawAltimeter.byte + 3);
+
     float tmp = static_cast<float> (rawAltimeter.Q16point4 >> 4);  // the 4 lowest bits of the data register are reserved
     tmp /= 16.0f;   // conversion from Q16.4 fixed point to float
-    Data.altitude = tmp;
+    Data.altitude = tmp - altimeterCalibrationFinal;
 
-
-#if 0
-    altimeterDataReady = false;
-
-    if (altimeterDataReady)
-    {
-        altimeterDataReady = false;        
-    }
-#endif
+    Data.isDataNew = dataIsNew;
+    dataIsNew = false;
 }
 
 /***********************************************************************************************************************
@@ -64,94 +67,70 @@ void MPL3115A2::GetResult(AltimeterData_t &Data)
 
 MPL3115A2::MPL3115A2()
 {
+    HAL_I2C_MspInit(&hi2c4);
 
-uint8_t txByte;
+    ConfigAltimeter();
 
-txByte = STANDBY_MODE_8_OS;
-HAL_I2C_Mem_Write(&hi2c4, ALTIMETER_SLAVE_ADDRESS, ALT_CTRL_REG1, MEM_SIZE_1_B, &txByte, 1, 1000);
+    //Calibrate();
 
-HAL_Delay(500);
+    altimeterCalibrationFinal = 0;
 
-txByte = ACTIVE_MODE_8_OS;
-HAL_I2C_Mem_Write(&hi2c4, ALTIMETER_SLAVE_ADDRESS, ALT_CTRL_REG1, MEM_SIZE_1_B, &txByte, 1, 1000);
+    dataIsNew = false;
 
-#if 0
-    I2C_Init(I2C_BUS);
-    I2C_DisableInterrupt(I2C_BUS);
-    I2C_Start(I2C_BUS);
-    I2C_BlockUntilReady(I2C_BUS);
-    I2C_SendSlaveAddressWrite(ALTIMETER_SLAVE_ADDRESS, I2C_BUS);
-    I2C_BlockUntilReady(I2C_BUS);
-    I2C_SendSlaveRegister(ALT_CTRL_REG1, I2C_BUS);
-    I2C_BlockUntilReady(I2C_BUS);
-    I2C_SendData(STANDBY_MODE_8_OS, I2C_BUS);
-    I2C_BlockUntilReady(I2C_BUS);
-    I2C_RepeatStart(I2C_BUS);
-    I2C_BlockUntilReady(I2C_BUS);
-    I2C_SendSlaveAddressWrite(ALTIMETER_SLAVE_ADDRESS, I2C_BUS);
-    I2C_BlockUntilReady(I2C_BUS);
-    I2C_SendSlaveRegister(ALT_CTRL_REG1, I2C_BUS);
-    I2C_BlockUntilReady(I2C_BUS);
-    I2C_SendData(ACTIVE_MODE_8_OS, I2C_BUS);
-    I2C_BlockUntilReady(I2C_BUS);
-    I2C_Stop(I2C_BUS);
-    I2C_EnableInterrupt(I2C_BUS);
-#endif
 }
 
 
-
-#if 0
-ISR(TWI1_vect)  // interrupt based altimeter reading
+void MPL3115A2::Calibrate(void)
 {
-    static uint8_t i;
+    constexpr int nSamplesForReliableAverage = 100;
 
-    switch (I2C_STATUS_BUS_1)
+    AltimeterData_t tempAltimeterData;
+    
+    float altimeterCalibration = 0;
+
+    for (int i = 0; i < nSamplesForReliableAverage; i++)
     {
-        case START_SUCCEEDED :
-            I2C_SendSlaveAddressWrite(ALTIMETER_SLAVE_ADDRESS, I2C_BUS);
-            break;
+        this->Begin_Measuring();
 
-        case SLAVE_WRITE_SUCCEEDED :
-            I2C_SendSlaveRegister(ALT_OUT_P_MSB_REG, I2C_BUS);
-            break;
+        HAL_Delay(7);
 
-        case DATA_TRANSMIT_SUCCEEDED :
-            I2C_RepeatStart(I2C_BUS);
-            break;
+        this->GetResult(tempAltimeterData);
 
-        case REPEAT_START_SUCCEEDED :
-            I2C_SendSlaveAddressRead(ALTIMETER_SLAVE_ADDRESS, I2C_BUS);
-            break;
+        altimeterCalibration += tempAltimeterData.altitude;
 
-        case SLAVE_READ_SUCCEEDED :
-            I2C_AskForAnotherByte(I2C_BUS);
-            break;
-
-        case SLAVE_SENT_NEXT_BYTE :
-            rawAltimeter.byte[2-i] = I2C_Read(I2C_BUS);
-
-            if(i == 2)
-            {
-                I2C_EndDataRead(I2C_BUS);
-                i = 0;
-            }
-            else
-            {
-                I2C_AskForAnotherByte(I2C_BUS);
-                i++;
-            }
-            break;
-
-        case END_READ_SUCCEEDED :
-            I2C_Stop(I2C_BUS);
-            altimeterDataReady = true;
-            altimeterMeasInProgress = false;
-            break;
-
-        default:
-            altimeterMeasInProgress = false;
-            altimeterFailure = true;
     }
+
+    altimeterCalibration /= static_cast<float> (nSamplesForReliableAverage);
+
+    altimeterCalibrationFinal = altimeterCalibration;
+
 }
-#endif
+
+void MPL3115A2::ConfigAltimeter(void)
+{
+    HAL_NVIC_DisableIRQ(I2C4_EV_IRQn);
+
+    uint8_t txByte;
+
+    txByte = STANDBY_MODE_8_OS;
+    HAL_StatusTypeDef stuff = HAL_I2C_Mem_Write(&hi2c4, LEFT_SHIFTED_ALTIMETER_SLAVE_ADDRESS, ALT_CTRL_REG1, MEM_SIZE_1_B, &txByte, 1, 1000);
+
+    HAL_Delay(20);
+
+    txByte = ACTIVE_MODE_8_OS;
+    stuff = HAL_I2C_Mem_Write(&hi2c4, LEFT_SHIFTED_ALTIMETER_SLAVE_ADDRESS, ALT_CTRL_REG1, MEM_SIZE_1_B, &txByte, 1, 1000);
+
+    HAL_Delay(20);
+
+    HAL_NVIC_EnableIRQ(I2C4_EV_IRQn);
+
+}
+
+/***********************************************************************************************************************
+ * Interrupt Callback
+ **********************************************************************************************************************/
+
+void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+    dataIsNew = true;
+}
