@@ -3,6 +3,7 @@
  * Author: Anthony Bertnyk, messed with by Gordon Fountain to co-opt for Telemetry
  */
 
+#include "TelemPathInterface.hpp"
 #include "CommsWithPathManager.hpp"
 
 extern "C"
@@ -10,48 +11,48 @@ extern "C"
 #include "cmsis_os.h"
 }
 
-osMailQDef(commandsMailQ, PATH_TELEM_MAIL_Q_SIZE, commandsOut);
-osMailQId commandsMailQID;
+//Set up a mail queue for sending commands to the path manager
+osMailQDef(PMcommandsMailQ, PATH_TELEM_MAIL_Q_SIZE, Telemetry_PIGO_t);
+osMailQId PMcommandsMailQID;
 
-void TelemCommWithPMInit()
+void CommFromTMToPMInit()
 {
-    commandsMailQ = osMailCreate(osMailQ(commandsMailQ), NULL);
+    PMcommandsMailQID = osMailCreate(osMailQ(PMcommandsMailQ), NULL);
 }
 
-void SendCommandsForPM(Telemetry_PIGO_t *commands)
+void SendFromTMToPM(Telemetry_PIGO_t *commands)
 {
     //Remove previous command from mail queue if it exists
-    osEvent event = osMailGet(commandsMailQ, 0);
+    osEvent event = osMailGet(PMcommandsMailQID, 0);
     if(event.status == osEventMail)
     {
-        osMailFree(commandsMailQ, static_cast<Telemetry_PIGO_t *>(event.value.p));
+        osMailFree(PMcommandsMailQID, static_cast<Telemetry_PIGO_t *>(event.value.p));
     }
 
     //Allocate mail slot
     Telemetry_PIGO_t *commandsOut;
-    commandsOut = static_cast<Telemetry_PIGO_t *>(osMailAlloc(commandsMailQ, osWaitForever));
+    commandsOut = static_cast<Telemetry_PIGO_t *>(osMailAlloc(PMcommandsMailQID, osWaitForever));
 
     //Fill mail slot with data
     *commandsOut = *commands;
 
     //Post mail slot to mail queue
-    osMailPut(commandsMailQ, commandsOut);
+    osMailPut(PMcommandsMailQID, commandsOut);
 }
 
-bool GetTelemData(Telemetry_POGI_t *data)
+bool GetFromTMToPM(Telemetry_PIGO_t *commands)
 {
-    
     //Try to get data from mail queue
     osEvent event;
-    Telemetry_POGI_t * dataIn;
-    event = osMailGet(telemDataMailQ, 0);
+    Telemetry_PIGO_t * commandsIn;
+    event = osMailGet(PMcommandsMailQID, 0);
     if(event.status == osEventMail)
     {
-        dataIn = static_cast<Telemetry_PIGO_t *>(event.value.p);
+        commandsIn = static_cast<Telemetry_PIGO_t *>(event.value.p);
 
         //Keep the data and remove it from the queue
-        *data = *dataIn;
-        osMailFree(telemDataMailQ, dataIn);
+        *commands = *commandsIn;
+        osMailFree(PMcommandsMailQID, commandsIn);
         return true;
     }
     else

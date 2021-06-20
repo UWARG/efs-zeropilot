@@ -9,6 +9,7 @@
 #include "pathDatatypes.hpp"
 #include "CommWithAttitudeManager.hpp"
 #include "CommsWithTelemetry.hpp"
+#include "CommsWithPathManager.hpp"
 #include "SensorFusion.hpp"
 #include "AttitudePathInterface.hpp"
 
@@ -45,11 +46,14 @@ class commsWithTelemetry : public pathManagerState
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
         static Telemetry_PIGO_t* GetTelemetryIncomingData(void) {return &_incomingData;}
+        static Telemetry_POGI_t* GetTelemetryIncomingOutgoingData(void) {return &_outgoingData;}
+
     private:
-        commsWithTelemetry() {CommWithTelemInit();}
+        commsWithTelemetry() { CommFromTMToPMInit(); CommFromPMToTMInit(); }
         commsWithTelemetry(const commsWithTelemetry& other);
         commsWithTelemetry& operator =(const commsWithTelemetry& other);
         static Telemetry_PIGO_t _incomingData; // Stores the commands sent by telemetry for easy access by other states in the pathmanager
+        static Telemetry_POGI_t _outgoingData; // Stores the commands to send to telemetry
 };
 
 class sensorFusion : public pathManagerState

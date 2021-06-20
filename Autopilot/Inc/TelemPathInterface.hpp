@@ -23,7 +23,6 @@ struct Telemetry_Waypoint_Data_t {
     uint8_t waypointType; // 0 = Path follow, 1 = Orbit, 2 = Hold
 };
 
-
 //Data for path manager to send to telemetry.
 struct Telemetry_POGI_t{
 	int errorCode; //Code for specified errors
@@ -64,8 +63,14 @@ struct Telemetry_PIGO_t {
     double stoppingLatitude;
     float stoppingAltitude;
     float takeoffDirectionHeading;
-    // Struct for stopping point gps coordinates
 
+    // Gimbal Commands
+    float gimbalPitch;
+    float gimbalYaw;
+
+    // Ground Commands
+    float groundCommandsHeading;
+    float latestDistance;
 };
 
 //RTOS stuff that the cpp files need
@@ -77,15 +82,6 @@ extern "C"
 }
 
 const char PATH_TELEM_MAIL_Q_SIZE = 1;
-
-//Set up a mail queue for sending commands to the path manager
-extern osMailQDef(PMcommandsMailQ, PATH_TELEM_MAIL_Q_SIZE, Telemetry_PIGO_t);
-extern osMailQId PMcommandsMailQ;
-
-
-//Set up a mail queue for sending data to telemetry
-extern osMailQDef(telemDataMailQ, PATH_TELEM_MAIL_Q_SIZE, POGI);
-extern osMailQId telemDataMailQ;
 
 #endif
 

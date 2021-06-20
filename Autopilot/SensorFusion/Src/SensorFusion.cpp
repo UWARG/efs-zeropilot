@@ -443,3 +443,19 @@ Airspeed_Data_t SF_GetRawAirspeed()
 
     return airspeedOutput;
 }
+
+Altimeter_Data_t SF_GetRawAltimeter() {
+    AltimeterData_t altimeterData {};
+
+    Altimeter_Data_t altimeterOutput {};
+
+    return altimeterOutput;
+}
+
+Gps_Data_t SF_GetRawGPS() {
+    GpsData_t gpsData {};
+
+    Gps_Data_t gpsOutput {};
+
+    return gpsOutput;
+}
