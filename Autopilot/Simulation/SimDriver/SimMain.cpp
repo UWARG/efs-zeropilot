@@ -18,7 +18,6 @@ int main(void)
 {
     pathManager pathmMng;
 	attitudeManager attMng;
-    pathmMng.setState(cruisingState::getInstance());
 
     PathMan::_Path_Manager_Cycle_Status pathManStatus;
     AttMan::_Attitude_Manager_Cycle_Status attManStatus;

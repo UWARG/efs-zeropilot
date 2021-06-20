@@ -378,7 +378,7 @@ void landingTransitionStage::execute(pathManager* pathMgr)
         currentLocation = landingPath.initialize_waypoint(input.sensorOutput->longitude, input.sensorOutput->latitude, input.sensorOutput->altitude, HOLD_WAYPOINT, 20); 
 
         //initializing flight path
-        waypointStatus = landingPath.initialize_flight_path(pathArray, 3, currentLocation);
+        waypointStatus = landingPath.initialize_flight_path(pathArray, 4, currentLocation);
 
         //set made madelandingPoints to true
         pathMgr->madeLandingPoints = true;
