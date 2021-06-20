@@ -12,13 +12,13 @@
  * Variables
  **********************************************************************************************************************/
 
-static PIDController bankPid{5,0,8,0, -MAX_BANK_ANGLE, MAX_BANK_ANGLE}; // 1, 3, 45, 5
+static PIDController bankPid{4.2,0,0,0, -MAX_BANK_ANGLE, MAX_BANK_ANGLE}; //5,0,8,0,
 
-static PIDController rudderPid{0.2,0.2,7,1, -100, 100}; // 1.5, 0, 20, 0,
+static PIDController rudderPid{0.2,0.2,7,1, -100, 100}; //0.2,0.2,7,1
 
-static PIDController pitchPid{1,0,0,0, -MAX_PITCH_ANGLE, MAX_PITCH_ANGLE}; // 0.04, 0, 50, 0,
+static PIDController pitchPid{1,0,0,0, -MAX_PITCH_ANGLE, MAX_PITCH_ANGLE}; //1,0,0,0,
 
-static PIDController altitudePid{110,0,0,0, 0, 100}; //25, 0, 200, 0,
+static PIDController altitudePid{110,0,0,0, 0, 100}; //110,0,0,0,
 
 static const float RUDDER_SCALING_FACTOR = 0.5f; // should be experimentally determined
 
@@ -69,8 +69,6 @@ void AutoSteer_ComputeAltitudeAndAirspeed(AltitudeAirspeedInput_t *Input, Altitu
 
     AttManCommands->requiredThrottlePercent = altitudePid.execute(Input->desiredAirspeed, Input->currentAirspeed);
     AttManCommands->requiredPitch = DEG_TO_RAD(pitchAngle);
-    
-
 }
 
 
