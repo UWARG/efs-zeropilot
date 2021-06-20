@@ -119,7 +119,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc/
+    ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Inc
   )
 
@@ -311,6 +311,7 @@ endif()
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc
 
     ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw
     ${SIM_ROOT_DIR}/GeneratedCCode/Headers/extern/include
