@@ -23,7 +23,7 @@ class fetchInstructionsMode : public attitudeState
         static attitudeState& getInstance();
         static CommandsForAM *GetPMInstructions(void) {return &_PMInstructions;}
     private:
-        fetchInstructionsMode() {CommWithPMInit();}
+        fetchInstructionsMode() {CommFromAMToPMInit();}
         fetchInstructionsMode(const fetchInstructionsMode& other);
         fetchInstructionsMode& operator =(const fetchInstructionsMode& other);
         static CommandsForAM _PMInstructions;
