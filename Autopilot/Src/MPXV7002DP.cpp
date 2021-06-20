@@ -44,12 +44,6 @@ void MPXV7002DP::GetResult(airspeedData_t &Data) {
     Data.sensorStatus = sensorStatus;
 }
 
-void MPXV7002DP::Begin_Measuring() {
-    
-    airspeed = GetAirspeed();
-    dataNew = true;
-}
-
 void MPXV7002DP::CalcOffset() {
 	uint16_t avg = GetAverage();
 	offset = avg - BASELINE;

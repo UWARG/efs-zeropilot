@@ -17,7 +17,6 @@
 #ifndef AIRSPEED_HPP
 #define AIRSPEED_HPP
 
-#include <ctime>
 #include <cstdint>
 
 /*
@@ -72,7 +71,7 @@ class MPXV7002DP : public airspeed {
         /**
          *  Don't use this function, the GetResult function is non blocking.
          */
-        void Begin_Measuring();
+        void Begin_Measuring() {}
 
         // Calculates the offset of the values coming from the sensor.
         // It does this by taking 10 measurements, averaging them, and then subtracting
