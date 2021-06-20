@@ -34,31 +34,36 @@ bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
 
     userPigo[index].waypoints[1].altitude = 50;
     userPigo[index].waypoints[1].waypointType = 0;
-    userPigo[index].waypoints[1].longitude = -156.924000;
+    userPigo[index].waypoints[1].longitude = -155.924000;
     userPigo[index].waypoints[1].latitude = 21.322000;
     userPigo[index].waypoints[1].turnRadius = 100;
 
     userPigo[index].waypoints[2].altitude = 50;
     userPigo[index].waypoints[2].waypointType = 0;
-    userPigo[index].waypoints[2].longitude = -155.000;
+    userPigo[index].waypoints[2].longitude = -154.000;
     userPigo[index].waypoints[2].latitude = 21.322000;
     userPigo[index].waypoints[2].turnRadius = 100;
-/*
-    if(index==500)
+
+    if(index==0)
+    {
+        userPigo[index].takeoffDirectionHeading = 0;
+        userPigo[index].beginTakeoff = true;
+    }
+    if(index==300)
+    {
+        int i = 0;
+    }
+
+    if(index==800)
     {
         userPigo[index].beginLanding = true;
         userPigo[index].stoppingAltitude = 0;
         userPigo[index].stoppingDirectionHeading = 90;
-        userPigo[index].stoppingLongitude = -157.92;
+        userPigo[index].stoppingLongitude = -157.91;
         userPigo[index].stoppingLatitude = 21.3200;
     }
 
-    if(index==700)
-    {
-        
-    }
 
-*/
     *commands = userPigo[index];
 
     index++;

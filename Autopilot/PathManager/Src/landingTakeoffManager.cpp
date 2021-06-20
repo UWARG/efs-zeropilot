@@ -120,6 +120,10 @@ _LandingPath LandingTakeoffManager::createSlopeWaypoints(const Telemetry_PIGO_t 
 _LandingTakeoffOutput LandingTakeoffManager::translateWaypointCommands(const _WaypointManager_Data_Out & outputData)
 {
     _LandingTakeoffOutput controlOutput;
+    controlOutput.controlDetails.rollPercent = 0;
+    controlOutput.controlDetails.rudderPercent = 0;
+    controlOutput.controlDetails.throttlePercent = 0;
+    controlOutput.controlDetails.pitchPercent = 0;
     controlOutput.useHeading = false;
     controlOutput.controlDetails.rudderPassby = false;
     controlOutput.controlDetails.pitchPassby = false;
