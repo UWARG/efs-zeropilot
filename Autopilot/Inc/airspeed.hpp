@@ -17,6 +17,7 @@
 #ifndef AIRSPEED_HPP
 #define AIRSPEED_HPP
 
+#include <ctime>
 #include <cstdint>
 
 /*
@@ -69,11 +70,15 @@ class MPXV7002DP : public airspeed {
         void GetResult(airspeedData_t &Data);
 
         /**
-         *  Triggers interrupt for new airspeed measurement - stores 
-         *  raw data in variables. This function is blocking, as polling for the adc has
-         *  a timeout of 50 ms.
+         *  Don't use this function, the GetResult function is non blocking.
          */
         void Begin_Measuring();
+
+        // Calculates the offset of the values coming from the sensor.
+        // It does this by taking 10 measurements, averaging them, and then subtracting
+        // the baseline value from them. The baseline voltage for no 
+        // differential pressure should be 2.5V.
+        void CalcOffset();
         
     private:
         // Singleton style constructor.
@@ -85,11 +90,6 @@ class MPXV7002DP : public airspeed {
         // offset. This value should be in the range of 0.0 to 5.0 (as that 
         //is all the sensor can give).
         float GetVoltage();
-        // Calculates the offset of the values coming from the sensor.
-        // It does this by taking 10 measurements, averaging them, and then subtracting
-        // the baseline value from them. The baseline voltage for no 
-        // differential pressure should be 2.5V.
-        void CalcOffset();
         // Calculates the differential pressure from the voltage. This is done using the inverse of the 
         // equation provided in the differential pressure sensor's datasheet. That equation is how the 
         // sensor calculates the signal voltage from the pressure. So we use the inverse to calculate the
@@ -109,6 +109,16 @@ class MPXV7002DP : public airspeed {
         bool dataNew = false;
         
 };
+
+// #ifdef __cplusplus
+// extern "C" {
+// #endif
+
+//     void testAirspeed();
+
+// #ifdef __cplusplus
+// }
+// #endif
 
 
 
