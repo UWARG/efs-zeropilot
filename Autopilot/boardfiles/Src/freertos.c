@@ -88,10 +88,10 @@
 // The period for which each of the threads are called
 
 // TODO: Confirm the period at which each of the threads are to be run and update them
-static const int PERIOD_ATTITUDEMANAGER_MS = 100;
-static const int PERIOD_SENSORDATA_MS = 100;
-static const int PERIOD_PATHMANAGER_MS = 100; 
-static const int PERIOD_TELEMETRY_MS = 100; 
+static const int PERIOD_ATTITUDEMANAGER_MS = 5;
+static const int PERIOD_SENSORDATA_MS = 5;
+static const int PERIOD_PATHMANAGER_MS = 20; 
+static const int PERIOD_TELEMETRY_MS = 20; 
 static const int PERIOD_INTERCHIP_MS = 20;
 
 static volatile bool catastrophicFailure = false;
@@ -172,14 +172,6 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of sensorDataRun (thread for IMU, sensor fusion, and altimeter) */
   osThreadDef(sensorDataRun, sensorDataExecute, osPriorityNormal, 0, 1000);
   sensorDataHandle = osThreadCreate(osThread(sensorDataRun), NULL);
-
-  // /* definition and creation of sensorFusionRun */
-  // osThreadDef(sensorFusionRun, sensorFusionExecute, osPriorityNormal, 0, 700);
-  // sensorFusionHandle = osThreadCreate(osThread(sensorFusionRun), NULL);
-
-  // /* definition and creation of IMU Thread */
-  // osThreadDef(IMURun, IMURunExecute, osPriorityNormal, 0, 700);
-  // IMUHandle = osThreadCreate(osThread(IMURun), NULL);
 
   /* definition and creation of attitudeManager */
   osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 250);
@@ -276,31 +268,6 @@ void telemetryRunExecute(void const * argument)
   /* USER CODE END telemetryRunExecute */
 }
 
-/* USER CODE BEGIN Header_sensorFusionExecute */
-/**
-* @brief Function implementing the telemetryRun thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_sensorFusionExecute */
-// void sensorFusionExecute(void const * argument) {
-  
-//   /* USER CODE BEGIN sensorFusionExecute */
-//   /* Infinite loop */
-
-//   while (1) {
-//     TickType_t xLastWakeTime = xTaskGetTickCount();
-//     vTaskDelayUntil(&xLastWakeTime, PERIOD_SENSORDATA_MS);
-//     SFError_t err = SensorFusionInterfaceExecute();
-//     if (err.errorCode == -1) {
-//       catastrophicFailure = true;
-//     }
-//     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin); 
-//   }
-  
-//   /* USER CODE END sensorFusionExecute */
-// }
-
 /* USER CODE BEGIN Header_interchipRunExecute */
 /**
 * @brief Function implementing the interchip thread.
@@ -330,19 +297,6 @@ void interchipRunExecute(void const * argument) {
 * @retval None
 */
 /* USER CODE END Header_IMURunExecute */
-
-// void IMURunExecute(void const * argument) {
-
-//   /* USER CODE BEGIN IMURunExecute */
-//   /* Infinite loop */
-//   while (1) {
-//     TickType_t xLastWakeTime = xTaskGetTickCount();
-//     vTaskDelayUntil(&xLastWakeTime, PERIOD_IMU_MS);
-//     IMUThreadInterfaceExecute();
-//     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin); 
-//   }
-// }
-
 
 /* USER CODE BEGIN Header_sensorDataExecute */
 /**

@@ -16,9 +16,9 @@ void attitudeManager::setState(attitudeState& newState)
     if (*currentState == fetchInstructionsMode::getInstance()) {
         status = AttMan::COMPLETED_CYCLE;
     } else if (*currentState == FatalFailureMode::getInstance()) {
-        status = AttMan::COMPLETED_CYCLE;
+        status = AttMan::FAILURE_MODE;
     } else {
-        status = AttMan::COMPLETED_CYCLE;
+        status = AttMan::IN_CYCLE;
     }
 
     currentState->enter(this);
