@@ -20,7 +20,6 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
-
   get_filename_component(PARENT_DIR ../ ABSOLUTE)
 
   include_directories(
@@ -45,6 +44,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
   add_subdirectory(boardfiles/Drivers/STM32F7xx_HAL_Driver)
   add_subdirectory(boardfiles/Middlewares/Third_Party/FreeRTOS)
   add_subdirectory(DataStructures)
+  add_subdirectory(../../Mavlink2 build)
 
   file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/Src/*.c boardfiles/Src/*.c CControl/Src/*.c)
 file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp PathManager/Src/*.cpp TelemetryManager/Src/*.cpp SensorFusion/Src/*.cpp)
@@ -59,7 +59,7 @@ file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src
 
   add_executable(${ELF_NAME} ${C_SOURCES} ${CXX_SOURCES} ${STARTUP_ASM})
 
-  target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS DataStructures arm_cortexM7lfdp_math)
+  target_link_libraries(${ELF_NAME} STM32_HAL FreeRTOS DataStructures arm_cortexM7lfdp_math Mavlink_Airside)
 
   # Add project-specific linker flags (.ld script, .map file)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${LINKER_SCRIPT} -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map,--cref")
@@ -121,6 +121,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc/
     ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Mavlink2
   )
 
   # Let cmake know where to find all the find<Package>.cmake files
@@ -226,6 +227,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
   set(TELEMETRY_MANAGER_FSM_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Src/telemetryManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Src/telemetryStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Src/telemetryStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/xbee.cpp
   )

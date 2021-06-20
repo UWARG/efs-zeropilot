@@ -11,6 +11,7 @@
 #include "CommsWithTelemetry.hpp"
 #include "TelemPathInterface.hpp"
 #include "MathConstants.hpp"
+#include "Airside_Functions.hpp"
 
 //each state's classes
 class initialMode: public telemetryState
