@@ -110,18 +110,6 @@ class MPXV7002DP : public airspeed {
         
 };
 
-// #ifdef __cplusplus
-// extern "C" {
-// #endif
-
-//     void testAirspeed();
-
-// #ifdef __cplusplus
-// }
-// #endif
-
-
-
 
 #ifdef UNIT_TESTING
 #include "airspeed_Mock.hpp"

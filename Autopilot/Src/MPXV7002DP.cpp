@@ -18,7 +18,6 @@ MPXV7002DP::MPXV7002DP() {
     if(status != HAL_OK) {
         sensorStatus = 1;
     }
-    HAL_ADC_PollForConversion(&hadc3, 10);
     CalcOffset();
 }
 
@@ -32,7 +31,6 @@ MPXV7002DP* MPXV7002DP::GetInstance() {
 uint16_t MPXV7002DP::GetAverage() {
 	uint16_t avg = 0;
 	for(int i = 0; i < 10; i++) {
-		//HAL_ADC_PollForConversion(&hadc3, 10);
 		uint16_t val = HAL_ADC_GetValue(&hadc3);
 		avg += val;
 	}
@@ -41,11 +39,9 @@ uint16_t MPXV7002DP::GetAverage() {
 }
 
 void MPXV7002DP::GetResult(airspeedData_t &Data) {
-    HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_0);
     Data.airspeed = GetAirspeed();
     Data.isDataNew = true;
     Data.sensorStatus = sensorStatus;
-    //Data->utcTime = getCurrentTime();
 }
 
 void MPXV7002DP::Begin_Measuring() {
@@ -84,10 +80,4 @@ float MPXV7002DP::GetAirspeed() {
         double z = (2 * dp)/DENSITY_AIR;
         return sqrt(z);
     }
-}
-
-void testAirspeed() {
-    MPXV7002DP::GetInstance()->Begin_Measuring();
-    airspeedData_t data{};
-	MPXV7002DP::GetInstance()->GetResult(data);
 }
