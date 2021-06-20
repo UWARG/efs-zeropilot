@@ -7,7 +7,10 @@
  * Definitions
  **********************************************************************************************************************/
 
-constexpr int MANUAL_OVERRIDE_CHANNEL = 4; 
+constexpr int MANUAL_OVERRIDE_CHANNEL = 4;
+// temporary grabber_rx and grabber_pwm channels. To be changed later.
+constexpr int grabber_rx_channel = 0;
+constexpr int grabber_pwm_channel = 9;
 
 /***********************************************************************************************************************
  * Prototypes
@@ -28,10 +31,6 @@ void safety_controller_init()
 
 void safety_run(PWMChannel &pwm, PPMChannel &ppm)
 {
-
-    // temporary grabber_rx and grabber_pwm channels. To be changed later.
-    int grabber_rx_channel = 0;
-    int grabber_pwm_channel = 9;
 
     // note that we don't need to set the servo to max opening or closing if we don't need to.
     // this can help prevent motor overheating if it constantly tries to hit a position which it physically can't.

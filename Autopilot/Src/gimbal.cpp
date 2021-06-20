@@ -6,8 +6,8 @@
 #include "gimbal.hpp"
 #include "MathConstants.hpp"
 
-static const float gimbalMaxPitch = ZP_PI;
-static const float gimbalMaxYaw = ZP_PI/2;
+static constexpr float gimbalMaxPitch = ZP_PI;
+static constexpr float gimbalMaxYaw = ZP_PI/2;
 
 void setPitchPercent(float pitchTarget) {
     // returns target pitch as a percentage of the gimbal
