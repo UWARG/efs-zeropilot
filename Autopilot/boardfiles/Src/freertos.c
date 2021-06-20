@@ -290,14 +290,6 @@ void interchipRunExecute(void const * argument) {
   }  
 }
 
-/* USER CODE BEGIN Header_IMURunExecute */
-/**
-* @brief Function implementing the interchip thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_IMURunExecute */
-
 /* USER CODE BEGIN Header_sensorDataExecute */
 /**
 * @brief Function implementing the sensor-fusion, IMU, and altimeter thread
