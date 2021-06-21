@@ -1,5 +1,7 @@
 #include "xbee.hpp"
 
+extern USART_HandleTypeDef husart2;
+
 XBEE* XBEE::xbeeInstance = nullptr;
 
 XBEE* XBEE::getInstance() {
