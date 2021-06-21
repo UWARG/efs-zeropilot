@@ -45,8 +45,6 @@ void MPL3115A2::Begin_Measuring(void)
     HAL_I2C_Mem_Read(&hi2c4, LEFT_SHIFTED_ALTIMETER_SLAVE_ADDRESS, ALT_OUT_P_MSB_REG, MEM_SIZE_1_B, rawAltimeter.byte, 1, 10);
 }
 
-static float dataLog[100];
-
 void MPL3115A2::GetResult(AltimeterData_t &Data)
 {
     static int j = 0;
@@ -112,13 +110,15 @@ void MPL3115A2::ConfigAltimeter(void)
 
     uint8_t txByte;
 
+    // Puts the altimeter in standby mode. This just allows us to access all its registers.
     txByte = STANDBY_MODE_8_OS;
-    HAL_StatusTypeDef stuff = HAL_I2C_Mem_Write(&hi2c4, LEFT_SHIFTED_ALTIMETER_SLAVE_ADDRESS, ALT_CTRL_REG1, MEM_SIZE_1_B, &txByte, 1, 1000);
+    HAL_I2C_Mem_Write(&hi2c4, LEFT_SHIFTED_ALTIMETER_SLAVE_ADDRESS, ALT_CTRL_REG1, MEM_SIZE_1_B, &txByte, 1, 1000);
 
     HAL_Delay(20);
-
+    
+    // In active mode, the altimeter is actually measuring. * OS corresponds to a measurement refresh every 6 ms. (We couldn't do this if the altimeter was not in standby mode before).
     txByte = ACTIVE_MODE_8_OS;
-    stuff = HAL_I2C_Mem_Write(&hi2c4, LEFT_SHIFTED_ALTIMETER_SLAVE_ADDRESS, ALT_CTRL_REG1, MEM_SIZE_1_B, &txByte, 1, 1000);
+    HAL_I2C_Mem_Write(&hi2c4, LEFT_SHIFTED_ALTIMETER_SLAVE_ADDRESS, ALT_CTRL_REG1, MEM_SIZE_1_B, &txByte, 1, 1000);
 
     HAL_Delay(20);
 
