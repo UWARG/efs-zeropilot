@@ -51,10 +51,14 @@ static airspeed *airspeedObj;
 static SFIterationData_t iterData;
 static SFOutput_t SFOutput;
 
-static double REF_LAT;
-static double REF_LONG;
-static bool gpsIsSet = false;
+//Values for accurate gps distance calculations
+static double REF_LAT = 0;
+static double REF_LONG = 0;
+static bool gpsRefIsSet = false;
+constexpr int EARTH_RAD = 6367449;
+constexpr int LAT_DIST = 111133;
 
+//Maximum covariance before a sensor value is discarded
 const int HIGH_COVAR = 10000;
 
 void SF_Init(void)
@@ -76,13 +80,12 @@ void SF_Init(void)
 
     //Set initial state to be unknown
     for(int i = 0; i < NUM_KALMAN_VALUES; i++) iterData.prevX[0] = 0;
-    iterData.prevX[0] = 0;
-    iterData.prevX[2] = 0;
-    iterData.prevX[4] = 0;
-    for(int i = 0; i < NUM_KALMAN_VALUES*NUM_KALMAN_VALUES; i++) iterData.prevP[0] = 0;
     iterData.prevP[0] = 100000;
+    iterData.prevP[1] = 0;
     iterData.prevP[2*NUM_KALMAN_VALUES+2] = 100000;
+    iterData.prevP[3] = 0;
     iterData.prevP[4*NUM_KALMAN_VALUES+4] = 100000;
+    iterData.prevP[5] = 0;
 }
 
 void localToGlobalAccel(IMUData_t *imudata, float *u)
@@ -95,28 +98,28 @@ void localToGlobalAccel(IMUData_t *imudata, float *u)
 //Map gps position to xy coords using the reference location as the origin.
 //wikipedia.org/wiki/Geographic_coordinate_system
 double * gpsToCartesian(double lat, double lng){
-    const double RAD_LAT = REF_LAT*ZP_PI/180;
+    const double RAD_LAT = DEG_TO_RAD(REF_LAT);
     static double xy[2] = {0};
 
     //Latitude
-    xy[0] = (lat - REF_LAT) * (111132.92 - 559.82*cos(2*RAD_LAT) + 1.175*cos(4*RAD_LAT) - 0.0023*cos(6*RAD_LAT));
+    xy[0] = (lat - REF_LAT) * LAT_DIST;
 
     //Longitude
-    xy[1] = (lng - REF_LONG) * (111412.84*cos(RAD_LAT) - 93.5*cos(3*RAD_LAT) + 0.118*cos(5*RAD_LAT));
+    xy[1] = (lng - REF_LONG) * DEG_TO_RAD(EARTH_RAD*cos(RAD_LAT));
 
 
     return xy;
 }
 
 double * cartesianToGPS(double x, double y){
-    const double RAD_LAT = REF_LAT*ZP_PI/180;
+    const double RAD_LAT = DEG_TO_RAD(REF_LAT);
     static double latLong[2] = {0};
 
     //Latitude
-    latLong[0] = x / (111132.92 - 559.82*cos(2*RAD_LAT) + 1.175*cos(4*RAD_LAT) - 0.0023*cos(6*RAD_LAT)) + REF_LAT;
+    latLong[0] = x / LAT_DIST + REF_LAT;
 
     //Longitude
-    latLong[1] = y / (111412.84*cos(RAD_LAT) - 93.5*cos(3*RAD_LAT) + 0.118*cos(5*RAD_LAT)) + REF_LONG;
+    latLong[1] = y / (DEG_TO_RAD(EARTH_RAD*cos(RAD_LAT))) + REF_LONG;
 
 
     return latLong;
@@ -206,22 +209,23 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
     imudata->accy = 0;
     imudata->accz = 0;
 
-    double baroCovar = HIGH_COVAR+1;
+
+    double baroCovar = HIGH_COVAR + 1;
     double gpsCovar;
     if(gpsdata->dataIsNew && gpsdata->numSatellites >= 3)
     {
         gpsCovar = 2;
-        if(!gpsIsSet)
+        if(!gpsRefIsSet)
         {
             //Set a reference position to help convert between gps data formats.
             REF_LAT = gpsdata->latitude;
             REF_LONG = gpsdata->longitude;
-            gpsIsSet;
+            gpsRefIsSet = true;
         }
     }
     else
     {
-        gpsCovar = HIGH_COVAR+1;
+        gpsCovar = HIGH_COVAR + 1;
     }
 
     //Error output
@@ -237,13 +241,15 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
 
     const int16_t DIM = 6;
 
-    float x[DIM*1];
+    //List of variables being tracked and estimated
+    float x[DIM];
 
     //float * prevX = iterdata->prevX;
 
     float prevX[DIM*1];
     for (int i = 0; i < DIM*1; i++) prevX[i] = iterdata->prevX[i];
 
+    //Maps x to itself, applying any physical relationships between variables.
     float f[DIM*DIM] =
     {
         1, dt, 0, 0,  0, 0,
@@ -258,7 +264,8 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
 
     float ddt = pow(dt,2)/2;
 
-    float u[U_DIM*1] =
+    //XYZ acceleration
+    float u[U_DIM] =
     {
         0,
         0,
@@ -266,6 +273,7 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
     };
     localToGlobalAccel(imudata, u);
 
+    //Maps u to x
     float b[DIM*U_DIM] =
     {
         ddt, 0,   0,
@@ -288,14 +296,16 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
     
     //Defines for error covariance
 
+    //Stores confidence in accuracy of variables of x
     float p[DIM*DIM];
 
     float prevP[DIM*DIM];
     for (int i = 0; i < DIM*DIM; i++) 
     {
-    prevP[i] = iterdata->prevP[i];
+        prevP[i] = iterdata->prevP[i];
     }
 
+    //Confidence in the physical relationship prediction performed using f
     float q[DIM*DIM]=
     {
         5.0, 0,   0,   0,   0,   0,
@@ -326,8 +336,10 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
     
     const int16_t NUM_MEASUREMENTS = 7;
 
+
     float k[DIM*NUM_MEASUREMENTS];
 
+    //Maps sensor data from z to x
     float h[NUM_MEASUREMENTS*DIM] =
     {
         1, 0, 0, 0, 0, 0,
@@ -352,6 +364,7 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
         h[6*DIM+5] = 0;
     }
 
+    //Defines the confidence to have in each sensor variable
     float r[NUM_MEASUREMENTS*NUM_MEASUREMENTS]
     {
         baroCovar, 0,               0,              0,              0,          0,         0,  
@@ -389,7 +402,8 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
 
     double * xyPos = gpsToCartesian(gpsdata->latitude, gpsdata->longitude);
 
-    float z[NUM_MEASUREMENTS*1]=
+    //List of sensor measurements
+    float z[NUM_MEASUREMENTS] =
     {
         altimeterdata->altitude,
         gpsdata->altitude,
@@ -416,6 +430,7 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
 
     //Defines for updating error covariance
 
+    //The identity matrix
     float I[DIM*DIM] =
     {
         1, 0, 0, 0, 0, 0,
