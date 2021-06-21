@@ -7,7 +7,7 @@
 #define XBEE_HPP
 
 #include "TelemPathInterface.hpp" //Holds structs for sent and received data
-
+#include "stm32f7xx_hal_usart.h"
 
 typedef struct __xbee_in_message {
     uint8_t len;            // Length of payload
