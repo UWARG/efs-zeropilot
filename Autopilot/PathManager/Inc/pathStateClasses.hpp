@@ -11,6 +11,7 @@
 #include "CommsWithTelemetry.hpp"
 #include "SensorFusion.hpp"
 #include "AttitudePathInterface.hpp"
+#include "gimbal.hpp"
 
 /***********************************************************************************************************************
  * Definitions

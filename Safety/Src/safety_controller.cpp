@@ -7,7 +7,10 @@
  * Definitions
  **********************************************************************************************************************/
 
-constexpr int MANUAL_OVERRIDE_CHANNEL = 4; 
+constexpr int MANUAL_OVERRIDE_CHANNEL = 4;
+// temporary grabber_rx and grabber_pwm channels. To be changed later.
+constexpr int grabber_rx_channel = 0;
+constexpr int grabber_pwm_channel = 9;
 
 /***********************************************************************************************************************
  * Prototypes
@@ -29,23 +32,43 @@ void safety_controller_init()
 void safety_run(PWMChannel &pwm, PPMChannel &ppm)
 {
 
+    // note that we don't need to set the servo to max opening or closing if we don't need to.
+    // this can help prevent motor overheating if it constantly tries to hit a position which it physically can't.
+    if (getPPM(ppm, grabber_rx_channel)>50){
+        setPWMChannel(pwm, grabber_pwm_channel, 75);
+    } else {
+        setPWMChannel(pwm, grabber_pwm_channel, 25);
+    }
+
     // For the second flight test, AutoPilot only controls elevator and aileron.
     if(AutoPilotEngaged(ppm))
     {
          volatile int16_t *AutoPilotPwmChannel = getPWM();
 
-        // only elevator controlled by AutoPilot
+        // These are Autopilot controlled pwm channels.
         setPWMChannel(pwm, 0, (uint32_t) getPPM(ppm, 0));
         setPWMChannel(pwm, 1, static_cast<uint32_t> (AutoPilotPwmChannel[1]));
+        setPWMChannel(pwm, 3, static_cast<uint32_t> (AutoPilotPwmChannel[3]));
+        setPWMChannel(pwm, 7, static_cast<uint32_t> (AutoPilotPwmChannel[7]));
 
-        for(int channel = 2; channel < 8; channel++)
-        {
-            setPWMChannel(pwm, channel, (uint32_t) getPPM(ppm, channel));
-        }
+        // these are ppm controls (not affected by autopilot). Ask Anthony or comment above if for more info.
+        setPWMChannel(pwm, 2, (uint32_t) getPPM(ppm, 2));
+        setPWMChannel(pwm, 4, (uint32_t) getPPM(ppm, 4));
+        setPWMChannel(pwm, 5, (uint32_t) getPPM(ppm, 5));
+        setPWMChannel(pwm, 6, (uint32_t) getPPM(ppm, 6));
     }
     else
     {
-        for(int channel = 0; channel < 8; channel++)
+        // we maintain pwm control for our pwm channels for gimbal (ch 3 and 7).
+        setPWMChannel(pwm, 3, 0);
+        setPWMChannel(pwm, 7, 50);
+
+        // we maintain ppm control for the rest of the servos.
+        for(int channel = 0; channel < 3; channel++)
+        {
+            setPWMChannel(pwm, channel, (uint32_t) getPPM(ppm, channel));
+        }
+        for(int channel = 4; channel < 7; channel++)
         {
             setPWMChannel(pwm, channel, (uint32_t) getPPM(ppm, channel));
         }
