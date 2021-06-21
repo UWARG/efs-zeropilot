@@ -12,6 +12,11 @@
 #include "TelemPathInterface.hpp"
 #include "MathConstants.hpp"
 #include "Airside_Functions.hpp"
+#include "mavlinkDecodingEncoding.hpp"
+#include "Mavlink2_lib/common/mavlink.h"
+
+#include <vector>
+#include <stdint.h>
 
 //each state's classes
 class initialMode: public telemetryState
@@ -35,12 +40,7 @@ class obtainDataMode: public telemetryState
         void execute(telemetryManager* telemetryMgr);
         void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
         static telemetryState& getInstance();
-        // Static getter to receive _rawPMData
-        static Telemetry_PIGO_t* getRawPMData(void) { return &_rawPMData; } // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
-
-        // #ifdef UNIT_TESTING
-        //     static XBEE* getXBEE(void) { return ZPXbee; }
-        // #endif
+        static std::vector<uint8_t> getRawPMData(void) { return _rawPMData; } 
 
     private:
         obtainDataMode(){ ZPXbee = XBEE::getInstance(); }
@@ -50,7 +50,7 @@ class obtainDataMode: public telemetryState
         XBEE* ZPXbee;
 
         // Some static array to hold the received data. Name it _rawPMData
-        static Telemetry_PIGO_t _rawPMData; // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
+        static std::vector<uint8_t> _rawPMData; 
 };
 
 class decodeDataMode: public telemetryState
@@ -63,11 +63,12 @@ class decodeDataMode: public telemetryState
         static Telemetry_PIGO_t* getDecodedPMData(void) { return &_decodedPMData; }
 
     private:
-        decodeDataMode(){}
+        decodeDataMode(){ decodingErrorCount = 0; }
         decodeDataMode(const decodeDataMode& other);
         decodeDataMode& operator =(const decodeDataMode& other);
 
         static Telemetry_PIGO_t _decodedPMData;
+        int decodingErrorCount;
 };
 
 class passToPathMode: public telemetryState
@@ -137,7 +138,7 @@ class encodeDataMode: public telemetryState
         void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
         static telemetryState& getInstance();
         // Getter to receive _encodedGSData
-        static Telemetry_POGI_t* getEncodedGSData(void) { return &_encodedGSData; } // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
+        static mavlink_message_t* getEncodedGSData(void) { return &_encodedGSData; } 
 
     private:
         encodeDataMode(){}
@@ -145,7 +146,7 @@ class encodeDataMode: public telemetryState
         encodeDataMode& operator =(const encodeDataMode& other);
 
         // Some data to store the encoded data. Call it _encodedGSData
-        static Telemetry_POGI_t _encodedGSData; // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
+        static mavlink_message_t _encodedGSData; 
 };
 
 class sendDataMode: public telemetryState

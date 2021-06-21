@@ -20,6 +20,8 @@ FAKE_VOID_FUNC(CommFromTMToPMInit);
 FAKE_VOID_FUNC(CommFromPMToTMInit);
 FAKE_VOID_FUNC(SendFromTMToPM, Telemetry_PIGO_t*);
 FAKE_VALUE_FUNC(bool, GetFromPMToTM, Telemetry_POGI_t*);
+FAKE_VALUE_FUNC(_AirsideMavlinkDecodingEncoding, decode, std::vector<uint8_t>, Telemetry_PIGO_t*);
+FAKE_VALUE_FUNC(_AirsideMavlinkDecodingEncoding, encode, Telemetry_POGI_t*, mavlink_message_t*);
 
 class TelemetryManagerFSM : public ::testing::Test
 {

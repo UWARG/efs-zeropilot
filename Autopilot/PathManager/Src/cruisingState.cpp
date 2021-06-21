@@ -29,9 +29,9 @@ _ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, Wayp
     if (telemetryData->numWaypoints == 1 && (telemetryData->waypointModifyFlightPathCommand >= 2 && telemetryData->waypointModifyFlightPathCommand <= 4)) { // Inserting, Appending, or Updating a waypoint
 
         // Set the output type of the new waypoint. Need if statements because of the enum parameter of the initialize_waypoint() method
-        if (telemetryData->waypoints[0].waypointType == 0) {
+        if (telemetryData->waypoints.at(0).waypointType == 0) {
             waypointType = PATH_FOLLOW;
-        } else if (telemetryData->waypoints[0].waypointType == 1) {
+        } else if (telemetryData->waypoints.at(0).waypointType == 1) {
             waypointType = ORBIT_FOLLOW;
         } else {
             waypointType = HOLD_WAYPOINT;
@@ -40,9 +40,9 @@ _ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, Wayp
         // Depending on the waypointType of the waypoint, we will need to call a different initialize_waypoint() method
         _PathData * modifyWaypoint;
         if (waypointType == PATH_FOLLOW) {
-            modifyWaypoint = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[0].longitude, telemetryData->waypoints[0].latitude, telemetryData->waypoints[0].altitude, waypointType); 
+            modifyWaypoint = cruisingStateManager.initialize_waypoint(telemetryData->waypoints.at(0).longitude, telemetryData->waypoints.at(0).latitude, telemetryData->waypoints.at(0).altitude, waypointType); 
         } else {
-            modifyWaypoint = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[0].longitude, telemetryData->waypoints[0].latitude, telemetryData->waypoints[0].altitude, waypointType, telemetryData->waypoints[0].turnRadius); // Create a _PathData object
+            modifyWaypoint = cruisingStateManager.initialize_waypoint(telemetryData->waypoints.at(0).longitude, telemetryData->waypoints.at(0).latitude, telemetryData->waypoints.at(0).altitude, waypointType, telemetryData->waypoints.at(0).turnRadius); // Create a _PathData object
         }
         
         // Update flight path by passing in the appropriate parameters to update_path_nodes()
@@ -86,11 +86,11 @@ _ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, Wayp
 
         _PathData * newFlightPath[PATH_BUFFER_SIZE];
 
-        for(int i = 0; i < telemetryData->numWaypoints && i < PATH_BUFFER_SIZE; i++) {
+        for(int i = 0; i < telemetryData->numWaypoints && i < telemetryData->waypoints.size(); i++) {
             // Set the output type of the new waypoint. Need if statements because of the enum parameter of the initialize_waypoint() method
-            if (telemetryData->waypoints[i].waypointType == 0) {
+            if (telemetryData->waypoints.at(i).waypointType == 0) {
                 waypointType = PATH_FOLLOW;
-            } else if (telemetryData->waypoints[i].waypointType == 1) {
+            } else if (telemetryData->waypoints.at(i).waypointType == 1) {
                 waypointType = ORBIT_FOLLOW;
             } else {
                 waypointType = HOLD_WAYPOINT;
@@ -98,9 +98,9 @@ _ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, Wayp
             
             // Depending on the waypointType of the waypoint, we will need to call a different initialize_waypoint() method
             if (waypointType == PATH_FOLLOW) {
-                newFlightPath[i] = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[i].longitude, telemetryData->waypoints[i].latitude, telemetryData->waypoints[i].altitude, waypointType); 
+                newFlightPath[i] = cruisingStateManager.initialize_waypoint(telemetryData->waypoints.at(i).longitude, telemetryData->waypoints.at(i).latitude, telemetryData->waypoints.at(i).altitude, waypointType); 
             } else {
-                newFlightPath[i] = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[i].longitude, telemetryData->waypoints[i].latitude, telemetryData->waypoints[i].altitude, waypointType, telemetryData->waypoints[i].turnRadius); 
+                newFlightPath[i] = cruisingStateManager.initialize_waypoint(telemetryData->waypoints.at(i).longitude, telemetryData->waypoints.at(i).latitude, telemetryData->waypoints.at(i).altitude, waypointType, telemetryData->waypoints.at(i).turnRadius); 
             }
 
             appendNewElement(idArray, newFlightPath[i]->waypointId); // Append elements to the idArray while we go :))

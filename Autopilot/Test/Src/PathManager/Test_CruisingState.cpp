@@ -151,9 +151,8 @@ static Telemetry_Waypoint_Data_t createTelemetryWaypoint(long double lon, long d
 
 /*** TESTS ***/
 
-
 TEST (CruisingState, IncorrectTelemetryCommandsReturnErrorCode) {
-    /***********************SETUP***********************/
+    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
 
 	TelemetryTestData.numWaypoints = 1;
     TelemetryTestData.waypointModifyFlightPathCommand = (_ModifyFlightPathCommand) 7;
@@ -165,7 +164,7 @@ TEST (CruisingState, IncorrectTelemetryCommandsReturnErrorCode) {
     TelemetryTestData.nextId = 0;
     TelemetryTestData.prevId = 0;
     TelemetryTestData.modifyId = 0;
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0);
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0));
     TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
 	/********************DEPENDENCIES*******************/	
@@ -193,15 +192,15 @@ TEST (CruisingState, IncorrectTelemetryCommandsReturnErrorCode) {
 }
 
 TEST (CruisingState, InitializeFlightPathSuccess) {
-    /***********************SETUP***********************/
+    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
     // Set up input telemetry data
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0);
-    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0);
-    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0);
-    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0));
 
 	TelemetryTestData.numWaypoints = 4;
     TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
@@ -288,15 +287,15 @@ TEST (CruisingState, InitializeFlightPathSuccess) {
 }
 
 TEST (CruisingState, NukeFlightPathSuccess) {
-    /***********************SETUP***********************/
+    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
     // Set up input telemetry data
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0);
-    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0);
-    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0);
-    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0));
 
 	TelemetryTestData.numWaypoints = 4;
     TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
@@ -362,15 +361,15 @@ TEST (CruisingState, NukeFlightPathSuccess) {
 }
 
 TEST (CruisingState, AppendWaypointSuccess) {
-    /***********************SETUP***********************/
+    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
     // Set up input telemetry data
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0);
-    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0);
-    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0);
-    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0));
 
 	TelemetryTestData.numWaypoints = 4;
     TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
@@ -428,7 +427,8 @@ TEST (CruisingState, AppendWaypointSuccess) {
     TelemetryTestData.numWaypoints = 1;
     TelemetryTestData.waypointModifyFlightPathCommand = APPEND; // Appending
 
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0);  
+    TelemetryTestData.waypoints.clear();
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0));  
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
     _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
@@ -458,15 +458,15 @@ TEST (CruisingState, AppendWaypointSuccess) {
 }
 
 TEST (CruisingState, AppendWaypointFail) {
-    /***********************SETUP***********************/
+    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
     // Set up input telemetry data
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0);
-    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0);
-    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0);
-    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0));
 
 	TelemetryTestData.numWaypoints = 4;
     TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
@@ -521,7 +521,8 @@ TEST (CruisingState, AppendWaypointFail) {
     TelemetryTestData.numWaypoints = 1;
     TelemetryTestData.waypointModifyFlightPathCommand = APPEND; // Appending
 
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 10, 0.0, 0); // Duplicate, so it will not append
+    TelemetryTestData.waypoints.clear();
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 10, 0.0, 0)); // Duplicate, so it will not append
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
     _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
@@ -551,15 +552,15 @@ TEST (CruisingState, AppendWaypointFail) {
 }
 
 TEST (CruisingState, InsertWaypointSuccess) {
-    /***********************SETUP***********************/
+    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
     // Set up input telemetry data
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0);
-    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0);
-    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0);
-    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0));
 
 	TelemetryTestData.numWaypoints = 4;
     TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
@@ -617,12 +618,14 @@ TEST (CruisingState, InsertWaypointSuccess) {
     TelemetryTestData.numWaypoints = 1;
     TelemetryTestData.waypointModifyFlightPathCommand = INSERT; // Inserting
 
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0);  
+    TelemetryTestData.waypoints.clear();
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0));  
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
     _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
 
+    TelemetryTestData.waypoints.clear();
     _ArrayStatus idArrayComparision = compare_id_arrays(idArray, idTestArray);    
     
     _PathData ** flightPath = cruisingStateManager.get_waypoint_buffer();
@@ -647,15 +650,15 @@ TEST (CruisingState, InsertWaypointSuccess) {
 }
 
 TEST (CruisingState, InsertWaypointFail) {
-    /***********************SETUP***********************/
+    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
     // Set up input telemetry data
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0);
-    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0);
-    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0);
-    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0));
 
 	TelemetryTestData.numWaypoints = 4;
     TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
@@ -710,7 +713,8 @@ TEST (CruisingState, InsertWaypointFail) {
     TelemetryTestData.numWaypoints = 1;
     TelemetryTestData.waypointModifyFlightPathCommand = INSERT; // Inserting
 
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0);  
+    TelemetryTestData.waypoints.clear();
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0));  
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
     _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
@@ -740,15 +744,15 @@ TEST (CruisingState, InsertWaypointFail) {
 }
 
 TEST (CruisingState, UpdateWaypointSuccess) {
-    /***********************SETUP***********************/
+    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
     // Set up input telemetry data
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0);
-    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0);
-    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0);
-    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0));
 
 	TelemetryTestData.numWaypoints = 4;
     TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
@@ -804,7 +808,8 @@ TEST (CruisingState, UpdateWaypointSuccess) {
     TelemetryTestData.numWaypoints = 1;
     TelemetryTestData.waypointModifyFlightPathCommand = UPDATE; // Updating
 
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0);  
+    TelemetryTestData.waypoints.clear();
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0));  
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
     _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
@@ -834,15 +839,15 @@ TEST (CruisingState, UpdateWaypointSuccess) {
 }
 
 TEST (CruisingState, UpdateWaypointFail) {
-    /***********************SETUP***********************/
+    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
     // Set up input telemetry data
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0);
-    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0);
-    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0);
-    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0));
 
 	TelemetryTestData.numWaypoints = 4;
     TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
@@ -897,12 +902,14 @@ TEST (CruisingState, UpdateWaypointFail) {
     TelemetryTestData.numWaypoints = 1;
     TelemetryTestData.waypointModifyFlightPathCommand = UPDATE; // Updating
 
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0);  
+    TelemetryTestData.waypoints.clear();
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(1.0, 0.0, 10, 0.0, 0));  
 
     editError = editFlightPath(&TelemetryTestData, cruisingStateManager, idArray);
     _GetNextDirectionsErrorCode pathError = pathFollow(&TelemetryTestData, cruisingStateManager, TestInputData, &TestOutputData, goingHome, inHold);
     setReturnValues(&TestReturnToGround, cruisingStateManager, editError, pathError);
 
+    TelemetryTestData.waypoints.clear();
     _ArrayStatus idArrayComparision = compare_id_arrays(idArray, idTestArray);    
     
     _PathData ** flightPath = cruisingStateManager.get_waypoint_buffer();
@@ -927,15 +934,15 @@ TEST (CruisingState, UpdateWaypointFail) {
 }
 
 TEST (CruisingState, DeleteWaypointSuccess) {
-    /***********************SETUP***********************/
+    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
     // Set up input telemetry data
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0);
-    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0);
-    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0);
-    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0));
 
 	TelemetryTestData.numWaypoints = 4;
     TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
@@ -1018,15 +1025,15 @@ TEST (CruisingState, DeleteWaypointSuccess) {
 }
 
 TEST (CruisingState, DeleteWaypointFail) {
-    /***********************SETUP***********************/
+    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
     // Set up input telemetry data
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0);
-    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0);
-    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0);
-    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0));
 
 	TelemetryTestData.numWaypoints = 4;
     TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
@@ -1109,15 +1116,15 @@ TEST (CruisingState, DeleteWaypointFail) {
 }
 
 TEST (CruisingState, NextDirectionsRegularCorrect) {
-    /***********************SETUP***********************/
+    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
     // Set up input telemetry data
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(-80.5479053969044, 43.47075830402289, 10, 0.0, 0);
-    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(-80.55044911526599, 43.469649460242174, 20, 0.0, 0);
-    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(-80.54172626568685, 43.46764349709017, 30, 0.0, 0);
-    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0);
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.5479053969044, 43.47075830402289, 10, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.55044911526599, 43.469649460242174, 20, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.54172626568685, 43.46764349709017, 30, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0));
 
 	TelemetryTestData.numWaypoints = 4;
     TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
@@ -1182,15 +1189,15 @@ TEST (CruisingState, NextDirectionsRegularCorrect) {
 }
 
 TEST (CruisingState, NextDirectionsGoingHomeCorrect) {
-    /***********************SETUP***********************/
+    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
     // Set up input telemetry data
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(-80.5479053969044, 43.47075830402289, 10, 0.0, 0);
-    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(-80.55044911526599, 43.469649460242174, 20, 0.0, 0);
-    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(-80.54172626568685, 43.46764349709017, 30, 0.0, 0);
-    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0);
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.5479053969044, 43.47075830402289, 10, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.55044911526599, 43.469649460242174, 20, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.54172626568685, 43.46764349709017, 30, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0));
 
 	TelemetryTestData.numWaypoints = 4;
     TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
@@ -1270,15 +1277,15 @@ TEST (CruisingState, NextDirectionsGoingHomeCorrect) {
 }
 
 TEST (CruisingState, GoingHomeHomeBaseUndefined) {
-    /***********************SETUP***********************/
+    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
     // Set up input telemetry data
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(-80.5479053969044, 43.47075830402289, 10, 0.0, 0);
-    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(-80.55044911526599, 43.469649460242174, 20, 0.0, 0);
-    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(-80.54172626568685, 43.46764349709017, 30, 0.0, 0);
-    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0);
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.5479053969044, 43.47075830402289, 10, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.55044911526599, 43.469649460242174, 20, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.54172626568685, 43.46764349709017, 30, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0));
 
 	TelemetryTestData.numWaypoints = 4;
     TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
@@ -1343,15 +1350,15 @@ TEST (CruisingState, GoingHomeHomeBaseUndefined) {
 }
 
 TEST (CruisingState, NextDirectionsStartHoldingCorrect) {
-    /***********************SETUP***********************/
+    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
     // Set up input telemetry data
-    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(-80.5479053969044, 43.47075830402289, 10, 0.0, 0);
-    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(-80.55044911526599, 43.469649460242174, 20, 0.0, 0);
-    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(-80.54172626568685, 43.46764349709017, 30, 0.0, 0);
-    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0);
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.5479053969044, 43.47075830402289, 10, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.55044911526599, 43.469649460242174, 20, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.54172626568685, 43.46764349709017, 30, 0.0, 0));
+    TelemetryTestData.waypoints.push_back(createTelemetryWaypoint(-80.54806720987989, 43.46430420301871, 33, 0.0, 0));
 
 	TelemetryTestData.numWaypoints = 4;
     TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;

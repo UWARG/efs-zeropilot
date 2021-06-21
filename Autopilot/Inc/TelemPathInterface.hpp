@@ -2,10 +2,12 @@
  * Provides declarations common to the telemetry and path manager interfaces.
  * Author: Anthony Bertnyk, Messed with by Gordon Fountain to turn from Attitude Manager to Telemetry
  */
- #include <cstdint>
 
 #ifndef TELEM_PATH_INTERFACE_HPP
 #define TELEM_PATH_INTERFACE_HPP
+
+ #include <cstdint>
+ #include <vector>
 
 /********************************************************************
 * Definitions
@@ -26,13 +28,14 @@ struct Telemetry_Waypoint_Data_t {
 //Data for path manager to send to telemetry.
 struct Telemetry_POGI_t{
 	int errorCode; //Code for specified errors
-	double gpsLattitude,gpsLongitude,curAltitude; //Current gps position and altitude
+    uint32_t timeStamp;
+	double gpsLatitude,gpsLongitude,curAltitude; //Current gps position and altitude
 	float curAirspeed; //Airspeed data
 	float roll,pitch,yaw;	//Current orientation (radians)
 	float camRoll,camPitch,camYaw;	//Current camera orientation (radians)
 	bool isLanded; //Switch to check if landed (maybe limit switch?)
 	uint8_t editingFlightPathErrorCode,flightPathFollowingErrorCode; //Flight path error codes
-	uint8_t currentWaypointId, currentWaypointIndex; //current waypoint data
+	int currentWaypointId, currentWaypointIndex; //current waypoint data
 	bool homeBaseInit; //is home base initialized
 };
 
@@ -52,7 +55,7 @@ struct Telemetry_PIGO_t {
     int prevId;
     int modifyId;
 
-    Telemetry_Waypoint_Data_t waypoints[100]; // Somehow need to get PATH_BUFFER_SIZE here...
+    std::vector<Telemetry_Waypoint_Data_t> waypoints; // Somehow need to get PATH_BUFFER_SIZE here...
     Telemetry_Waypoint_Data_t homebase;
 
     // landing and takeoff 
