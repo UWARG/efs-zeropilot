@@ -152,7 +152,8 @@ static Telemetry_Waypoint_Data_t createTelemetryWaypoint(long double lon, long d
 /*** TESTS ***/
 
 TEST (CruisingState, IncorrectTelemetryCommandsReturnErrorCode) {
-    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
+    /***********************SETUP***********************/   
+    TelemetryTestData.waypoints.clear();
 
 	TelemetryTestData.numWaypoints = 1;
     TelemetryTestData.waypointModifyFlightPathCommand = (_ModifyFlightPathCommand) 7;
@@ -192,7 +193,8 @@ TEST (CruisingState, IncorrectTelemetryCommandsReturnErrorCode) {
 }
 
 TEST (CruisingState, InitializeFlightPathSuccess) {
-    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
+    /***********************SETUP***********************/   
+    TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
@@ -287,7 +289,8 @@ TEST (CruisingState, InitializeFlightPathSuccess) {
 }
 
 TEST (CruisingState, NukeFlightPathSuccess) {
-    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
+    /***********************SETUP***********************/   
+    TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
@@ -361,7 +364,8 @@ TEST (CruisingState, NukeFlightPathSuccess) {
 }
 
 TEST (CruisingState, AppendWaypointSuccess) {
-    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
+    /***********************SETUP***********************/   
+    TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
@@ -458,7 +462,8 @@ TEST (CruisingState, AppendWaypointSuccess) {
 }
 
 TEST (CruisingState, AppendWaypointFail) {
-    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
+    /***********************SETUP***********************/   
+    TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
@@ -552,7 +557,8 @@ TEST (CruisingState, AppendWaypointFail) {
 }
 
 TEST (CruisingState, InsertWaypointSuccess) {
-    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
+    /***********************SETUP***********************/   
+    TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
@@ -650,7 +656,8 @@ TEST (CruisingState, InsertWaypointSuccess) {
 }
 
 TEST (CruisingState, InsertWaypointFail) {
-    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
+    /***********************SETUP***********************/   
+    TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
@@ -744,7 +751,8 @@ TEST (CruisingState, InsertWaypointFail) {
 }
 
 TEST (CruisingState, UpdateWaypointSuccess) {
-    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
+    /***********************SETUP***********************/   
+    TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
@@ -839,7 +847,8 @@ TEST (CruisingState, UpdateWaypointSuccess) {
 }
 
 TEST (CruisingState, UpdateWaypointFail) {
-    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
+    /***********************SETUP***********************/   
+    TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
@@ -934,7 +943,8 @@ TEST (CruisingState, UpdateWaypointFail) {
 }
 
 TEST (CruisingState, DeleteWaypointSuccess) {
-    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
+    /***********************SETUP***********************/   
+    TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
@@ -1025,7 +1035,8 @@ TEST (CruisingState, DeleteWaypointSuccess) {
 }
 
 TEST (CruisingState, DeleteWaypointFail) {
-    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
+    /***********************SETUP***********************/   
+    TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
@@ -1116,7 +1127,8 @@ TEST (CruisingState, DeleteWaypointFail) {
 }
 
 TEST (CruisingState, NextDirectionsRegularCorrect) {
-    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
+    /***********************SETUP***********************/   
+    TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
@@ -1189,7 +1201,8 @@ TEST (CruisingState, NextDirectionsRegularCorrect) {
 }
 
 TEST (CruisingState, NextDirectionsGoingHomeCorrect) {
-    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
+    /***********************SETUP***********************/   
+    TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
@@ -1277,7 +1290,8 @@ TEST (CruisingState, NextDirectionsGoingHomeCorrect) {
 }
 
 TEST (CruisingState, GoingHomeHomeBaseUndefined) {
-    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
+    /***********************SETUP***********************/   
+    TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 
@@ -1350,7 +1364,8 @@ TEST (CruisingState, GoingHomeHomeBaseUndefined) {
 }
 
 TEST (CruisingState, NextDirectionsStartHoldingCorrect) {
-    /***********************SETUP***********************/   TelemetryTestData.waypoints.clear();
+    /***********************SETUP***********************/   
+    TelemetryTestData.waypoints.clear();
 
     WaypointManager cruisingStateManager;
 

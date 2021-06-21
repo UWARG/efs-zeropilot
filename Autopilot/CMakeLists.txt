@@ -241,6 +241,21 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
 #########
 
+######### Telemetry manager modules
+
+  set(TELEMETRY_MANAGER_MODULES_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Src/airsideMavlinkDecodingEncoding.cpp
+  )
+
+  set(TELEMETRY_MANAGER_MODULES_UNIT_TEST_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/TelemetryManager/Test_AirsideMavlinkFunctions.cpp
+  )
+
+  add_executable(airsideMavlinkDecodingEncoding ${TELEMETRY_MANAGER_MODULES_SOURCES} ${TELEMETRY_MANAGER_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
+  target_link_libraries(airsideMavlinkDecodingEncoding ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
+
+#########
+
 #########  SensorFusion manager
 
 set(SENSOR_FUSION_MODULES_SOURCES

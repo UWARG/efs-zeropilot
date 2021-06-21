@@ -1,4 +1,4 @@
-#include "mavlinkDecodingEncoding.hpp"
+#include "airsideMavlinkDecodingEncoding.hpp"
 #include "Airside_Functions.hpp"
 
 _AirsideMavlinkDecodingEncoding decode(std::vector<uint8_t> rawData, Telemetry_PIGO_t* decodedData) {
@@ -244,23 +244,26 @@ _AirsideMavlinkDecodingEncoding encode(Telemetry_POGI_t* rawData, mavlink_messag
     one_byte_uint_cmd_t pathFollowErrorCodeCommand = { rawData->flightPathFollowingErrorCode };
 
     // Encode
-    Mavlink_airside_encoder(MESSAGE_ID_TIMESTAMP, encodedData, (const uint8_t*) &timeStampCommand);
+    mavlink_encoding_status_t e1 = Mavlink_airside_encoder(MESSAGE_ID_TIMESTAMP, encodedData, (const uint8_t*) &timeStampCommand);
     
-    Mavlink_airside_encoder(MESSAGE_ID_AIR_SPEED, encodedData, (const uint8_t*) &airspeedCommand);
-    Mavlink_airside_encoder(MESSAGE_ID_CURRENT_WAYPOINT_ID, encodedData, (const uint8_t*) &waypointIdCommand);
-    Mavlink_airside_encoder(MESSAGE_ID_CURRENT_WAYPOINT_INDEX, encodedData, (const uint8_t*) &waypointIndexCommand);
+    mavlink_encoding_status_t e2 = Mavlink_airside_encoder(MESSAGE_ID_AIR_SPEED, encodedData, (const uint8_t*) &airspeedCommand);
+    mavlink_encoding_status_t e3 = Mavlink_airside_encoder(MESSAGE_ID_CURRENT_WAYPOINT_ID, encodedData, (const uint8_t*) &waypointIdCommand);
+    mavlink_encoding_status_t e4 = Mavlink_airside_encoder(MESSAGE_ID_CURRENT_WAYPOINT_INDEX, encodedData, (const uint8_t*) &waypointIndexCommand);
 
-    Mavlink_airside_encoder(MESSAGE_ID_IS_LANDED, encodedData, (const uint8_t*) &isLandedCommand);
-    Mavlink_airside_encoder(MESSAGE_ID_HOMEBASE_INITIALIZED, encodedData, (const uint8_t*) &isHomebaseInitializedCommand);
+    mavlink_encoding_status_t e5 = Mavlink_airside_encoder(MESSAGE_ID_IS_LANDED, encodedData, (const uint8_t*) &isLandedCommand);
+    mavlink_encoding_status_t e6 = Mavlink_airside_encoder(MESSAGE_ID_HOMEBASE_INITIALIZED, encodedData, (const uint8_t*) &isHomebaseInitializedCommand);
+    mavlink_encoding_status_t e7 = Mavlink_airside_encoder(MESSAGE_ID_EULER_ANGLE_PLANE, encodedData, (const uint8_t*) &planeAngleCommand);
+    mavlink_encoding_status_t e8 = Mavlink_airside_encoder(MESSAGE_ID_EULER_ANGLE_CAM, encodedData, (const uint8_t*) &cameraAngleCommand);
 
-    Mavlink_airside_encoder(MESSAGE_ID_EULER_ANGLE_PLANE, encodedData, (const uint8_t*) &planeAngleCommand);
-    Mavlink_airside_encoder(MESSAGE_ID_EULER_ANGLE_CAM, encodedData, (const uint8_t*) &cameraAngleCommand);
+    mavlink_encoding_status_t e9 = Mavlink_airside_encoder(MESSAGE_ID_GPS, encodedData, (const uint8_t*) &gpsCoordinatesCommand);
 
-    Mavlink_airside_encoder(MESSAGE_ID_GPS, encodedData, (const uint8_t*) &gpsCoordinatesCommand);
+    mavlink_encoding_status_t e10 = Mavlink_airside_encoder(MESSAGE_ID_ERROR_CODE, encodedData, (const uint8_t*) &errorCodeCommand);
+    mavlink_encoding_status_t e11 = Mavlink_airside_encoder(MESSAGE_ID_EDITING_FLIGHT_PATH_ERROR_CODE, encodedData, (const uint8_t*) &flightPathErrorCodeCommand);
+    mavlink_encoding_status_t e12 = Mavlink_airside_encoder(MESSAGE_ID_FLIGHT_PATH_FOLLOWING_ERROR_CODE, encodedData, (const uint8_t*) &pathFollowErrorCodeCommand);
 
-    Mavlink_airside_encoder(MESSAGE_ID_ERROR_CODE, encodedData, (const uint8_t*) &errorCodeCommand);
-    Mavlink_airside_encoder(MESSAGE_ID_EDITING_FLIGHT_PATH_ERROR_CODE, encodedData, (const uint8_t*) &flightPathErrorCodeCommand);
-    Mavlink_airside_encoder(MESSAGE_ID_FLIGHT_PATH_FOLLOWING_ERROR_CODE, encodedData, (const uint8_t*) &pathFollowErrorCodeCommand);
+    if (e1 != MAVLINK_ENCODING_OKAY || e2 != MAVLINK_ENCODING_OKAY || e3 != MAVLINK_ENCODING_OKAY || e4 != MAVLINK_ENCODING_OKAY || e5 != MAVLINK_ENCODING_OKAY || e6 != MAVLINK_ENCODING_OKAY || e7 != MAVLINK_ENCODING_OKAY || e8 != MAVLINK_ENCODING_OKAY || e9 != MAVLINK_ENCODING_OKAY || e10 != MAVLINK_ENCODING_OKAY || e11 != MAVLINK_ENCODING_OKAY || e12 != MAVLINK_ENCODING_OKAY) {
+        return MAVLINK_DECODING_ENCODING_FAILED;
+    }
 
     return MAVLINK_DECODING_ENCODING_OK;
 }

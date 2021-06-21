@@ -33,13 +33,15 @@ class TelemetryManagerFSM : public ::testing::Test
 			RESET_FAKE(CommFromPMToTMInit);
 			RESET_FAKE(SendFromTMToPM);
             RESET_FAKE(GetFromPMToTM);
+            RESET_FAKE(decode);
+            RESET_FAKE(encode);
 		}
+        
 
 		virtual void TearDown()
 		{
 			FFF_RESET_HISTORY();
 		}
-
 };
 
 

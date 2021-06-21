@@ -12,7 +12,7 @@
 #include "TelemPathInterface.hpp"
 #include "MathConstants.hpp"
 #include "Airside_Functions.hpp"
-#include "mavlinkDecodingEncoding.hpp"
+#include "airsideMavlinkDecodingEncoding.hpp"
 #include "Mavlink2_lib/common/mavlink.h"
 
 #include <vector>
