@@ -319,8 +319,12 @@ void sensorDataExecute(void const * argument) {
 
 /* USER CODE END Application */
 
+<<<<<<< HEAD
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 <<<<<<< HEAD
 
 =======
 >>>>>>> Configured timer (#1)
+=======
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+>>>>>>> Revert "Configured timer (#1)"
