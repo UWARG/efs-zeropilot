@@ -20,11 +20,8 @@ mavlink_message_t encodeDataMode::_encodedGSData; // CHANGE DATATYPE. ONLY USING
 
 void initialMode::execute(telemetryManager* telemetryMgr)
 {
-    //Initialize mail queue to SEND data to Path Manager
+    //Initialize mail queue to communicate with Path Manager
     CommFromTMToPMInit();
-    
-    //Initialize mail queue to RECEIVE Path Manager data
-    CommFromPMToTMInit();
 
     //State change
     telemetryMgr->setState(obtainDataMode::getInstance());

@@ -141,7 +141,7 @@ class encodeDataMode: public telemetryState
         static mavlink_message_t* getEncodedGSData(void) { return &_encodedGSData; } 
 
     private:
-        encodeDataMode(){}
+        encodeDataMode(){ memset(&_encodedGSData, 0x00, sizeof(mavlink_message_t)); }
         encodeDataMode(const encodeDataMode& other);
         encodeDataMode& operator =(const encodeDataMode& other);
 

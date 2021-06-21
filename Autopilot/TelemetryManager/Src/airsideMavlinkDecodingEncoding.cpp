@@ -232,11 +232,24 @@ _AirsideMavlinkDecodingEncoding encode(Telemetry_POGI_t* rawData, mavlink_messag
     single_bool_cmd_t isHomebaseInitializedCommand = { rawData->homeBaseInit };
 
     // POGI_Euler_Angle_t
-    POGI_Euler_Angle_t planeAngleCommand = { rawData->yaw, rawData->pitch, rawData->roll };
-    POGI_Euler_Angle_t cameraAngleCommand = { rawData->camYaw, rawData->camPitch, rawData->camRoll };
+    POGI_Euler_Angle_t planeAngleCommand = { 
+        (int32_t) (*(int32_t*) &rawData->yaw), // Convert float memory to 32 bit integer
+        (int32_t) (*(int32_t*) &rawData->pitch), 
+        (int32_t) (*(int32_t*) &rawData->roll) 
+    }; 
+
+    POGI_Euler_Angle_t cameraAngleCommand = { 
+        (int32_t) (*(int32_t*) &rawData->camYaw), 
+        (int32_t) (*(int32_t*) &rawData->camPitch), 
+        (int32_t) (*(int32_t*) &rawData->camRoll) 
+    };
 
     // POGI_GPS_t
-    POGI_GPS_t gpsCoordinatesCommand = { rawData->gpsLatitude, rawData->gpsLongitude, rawData->curAltitude };
+    POGI_GPS_t gpsCoordinatesCommand = { 
+        rawData->gpsLatitude, 
+        rawData->gpsLongitude, 
+        rawData->curAltitude 
+    };
 
     // one_byte_uint_cmd_t
     one_byte_uint_cmd_t errorCodeCommand = { rawData->errorCode };
@@ -244,24 +257,29 @@ _AirsideMavlinkDecodingEncoding encode(Telemetry_POGI_t* rawData, mavlink_messag
     one_byte_uint_cmd_t pathFollowErrorCodeCommand = { rawData->flightPathFollowingErrorCode };
 
     // Encode
-    mavlink_encoding_status_t e1 = Mavlink_airside_encoder(MESSAGE_ID_TIMESTAMP, encodedData, (const uint8_t*) &timeStampCommand);
+    // const uint8_t * arr = static_cast<const uint8_t*>(static_cast<void*>(&planeAngleCommand));
+    mavlink_encoding_status_t e1 = Mavlink_airside_encoder(MESSAGE_ID_TIMESTAMP, encodedData, static_cast<const uint8_t*>(static_cast<void*>(&timeStampCommand)));
     
-    mavlink_encoding_status_t e2 = Mavlink_airside_encoder(MESSAGE_ID_AIR_SPEED, encodedData, (const uint8_t*) &airspeedCommand);
-    mavlink_encoding_status_t e3 = Mavlink_airside_encoder(MESSAGE_ID_CURRENT_WAYPOINT_ID, encodedData, (const uint8_t*) &waypointIdCommand);
-    mavlink_encoding_status_t e4 = Mavlink_airside_encoder(MESSAGE_ID_CURRENT_WAYPOINT_INDEX, encodedData, (const uint8_t*) &waypointIndexCommand);
+    mavlink_encoding_status_t e2 = Mavlink_airside_encoder(MESSAGE_ID_AIR_SPEED, encodedData, static_cast<const uint8_t*>(static_cast<void*>(&airspeedCommand)));
+    mavlink_encoding_status_t e3 = Mavlink_airside_encoder(MESSAGE_ID_CURRENT_WAYPOINT_ID, encodedData, static_cast<const uint8_t*>(static_cast<void*>(&waypointIdCommand)));
+    mavlink_encoding_status_t e4 = Mavlink_airside_encoder(MESSAGE_ID_CURRENT_WAYPOINT_INDEX, encodedData, static_cast<const uint8_t*>(static_cast<void*>(&waypointIndexCommand)));
 
-    mavlink_encoding_status_t e5 = Mavlink_airside_encoder(MESSAGE_ID_IS_LANDED, encodedData, (const uint8_t*) &isLandedCommand);
-    mavlink_encoding_status_t e6 = Mavlink_airside_encoder(MESSAGE_ID_HOMEBASE_INITIALIZED, encodedData, (const uint8_t*) &isHomebaseInitializedCommand);
-    mavlink_encoding_status_t e7 = Mavlink_airside_encoder(MESSAGE_ID_EULER_ANGLE_PLANE, encodedData, (const uint8_t*) &planeAngleCommand);
-    mavlink_encoding_status_t e8 = Mavlink_airside_encoder(MESSAGE_ID_EULER_ANGLE_CAM, encodedData, (const uint8_t*) &cameraAngleCommand);
+    mavlink_encoding_status_t e5 = Mavlink_airside_encoder(MESSAGE_ID_IS_LANDED, encodedData, static_cast<const uint8_t*>(static_cast<void*>(&isLandedCommand)));
+    mavlink_encoding_status_t e6 = Mavlink_airside_encoder(MESSAGE_ID_HOMEBASE_INITIALIZED, encodedData, static_cast<const uint8_t*>(static_cast<void*>(&isHomebaseInitializedCommand)));
+    mavlink_encoding_status_t e7 = Mavlink_airside_encoder(MESSAGE_ID_EULER_ANGLE_PLANE, encodedData, static_cast<const uint8_t*>(static_cast<void*>(&planeAngleCommand)));
+    mavlink_encoding_status_t e8 = Mavlink_airside_encoder(MESSAGE_ID_EULER_ANGLE_CAM, encodedData, static_cast<const uint8_t*>(static_cast<void*>(&cameraAngleCommand)));
 
-    mavlink_encoding_status_t e9 = Mavlink_airside_encoder(MESSAGE_ID_GPS, encodedData, (const uint8_t*) &gpsCoordinatesCommand);
+    mavlink_encoding_status_t e9 = Mavlink_airside_encoder(MESSAGE_ID_GPS, encodedData, static_cast<const uint8_t*>(static_cast<void*>(&gpsCoordinatesCommand)));
 
-    mavlink_encoding_status_t e10 = Mavlink_airside_encoder(MESSAGE_ID_ERROR_CODE, encodedData, (const uint8_t*) &errorCodeCommand);
-    mavlink_encoding_status_t e11 = Mavlink_airside_encoder(MESSAGE_ID_EDITING_FLIGHT_PATH_ERROR_CODE, encodedData, (const uint8_t*) &flightPathErrorCodeCommand);
-    mavlink_encoding_status_t e12 = Mavlink_airside_encoder(MESSAGE_ID_FLIGHT_PATH_FOLLOWING_ERROR_CODE, encodedData, (const uint8_t*) &pathFollowErrorCodeCommand);
+    mavlink_encoding_status_t e10 = Mavlink_airside_encoder(MESSAGE_ID_ERROR_CODE, encodedData, static_cast<const uint8_t*>(static_cast<void*>(&errorCodeCommand)));
+    mavlink_encoding_status_t e11 = Mavlink_airside_encoder(MESSAGE_ID_EDITING_FLIGHT_PATH_ERROR_CODE, encodedData, static_cast<const uint8_t*>(static_cast<void*>(&flightPathErrorCodeCommand)));
+    mavlink_encoding_status_t e12 = Mavlink_airside_encoder(MESSAGE_ID_FLIGHT_PATH_FOLLOWING_ERROR_CODE, encodedData, static_cast<const uint8_t*>(static_cast<void*>(&pathFollowErrorCodeCommand)));
 
     if (e1 != MAVLINK_ENCODING_OKAY || e2 != MAVLINK_ENCODING_OKAY || e3 != MAVLINK_ENCODING_OKAY || e4 != MAVLINK_ENCODING_OKAY || e5 != MAVLINK_ENCODING_OKAY || e6 != MAVLINK_ENCODING_OKAY || e7 != MAVLINK_ENCODING_OKAY || e8 != MAVLINK_ENCODING_OKAY || e9 != MAVLINK_ENCODING_OKAY || e10 != MAVLINK_ENCODING_OKAY || e11 != MAVLINK_ENCODING_OKAY || e12 != MAVLINK_ENCODING_OKAY) {
+        // cout << (bool) (e1 != MAVLINK_ENCODING_OKAY) << " " << (bool) (e2 != MAVLINK_ENCODING_OKAY) << " " << (bool) (e3 != MAVLINK_ENCODING_OKAY) << " " << (bool) (e4 != MAVLINK_ENCODING_OKAY) << " " << (bool) (e5 != MAVLINK_ENCODING_OKAY) << " " << (bool) (e6 != MAVLINK_ENCODING_OKAY) << " " << (bool) (e7 != MAVLINK_ENCODING_OKAY) << " " << (bool) (e8 != MAVLINK_ENCODING_OKAY) << " " << (bool) (e9 != MAVLINK_ENCODING_OKAY) << " " << (bool) (e10 != MAVLINK_ENCODING_OKAY) << " " << (bool) (e11 != MAVLINK_ENCODING_OKAY) << " " << (bool) (e12 != MAVLINK_ENCODING_OKAY) << endl; 
+        // cout << (bool) (e1 == MAVLINK_ENCODING_OKAY) << " " << (bool) (e1 == MAVLINK_ENCODING_INCOMPLETE) << " " << (bool) (e1 == MAVLINK_ENCODING_FAIL) << " " << (bool) (e1 == MAVLINK_ENCODING_BAD_ID) << endl;
+
+
         return MAVLINK_DECODING_ENCODING_FAILED;
     }
 
