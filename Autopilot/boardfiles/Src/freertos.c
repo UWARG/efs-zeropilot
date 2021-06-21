@@ -96,6 +96,7 @@ static const int PERIOD_INTERCHIP_MS = 20;
 
 static volatile bool catastrophicFailure = false;
 
+
 /* USER CODE END Variables */ 
 osThreadId sensorDataHandle;
 osThreadId attitudeManagerHandle;
@@ -313,10 +314,10 @@ void sensorDataExecute(void const * argument) {
   }
 }
 
-
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
