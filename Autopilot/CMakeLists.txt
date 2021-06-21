@@ -230,6 +230,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Src/telemetryStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Src/telemetryStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/xbee.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Mavlink2/Airside_Functions.cpp
   )
 
   set(TELEMETRY_MANAGER_FSM_UNIT_TEST_SOURCES

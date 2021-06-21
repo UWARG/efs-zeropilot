@@ -11,9 +11,8 @@
 #include "CommsWithTelemetry.hpp"
 #include "TelemPathInterface.hpp"
 #include "MathConstants.hpp"
-#include "Airside_Functions.hpp"
 #include "airsideMavlinkDecodingEncoding.hpp"
-#include "Mavlink2_lib/common/mavlink.h"
+
 
 #include <vector>
 #include <stdint.h>
@@ -40,7 +39,7 @@ class obtainDataMode: public telemetryState
         void execute(telemetryManager* telemetryMgr);
         void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
         static telemetryState& getInstance();
-        static std::vector<uint8_t> getRawPMData(void) { return _rawPMData; } 
+        static Telemetry_PIGO_t* getDecodedPMData(void) { return &_decodedPMData; }
 
     private:
         obtainDataMode(){ ZPXbee = XBEE::getInstance(); }
@@ -50,26 +49,26 @@ class obtainDataMode: public telemetryState
         XBEE* ZPXbee;
 
         // Some static array to hold the received data. Name it _rawPMData
-        static std::vector<uint8_t> _rawPMData; 
-};
-
-class decodeDataMode: public telemetryState
-{
-    public:
-        void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-        void execute(telemetryManager* telemetryMgr);
-        void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-        static telemetryState& getInstance();
-        static Telemetry_PIGO_t* getDecodedPMData(void) { return &_decodedPMData; }
-
-    private:
-        decodeDataMode(){ decodingErrorCount = 0; }
-        decodeDataMode(const decodeDataMode& other);
-        decodeDataMode& operator =(const decodeDataMode& other);
-
         static Telemetry_PIGO_t _decodedPMData;
-        int decodingErrorCount;
 };
+
+// class decodeDataMode: public telemetryState
+// {
+//     public:
+//         void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+//         void execute(telemetryManager* telemetryMgr);
+//         void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+//         static telemetryState& getInstance();
+//         static Telemetry_PIGO_t* getDecodedPMData(void) { return &_decodedPMData; }
+
+//     private:
+//         decodeDataMode(){ decodingErrorCount = 0; }
+//         decodeDataMode(const decodeDataMode& other);
+//         decodeDataMode& operator =(const decodeDataMode& other);
+
+//         static Telemetry_PIGO_t _decodedPMData;
+//         int decodingErrorCount;
+// };
 
 class passToPathMode: public telemetryState
 {
@@ -116,38 +115,38 @@ class analyzeDataMode: public telemetryState
         analyzeDataMode& operator =(const analyzeDataMode& other);
 };
 
-class reportMode: public telemetryState
-{
-    public:
-        void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-        void execute(telemetryManager* telemetryMgr);
-        void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-        static telemetryState& getInstance();
+// class reportMode: public telemetryState
+// {
+//     public:
+//         void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+//         void execute(telemetryManager* telemetryMgr);
+//         void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+//         static telemetryState& getInstance();
 
-    private:
-        reportMode(){}
-        reportMode(const reportMode& other);
-        reportMode& operator =(const reportMode& other);
-};
+//     private:
+//         reportMode(){}
+//         reportMode(const reportMode& other);
+//         reportMode& operator =(const reportMode& other);
+// };
 
-class encodeDataMode: public telemetryState
-{
-    public:
-        void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-        void execute(telemetryManager* telemetryMgr);
-        void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-        static telemetryState& getInstance();
-        // Getter to receive _encodedGSData
-        static mavlink_message_t* getEncodedGSData(void) { return &_encodedGSData; } 
+// class encodeDataMode: public telemetryState
+// {
+//     public:
+//         void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+//         void execute(telemetryManager* telemetryMgr);
+//         void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
+//         static telemetryState& getInstance();
+//         // Getter to receive _encodedGSData
+//         static mavlink_message_t* getEncodedGSData(void) { return &_encodedGSData; } 
 
-    private:
-        encodeDataMode(){ memset(&_encodedGSData, 0x00, sizeof(mavlink_message_t)); }
-        encodeDataMode(const encodeDataMode& other);
-        encodeDataMode& operator =(const encodeDataMode& other);
+//     private:
+//         encodeDataMode(){ memset(&_encodedGSData, 0x00, sizeof(mavlink_message_t)); }
+//         encodeDataMode(const encodeDataMode& other);
+//         encodeDataMode& operator =(const encodeDataMode& other);
 
-        // Some data to store the encoded data. Call it _encodedGSData
-        static mavlink_message_t _encodedGSData; 
-};
+//         // Some data to store the encoded data. Call it _encodedGSData
+//         static mavlink_message_t _encodedGSData; 
+// };
 
 class sendDataMode: public telemetryState
 {
@@ -158,10 +157,11 @@ class sendDataMode: public telemetryState
         static telemetryState& getInstance();
 
     private:
-        sendDataMode(){ ZPXbee = XBEE::getInstance(); }
+        sendDataMode(){ ZPXbee = XBEE::getInstance(); sendingErrorCount = 0; }
         sendDataMode(const sendDataMode& other);
         sendDataMode& operator =(const sendDataMode& other);
 
+        int sendingErrorCount;
         XBEE* ZPXbee;
 };
 

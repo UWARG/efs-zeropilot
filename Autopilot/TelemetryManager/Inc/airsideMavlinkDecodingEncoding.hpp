@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 // Error code for the module
-enum _AirsideMavlinkDecodingEncoding { MAVLINK_DECODING_ENCODING_OK = 0, MAVLINK_DECODING_ENCODING_FAILED };
+// enum _AirsideMavlinkDecodingEncoding2 { MAVLINK_DECODING_ENCODING_OK = 0, MAVLINK_DECODING_ENCODING_FAILED };
 
 /**
  * Decodes data received from ground
@@ -18,7 +18,7 @@ enum _AirsideMavlinkDecodingEncoding { MAVLINK_DECODING_ENCODING_OK = 0, MAVLINK
  * 
  * @return error code
  */ 
-_AirsideMavlinkDecodingEncoding decode(std::vector<uint8_t> rawData, Telemetry_PIGO_t* decodedData);
+// _AirsideMavlinkDecodingEncoding2 decode(std::vector<uint8_t> rawData, Telemetry_PIGO_t* decodedData);
 
 /**
  * Encodes data that will be sent to ground
@@ -28,7 +28,7 @@ _AirsideMavlinkDecodingEncoding decode(std::vector<uint8_t> rawData, Telemetry_P
  * 
  * @return error code
  */ 
-_AirsideMavlinkDecodingEncoding encode(Telemetry_POGI_t* rawData, mavlink_message_t* encodedData);
+// _AirsideMavlinkDecodingEncoding2 encode(Telemetry_POGI_t* rawData, mavlink_message_t* encodedData);
 
 #endif
 
