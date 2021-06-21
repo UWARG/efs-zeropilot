@@ -8,6 +8,13 @@
 
 #include "TelemPathInterface.hpp" //Holds structs for sent and received data
 
+
+typedef struct __xbee_in_message {
+    uint8_t len;            // Length of payload
+    uint8_t payload[255];
+} xbee_in_t;
+
+
 class XBEE {
     public:
         static XBEE* getInstance();
@@ -25,7 +32,7 @@ class XBEE {
          * 2. Transfers raw data from variables to struct
          * 3. Updates utcTime and status values in struct as well
          * */
-        void GetResult(uint8_t* data); //Switch to MavLink data (ask Jingting how to feed to Xbee)
+        xbee_in_t GetResult();
 
         /*Interrupt to send data to ground       
         */

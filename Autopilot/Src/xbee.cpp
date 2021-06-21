@@ -16,16 +16,17 @@ void XBEE::Receive_GS_Data() {}
 
 void XBEE::Send_GS_Data() {}
 
-void XBEE::GetResult(uint8_t* data) {
-	uint8_t array_until_len[2];
-	HAL_USART_Receive(&husart2, &array_until_len[0], 1, 100);
-	HAL_USART_Receive(&husart2, &array_until_len[0], 1, 100);
-	uint8_t data[11 + array_until_len[1]];
-	data[0] = array_until_len[0];
-	data[1] = array_until_len[1];
-	for(int i = 2; i < array_until_len[1] + 2; i++) {
-		HAL_USART_Receive(&husart2, &data[i], 1, 100);
+xbee_in_t GetResult() {
+	uint8_t holder;
+	xbee_in_t xbeeIn;
+	HAL_USART_Receive(&husart2, &holder, 1, 100);
+	HAL_USART_Receive(&husart2, &xbeeIn.len, 1, 100);
+	uint8_t payload[xbeeIn.len];
+	for(int i = 2; i < xbeeIn.len; i++) {
+		HAL_USART_Receive_DMA(&husart2, &payload[i], 1);
 	}
+	xbeeIn.payload = payload;
+	return xbeeIn;
 }
 
 void XBEE::SendResult(Telemetry_POGI_t* data) {
