@@ -61,7 +61,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "altimeter.hpp"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
