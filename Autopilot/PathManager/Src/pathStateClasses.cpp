@@ -94,6 +94,9 @@ void commsWithTelemetry::execute(pathManager* pathMgr)
 {
     GetTelemetryCommands(&_incomingData);
 
+    setPitchPercent(_incomingData.gimbalPitch);
+    setYawPercent(_incomingData.gimbalYaw);
+
     if(pathMgr->isError)
     {
         pathMgr->setState(fatalFailureMode::getInstance());
