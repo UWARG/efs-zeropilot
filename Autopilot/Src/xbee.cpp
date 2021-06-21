@@ -1,4 +1,5 @@
 #include "xbee.hpp"
+#include "stm32f7xx_hal_usart.h"
 
 extern USART_HandleTypeDef husart2;
 
