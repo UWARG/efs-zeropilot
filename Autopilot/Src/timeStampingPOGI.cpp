@@ -32,7 +32,7 @@ void TimeStampingPOGI::setGPSTime(GpsData_t* gpsData){
     //check if its new and set the recentUTCTime to it
     if (gpsData->timeIsNew){
 
-        __HAL_TIM_SET_COUNTER(&htim12, 0);
+        __HAL_TIM_SET_COUNTER(&htim14, 0);
 
         //gps data sends time in the form HHMMSS.00 - will use integer division to extract the hours, minutes and seconds indiviudually
         int hours = gpsData->utcTime / 10000;
