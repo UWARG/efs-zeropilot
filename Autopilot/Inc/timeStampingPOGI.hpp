@@ -48,8 +48,5 @@ class TimeStampingPOGI {
 };
 
 #endif
-<<<<<<< HEAD
-=======
 
 
->>>>>>> Fixed mainly formatting errors

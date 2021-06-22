@@ -1,5 +1,4 @@
-
-#include "TimeStampingPOGI.hpp"
+#include "timeStampingPOGI.hpp"
 #include "tim.h"
 #include "stm32f7xx_hal_tim.h"
 
@@ -55,9 +54,6 @@ uint32_t TimeStampingPOGI::getUTCTimeMS(){
     return (recentUTCTime * 1000) + (__HAL_TIM_GET_COUNTER(&htim14) / 4);
 
 }
-
-
-
 
 
 
