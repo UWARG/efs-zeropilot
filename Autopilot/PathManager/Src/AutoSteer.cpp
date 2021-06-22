@@ -18,7 +18,7 @@ static PIDController rudderPid{0.2,0.2,7,1, -100, 100}; //0.2,0.2,7,1
 
 static PIDController pitchPid{1,0,0,0, -MAX_PITCH_ANGLE, MAX_PITCH_ANGLE}; //1,0,0,0,
 
-static PIDController altitudePid{110,0,0,0, 0, 100}; //110,0,0,0,
+static PIDController airspeedPid{80,0,0,0, 0, 100}; //110,0,0,0,
 
 static const float RUDDER_SCALING_FACTOR = 0.5f; // should be experimentally determined
 
@@ -67,7 +67,7 @@ void AutoSteer_ComputeAltitudeAndAirspeed(AltitudeAirspeedInput_t *Input, Altitu
 {
     float pitchAngle = pitchPid.execute(Input->desiredAltitude, Input->currentAltitude);
 
-    AttManCommands->requiredThrottlePercent = altitudePid.execute(Input->desiredAirspeed, Input->currentAirspeed);
+    AttManCommands->requiredThrottlePercent = airspeedPid.execute(Input->desiredAirspeed, Input->currentAirspeed);
     AttManCommands->requiredPitch = DEG_TO_RAD(pitchAngle);
 }
 

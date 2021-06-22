@@ -17,8 +17,8 @@
 constexpr static double DISTANCE_OF_LANDING {10}; //in meters
 constexpr static double METERS_PER_DEG_LAT {111320.0};
 constexpr static double ANGLE_OF_LANDING {5}; //in degrees
-constexpr static int STALL_SPEED_NO_PACKAGE {30}; //in m/s
-constexpr static int STALL_SPEED_WITH_PACKAGE {35}; //in m/s
+constexpr static int STALL_SPEED_NO_PACKAGE {5}; //in m/s
+constexpr static int STALL_SPEED_WITH_PACKAGE {5}; //in m/s
 constexpr static int FLARE_ALTITUDE {10}; //in meters
 constexpr static double DECRAB_ALTITUDE {5}; //in meters
 constexpr static double TOUCHDOWN_ALTITUDE {2}; //in meters
@@ -28,10 +28,10 @@ constexpr static double LATITUDE_LONGITUDE_CONVERSION_CONSTANT {40075000.0};
     TAKEOFF CONSTANTS
 **********************/
 constexpr static double EXIT_TAKEOFF_ALTITUDE {40}; //in meters, difference in altitude
-constexpr static double ROTATION_SPEED_NO_PACKAGE {10}; //in meters per second
-constexpr static double ROTATION_SPEED_WITH_PACKAGE {10}; //in meters per second
-constexpr static double CLIMB_SPEED_NO_PACKAGE {20}; // in meters per second
-constexpr static double CLIMB_SPEED_WITH_PACKAGE {20}; // in meters per second
+constexpr static double ROTATION_SPEED_NO_PACKAGE {7}; //in meters per second
+constexpr static double ROTATION_SPEED_WITH_PACKAGE {7}; //in meters per second
+constexpr static double CLIMB_SPEED_NO_PACKAGE {15}; // in meters per second
+constexpr static double CLIMB_SPEED_WITH_PACKAGE {15}; // in meters per second
 constexpr static double DISTANCE_OF_TAKEOFF {1000}; // in meters, just used to approximate the horizontal location
 
 struct _LandingPath //this structure is used to hold the waypoint data of the landing path, when it is created in the transition stage
@@ -54,7 +54,7 @@ struct _LandingTakeoffOutput //this structure is used to hold the outputs of eac
     bool useHeading; //this variable is used to determine if heading needs to be controlled, rather than track
     double desiredAltitude;
     double desiredAirspeed;
-    _PassbyControl controlDetails = _PassbyControl(); //this variable is used to store the controls if passby control is needed
+    _PassbyControl controlDetails {}; //this variable is used to store the controls if passby control is needed
 };
 
 
