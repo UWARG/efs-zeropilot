@@ -245,7 +245,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 ######### Telemetry manager modules
 
   set(TELEMETRY_MANAGER_MODULES_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Src/airsideMavlinkDecodingEncoding.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/xbee.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Mavlink2/Airside_Functions.cpp
   )
 

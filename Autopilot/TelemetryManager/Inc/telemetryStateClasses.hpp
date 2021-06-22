@@ -11,8 +11,6 @@
 #include "CommsWithTelemetry.hpp"
 #include "TelemPathInterface.hpp"
 #include "MathConstants.hpp"
-#include "airsideMavlinkDecodingEncoding.hpp"
-
 
 #include <vector>
 #include <stdint.h>
@@ -51,24 +49,6 @@ class obtainDataMode: public telemetryState
         // Some static array to hold the received data. Name it _rawPMData
         static Telemetry_PIGO_t _decodedPMData;
 };
-
-// class decodeDataMode: public telemetryState
-// {
-//     public:
-//         void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-//         void execute(telemetryManager* telemetryMgr);
-//         void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-//         static telemetryState& getInstance();
-//         static Telemetry_PIGO_t* getDecodedPMData(void) { return &_decodedPMData; }
-
-//     private:
-//         decodeDataMode(){ decodingErrorCount = 0; }
-//         decodeDataMode(const decodeDataMode& other);
-//         decodeDataMode& operator =(const decodeDataMode& other);
-
-//         static Telemetry_PIGO_t _decodedPMData;
-//         int decodingErrorCount;
-// };
 
 class passToPathMode: public telemetryState
 {
@@ -114,39 +94,6 @@ class analyzeDataMode: public telemetryState
         analyzeDataMode(const analyzeDataMode& other);
         analyzeDataMode& operator =(const analyzeDataMode& other);
 };
-
-// class reportMode: public telemetryState
-// {
-//     public:
-//         void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-//         void execute(telemetryManager* telemetryMgr);
-//         void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-//         static telemetryState& getInstance();
-
-//     private:
-//         reportMode(){}
-//         reportMode(const reportMode& other);
-//         reportMode& operator =(const reportMode& other);
-// };
-
-// class encodeDataMode: public telemetryState
-// {
-//     public:
-//         void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-//         void execute(telemetryManager* telemetryMgr);
-//         void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-//         static telemetryState& getInstance();
-//         // Getter to receive _encodedGSData
-//         static mavlink_message_t* getEncodedGSData(void) { return &_encodedGSData; } 
-
-//     private:
-//         encodeDataMode(){ memset(&_encodedGSData, 0x00, sizeof(mavlink_message_t)); }
-//         encodeDataMode(const encodeDataMode& other);
-//         encodeDataMode& operator =(const encodeDataMode& other);
-
-//         // Some data to store the encoded data. Call it _encodedGSData
-//         static mavlink_message_t _encodedGSData; 
-// };
 
 class sendDataMode: public telemetryState
 {

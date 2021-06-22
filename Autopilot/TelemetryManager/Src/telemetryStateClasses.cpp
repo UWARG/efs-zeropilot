@@ -9,10 +9,8 @@
  **********************************************************************************************************************/
 
 Telemetry_PIGO_t obtainDataMode::_decodedPMData; 
-// Telemetry_PIGO_t decodeDataMode::_decodedPMData;
 
 Telemetry_POGI_t readFromPathMode::_rawGSData;
-// mavlink_message_t encodeDataMode::_encodedGSData; // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
 
 /***********************************************************************************************************************
  * Code
@@ -36,10 +34,7 @@ telemetryState& initialMode::getInstance()
 void obtainDataMode::execute(telemetryManager* telemetryMgr)
 {
     //obtain data from ground
-    ZPXbee->Receive_GS_Data(); //Receives data in MavLink form from the XBEE
-
-    // Set _decodedPMData
-    
+    ZPXbee->GetResult(_decodedPMData); //Receives data in MavLink form from the XBEE
 
     //State change:
     if(telemetryMgr->fatalFail)
@@ -57,41 +52,6 @@ telemetryState& obtainDataMode::getInstance()
     static obtainDataMode singleton;
     return singleton;
 }
-
-
-// void decodeDataMode::execute(telemetryManager* telemetryMgr)
-// {
-//     // Get mavlink data from obtainDataMode state
-//     std::vector<uint8_t> rawData = obtainDataMode::getRawPMData(); // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
-
-//     // Decode data with Mavlink
-//     _AirsideMavlinkDecodingEncoding errorCode = decode(rawData, &_decodedPMData);
-
-//     if (MAVLINK_DECODING_ENCODING_FAILED == errorCode) {
-//         decodingErrorCount++;
-//         if (decodingErrorCount > 10) {
-//             telemetryMgr->fatalFail = true;
-//         }
-//     } else {
-//         decodingErrorCount = 0;
-//     }
-
-//     //State change:
-//     if(telemetryMgr->fatalFail)
-//     {
-//         telemetryMgr->setState(failureMode::getInstance());
-//     }
-//     else
-//     {
-//         telemetryMgr->setState(passToPathMode::getInstance());
-//     }
-// }
-
-// telemetryState& decodeDataMode::getInstance()
-// {
-//     static decodeDataMode singleton;
-//     return singleton;
-// }
 
 void passToPathMode::execute(telemetryManager* telemetryMgr)
 {
@@ -213,31 +173,6 @@ telemetryState& analyzeDataMode::getInstance()
     static analyzeDataMode singleton;
     return singleton;
 }
-
-// void encodeDataMode::execute(telemetryManager* telemetryMgr)
-// {
-//     // Get raw GS data
-//     Telemetry_POGI_t* rawGSData = readFromPathMode::getRawGSData();
-
-//     //encode data with mavlink (Jingting's function)
-//     encode(rawGSData, &_encodedGSData); 
-
-//     //State change:
-//     if(telemetryMgr->fatalFail)
-//     {
-//         telemetryMgr->setState(failureMode::getInstance());
-//     }
-//     else
-//     {
-//         telemetryMgr->setState(sendDataMode::getInstance());
-//     }
-// }
-
-// telemetryState& encodeDataMode::getInstance()
-// {
-//     static encodeDataMode singleton;
-//     return singleton;
-// }
 
 void sendDataMode::execute(telemetryManager* telemetryMgr)
 {

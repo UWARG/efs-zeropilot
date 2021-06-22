@@ -18,8 +18,8 @@ enum _GetNextDirectionsCommand { REGULAR_PATH_FOLLOWING = 0, TOGGLE_HOLDING, TOG
 
 
 struct Telemetry_Waypoint_Data_t {
-    long double latitude;
-    long double longitude;
+    float latitude;
+    float longitude;
     int altitude;
     float turnRadius;
     uint8_t waypointType; // 0 = Path follow, 1 = Orbit, 2 = Hold
@@ -29,7 +29,7 @@ struct Telemetry_Waypoint_Data_t {
 struct Telemetry_POGI_t{
 	int errorCode; //Code for specified errors
     uint32_t timeStamp;
-	double gpsLatitude,gpsLongitude,curAltitude; //Current gps position and altitude
+	float gpsLatitude,gpsLongitude,curAltitude; //Current gps position and altitude
 	float curAirspeed; //Airspeed data
 	float roll,pitch,yaw;	//Current orientation (radians)
 	float camRoll,camPitch,camYaw;	//Current camera orientation (radians)
@@ -62,8 +62,8 @@ struct Telemetry_PIGO_t {
     bool beginLanding;
     bool beginTakeoff;
     float stoppingDirectionHeading;
-    double stoppingLongitude;
-    double stoppingLatitude;
+    float stoppingLongitude;
+    float stoppingLatitude;
     float stoppingAltitude;
     float takeoffDirectionHeading;
 
