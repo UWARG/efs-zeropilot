@@ -108,7 +108,7 @@ void commsWithTelemetry::execute(pathManager* pathMgr)
 
     // Populate struct
     _outgoingData.errorCode = true == pathMgr->isError;
-    _outgoingData.gpsLattitude = gpsData.latitude;
+    _outgoingData.gpsLatitude = gpsData.latitude;
     _outgoingData.gpsLongitude = gpsData.longitude;
     _outgoingData.curAltitude = altData.altitude;
     _outgoingData.curAirspeed = airspData.airspeed;

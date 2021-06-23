@@ -32,12 +32,12 @@ class TelemetryManagerFSM : public ::testing::Test
 			RESET_FAKE(SendFromTMToPM);
             RESET_FAKE(GetFromPMToTM);
 		}
+        
 
 		virtual void TearDown()
 		{
 			FFF_RESET_HISTORY();
 		}
-
 };
 
 
@@ -61,25 +61,25 @@ TEST(TelemetryManagerFSM, InitialTransitionToObtain){ //testing if first transit
     EXPECT_EQ(*(telemetryMng.getCurrentState()), obtainDataMode::getInstance());
 }
 
-TEST(TelemetryManagerFSM, ObtainToDecode){ //testing transition from obtainDataMode to decodeDataMode
+TEST(TelemetryManagerFSM, ObtainToPass){ //testing transition from obtainDataMode to decodeDataMode
     /***SETUP***/
     telemetryManager telemetryMng;
     telemetryMng.setState(obtainDataMode::getInstance());
     /***STEPTHROUGH***/
     telemetryMng.execute();
     /***ASSERTS***/
-    EXPECT_EQ(*(telemetryMng.getCurrentState()), decodeDataMode::getInstance());
-}
-
-TEST(TelemetryManagerFSM, decodeToPass){ //testing transition from decodeDataMode to passToPathMode
-    /***SETUP***/
-    telemetryManager telemetryMng;
-    telemetryMng.setState(decodeDataMode::getInstance());
-    /***STEPTHROUGH***/
-    telemetryMng.execute();
-    /***ASSERTS***/
     EXPECT_EQ(*(telemetryMng.getCurrentState()), passToPathMode::getInstance());
 }
+
+// TEST(TelemetryManagerFSM, decodeToPass){ //testing transition from decodeDataMode to passToPathMode
+//     /***SETUP***/
+//     telemetryManager telemetryMng;
+//     telemetryMng.setState(decodeDataMode::getInstance());
+//     /***STEPTHROUGH***/
+//     telemetryMng.execute();
+//     /***ASSERTS***/
+//     EXPECT_EQ(*(telemetryMng.getCurrentState()), passToPathMode::getInstance());
+// }
 
 TEST(TelemetryManagerFSM, passToRead){ //testing transition from passToPathMode to readFromPathMode
     /***SETUP***/
@@ -101,25 +101,25 @@ TEST(TelemetryManagerFSM, readToAnalyze){ //testing transition from readFromPath
     EXPECT_EQ(*(telemetryMng.getCurrentState()), analyzeDataMode::getInstance());
 }
 
-TEST(TelemetryManagerFSM, analyzeToEncode){ //testing transition from analyzeDataMode to reportMode
+TEST(TelemetryManagerFSM, analyzeToSend){ //testing transition from analyzeDataMode to reportMode
     /***SETUP***/
     telemetryManager telemetryMng;
     telemetryMng.setState(analyzeDataMode::getInstance());
     /***STEPTHROUGH***/
     telemetryMng.execute();
     /***ASSERTS***/
-    EXPECT_EQ(*(telemetryMng.getCurrentState()), encodeDataMode::getInstance());
-}
-
-TEST(TelemetryManagerFSM, encodeToSend){ //testing transition from encodeDataMode to sendDataMode
-    /***SETUP***/
-    telemetryManager telemetryMng;
-    telemetryMng.setState(encodeDataMode::getInstance());
-    /***STEPTHROUGH***/
-    telemetryMng.execute();
-    /***ASSERTS***/
     EXPECT_EQ(*(telemetryMng.getCurrentState()), sendDataMode::getInstance());
 }
+
+// TEST(TelemetryManagerFSM, encodeToSend){ //testing transition from encodeDataMode to sendDataMode
+//     /***SETUP***/
+//     telemetryManager telemetryMng;
+//     telemetryMng.setState(encodeDataMode::getInstance());
+//     /***STEPTHROUGH***/
+//     telemetryMng.execute();
+//     /***ASSERTS***/
+//     EXPECT_EQ(*(telemetryMng.getCurrentState()), sendDataMode::getInstance());
+// }
 
 TEST(TelemetryManagerFSM, sendToInitial){ //testing transition from sendDataMode to initialMode
     /***SETUP***/
@@ -214,16 +214,16 @@ TEST(TelemetryManagerFSM, obtainFail){
     EXPECT_EQ(*(telemetryMng.getCurrentState()), failureMode::getInstance());
 }
 
-TEST(TelemetryManagerFSM, decodeFail){ 
-    /***SETUP***/
-    telemetryManager telemetryMng;
-    telemetryMng.setState(decodeDataMode::getInstance());
-    telemetryMng.fatalFail=true;
-    /***STEPTHROUGH***/
-    telemetryMng.execute();
-    /***ASSERTS***/
-    EXPECT_EQ(*(telemetryMng.getCurrentState()), failureMode::getInstance());
-}
+// TEST(TelemetryManagerFSM, decodeFail){ 
+//     /***SETUP***/
+//     telemetryManager telemetryMng;
+//     telemetryMng.setState(decodeDataMode::getInstance());
+//     telemetryMng.fatalFail=true;
+//     /***STEPTHROUGH***/
+//     telemetryMng.execute();
+//     /***ASSERTS***/
+//     EXPECT_EQ(*(telemetryMng.getCurrentState()), failureMode::getInstance());
+// }
 
 TEST(TelemetryManagerFSM, passFail){ 
     /***SETUP***/
@@ -258,16 +258,16 @@ TEST(TelemetryManagerFSM, analyzeFail){
     EXPECT_EQ(*(telemetryMng.getCurrentState()), failureMode::getInstance());
 }
 
-TEST(TelemetryManagerFSM, encodeFail){ 
-    /***SETUP***/
-    telemetryManager telemetryMng;
-    telemetryMng.setState(encodeDataMode::getInstance());
-    telemetryMng.fatalFail=true;
-    /***STEPTHROUGH***/
-    telemetryMng.execute();
-    /***ASSERTS***/
-    EXPECT_EQ(*(telemetryMng.getCurrentState()), failureMode::getInstance());
-}
+// TEST(TelemetryManagerFSM, encodeFail){ 
+//     /***SETUP***/
+//     telemetryManager telemetryMng;
+//     telemetryMng.setState(encodeDataMode::getInstance());
+//     telemetryMng.fatalFail=true;
+//     /***STEPTHROUGH***/
+//     telemetryMng.execute();
+//     /***ASSERTS***/
+//     EXPECT_EQ(*(telemetryMng.getCurrentState()), failureMode::getInstance());
+// }
 
 TEST(TelemetryManagerFSM, sendFail){ 
     /***SETUP***/

@@ -1,6 +1,5 @@
 /*
-* Author: Nixon Chan
-* Implementing Telem Comms: Gordon Fountain, Dhruv Rawat
+* Author: Nixon Chan, Gordon Fountain, Dhruv Rawat
 */
 
 #include "telemetryStateClasses.hpp"
@@ -9,11 +8,9 @@
  * Definitions
  **********************************************************************************************************************/
 
-Telemetry_PIGO_t obtainDataMode::_rawPMData; // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
-Telemetry_PIGO_t decodeDataMode::_decodedPMData;
+Telemetry_PIGO_t obtainDataMode::_decodedPMData; 
 
 Telemetry_POGI_t readFromPathMode::_rawGSData;
-Telemetry_POGI_t encodeDataMode::_encodedGSData; // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
 
 /***********************************************************************************************************************
  * Code
@@ -21,11 +18,8 @@ Telemetry_POGI_t encodeDataMode::_encodedGSData; // CHANGE DATATYPE. ONLY USING 
 
 void initialMode::execute(telemetryManager* telemetryMgr)
 {
-    //Initialize mail queue to SEND data to Path Manager
+    //Initialize mail queue to communicate with Path Manager
     CommFromTMToPMInit();
-    
-    //Initialize mail queue to RECEIVE Path Manager data
-    CommFromPMToTMInit();
 
     //State change
     telemetryMgr->setState(obtainDataMode::getInstance());
@@ -40,40 +34,7 @@ telemetryState& initialMode::getInstance()
 void obtainDataMode::execute(telemetryManager* telemetryMgr)
 {
     //obtain data from ground
-    ZPXbee->Receive_GS_Data(); //Receives data in MavLink form from the XBEE
-
-    // Set _rawPMData
-    _rawPMData = {0};
-
-    //State change:
-    if(telemetryMgr->fatalFail)
-    {
-        telemetryMgr->setState(failureMode::getInstance());
-    }
-    else
-    {
-        telemetryMgr->setState(decodeDataMode::getInstance());
-    }
-}
-
-telemetryState& obtainDataMode::getInstance()
-{
-    static obtainDataMode singleton;
-    return singleton;
-}
-
-/**
- * 
- * THIS IS BLOCKED BY MAVLINK DECODER
- * 
- */ 
-void decodeDataMode::execute(telemetryManager* telemetryMgr)
-{
-    // Get mavlink data from obtainDataMode state
-    Telemetry_PIGO_t* rawPMData = obtainDataMode::getRawPMData(); // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
-
-    // Decode data with Mavlink
-    _decodedPMData = {0};
+    ZPXbee->GetResult(_decodedPMData); //Receives data in MavLink form from the XBEE
 
     //State change:
     if(telemetryMgr->fatalFail)
@@ -86,18 +47,18 @@ void decodeDataMode::execute(telemetryManager* telemetryMgr)
     }
 }
 
-telemetryState& decodeDataMode::getInstance()
+telemetryState& obtainDataMode::getInstance()
 {
-    static decodeDataMode singleton;
+    static obtainDataMode singleton;
     return singleton;
 }
 
 void passToPathMode::execute(telemetryManager* telemetryMgr)
 {
     // Get decoded data 
-    Telemetry_PIGO_t* pmData = decodeDataMode::getDecodedPMData();
+    Telemetry_PIGO_t* pmData = obtainDataMode::getDecodedPMData();
 
-    //pass decoded data to path manager
+    // Pass decoded data to path manager
     SendFromTMToPM(pmData); 
 
     //State change:
@@ -139,13 +100,10 @@ telemetryState& readFromPathMode::getInstance()
     return singleton;
 }
 
-#include <iostream>
-using namespace std;
-
 void analyzeDataMode::execute(telemetryManager* telemetryMgr)
 {
     // Get decoded data 
-    Telemetry_PIGO_t* pmData = decodeDataMode::getDecodedPMData(); 
+    Telemetry_PIGO_t* pmData = obtainDataMode::getDecodedPMData(); 
 
     /*********
      *  TODO, CLEAN THIS UP
@@ -170,7 +128,7 @@ void analyzeDataMode::execute(telemetryManager* telemetryMgr)
     telemetryMgr->dataValid &= pmData->takeoffDirectionHeading >= 0 && pmData->takeoffDirectionHeading < 360;
     telemetryMgr->dataValid &= pmData->waypointModifyFlightPathCommand > 0 && pmData->waypointModifyFlightPathCommand <= 6;
     telemetryMgr->dataValid &= pmData->waypointNextDirectionsCommand > 0 && pmData->waypointNextDirectionsCommand <= 2;
-    if((pmData->numWaypoints == 0 && pmData->waypoints != nullptr) || pmData->numWaypoints < 0 || (pmData->numWaypoints > 0 && pmData->waypoints == nullptr)) {
+    if((pmData->numWaypoints == 0 && pmData->waypoints.size() == 0) || pmData->numWaypoints < 0 || (pmData->numWaypoints > 0 && pmData->waypoints.size() == 0)) {
         telemetryMgr->dataValid = false;
     }
     telemetryMgr->dataValid &= pmData->gimbalPitch >= 0 && pmData->gimbalPitch <= ZP_PI;
@@ -206,7 +164,7 @@ void analyzeDataMode::execute(telemetryManager* telemetryMgr)
     }
     else
     {
-        telemetryMgr->setState(encodeDataMode::getInstance());
+        telemetryMgr->setState(sendDataMode::getInstance());
     }
 }
 
@@ -216,44 +174,44 @@ telemetryState& analyzeDataMode::getInstance()
     return singleton;
 }
 
-/**
- * 
- * THIS IS BLOCKED BY MAVLINK ENCODER
- * 
- */ 
-void encodeDataMode::execute(telemetryManager* telemetryMgr)
-{
-    // Get raw GS data
-    Telemetry_POGI_t* rawGSData = readFromPathMode::getRawGSData();
-
-    //encode data with mavlink (Jingting's function)
-    _encodedGSData = {0};
-
-    //State change:
-    if(telemetryMgr->fatalFail)
-    {
-        telemetryMgr->setState(failureMode::getInstance());
-    }
-    else
-    {
-        telemetryMgr->setState(sendDataMode::getInstance());
-    }
-}
-
-telemetryState& encodeDataMode::getInstance()
-{
-    static encodeDataMode singleton;
-    return singleton;
-}
-
 void sendDataMode::execute(telemetryManager* telemetryMgr)
 {
     // Get encoded data
-    Telemetry_POGI_t* encodedGSData = encodeDataMode::getEncodedGSData(); // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
+    Telemetry_POGI_t* encodedGSData = readFromPathMode::getRawGSData(); 
+
+    #ifdef UNIT_TESTING
+        encodedGSData->errorCode = 0;
+        encodedGSData->timeStamp = 100;
+        encodedGSData->gpsLatitude = 1.03928;
+        encodedGSData->gpsLongitude = 2.03928;
+        encodedGSData->curAltitude = 20;
+        encodedGSData->curAirspeed = 10;
+        encodedGSData->roll = 90;
+        encodedGSData->pitch = 1;
+        encodedGSData->yaw = 2;
+        encodedGSData->camRoll = 2.1;
+        encodedGSData->camPitch = 2.2;
+        encodedGSData->camYaw = 2.3;
+        encodedGSData->isLanded = true;
+        encodedGSData->editingFlightPathErrorCode = 1;
+        encodedGSData->flightPathFollowingErrorCode = 2;
+        encodedGSData->currentWaypointId = 69;
+        encodedGSData->currentWaypointIndex = 70;
+        encodedGSData->homeBaseInit = true;
+    #endif
 
     //send data to ground
-    //Not sure if this state is needed. From what I understand FREERTOS is calling the function to send down data.
-    ZPXbee->Send_GS_Data(); // PROBABLY NEED A PARAMETER HERE @GORDON
+    _AirsideMavlinkDecodingEncoding result = ZPXbee->SendResult(*encodedGSData);
+
+    // If sending fails 10 times in a row, then diconnect
+    if (result != MAVLINK_DECODING_ENCODING_OK) {
+        sendingErrorCount++;
+        if (sendingErrorCount > 10) {
+            telemetryMgr->fatalFail = true;
+        }
+    } else {
+        sendingErrorCount = 0;
+    }
 
     //State change:
     if(telemetryMgr->fatalFail)

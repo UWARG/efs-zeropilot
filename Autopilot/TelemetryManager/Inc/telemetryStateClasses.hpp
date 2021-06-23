@@ -12,6 +12,9 @@
 #include "TelemPathInterface.hpp"
 #include "MathConstants.hpp"
 
+#include <vector>
+#include <stdint.h>
+
 //each state's classes
 class initialMode: public telemetryState
 {
@@ -34,12 +37,7 @@ class obtainDataMode: public telemetryState
         void execute(telemetryManager* telemetryMgr);
         void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
         static telemetryState& getInstance();
-        // Static getter to receive _rawPMData
-        static Telemetry_PIGO_t* getRawPMData(void) { return &_rawPMData; } // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
-
-        // #ifdef UNIT_TESTING
-        //     static XBEE* getXBEE(void) { return ZPXbee; }
-        // #endif
+        static Telemetry_PIGO_t* getDecodedPMData(void) { return &_decodedPMData; }
 
     private:
         obtainDataMode(){ ZPXbee = XBEE::getInstance(); }
@@ -49,23 +47,6 @@ class obtainDataMode: public telemetryState
         XBEE* ZPXbee;
 
         // Some static array to hold the received data. Name it _rawPMData
-        static Telemetry_PIGO_t _rawPMData; // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
-};
-
-class decodeDataMode: public telemetryState
-{
-    public:
-        void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-        void execute(telemetryManager* telemetryMgr);
-        void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-        static telemetryState& getInstance();
-        static Telemetry_PIGO_t* getDecodedPMData(void) { return &_decodedPMData; }
-
-    private:
-        decodeDataMode(){}
-        decodeDataMode(const decodeDataMode& other);
-        decodeDataMode& operator =(const decodeDataMode& other);
-
         static Telemetry_PIGO_t _decodedPMData;
 };
 
@@ -114,39 +95,6 @@ class analyzeDataMode: public telemetryState
         analyzeDataMode& operator =(const analyzeDataMode& other);
 };
 
-class reportMode: public telemetryState
-{
-    public:
-        void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-        void execute(telemetryManager* telemetryMgr);
-        void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-        static telemetryState& getInstance();
-
-    private:
-        reportMode(){}
-        reportMode(const reportMode& other);
-        reportMode& operator =(const reportMode& other);
-};
-
-class encodeDataMode: public telemetryState
-{
-    public:
-        void enter(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-        void execute(telemetryManager* telemetryMgr);
-        void exit(telemetryManager* telemetryMgr){(void) telemetryMgr;}
-        static telemetryState& getInstance();
-        // Getter to receive _encodedGSData
-        static Telemetry_POGI_t* getEncodedGSData(void) { return &_encodedGSData; } // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
-
-    private:
-        encodeDataMode(){}
-        encodeDataMode(const encodeDataMode& other);
-        encodeDataMode& operator =(const encodeDataMode& other);
-
-        // Some data to store the encoded data. Call it _encodedGSData
-        static Telemetry_POGI_t _encodedGSData; // CHANGE DATATYPE. ONLY USING THIS SO I CAN GET FLOW
-};
-
 class sendDataMode: public telemetryState
 {
     public:
@@ -156,10 +104,11 @@ class sendDataMode: public telemetryState
         static telemetryState& getInstance();
 
     private:
-        sendDataMode(){ ZPXbee = XBEE::getInstance(); }
+        sendDataMode(){ ZPXbee = XBEE::getInstance(); sendingErrorCount = 0; }
         sendDataMode(const sendDataMode& other);
         sendDataMode& operator =(const sendDataMode& other);
 
+        int sendingErrorCount;
         XBEE* ZPXbee;
 };
 

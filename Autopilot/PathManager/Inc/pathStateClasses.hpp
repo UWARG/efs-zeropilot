@@ -49,7 +49,7 @@ class commsWithTelemetry : public pathManagerState
         static Telemetry_POGI_t* GetTelemetryIncomingOutgoingData(void) {return &_outgoingData;}
 
     private:
-        commsWithTelemetry() { CommFromTMToPMInit(); CommFromPMToTMInit(); }
+        commsWithTelemetry() { CommFromPMToTMInit(); }
         commsWithTelemetry(const commsWithTelemetry& other);
         commsWithTelemetry& operator =(const commsWithTelemetry& other);
         static Telemetry_PIGO_t _incomingData; // Stores the commands sent by telemetry for easy access by other states in the pathmanager
