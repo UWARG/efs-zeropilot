@@ -2,6 +2,7 @@
 #include "PWM.hpp"
 #include "stdlib.h"
 #include "interchip_S.hpp"
+#include "RSSI.hpp"
 
 /***********************************************************************************************************************
  * Definitions
@@ -32,6 +33,14 @@ void safety_controller_init()
 void safety_run(PWMChannel &pwm, PPMChannel &ppm)
 {
 
+    if(CommsFailed()) {
+        setPWMChannel(pwm, 0, 100); // elevator
+        setPWMChannel(pwm, 1, 100); // aileron
+        setPWMChannel(pwm, 2, 0);   // throttle
+        setPWMChannel(pwm, 4, 0);   // aux0 (I HOPE THIS IS REVERSE THRUST)
+        setPWMChannel(pwm, 6, 100); // rudder
+        return;
+    }
     // note that we don't need to set the servo to max opening or closing if we don't need to.
     // this can help prevent motor overheating if it constantly tries to hit a position which it physically can't.
     if (getPPM(ppm, grabber_rx_channel)>50){
