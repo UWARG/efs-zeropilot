@@ -53,10 +53,12 @@ class XBEE {
         XBEE();
 
         static XBEE* xbeeInstance;
+        void set_usart_dat_new(bool isNew);
 
         Telemetry_PIGO_t data;
         bool dataIsNew;
         std::vector<uint8_t> receivedData;
+        uint8_t byte_collection_buffer[255];
 
         /**
          * Called everytime we encode data. It sends data to the ground

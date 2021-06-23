@@ -402,9 +402,14 @@ _AirsideMavlinkDecodingEncoding XBEE::decodeMavlinkPacket(uint8_t* toDecode) {
 	return toReturn;
 }
 
-void XBEE::Receive_GS_Data() {
-	// Call XBEE API here to get data
+void XBEE::set_usart_dat_new(bool isNew) {
+	dataIsNew = isNew;
+}
 
+void XBEE::Receive_GS_Data() {
+	if(dataIsNew) {
+		decodeMavlinkPacket(uint8_t* byte_collection_buffer);
+	}
 }
 
 void XBEE::Send_GS_Data(uint8_t* toSend) {
@@ -419,6 +424,17 @@ void XBEE::Send_GS_Data(uint8_t* toSend) {
 	HAL_USART_Transmit_DMA(&husart2, (uint8_t*)sendArray, 11 + len);
 }
 
+uint8_t* XBEE::get_byte_collection_buffer() {
+	return byte_collection_buffer;
+}
+
+void HAL_USART_RxCpltCallback(USART_HandleTypeDef *huart) {
+	XBEE * airXbee = XBEE::GetInstance();
+
+	XBEE->set_usart_dat_new(true);
+
+	HAL_USART_Receive_DMA(&huart2, airXbee->get_byte_collection_buffer(), GPS_UART_BUFFER_SIZE);
+}
 
 
 
