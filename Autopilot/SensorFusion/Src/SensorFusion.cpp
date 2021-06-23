@@ -12,6 +12,7 @@
 #include "gps.hpp"
 #include "altimeter.hpp"
 #include "airspeed.hpp"
+#include "timeStampingPOGI.hpp"
 
 #ifdef __cplusplus
 extern "C"
@@ -480,6 +481,16 @@ SFError_t SF_GenerateNewResult()
     gpsObj->GetResult(&GpsData);
     //altimeterObj->GetResult(altimeterData);
     //airspeedObj->GetResult(airspeedData);
+
+    //Send gps timestamp
+    #ifndef UNIT_TESTING
+    TimeStampingPOGI *timeStamper = TimeStampingPOGI::GetInstance();
+
+    if(GpsData.ggaDataIsNew)
+    {
+        timeStamper->setGPSTime(&GpsData);
+    }
+    #endif
 
     SFAttitudeOutput_t attitudeOutput;
     SFPathOutput_t pathOutput;

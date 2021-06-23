@@ -22,7 +22,8 @@ static void writeAttitudeCommandsToFile(CommandsForAM *commands);
  * Code
  **********************************************************************************************************************/
 
-void CommWithAMInit()
+//PM To AM intercepts
+void CommFromPMToAMInit()
 {
     PathToAttComLog.open("DebugLogs/PathToAttComLog.txt", std::fstream::out);
     PathToAttComLog << "";
@@ -30,30 +31,31 @@ void CommWithAMInit()
 
 }
 
-void SendCommandsForAM(CommandsForAM *commands)
+void SendFromPMToAM(CommandsForAM *commands)
 {
     commandsForAM = *commands;
-
     writeAttitudeCommandsToFile(commands);
 }
 
-bool GetAttitudeData(AttitudeData *data)
+bool GetFromPMToAM(CommandsForAM *commands)
 {
-    *data = attitudeData;
+    *commands = commandsForAM;
 }
 
-void CommWithPMInit()
+//AM To PM intercepts
+
+void CommFromAMToPMInit()
 {
 }
 
-void SendAttitudeData(AttitudeData *data)
+void SendFromAMToPM(AttitudeData *data)
 {
     attitudeData = *data;
 }
 
-bool GetCommands(CommandsForAM *commands)
+bool GetFromAMToPM(AttitudeData *data)
 {
-    *commands = commandsForAM;
+    *data = attitudeData;
 }
 
 static void writeAttitudeCommandsToFile(CommandsForAM *commands)

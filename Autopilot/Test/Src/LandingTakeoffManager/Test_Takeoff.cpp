@@ -14,7 +14,7 @@ TEST(TakeoffFunctions, Test_desiredRotationNoPackage){
     /***STEPTHROUGH***/
     double desiredSpeed = LandingTakeoffManager::desiredRotationSpeed(ifPackage);
     /***ASSERTS***/
-    EXPECT_NEAR(desiredSpeed, 4.0, 0.000001); 
+    EXPECT_NEAR(desiredSpeed, 7, 0.000001); 
 }
 
 TEST(TakeoffFunctions, Test_desiredRotationWithPackage){ 
@@ -23,7 +23,7 @@ TEST(TakeoffFunctions, Test_desiredRotationWithPackage){
     /***STEPTHROUGH***/
     double desiredSpeed = LandingTakeoffManager::desiredRotationSpeed(ifPackage);
     /***ASSERTS***/
-    EXPECT_NEAR(desiredSpeed, 6.0, 0.000001); 
+    EXPECT_NEAR(desiredSpeed, 7, 0.000001); 
 }
 
 TEST(TakeoffFunctions, Test_desiredClimbNoPackage){ 
@@ -32,7 +32,7 @@ TEST(TakeoffFunctions, Test_desiredClimbNoPackage){
     /***STEPTHROUGH***/
     double desiredSpeed = LandingTakeoffManager::desiredClimbSpeed(ifPackage);
     /***ASSERTS***/
-    EXPECT_NEAR(desiredSpeed, 5.0, 0.000001); 
+    EXPECT_NEAR(desiredSpeed, 15.0, 0.000001); 
 }
 
 TEST(TakeoffFunctions, Test_desiredClimbWithPackage){ 
@@ -41,7 +41,7 @@ TEST(TakeoffFunctions, Test_desiredClimbWithPackage){
     /***STEPTHROUGH***/
     double desiredSpeed = LandingTakeoffManager::desiredClimbSpeed(ifPackage);
     /***ASSERTS***/
-    EXPECT_NEAR(desiredSpeed, 7.0, 0.000001); 
+    EXPECT_NEAR(desiredSpeed, 15.0, 0.000001); 
 }
 
 TEST(TakeoffFunctions, Test_createTakeoffWaypoint){
@@ -55,8 +55,8 @@ TEST(TakeoffFunctions, Test_createTakeoffWaypoint){
 
     desiredTakeoffPoint = LandingTakeoffManager::createTakeoffWaypoint(currentLatitude, currentLongitude, currentAltitude, takeoffDirection);
     /***ASSERTS***/
-    EXPECT_NEAR(desiredTakeoffPoint.latitude, 1.0006353018, 0.000001);
-    EXPECT_NEAR(desiredTakeoffPoint.longitude, 2.0006352019, 0.000001);
+    EXPECT_NEAR(desiredTakeoffPoint.latitude, 1.0063520192, 0.000001);
+    EXPECT_NEAR(desiredTakeoffPoint.longitude, 2.0063530185, 0.000001);
     EXPECT_NEAR(desiredTakeoffPoint.altitude, 3, 0.000001);
 }
 

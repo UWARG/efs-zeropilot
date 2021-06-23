@@ -1,5 +1,4 @@
 #include "attitudeStateClasses.hpp"
-
 /***********************************************************************************************************************
  * Definitions
  **********************************************************************************************************************/
@@ -102,7 +101,6 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
     PID_Output_t *PidOutput = PIDloopMode::GetPidOutput();
 
     OutputMixing_error_t ErrorStruct = OutputMixing_Execute(PidOutput, _channelOut);
-
     if (ErrorStruct.errorCode == 0)
     {
         attitudeMgr->setState(sendToSafetyMode::getInstance());
