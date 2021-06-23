@@ -1,4 +1,4 @@
-#include "MPX00V72DP.cpp"
+#include "MPXV7002DP.cpp"
 
 #ifndef AIRSPEED_THREAD_INTERFACE_H
 #define AIRSPEED_THREAD_INTERFACE_H
@@ -13,7 +13,7 @@ void airspeedThreadInterfaceExecute(void);
 
 
 #ifdef __cplusplus
-}
+}t 
 #endif
 
 #endif 
