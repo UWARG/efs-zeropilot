@@ -52,6 +52,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "FreeRTOS.h"
 #include "Interchip_A.h"
+#include "airspeedThreadInterface.h"
+#include "altimeterThreadInterface.h"
 #include "portmacro.h"
 #include "stm32f7xx_hal_gpio.h"
 #include "task.h"
@@ -150,6 +152,8 @@ void MX_FREERTOS_Init(void) {
     SensorFusionInterfaceInit();
     Interchip_Init();
     IMUThreadInterfaceInit();
+    AltimeterThreadInterfaceInit();
+    airspeedThreadInterfaceInit();
 
   /* USER CODE END Init */
 
@@ -310,6 +314,8 @@ void sensorDataExecute(void const * argument) {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_SENSORDATA_MS);
     IMUThreadInterfaceExecute();
+    AltimeterThreadInterfaceExecute();
+    airspeedThreadInterfaceExecute();
     SFError_t err = SensorFusionInterfaceExecute();
     if (err.errorCode == -1) {
       catastrophicFailure = true;

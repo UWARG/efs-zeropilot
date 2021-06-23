@@ -4,10 +4,12 @@
 // TODO: The implementations of the functions and integration into threads will be done once the altimeter driver is fully implemented
 
 void AltimeterThreadInterfaceInit(void) {
-    static Altimeter& imuobj = BMX160::getInstance();
+    static Altimeter& altObj = MPL3115A2::getInstance();
+    altObj.Begin_Measuring();
 
 }
 
 void AltimeterThreadInterfaceExecute() {
-
+    static Altimeter& altObj = MPL3115A2::getInstance();
+    altObj.Begin_Measuring();
 } 
