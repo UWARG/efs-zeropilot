@@ -55,6 +55,8 @@
 #define BUZZER_GPIO_Port GPIOB
 #define PPM_Pin GPIO_PIN_14
 #define PPM_GPIO_Port GPIOB
+#define RSSI_Pin GPIO_PIN_15
+#define RSSI_GPIO_Port GPIOB
 #define PWM6_Pin GPIO_PIN_6
 #define PWM6_GPIO_Port GPIOC
 #define PWM10_Pin GPIO_PIN_7

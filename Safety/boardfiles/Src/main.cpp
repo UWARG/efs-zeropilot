@@ -45,6 +45,7 @@
 #include "usart.h"
 #include "gpio.h"
 #include "interchip_S.hpp"
+#include "RSSI.hpp"
 
 /* USER CODE BEGIN Includes */
 
@@ -168,6 +169,7 @@ int main(void)
 
   // start the IC in interrupt mode
 
+
   PPMChannel ppm;
   ppm.setNumChannels(8);
 
@@ -192,7 +194,7 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-
+    RSSI_Check();
     safety_run(pwm, ppm);
     HAL_Delay(1);
 
