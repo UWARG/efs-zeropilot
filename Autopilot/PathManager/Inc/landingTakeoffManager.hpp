@@ -54,7 +54,7 @@ struct _LandingTakeoffOutput //this structure is used to hold the outputs of eac
     bool useHeading; //this variable is used to determine if heading needs to be controlled, rather than track
     double desiredAltitude;
     double desiredAirspeed;
-    _PassbyControl controlDetails {}; //this variable is used to store the controls if passby control is needed
+    _PassbyControl controlDetails; //this variable is used to store the controls if passby control is needed
 };
 
 
