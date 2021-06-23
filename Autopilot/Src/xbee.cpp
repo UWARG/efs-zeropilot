@@ -404,10 +404,19 @@ _AirsideMavlinkDecodingEncoding XBEE::decodeMavlinkPacket(uint8_t* toDecode) {
 
 void XBEE::Receive_GS_Data() {
 	// Call XBEE API here to get data
+
 }
 
 void XBEE::Send_GS_Data(uint8_t* toSend) {
-	int a = 0; // Temp for GDB debugging
+	uint8_t magic = toSend[0];
+	uint8_t len = toSend[1];
+	uint_t sendArray[(uint8_t)11 + len];
+	sendArray[0] = magic;
+	sendArray[1] = len;
+	for(unsigned int i = 2; i < 11 + len; i++) {
+		sendArray[i] = toSend[i];
+	}
+	HAL_USART_Transmit_DMA(&husart2, (uint8_t*)sendArray, 11 + len);
 }
 
 
