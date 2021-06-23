@@ -13,7 +13,7 @@ void airspeedThreadInterfaceExecute(void);
 
 
 #ifdef __cplusplus
-}t 
+}
 #endif
 
 #endif 
