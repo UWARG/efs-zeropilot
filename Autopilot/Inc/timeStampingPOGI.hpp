@@ -9,6 +9,9 @@ class TimeStampingPOGI {
 
     public:
 
+        //added to make sure people dont accidentally initialize
+        TimeStampingPOGI(const TimeStampingPOGI*) = delete;
+        
         /*
         *Called to either create or get the existing instance of the class
         *Constructor is private so it only gets called through here (singleton)
