@@ -52,6 +52,7 @@
 #include "cmsis_os.h"
 #include "adc.h"
 #include "crc.h"
+#include "dma.h"
 #include "i2c.h"
 #include "spi.h"
 #include "tim.h"
@@ -135,6 +136,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_SPI5_Init();
   MX_SPI4_Init();
   MX_I2C4_Init();

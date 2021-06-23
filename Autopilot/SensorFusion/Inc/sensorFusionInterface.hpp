@@ -8,7 +8,6 @@ extern "C" {
 #endif
 
 void SensorFusionInterfaceInit(void);
-
 SFError_t SensorFusionInterfaceExecute(void);
 
 #ifdef __cplusplus

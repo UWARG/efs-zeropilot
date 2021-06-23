@@ -119,7 +119,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc/
+    ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Inc
   )
 
@@ -163,7 +163,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
   set(ATTITUDE_MANAGER_MODULES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/OutputMixing.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Src/SensorFusion.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Src/MahonyAHRS.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MahonyAHRS.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/mul.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/tran.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/inv.c
@@ -242,7 +242,11 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
 set(SENSOR_FUSION_MODULES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Src/SensorFusion.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Src/MahonyAHRS.c
+  )  
+
+  set(SENSOR_FUSION_MODULES_UNIT_TEST_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_SF.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MahonyAHRS.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/mul.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/tran.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/inv.c
@@ -311,6 +315,7 @@ endif()
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc
 
     ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw
     ${SIM_ROOT_DIR}/GeneratedCCode/Headers/extern/include
@@ -343,6 +348,7 @@ endif()
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/OutputMixing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MahonyAHRS.cpp
   )
 
   set(OTHER_SOURCES
