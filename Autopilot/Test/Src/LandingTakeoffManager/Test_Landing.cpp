@@ -44,7 +44,7 @@ TEST(LandingFunctions, Test_approachSpeed_packageTrue){
     /***STEPTHROUGH***/
     double desiredSpeed = LandingTakeoffManager::approachSpeed(ifPackage);
     /***ASSERTS***/
-    EXPECT_EQ(desiredSpeed, 5.2);
+    EXPECT_EQ(desiredSpeed, 6.5);
 }
 
 TEST(LandingFunctions, Test_approachSpeed_packageFalse){ 
@@ -53,7 +53,7 @@ TEST(LandingFunctions, Test_approachSpeed_packageFalse){
     /***STEPTHROUGH***/
     double desiredSpeed = LandingTakeoffManager::approachSpeed(ifPackage);
     /***ASSERTS***/
-    EXPECT_EQ(desiredSpeed, 2.6);
+    EXPECT_EQ(desiredSpeed, 6.5);
 }
 
 TEST(LandingFunctions, Test_slowFlightSpeed_packageTrue){ 
@@ -71,7 +71,7 @@ TEST(LandingFunctions, Test_slowFlightSpeed_packageFalse){
     /***STEPTHROUGH***/
     double desiredSpeed = LandingTakeoffManager::slowFlightSpeed(ifPackage);
     /***ASSERTS***/
-    EXPECT_EQ(desiredSpeed, 4);
+    EXPECT_EQ(desiredSpeed, 6);
 }
 
 TEST(LandingFunctions, Test_createSlopeWaypoints){ 
