@@ -221,7 +221,6 @@ void attitudeManagerExecute(void const * argument)
     if (!status) {
       catastrophicFailure = true;
     }    
-    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
   }
   
   /* USER CODE END attitudeManagerExecute */
@@ -272,6 +271,7 @@ void telemetryRunExecute(void const * argument)
     if (!status) {
       catastrophicFailure = true;
     }
+    HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
   }
   
   /* USER CODE END telemetryRunExecute */
@@ -294,7 +294,7 @@ void interchipRunExecute(void const * argument) {
     if (!catastrophicFailure) {
       Interchip_Run();
     }
-    HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+    // HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
     /* USER CODE END interchipRunExecute */ 
   }  
 }
