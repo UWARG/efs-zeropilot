@@ -8,7 +8,6 @@ TimeStampingPOGI* TimeStampingPOGI::s_Instance = nullptr;
 TimeStampingPOGI::TimeStampingPOGI(){
 
     //initializing and starting timer
-    HAL_TIM_Base_Init(&htim14);
     HAL_TIM_Base_Start(&htim14);
 
 }
@@ -48,10 +47,10 @@ void TimeStampingPOGI::setGPSTime(GpsData_t* gpsData){
 //call this to receive the milliseconds since midnight (in UTC)
 uint32_t TimeStampingPOGI::getUTCTimeMS(){
 
-    //the timer is set to tick every 0.25 milliseconds
-    //thus, by dividing the number of ticks by 4, we get the milliseconds measured
+    //the timer is set to tick every 0.5 milliseconds
+    //thus, by dividing the number of ticks by 2, we get the milliseconds measured
     //we only need millisecond precision so we dont really care about the truncation
-    return (recentUTCTime * 1000) + (__HAL_TIM_GET_COUNTER(&htim14) / 4);
+    return (recentUTCTime * 1000) + (__HAL_TIM_GET_COUNTER(&htim14) / 2);
 
 }
 
