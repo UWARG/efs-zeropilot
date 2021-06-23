@@ -1,3 +1,8 @@
+/**
+ * Interface implementation from path manager (written in C++) to freertos (C).
+ * Author(s): Dhruv Upadhyay
+ */
+
 #include "PathManagerInterface.h"
 #include "pathManager.hpp"
 

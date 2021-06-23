@@ -1,3 +1,9 @@
+/**
+ * Interface implementation from altimeter driver (written in C++) to freertos (C).
+ * Author(s): Dhruv Upadhyay
+ */
+
+
 #include "altimeterThreadInterface.h"
 #include "altimeter.hpp"
 

@@ -1,3 +1,8 @@
+/**
+ * Interface implementation from imu driver (written in C++) to freertos (C).
+ * Author(s): Dhruv Upadhyay
+ */
+
 #include "IMUThreadInterface.h"
 #include "imu.hpp"
 

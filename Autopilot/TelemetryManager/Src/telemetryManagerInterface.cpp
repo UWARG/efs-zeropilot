@@ -1,3 +1,8 @@
+/**
+ * Interface header from telemetry manager (written in C++) to freertos (C).
+ * Author(s): Dhruv Upadhyay
+ */
+
 #include "telemetryManagerInterface.h"
 #include "telemetryManager.hpp"
 
