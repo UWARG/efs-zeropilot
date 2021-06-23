@@ -53,6 +53,7 @@
 #include "FreeRTOS.h"
 #include "Interchip_A.h"
 #include "portmacro.h"
+#include "stm32f7xx_hal_gpio.h"
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
@@ -171,7 +172,7 @@ void MX_FREERTOS_Init(void) {
   // /* Create the thread(s) */
 
   /* definition and creation of sensorDataRun (thread for IMU, sensor fusion, and altimeter) */
-  osThreadDef(sensorDataRun, sensorDataExecute, osPriorityNormal, 0, 1000);
+  osThreadDef(sensorDataRun, sensorDataExecute, osPriorityNormal, 0, 1500);
   sensorDataHandle = osThreadCreate(osThread(sensorDataRun), NULL);
 
   /* definition and creation of attitudeManager */
@@ -182,11 +183,11 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(pathManager, pathManagerExecute, osPriorityNormal, 0, 250);
   pathManagerHandle = osThreadCreate(osThread(pathManager), NULL);
 
-  // /* definition and creation of telemetryRun */
+  // // /* definition and creation of telemetryRun */
   osThreadDef(telemetryRun, telemetryRunExecute, osPriorityNormal, 0, 250);
   telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
 
-  /* definition and creation of Interchip */
+  // /* definition and creation of Interchip */
   osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 0, 250);
   InterchipHandle = osThreadCreate(osThread(interchip), NULL);
 
@@ -216,7 +217,9 @@ void attitudeManagerExecute(void const * argument)
     if (!status) {
       catastrophicFailure = true;
     }    
+    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
   }
+  
   /* USER CODE END attitudeManagerExecute */
 }
 
@@ -236,9 +239,11 @@ void pathManagerExecute(void const * argument)
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_PATHMANAGER_MS);
     bool status = PathManagerInterfaceExecute();
+    Interchip_Run();
     if (!status) {
       catastrophicFailure = true;
     }
+    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
   }
   
   /* USER CODE END pathManagerExecute */
@@ -263,7 +268,6 @@ void telemetryRunExecute(void const * argument)
     if (!status) {
       catastrophicFailure = true;
     }
-    HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
   }
   
   /* USER CODE END telemetryRunExecute */
@@ -286,7 +290,7 @@ void interchipRunExecute(void const * argument) {
     if (!catastrophicFailure) {
       Interchip_Run();
     }
-    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+    HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
     /* USER CODE END interchipRunExecute */ 
   }  
 }
