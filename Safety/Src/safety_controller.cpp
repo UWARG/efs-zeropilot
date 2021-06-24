@@ -4,6 +4,8 @@
 #include "interchip_S.hpp"
 #include "RSSI.hpp"
 
+#include "gpio.h"
+
 /***********************************************************************************************************************
  * Definitions
  **********************************************************************************************************************/
@@ -12,6 +14,16 @@ constexpr int MANUAL_OVERRIDE_CHANNEL = 4;
 // temporary grabber_rx and grabber_pwm channels. To be changed later.
 constexpr int grabber_rx_channel = 0;
 constexpr int grabber_pwm_channel = 9;
+
+
+        // pwm order: left tail, right tail, aileron, nose wheel, throttle, gimbal x, gimbal y, reverse thrust.
+#define PWM_CHANNEL_LEFT_TAIL 0
+#define PWM_CHANNEL_RIGHT_TAIL 1
+#define PWM_CHANNEL_AILERON 2
+#define PWM_CHANNEL_NOSE_WHEEL 3
+#define PWM_CHANNEL_THROTTLE 4
+#define PWM_CHANNEL_GIMBAL_YAW 5
+#define PWM_CHANNEL_GRABBER 6
 
 /***********************************************************************************************************************
  * Prototypes
@@ -34,55 +46,81 @@ void safety_run(PWMChannel &pwm, PPMChannel &ppm)
 {
 
     if(CommsFailed()) {
-        setPWMChannel(pwm, 0, 100); // elevator
-        setPWMChannel(pwm, 1, 100); // aileron
-        setPWMChannel(pwm, 2, 0);   // throttle
-        setPWMChannel(pwm, 4, 0);   // aux0 (I HOPE THIS IS REVERSE THRUST)
-        setPWMChannel(pwm, 6, 100); // rudder
+        setPWMChannel(pwm, PWM_CHANNEL_LEFT_TAIL, 0);
+        setPWMChannel(pwm, PWM_CHANNEL_RIGHT_TAIL, 100);
+        setPWMChannel(pwm, PWM_CHANNEL_AILERON, 100);
+        setPWMChannel(pwm, PWM_CHANNEL_THROTTLE, 0);
+        setPWMChannel(pwm, PWM_CHANNEL_GIMBAL_YAW, 50);
+        setPWMChannel(pwm, PWM_CHANNEL_NOSE_WHEEL, 0);
+
         return;
     }
-    // note that we don't need to set the servo to max opening or closing if we don't need to.
-    // this can help prevent motor overheating if it constantly tries to hit a position which it physically can't.
-    if (getPPM(ppm, grabber_rx_channel)>50){
-        setPWMChannel(pwm, grabber_pwm_channel, 75);
-    } else {
-        setPWMChannel(pwm, grabber_pwm_channel, 25);
-    }
 
-    // For the second flight test, AutoPilot only controls elevator and aileron.
+    volatile int16_t *AutoPilotPwmChannel = getPWM();
+
+    int elevatorAutoPilot = AutoPilotPwmChannel[0];
+    int aileronAutoPilot = AutoPilotPwmChannel[1];
+    int throttleAutoPilot =  AutoPilotPwmChannel[2];
+    int rudderAutoPilot= AutoPilotPwmChannel[3];
+
+    int elevatorPPM = getPPM(ppm, 0);
+    int aileronPPM = getPPM(ppm, 1);
+    int throttlePPM =  getPPM(ppm, 2);
+    int rudderPPM = getPPM(ppm, 3);
+    int gimbalYawPPM = getPPM(ppm, 5);
+    int reverseThrustPPM = getPPM(ppm, 6);
+
+    int leftTailMix = 0;
+    int rightTailMix = 0;
+    int aileronMix = 0;
+    int noseWheelMix = 0;
+
+    noseWheelMix = 100 - rudderPPM;
+
     if(AutoPilotEngaged(ppm))
     {
-         volatile int16_t *AutoPilotPwmChannel = getPWM();
+        leftTailMix = (0.7 * (100 - elevatorAutoPilot)) + (0.2 * rudderAutoPilot);
+        rightTailMix = (0.7 * elevatorAutoPilot) + (0.2 * rudderAutoPilot);
+        aileronMix = aileronAutoPilot;
+    }
 
-        // These are Autopilot controlled pwm channels.
-        setPWMChannel(pwm, 0, (uint32_t) getPPM(ppm, 0));
-        setPWMChannel(pwm, 1, static_cast<uint32_t> (AutoPilotPwmChannel[1]));
-        setPWMChannel(pwm, 3, static_cast<uint32_t> (AutoPilotPwmChannel[3]));
-        setPWMChannel(pwm, 7, static_cast<uint32_t> (AutoPilotPwmChannel[7]));
+    else
+    {
+        leftTailMix = (0.7 * (100 - elevatorPPM)) + (0.2 * rudderPPM);
+        rightTailMix = (0.7 * elevatorPPM) + (0.2 * rudderPPM);
+        aileronMix = aileronPPM;
+    }
 
-        // these are ppm controls (not affected by autopilot). Ask Anthony or comment above if for more info.
-        setPWMChannel(pwm, 2, (uint32_t) getPPM(ppm, 2));
-        setPWMChannel(pwm, 4, (uint32_t) getPPM(ppm, 4));
-        setPWMChannel(pwm, 5, (uint32_t) getPPM(ppm, 5));
-        setPWMChannel(pwm, 6, (uint32_t) getPPM(ppm, 6));
+    /************Reverse thrust**************/
+
+
+    setPWMChannel(pwm, PWM_CHANNEL_LEFT_TAIL, leftTailMix);
+    setPWMChannel(pwm, PWM_CHANNEL_RIGHT_TAIL, rightTailMix);
+    setPWMChannel(pwm, PWM_CHANNEL_AILERON, aileronMix);
+    setPWMChannel(pwm, PWM_CHANNEL_NOSE_WHEEL, noseWheelMix);
+    setPWMChannel(pwm, PWM_CHANNEL_THROTTLE, throttlePPM);
+    setPWMChannel(pwm, PWM_CHANNEL_GIMBAL_YAW, gimbalYawPPM);
+
+    if (reverseThrustPPM > 50)
+    {
+        HAL_GPIO_WritePin(LED3_GPIO_Port,LED3_Pin, GPIO_PIN_SET);
     }
     else
     {
-        // we maintain pwm control for our pwm channels for gimbal (ch 3 and 7).
-        setPWMChannel(pwm, 3, 0);
-        setPWMChannel(pwm, 7, 50);
-
-        // we maintain ppm control for the rest of the servos.
-        for(int channel = 0; channel < 3; channel++)
-        {
-            setPWMChannel(pwm, channel, (uint32_t) getPPM(ppm, channel));
-        }
-        for(int channel = 4; channel < 7; channel++)
-        {
-            setPWMChannel(pwm, channel, (uint32_t) getPPM(ppm, channel));
-        }
+        HAL_GPIO_WritePin(LED3_GPIO_Port,LED3_Pin, GPIO_PIN_RESET); 
     }
 
+    /************ Grabber**************/
+    if (gimbalYawPPM < 40)
+    {
+        setPWMChannel(pwm, PWM_CHANNEL_GRABBER, 0);
+        setPWMChannel(pwm, PWM_CHANNEL_GIMBAL_YAW, 50);
+    }
+    else if (gimbalYawPPM > 60)
+    {
+        setPWMChannel(pwm, PWM_CHANNEL_GRABBER, 65);
+        setPWMChannel(pwm, PWM_CHANNEL_GIMBAL_YAW, 50);
+    }
 }
 
 static bool AutoPilotEngaged(PPMChannel &ppm)

@@ -191,9 +191,9 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspee
     Output->roll = imu_RollAngle;
     Output->yaw = imu_YawAngle;
 
-    //Output->pitchRate = imu_PitchRate;
-    //Output->rollRate = imu_RollRate;
-    //Output->yawRate = imu_YawRate;
+    Output->pitchRate = imu_PitchRate;
+    Output->rollRate = imu_RollRate;
+    Output->yawRate = imu_YawRate;
 
     //Transfer airspeed data
     Output->airspeed = airspeeddata->airspeed;
@@ -473,20 +473,25 @@ SFError_t SF_GenerateNewResult()
     SFError.errorCode = 0;
     
     IMUData_t imuData;
-
+    GpsData_t GpsData;
+    AltimeterData_t altimeterData;
+    airspeedData_t airspeedData;
     imuObj->GetResult(imuData);
-    
-    imuData.magx = NAN;
-    imuData.magy = NAN;
-    imuData.magz = NAN;
+    gpsObj->GetResult(&GpsData);
+    //altimeterObj->GetResult(altimeterData);
+    //airspeedObj->GetResult(airspeedData);
 
     SFAttitudeOutput_t attitudeOutput;
-    airspeedData_t airspeedData = {0};
+    SFPathOutput_t pathOutput;
 
     SFError = SF_GetAttitude(&attitudeOutput, &imuData, &airspeedData);
+    if(SFError.errorCode != 0) return SFError;
 
-    SFOutput.pitch = (-1) * attitudeOutput.pitch;
-    SFOutput.roll = (-1) * attitudeOutput.roll;
+    //SFError = SF_GetPosition(&pathOutput, &altimeterData, &GpsData, &imuData, &attitudeOutput, &iterData);
+    //if(SFError.errorCode != 0) return SFError;
+
+    SFOutput.pitch = attitudeOutput.pitch;
+    SFOutput.roll = attitudeOutput.roll;
     SFOutput.yaw = attitudeOutput.yaw;
     SFOutput.altitude = pathOutput.altitude;
     SFOutput.rateOfClimb = pathOutput.rateOfClimb;
@@ -498,17 +503,6 @@ SFError_t SF_GenerateNewResult()
     return SFError;
 }
 
-#ifdef TARGET_BUILD
-/********************TEMPORARY FOR DATA COLLECTION*****************************************/
-static float rollLog[2000];
-static float pitchLog[2000];
-
-static uint16_t index;
-static uint8_t cnter;
-
-/********************TEMPORARY FOR DATA COLLECTION*****************************************/
-#endif
-
 SFError_t SF_GetResult(SFOutput_t *output)
 {
     SFError_t SFError;
@@ -516,30 +510,13 @@ SFError_t SF_GetResult(SFOutput_t *output)
 
     *output = SFOutput;
 
-#ifdef TARGET_BUILD
-/********************TEMPORARY FOR DATA COLLECTION*****************************************/
-    cnter ++;
-
-    if( (cnter == 50) && (index < 2000) )
-    {
-        cnter = 0;
-
-        rollLog[index] = SFOutput.roll;
-        pitchLog[index] = SFOutput.pitch;
-
-        index ++;
-    }
-
-/********************TEMPORARY FOR DATA COLLECTION*****************************************/
-#endif
-
     return SFError;
 }
 
 IMU_Data_t SF_GetRawIMU()
 {
     IMUData_t imuData;
-    imuObj->GetResult(imuData);
+    //imuData = imuObj->getResult();
 
     IMU_Data_t imuOutput;
 

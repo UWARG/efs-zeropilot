@@ -48,7 +48,6 @@ void testSetup() {
     txData.PWM[10] = 11;
     txData.PWM[11] = 12;
     txData.safetyLevel = 13; 
-    HAL_GPIO_TogglePin(LED1_GPIO_Port,LED1_Pin);
 }
 
 // spi callback that starts up another interrupt.

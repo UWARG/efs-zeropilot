@@ -9,7 +9,7 @@ bool CommsFailed() {
 }
 void RSSI_Check() {
     GPIO_PinState state = HAL_GPIO_ReadPin(RSSI_GPIO_Port, RSSI_Pin);
-    if (state == GPIO_PIN_RESET) {
+    if (state == GPIO_PIN_SET) {
         // Low
         counter = 0;
         failed = false;
