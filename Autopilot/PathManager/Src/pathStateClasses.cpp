@@ -64,6 +64,29 @@ _WaypointManager_Data_Out landingTouchdownStage::waypointOutput;
  * Code
  **********************************************************************************************************************/
 
+#include "pathModeSelector.hpp"
+#include <iostream>
+
+void modeExecutor::execute(pathManager* pathMgr) {
+    PathModeSelector modeSelector = PathModeSelector::getInstance();
+
+    Telemetry_PIGO_t telem;
+    SFOutput_t sf;
+
+    modeSelector.execute(telem, sf);
+
+    std::cout << "modeExecutor: Done" << std::endl;
+
+    pathMgr->setState(coordinateTurnElevation::getInstance());
+}
+
+pathManagerState& modeExecutor::getInstance() {
+    static modeExecutor singleton;
+    return singleton;
+}
+
+
+
 void commsWithAttitude::execute(pathManager* pathMgr)
 {
 

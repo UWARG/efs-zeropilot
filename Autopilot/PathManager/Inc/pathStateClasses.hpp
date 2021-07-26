@@ -22,6 +22,19 @@
  * Code
  **********************************************************************************************************************/
 
+class modeExecutor : public pathManagerState {
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+
+    private:
+        modeExecutor() {} // Initializes module
+        modeExecutor(const modeExecutor& other);
+        modeExecutor& operator =(const modeExecutor& other);
+};
+
 class commsWithAttitude : public pathManagerState
 {
     public:

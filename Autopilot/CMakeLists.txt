@@ -31,6 +31,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
     boardfiles/Drivers/CMSIS/Device/ST/STM32F7xx/Include
     AttitudeManager/Inc
     PathManager/Inc
+    PathManager/Inc/cruisingMode
     TelemetryManager/Inc
     CControl/Inc
     SensorFusion/Inc
@@ -47,7 +48,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
   add_subdirectory(DataStructures)
 
   file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/Src/*.c boardfiles/Src/*.c CControl/Src/*.c)
-file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp PathManager/Src/*.cpp TelemetryManager/Src/*.cpp SensorFusion/Src/*.cpp)
+file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp AttitudeManager/Src/cruisingMode/*.cpp PathManager/Src/*.cpp TelemetryManager/Src/*.cpp SensorFusion/Src/*.cpp)
   if(NOT NUCLEO)
     set(STARTUP_ASM startup_stm32f765xx.s)
     set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F765ZGTx_FLASH.ld)
@@ -117,6 +118,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc/cruisingMode
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc
@@ -158,6 +160,29 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
 #########
 
+######### Cruiosing State
+
+set(CRUISING_MODE_SOURCE
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathStateClasses.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/waypointManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingState.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingTakeoffManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathModeSelector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingMode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingModeStages.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Src/vectorClass.cpp
+)
+
+set(CRUISNG_MODE_FILE
+${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_cruisingMode.cpp
+)
+
+add_executable(CruisingModeTest ${CRUISING_MODE_SOURCE} ${CRUISNG_MODE_FILE} ${UNIT_TEST_MAIN})
+target_link_libraries(CruisingModeTest ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
+
+#########
+
 ######### Attitude manager modules
 
   set(ATTITUDE_MANAGER_MODULES_SOURCES
@@ -189,6 +214,9 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/waypointManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingState.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingTakeoffManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathModeSelector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingMode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingModeStages.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Src/vectorClass.cpp
   )
 
