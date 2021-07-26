@@ -4,7 +4,10 @@
 using namespace std;
 
 void CruisingFlight::execute(CruisingMode* cruiseMode) {
-    cout << "Here" << endl;
+
+    Telemetry_PIGO_t telem = cruiseMode->getTelemetryData();
+
+    cout << "Here | " << telem.numWaypoints << endl;
 }
 
 CruisingModeStageManager& CruisingFlight::getInstance() {

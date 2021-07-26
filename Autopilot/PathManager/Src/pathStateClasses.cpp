@@ -67,13 +67,46 @@ _WaypointManager_Data_Out landingTouchdownStage::waypointOutput;
 #include "pathModeSelector.hpp"
 #include <iostream>
 
+
+static Telemetry_Waypoint_Data_t createTelemetryWaypoint(long double lon, long double lat, int alt, float turnRadius, int type) {
+    Telemetry_Waypoint_Data_t waypoint {};
+
+    waypoint.longitude = lon;
+    waypoint.latitude = lat;
+    waypoint.altitude = alt;
+    waypoint.turnRadius = turnRadius;
+    waypoint.waypointType = type;
+
+    return waypoint;
+}
+
 void modeExecutor::execute(pathManager* pathMgr) {
+    std::cout << "modeExecutor: Start" << std::endl;
+
     PathModeSelector modeSelector = PathModeSelector::getInstance();
 
-    Telemetry_PIGO_t telem;
+    Telemetry_PIGO_t TelemetryTestData;
+
+    TelemetryTestData.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0);
+    TelemetryTestData.waypoints[1] = createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0);
+    TelemetryTestData.waypoints[2] = createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0);
+    TelemetryTestData.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
+
+	TelemetryTestData.numWaypoints = 4;
+    TelemetryTestData.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
+    TelemetryTestData.initializingHomeBase = 1;
+    TelemetryTestData.waypointNextDirectionsCommand = REGULAR_PATH_FOLLOWING;
+    TelemetryTestData.holdingAltitude = 0;
+    TelemetryTestData.holdingTurnRadius = 0;
+    TelemetryTestData.holdingTurnDirection = 0;
+    TelemetryTestData.nextId = 0;
+    TelemetryTestData.prevId = 0;
+    TelemetryTestData.modifyId = 0;
+    TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
+
     SFOutput_t sf;
 
-    modeSelector.execute(telem, sf);
+    modeSelector.execute(TelemetryTestData, sf);
 
     std::cout << "modeExecutor: Done" << std::endl;
 
@@ -84,8 +117,6 @@ pathManagerState& modeExecutor::getInstance() {
     static modeExecutor singleton;
     return singleton;
 }
-
-
 
 void commsWithAttitude::execute(pathManager* pathMgr)
 {

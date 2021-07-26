@@ -67,8 +67,7 @@ class PathModeSelector {
 
         PathMode* current_mode;
         PathModeEnum current_mode_enum;
-        Telemetry_PIGO_t telemetry_data;
-        SFOutput_t sensor_fusion_output;
+        
 
         // Output data insert later
 };
