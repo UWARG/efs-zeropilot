@@ -61,10 +61,23 @@ class PathModeSelector {
          */
         void setCurrentModeEnum(PathModeEnum newMode) { current_mode_enum = newMode; }
 
-        // Getters and setters for output data insert later
+        /**
+         * Set the altitude_airspeed_input parameter, which will be used by coordinateTurnElevation 
+         *
+         * @param alt_airspeed_input -> new value
+         * 
+         * @return none
+         */
         void setAltitdeAirspeedInput(AltitudeAirspeedInput_t alt_airspeed_input);
 
+        /**
+         * get the altitude_airspeed_input parameter, which will be used by coordinateTurnElevation 
+         * 
+         * @return altitude_airspeed_input parameter
+         */
         AltitudeAirspeedInput_t getAltitudeAirspeedInput() { return altitude_airspeed_input; }
+
+        // Getters and setters for output data insert later
 
     private: 
         PathModeSelector();
@@ -72,7 +85,6 @@ class PathModeSelector {
 
         PathMode* current_mode;
         PathModeEnum current_mode_enum;
-        
 
         // Output data insert later
         AltitudeAirspeedInput_t altitude_airspeed_input;

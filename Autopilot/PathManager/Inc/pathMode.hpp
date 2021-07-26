@@ -15,10 +15,20 @@ class PathMode {
          */
         virtual void execute(Telemetry_PIGO_t telemetry_in, SFOutput_t sensor_fusion_in) = 0;
 
+        /**
+         * Get telemetry data that was sent in by path manager
+         *
+         * @return telemetry data sent by path manager
+         */
         Telemetry_PIGO_t getTelemetryData() { return telemetry_data; }
+
+        /**
+         * Get sensor fusion data that was sent in by path manager
+         *
+         * @return sensor fusion data sent by path manager
+         */
         SFOutput_t getSensorFusionData() { return sensor_fusion_output; }
         
-
     protected:
         PathMan::_Path_Manager_Cycle_Status current_status;
         Telemetry_PIGO_t telemetry_data;

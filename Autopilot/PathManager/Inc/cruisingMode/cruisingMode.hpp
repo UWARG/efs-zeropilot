@@ -10,12 +10,31 @@ class CruisingModeStageManager;
 // Mode class as depicted in https://uwarg-docs.atlassian.net/wiki/spaces/ZP/pages/1866989569/Proposed+Redesign
 class CruisingMode : public PathMode { 
     public:
+        /**
+         * Call to get singleton for this clas
+         *
+         * @return instance of class object
+         */
         static PathMode& getInstance();
         
-        inline CruisingModeStageManager* getCurrentStage() const { return current_stage; }
+        /**
+         * Execute the curent stage in the mode
+         * 
+         * @param telemetry_in -> telemetry data from ground 
+         * @param sensor_fusion_in -> sensor fusion data
+         *
+         * @return none
+         */
         void execute(Telemetry_PIGO_t telemetry_in, SFOutput_t sensor_fusion_in);
-
+        
+        /**
+         * Get PathModeSelector singleton instance
+         *
+         * @return instance of PathModeSelector singleton
+         */
         PathModeSelector* getModeSelector();
+
+        inline CruisingModeStageManager* getCurrentStage() const { return current_stage; }
         
         // No need for a setStage or getStage method as we only have one stage
     private: 
