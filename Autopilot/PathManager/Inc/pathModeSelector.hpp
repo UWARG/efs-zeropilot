@@ -4,6 +4,7 @@
 #include "pathMode.hpp"
 #include "TelemPathInterface.hpp"
 #include "SensorFusion.hpp"
+#include "AutoSteer.hpp"
 
 enum PathModeEnum {MODE_TAKEOFF = 0, MODE_CRUISING, MODE_LANDING, MODE_TAXIING};
 
@@ -15,7 +16,7 @@ class PathModeSelector {
          *
          * @return instance of class object
          */
-        static PathModeSelector& getInstance();
+        static PathModeSelector* getInstance();
 
         /**
          * Called by the ModeExecutor state in PathManager to execute the correct mode of flight
@@ -61,15 +62,20 @@ class PathModeSelector {
         void setCurrentModeEnum(PathModeEnum newMode) { current_mode_enum = newMode; }
 
         // Getters and setters for output data insert later
+        void setAltitdeAirspeedInput(AltitudeAirspeedInput_t alt_airspeed_input);
+
+        AltitudeAirspeedInput_t getAltitudeAirspeedInput() { return altitude_airspeed_input; }
 
     private: 
         PathModeSelector();
+        static PathModeSelector* singleton;
 
         PathMode* current_mode;
         PathModeEnum current_mode_enum;
         
 
         // Output data insert later
+        AltitudeAirspeedInput_t altitude_airspeed_input;
 };
 
 #endif

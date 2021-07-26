@@ -14,13 +14,15 @@ class CruisingMode : public PathMode {
         
         inline CruisingModeStageManager* getCurrentStage() const { return current_stage; }
         void execute(Telemetry_PIGO_t telemetry_in, SFOutput_t sensor_fusion_in);
+
+        PathModeSelector* getModeSelector();
         
         // No need for a setStage or getStage method as we only have one stage
     private: 
         CruisingMode();
 
         CruisingModeStageManager* current_stage;
-        PathModeSelector* mode_selector;        
+        static PathModeSelector* mode_selector;        
 };
 
 #endif

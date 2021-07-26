@@ -17,6 +17,7 @@ class PathMode {
 
         Telemetry_PIGO_t getTelemetryData() { return telemetry_data; }
         SFOutput_t getSensorFusionData() { return sensor_fusion_output; }
+        
 
     protected:
         PathMan::_Path_Manager_Cycle_Status current_status;

@@ -83,7 +83,7 @@ static Telemetry_Waypoint_Data_t createTelemetryWaypoint(long double lon, long d
 void modeExecutor::execute(pathManager* pathMgr) {
     std::cout << "modeExecutor: Start" << std::endl;
 
-    PathModeSelector modeSelector = PathModeSelector::getInstance();
+    PathModeSelector* modeSelector = PathModeSelector::getInstance();
 
     Telemetry_PIGO_t TelemetryTestData;
 
@@ -106,7 +106,11 @@ void modeExecutor::execute(pathManager* pathMgr) {
 
     SFOutput_t sf;
 
-    modeSelector.execute(TelemetryTestData, sf);
+    modeSelector->execute(TelemetryTestData, sf);
+
+    AltitudeAirspeedInput_t a = modeSelector->getAltitudeAirspeedInput();
+
+    std::cout << "Sent from cruising: " << a.currentAltitude << std::endl;
 
     std::cout << "modeExecutor: Done" << std::endl;
 
