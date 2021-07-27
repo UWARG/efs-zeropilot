@@ -92,9 +92,9 @@
 
 // TODO: Confirm the period at which each of the threads are to be run and update them
 static const int PERIOD_ATTITUDEMANAGER_MS = 5;
-static const int PERIOD_SENSORDATA_MS = 5;
-static const int PERIOD_PATHMANAGER_MS = 20; 
-static const int PERIOD_TELEMETRY_MS = 20; 
+static const int PERIOD_SENSORDATA_MS = 200;
+static const int PERIOD_PATHMANAGER_MS = 200; 
+static const int PERIOD_TELEMETRY_MS = 200; 
 static const int PERIOD_INTERCHIP_MS = 20;
 
 static volatile bool catastrophicFailure = false;
@@ -106,8 +106,6 @@ osThreadId attitudeManagerHandle;
 osThreadId InterchipHandle;
 osThreadId pathManagerHandle;
 osThreadId telemetryRunHandle;
-// osThreadId sensorFusionHandle;
-// osThreadId IMUHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -176,7 +174,7 @@ void MX_FREERTOS_Init(void) {
   // /* Create the thread(s) */
 
   /* definition and creation of sensorDataRun (thread for IMU, sensor fusion, and altimeter) */
-  osThreadDef(sensorDataRun, sensorDataExecute, osPriorityNormal, 0, 1500);
+  osThreadDef(sensorDataRun, sensorDataExecute, osPriorityNormal, 0, 1800);
   sensorDataHandle = osThreadCreate(osThread(sensorDataRun), NULL);
 
   /* definition and creation of attitudeManager */
@@ -294,7 +292,6 @@ void interchipRunExecute(void const * argument) {
     if (!catastrophicFailure) {
       Interchip_Run();
     }
-    // HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
     /* USER CODE END interchipRunExecute */ 
   }  
 }
