@@ -126,7 +126,7 @@ double * cartesianToGPS(double x, double y){
     return latLong;
 }
 
-SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspeedData_t *airspeeddata) {
+SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata) {
     
     //Error output
     SFError_t SFError;
@@ -142,10 +142,8 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspee
     float imu_PitchRate = 0;
     float imu_YawRate = 0;
     
-    //Airspeed checks are temporarily disabled until an airspeed driver is implemented
-
-    //Abort if both sensors are busy or failed data collection
-    if(imudata->sensorStatus != 0 ) // || airspeeddata->sensorStatus != 0)
+    //Abort if imu sensor is busy or failed data collection
+    if(imudata->sensorStatus != 0 )
     {  
 
         /************************************************************************************************
@@ -158,7 +156,7 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspee
     }
 
     //Check if data is old
-    if(!imudata->isDataNew){ // || !airspeeddata->isDataNew){
+    if(!imudata->isDataNew){
         SFError.errorCode = 1;
     }
 
@@ -196,23 +194,27 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata, airspee
     Output->rollRate = imu_RollRate;
     Output->yawRate = imu_YawRate;
 
-    //Transfer airspeed data
-    Output->airspeed = airspeeddata->airspeed;
-
     return SFError;
 }
 
 SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata, GpsData_t *gpsdata, IMUData_t *imudata, SFAttitudeOutput_t *attitudedata,  SFIterationData_t *iterdata)
 {
+    //Error output
+    SFError_t SFError;
+    SFError.errorCode = 0;
+
+    float freq = SF_FREQ;
+    float dt = 1/freq;
+
     //Set currently unused sensors to zero
     altimeterdata->altitude = 0;
     imudata->accx = 0;
     imudata->accy = 0;
     imudata->accz = 0;
 
-
-    double baroCovar = HIGH_COVAR + 1;
-    double gpsCovar;
+    //Define the covariance of sensors
+    float baroCovar = HIGH_COVAR + 1;
+    float gpsCovar;
     if(gpsdata->dataIsNew && gpsdata->numSatellites >= 3)
     {
         gpsCovar = 2;
@@ -229,26 +231,10 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
         gpsCovar = HIGH_COVAR + 1;
     }
 
-    //Error output
-    SFError_t SFError;
-    SFError.errorCode = 0;
+    /* Matrix Definitions */
 
-    float freq = SF_FREQ;
-    float dt = 1/freq;
-
-    /* Time Update */
-
-    //Defines for estimate
-
+    //Number of variables being estimated (dimension of the state vector x).
     const int16_t DIM = 6;
-
-    //List of variables being tracked and estimated
-    float x[DIM];
-
-    //float * prevX = iterdata->prevX;
-
-    float prevX[DIM*1];
-    for (int i = 0; i < DIM*1; i++) prevX[i] = iterdata->prevX[i];
 
     //Maps x to itself, applying any physical relationships between variables.
     float f[DIM*DIM] =
@@ -263,9 +249,7 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
     
     const int16_t U_DIM = 3;
 
-    float ddt = pow(dt,2)/2;
-
-    //XYZ acceleration
+    //Measured XYZ acceleration
     float u[U_DIM] =
     {
         0,
@@ -274,7 +258,10 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
     };
     localToGlobalAccel(imudata, u);
 
-    //Maps u to x
+    //Relationship between distance and acceleration
+    float ddt = pow(dt,2)/2;
+
+    //Maps u to x, incorporating acceleration into the estimate
     float b[DIM*U_DIM] =
     {
         ddt, 0,   0,
@@ -284,27 +271,6 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
         0,   0,   ddt,
         0,   0,   dt
     };
-
-    //Calculate estimate: x = f*prevX + b*u
-    
-    float fMultPrevX[DIM*1];
-    mul(f, prevX, fMultPrevX, DIM, DIM, 1);
-
-    float bMultU[DIM*1];
-    mul(b, u, bMultU, DIM, U_DIM, 1);
-
-    for (int i = 0; i < DIM*1; i++) x[i] = fMultPrevX[i] + bMultU[i];
-    
-    //Defines for error covariance
-
-    //Stores confidence in accuracy of variables of x
-    float p[DIM*DIM];
-
-    float prevP[DIM*DIM];
-    for (int i = 0; i < DIM*DIM; i++) 
-    {
-        prevP[i] = iterdata->prevP[i];
-    }
 
     //Confidence in the physical relationship prediction performed using f
     float q[DIM*DIM]=
@@ -317,28 +283,7 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
         0,   0,   0,   0,   0,   5.0
     };
 
-    //Calculate error covariance: p = f*prevP*transpose(f) + q
-
-    float fMultPrevP[DIM*DIM];
-    mul(f, prevP, fMultPrevP, DIM, DIM, DIM);
-
-    float transF[DIM*DIM];
-    for (int i = 0; i < DIM*DIM; i++) transF[i] = f[i];
-    tran(transF, DIM, DIM);
-
-    float fMultPrevPMultTransF[DIM*DIM];
-    mul(fMultPrevP, transF, fMultPrevPMultTransF, DIM, DIM, DIM);
-
-    for (int i = 0; i < DIM*DIM; i++) p[i] = fMultPrevPMultTransF[i] + q[i];
-
-    /* Measurement Update */
-
-    //Defines for Kalman gain
-    
     const int16_t NUM_MEASUREMENTS = 7;
-
-
-    float k[DIM*NUM_MEASUREMENTS];
 
     //Maps sensor data from z to x
     float h[NUM_MEASUREMENTS*DIM] =
@@ -365,6 +310,20 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
         h[6*DIM+5] = 0;
     }
 
+    double * xyPos = gpsToCartesian(gpsdata->latitude, gpsdata->longitude);
+
+    //List of sensor measurements
+    float z[NUM_MEASUREMENTS] =
+    {
+        altimeterdata->altitude,
+        (float) gpsdata->altitude,
+        xyPos[0], //Latitude
+        xyPos[1], //Longitude
+        0, //Vertical speed (Currently unused)
+        gpsdata->groundSpeed * cos(DEG_TO_RAD(gpsdata->heading)), //North speed
+        gpsdata->groundSpeed * sin(DEG_TO_RAD(gpsdata->heading)) //East speed
+    };
+
     //Defines the confidence to have in each sensor variable
     float r[NUM_MEASUREMENTS*NUM_MEASUREMENTS]
     {
@@ -377,7 +336,55 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
         0,         0,               0,              0,              0,          0,         gpsCovar
     };
 
+
+    /* Kalman Filter Inner Workings */
+
+    /* Time Update */
+
+    //Calculate estimate: x = f*prevX + b*u
+    
+    //List of variables being tracked and estimated
+    float x[DIM];
+
+    float prevX[DIM];
+    for (int i = 0; i < DIM; i++) prevX[i] = iterdata->prevX[i];
+
+    //Stores confidence in accuracy of variables of x
+    float p[DIM*DIM];
+
+    float prevP[DIM*DIM];
+    for (int i = 0; i < DIM*DIM; i++) 
+    {
+        prevP[i] = iterdata->prevP[i];
+    }
+
+    float fMultPrevX[DIM*1];
+    mul(f, prevX, fMultPrevX, DIM, DIM, 1);
+
+    float bMultU[DIM*1];
+    mul(b, u, bMultU, DIM, U_DIM, 1);
+
+    for (int i = 0; i < DIM*1; i++) x[i] = fMultPrevX[i] + bMultU[i];
+    
+    //Calculate error covariance: p = f*prevP*transpose(f) + q
+
+    float fMultPrevP[DIM*DIM];
+    mul(f, prevP, fMultPrevP, DIM, DIM, DIM);
+
+    float transF[DIM*DIM];
+    for (int i = 0; i < DIM*DIM; i++) transF[i] = f[i];
+    tran(transF, DIM, DIM);
+
+    float fMultPrevPMultTransF[DIM*DIM];
+    mul(fMultPrevP, transF, fMultPrevPMultTransF, DIM, DIM, DIM);
+
+    for (int i = 0; i < DIM*DIM; i++) p[i] = fMultPrevPMultTransF[i] + q[i];
+
+    /* Measurement Update */
+
     //Calculate Kalman gain: k = p*transpose(h) * (h*p*transpose(h) + r)^-1
+
+    float k[DIM*NUM_MEASUREMENTS];
 
     float transH[DIM*NUM_MEASUREMENTS];
     for (int i = 0; i < NUM_MEASUREMENTS*DIM; i++) transH[i] = h[i];
@@ -398,23 +405,6 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
 
     mul(pMultTransH, hPMultTransHPlusRInv, k, DIM, NUM_MEASUREMENTS, NUM_MEASUREMENTS);
 
-
-    //Defines for updating estimate
-
-    double * xyPos = gpsToCartesian(gpsdata->latitude, gpsdata->longitude);
-
-    //List of sensor measurements
-    float z[NUM_MEASUREMENTS] =
-    {
-        altimeterdata->altitude,
-        gpsdata->altitude,
-        xyPos[0], //Latitude
-        xyPos[1], //Longitude
-        0, //Vertical speed (Currently unused)
-        gpsdata->groundSpeed * cos(gpsdata->heading*ZP_PI/180), //North speed
-        gpsdata->groundSpeed * sin(gpsdata->heading*ZP_PI/180) //East speed
-    };
-
     //Update estimate: newX = x + k*(z - h*x)
 
     float hMultX[NUM_MEASUREMENTS*1];
@@ -429,7 +419,7 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
     float newX[DIM*1];
     for (int i = 0; i < DIM*1; i++) newX[i] = x[i] + kMultZMinHMultX[i];
 
-    //Defines for updating error covariance
+    //Update error covariance: newP = (I - k*h)*p
 
     //The identity matrix
     float I[DIM*DIM] =
@@ -441,8 +431,6 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
         0, 0, 0, 0, 1, 0,
         0, 0, 0, 0, 0, 1
     };
-
-    //Update error covariance: newP = (I - k*h)*p
 
     float kMultH[DIM*DIM];
     mul(k, h, kMultH, DIM, NUM_MEASUREMENTS, DIM);
@@ -478,7 +466,7 @@ SFError_t SF_GenerateNewResult()
     AltimeterData_t altimeterData;
     airspeedData_t airspeedData;
     imuObj->GetResult(imuData);
-    gpsObj->GetResult(&GpsData);
+    gpsObj->GetResult(GpsData);
     //altimeterObj->GetResult(altimeterData);
     //airspeedObj->GetResult(airspeedData);
 
@@ -495,7 +483,7 @@ SFError_t SF_GenerateNewResult()
     SFAttitudeOutput_t attitudeOutput;
     SFPathOutput_t pathOutput;
 
-    SFError = SF_GetAttitude(&attitudeOutput, &imuData, &airspeedData);
+    SFError = SF_GetAttitude(&attitudeOutput, &imuData);
     if(SFError.errorCode != 0) return SFError;
 
     SFError = SF_GetPosition(&pathOutput, &altimeterData, &GpsData, &imuData, &attitudeOutput, &iterData);
@@ -528,7 +516,7 @@ IMU_Data_t SF_GetRawIMU()
 {
     IMUData_t imuData;
     //imuData = imuObj->getResult();
-
+    
     IMU_Data_t imuOutput;
 
     imuOutput.accx = imuData.accx;

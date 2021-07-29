@@ -15,8 +15,7 @@ extern "C"
 #define SENSORFUSION_HPP
 
 //Frequency of SF calculations in Hz
-// constexpr int SF_FREQ = 512;
-const int SF_FREQ = 512;
+const int SF_FREQ = 200;
 
 // -1 = FAILED
 // 0 = SUCCESS
