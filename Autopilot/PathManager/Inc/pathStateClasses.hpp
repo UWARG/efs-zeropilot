@@ -1,7 +1,7 @@
 #pragma once
 
 #include "pathManagerStateManager.hpp"
-#include "cruisingState.hpp"
+#include "pathModeSelector.hpp"
 #include "pathManager.hpp"
 #include "AutoSteer.hpp"
 #include "waypointManager.hpp"
@@ -17,23 +17,9 @@
  **********************************************************************************************************************/
 
 
-
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
-
-class modeExecutor : public pathManagerState {
-    public:
-        void enter(pathManager* pathMgr) {(void) pathMgr;}
-        void execute(pathManager* pathMgr);
-        void exit(pathManager* pathMgr) {(void) pathMgr;}
-        static pathManagerState& getInstance();
-
-    private:
-        modeExecutor() {} // Initializes module
-        modeExecutor(const modeExecutor& other);
-        modeExecutor& operator =(const modeExecutor& other);
-};
 
 class commsWithAttitude : public pathManagerState
 {
@@ -84,8 +70,7 @@ class sensorFusion : public pathManagerState
         // it like the IMU_Data_t struct above
 };
 
-class resetVariables : public pathManagerState
-{
+class modeExecutor : public pathManagerState {
     public:
         void enter(pathManager* pathMgr) {(void) pathMgr;}
         void execute(pathManager* pathMgr);
@@ -93,18 +78,10 @@ class resetVariables : public pathManagerState
         static pathManagerState& getInstance();
 
     private:
-        resetVariables() {}
-        resetVariables(const resetVariables& other);
-        resetVariables& operator =(const resetVariables& other);
-        void resetPassby(_PassbyControl* controlDetails)
-        {
-            controlDetails->rollPassby = false;
-            controlDetails->pitchPassby = false;
-            controlDetails->throttlePassby = false;
-            controlDetails->rudderPassby = false;
-        }
-
- };       
+        modeExecutor() {} // Initializes module
+        modeExecutor(const modeExecutor& other);
+        modeExecutor& operator =(const modeExecutor& other);
+};
 
 class takeoffRollStage : public pathManagerState
 {
@@ -146,131 +123,6 @@ class takeoffClimbStage : public pathManagerState
         takeoffClimbStage() {}
         takeoffClimbStage(const takeoffClimbStage& other);
         takeoffClimbStage& operator =(const takeoffClimbStage& other);
-};
-
-
-class cruisingState : public pathManagerState
-{
-    public:
-        void enter(pathManager* pathMgr) {(void) pathMgr;}
-        void execute(pathManager* pathMgr);
-        void exit(pathManager* pathMgr) {(void) pathMgr;}
-        static pathManagerState& getInstance();
-        static _WaypointManager_Data_Out* GetOutputData(void) {return &_outputdata;}
-        static _CruisingState_Telemetry_Return* GetErrorCodes(void) {return &_returnToGround;}
-
-        #ifdef UNIT_TESTING
-            WaypointManager* GetWaypointManager(void) {return &cruisingStateManager;}
-            int* GetWaypointIdArray(void) {return waypointIDArray;}
-        #endif
-    private:
-        cruisingState() {}
-        cruisingState(const cruisingState& other);
-        cruisingState& operator =(const cruisingState& other);
-
-        WaypointManager cruisingStateManager;
-        int waypointIDArray[PATH_BUFFER_SIZE]; // Stores ids of the waypoints in the flight path in the order that they are executed
-        static _WaypointManager_Data_In _inputdata;
-        static _WaypointManager_Data_Out _outputdata;
-        static _CruisingState_Telemetry_Return _returnToGround;
-        bool inHold = false;
-        bool goingHome = false;
-};
-
-class landingTransitionStage : public pathManagerState
-{
-    public:
-        void enter(pathManager* pathMgr) {(void) pathMgr;}
-        void execute(pathManager* pathMgr);
-        void exit(pathManager* pathMgr) {(void) pathMgr;}
-        static pathManagerState& getInstance();
-
-        static _LandingTakeoffOutput* getControlOutput(){return &output;}
-        static WaypointManager landingPath;
-        static _WaypointStatus waypointStatus; //used to catch errors
-        static _LandingPath path; //used to load in path
-    private:
-        int waypointIDArray[PATH_BUFFER_SIZE];
-        static _LandingTakeoffInput input;
-        static _LandingTakeoffOutput output;
-        static _WaypointManager_Data_In waypointInput;
-        static _WaypointManager_Data_Out waypointOutput;
-        static _PathData * pathArray[3]; //used to translate loaded in path to something the waypoint manager can take as a parameter
-        static _PathData * currentLocation;
-        landingTransitionStage() {}
-        landingTransitionStage(const landingTransitionStage& other);
-        landingTransitionStage& operator =(const landingTransitionStage& other);
-
-};
-
-class landingSlopeStage : public pathManagerState
-{
-    public:
-        void enter(pathManager* pathMgr) {(void) pathMgr;}
-        void execute(pathManager* pathMgr);
-        void exit(pathManager* pathMgr) {(void) pathMgr;}
-        static pathManagerState& getInstance();
-        static _LandingTakeoffOutput* getControlOutput(){return &output;}
-    private:
-        static _LandingTakeoffInput input;
-        static _LandingTakeoffOutput output;
-        static _WaypointManager_Data_In waypointInput;
-        static _WaypointManager_Data_Out waypointOutput;
-        landingSlopeStage() {}
-        landingSlopeStage(const landingSlopeStage& other);
-        landingSlopeStage& operator =(const landingSlopeStage& other);
-};
-
-class landingFlareStage : public pathManagerState
-{
-    public:
-        void enter(pathManager* pathMgr) {(void) pathMgr;}
-        void execute(pathManager* pathMgr);
-        void exit(pathManager* pathMgr) {(void) pathMgr;}
-        static pathManagerState& getInstance();
-        static _LandingTakeoffOutput* getControlOutput(){return &output;}
-    private:
-        static _LandingTakeoffInput input;
-        static _LandingTakeoffOutput output;
-        static _WaypointManager_Data_In waypointInput;
-        static _WaypointManager_Data_Out waypointOutput;
-        landingFlareStage() {}
-        landingFlareStage(const landingFlareStage& other);
-        landingFlareStage& operator =(const landingFlareStage& other);
-};
-
-class landingDecrabStage : public pathManagerState
-{
-    public:
-        void enter(pathManager* pathMgr) {(void) pathMgr;}
-        void execute(pathManager* pathMgr);
-        void exit(pathManager* pathMgr) {(void) pathMgr;}
-        static pathManagerState& getInstance();
-        static _LandingTakeoffOutput* getControlOutput(){return &output;}
-    private:
-        static _LandingTakeoffInput input;
-        static _LandingTakeoffOutput output;
-        static _WaypointManager_Data_Out waypointOutput;
-        landingDecrabStage() {}
-        landingDecrabStage(const landingDecrabStage& other);
-        landingDecrabStage& operator =(const landingDecrabStage& other);
-};
-
-class landingTouchdownStage : public pathManagerState
-{
-    public:
-        void enter(pathManager* pathMgr) {(void) pathMgr;}
-        void execute(pathManager* pathMgr);
-        void exit(pathManager* pathMgr) {(void) pathMgr;}
-        static pathManagerState& getInstance();
-        static _LandingTakeoffOutput* getControlOutput(){return &output;}
-    private:
-        static _LandingTakeoffInput input;
-        static _LandingTakeoffOutput output;
-        static _WaypointManager_Data_Out waypointOutput;
-        landingTouchdownStage() {}
-        landingTouchdownStage(const landingTouchdownStage& other);
-        landingTouchdownStage& operator =(const landingTouchdownStage& other);
 };
 
 class coordinateTurnElevation : public pathManagerState

@@ -7,7 +7,7 @@
 #include "pathManager.hpp"
 #include "pathStateClasses.hpp"
 #include "waypointManager.hpp"
-#include "cruisingState.hpp"
+#include "cruisingFlight.hpp"
 #include "pathDatatypes.hpp"
 
 using namespace std; 

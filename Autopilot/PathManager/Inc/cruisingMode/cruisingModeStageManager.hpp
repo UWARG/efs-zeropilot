@@ -8,9 +8,9 @@ class CruisingMode;
 // Like ModeStage class as depicted in https://uwarg-docs.atlassian.net/wiki/spaces/ZP/pages/1866989569/Proposed+Redesign
 class CruisingModeStageManager { 
     public:
-        virtual void enter(CruisingMode* cruiseMode) = 0;
-        virtual void execute(CruisingMode* cruiseMode) = 0;
-        virtual void exit(CruisingMode* cruiseMode) = 0;
+        virtual void enter(CruisingMode* cruise_mode) = 0;
+        virtual void execute(CruisingMode* cruise_mode) = 0;
+        virtual void exit(CruisingMode* cruise_mode) = 0;
 
         bool operator==(const CruisingModeStageManager& rhs) const {return (this == &rhs);} 
 
@@ -18,3 +18,4 @@ class CruisingModeStageManager {
 };
 
 #endif
+

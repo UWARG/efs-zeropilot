@@ -3,7 +3,7 @@
 * Author: Dhruv Rawat
 */
 
-#include "cruisingState.hpp"
+#include "cruisingFlight.hpp"
 
 // The following functions are used to update the ID array that is a part of the CruisingState class
 static void appendNewElement(int * idArray, int newId);             // Adds newId to the first free element in idArray

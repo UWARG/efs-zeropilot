@@ -3,21 +3,32 @@
 
 #include "cruisingModeStageManager.hpp"
 #include "cruisingMode.hpp"
+
 #include "waypointManager.hpp"
 #include "TelemPathInterface.hpp"
 #include "Autosteer.hpp"
+#include "cruisingFlight.hpp"
 
 class CruisingFlight : public CruisingModeStageManager {
     public:
-        void enter(CruisingMode* cruiseMode) { (void) cruiseMode; }
-        void execute(CruisingMode* cruiseMode);
-        void exit(CruisingMode* cruiseMode) { (void) cruiseMode; }
+        void enter(CruisingMode* cruise_mode) { (void) cruise_mode; }
+        void execute(CruisingMode* cruise_mode);
+        void exit(CruisingMode* cruise_mode) { (void) cruise_mode; }
         static CruisingModeStageManager& getInstance();
 
     private: 
-        CruisingFlight() {}
+        CruisingFlight() : in_hold {false}, going_home {false} {}
         CruisingFlight(const CruisingFlight& other);
         CruisingFlight& operator=(const CruisingFlight& other);
+
+        WaypointManager cruising_state_manager;
+        int waypoint_id_array[PATH_BUFFER_SIZE]; // Stores ids of the waypoints in the flight path in the order that they are executed
+        static _WaypointManager_Data_In _input_data;
+        static _WaypointManager_Data_Out _output_data;
+        static _CruisingState_Telemetry_Return _return_to_ground;
+        bool in_hold;
+        bool going_home;
 };
 
 #endif
+

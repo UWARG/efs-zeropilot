@@ -32,6 +32,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
     AttitudeManager/Inc
     PathManager/Inc
     PathManager/Inc/cruisingMode
+    PathManager/Inc/landingMode
     TelemetryManager/Inc
     CControl/Inc
     SensorFusion/Inc
@@ -115,10 +116,10 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/../Common/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc/
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc/cruisingMode
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc/landingMode
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc
@@ -160,29 +161,6 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
 #########
 
-######### Cruiosing State
-
-set(CRUISING_MODE_SOURCE
-    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathStateClasses.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/waypointManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingState.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingTakeoffManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathModeSelector.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingMode.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingModeStages.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Src/vectorClass.cpp
-)
-
-set(CRUISNG_MODE_FILE
-${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_cruisingMode.cpp
-)
-
-add_executable(CruisingModeTest ${CRUISING_MODE_SOURCE} ${CRUISNG_MODE_FILE} ${UNIT_TEST_MAIN})
-target_link_libraries(CruisingModeTest ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
-
-#########
-
 ######### Attitude manager modules
 
   set(ATTITUDE_MANAGER_MODULES_SOURCES
@@ -212,11 +190,13 @@ target_link_libraries(CruisingModeTest ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBR
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/waypointManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingState.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingTakeoffManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathModeSelector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingFlight.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingMode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingModeStages.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingMode/landingMode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingMode/landingModeStages.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Src/vectorClass.cpp
   )
 
@@ -229,20 +209,46 @@ target_link_libraries(CruisingModeTest ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBR
 
 #########
 
+######### Path manager modes fsm 
+
+set(PATH_MANAGER_MODES_FSM_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathStateClasses.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/waypointManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingTakeoffManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathModeSelector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingFlight.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingMode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingModeStages.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingMode/landingMode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingMode/landingModeStages.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Src/vectorClass.cpp
+)
+
+set(PATH_MANAGER_MODES_FSM_UNIT_TEST_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_CruisingMode_Fsm.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_LandingMode_Fsm.cpp
+)
+
+add_executable(pathManagerModesFsm ${PATH_MANAGER_MODES_FSM_SOURCES} ${PATH_MANAGER_MODES_FSM_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
+target_link_libraries(pathManagerModesFsm ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
+
+#########
+
 ######### Path manager modules
 
   set(PATH_MANAGER_MODULES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/waypointManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingState.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingFlight.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingTakeoffManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Src/vectorClass.cpp
   )
 
   set(PATH_MANAGER_MODULES_UNIT_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_WaypointManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_CruisingState.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/LandingTakeoffManager/Test_Landing.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/LandingTakeoffManager/Test_Takeoff.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_CruisingFlight.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_Landing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_Takeoff.cpp
   )
 
   add_executable(pathManagerModules ${PATH_MANAGER_MODULES_SOURCES} ${PATH_MANAGER_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
@@ -364,7 +370,7 @@ endif()
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/pathStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/waypointManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingTakeoffManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingState.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingFlight.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/AutoSteer.cpp
   )
 
