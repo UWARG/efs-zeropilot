@@ -75,8 +75,8 @@ void SF_Init(void)
 #elif defined(UNIT_TESTING)
     imuObj = TestIMU::GetInstance();
     gpsObj = TestGps::GetInstance();
-    //altimeterObj = TestAltimeter::GetInstance();
-    //airspeedObj = TestAirspeed::GetInstance();
+    altimeterObj = TestAltimeter::GetInstance();
+    airspeedObj = TestAirspeed::GetInstance();
 #endif
 
     //Set initial state to be unknown
