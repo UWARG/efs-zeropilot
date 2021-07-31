@@ -527,7 +527,7 @@ SFError_t SF_GetResult(SFOutput_t *output)
 IMU_Data_t SF_GetRawIMU()
 {
     IMUData_t imuData;
-    //imuData = imuObj->getResult();
+    imuObj->GetResult(imuData);
 
     IMU_Data_t imuOutput;
 
@@ -549,7 +549,7 @@ IMU_Data_t SF_GetRawIMU()
 Airspeed_Data_t SF_GetRawAirspeed()
 {
     airspeedData_t airspeedData;
-    //airspeedData = airspeedObj->getResult();
+    airspeedObj->GetResult(airspeedData);
 
     Airspeed_Data_t airspeedOutput;
 
