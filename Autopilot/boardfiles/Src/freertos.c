@@ -92,7 +92,7 @@
 
 // TODO: Confirm the period at which each of the threads are to be run and update them
 static const int PERIOD_ATTITUDEMANAGER_MS = 5;
-static const int PERIOD_SENSORDATA_MS = 200;
+static const int PERIOD_SENSORDATA_MS = 5;
 static const int PERIOD_PATHMANAGER_MS = 200; 
 static const int PERIOD_TELEMETRY_MS = 200; 
 static const int PERIOD_INTERCHIP_MS = 20;
