@@ -69,8 +69,8 @@ void SF_Init(void)
     imuObj = &BMX160::getInstance();
     gpsObj = NEOM8::GetInstance();
     //Waiting for definitions
-    altimeterObj = &MPL3115A2::getInstance();
-    airspeedObj = MPXV7002DP::GetInstance();
+    // altimeterObj = &MPL3115A2::getInstance();
+    // airspeedObj = MPXV7002DP::GetInstance();
 
 #elif defined(UNIT_TESTING)
     imuObj = TestIMU::GetInstance();
