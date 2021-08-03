@@ -515,7 +515,7 @@ SFError_t SF_GetResult(SFOutput_t *output)
 IMU_Data_t SF_GetRawIMU()
 {
     IMUData_t imuData;
-    //imuData = imuObj->getResult();
+    imuObj->GetResult(imuData);
     
     IMU_Data_t imuOutput;
 
@@ -547,4 +547,45 @@ Airspeed_Data_t SF_GetRawAirspeed()
     airspeedOutput.sensorStatus = airspeedData.sensorStatus;
 
     return airspeedOutput;
+}
+
+Gps_Data_t SF_GetRawGPS()
+{
+    GpsData_t gpsData;
+    gpsObj->GetResult(gpsData);
+
+    Gps_Data_t gpsOutput;
+
+    gpsOutput.dataIsNew = gpsData.dataIsNew;
+    gpsOutput.ggaDataIsNew = gpsData.ggaDataIsNew;
+    gpsOutput.vtgDataIsNew = gpsData.vtgDataIsNew;
+    gpsOutput.latitude = gpsData.latitude;
+    gpsOutput.longitude = gpsData.longitude;
+    gpsOutput.utcTime = gpsData.utcTime;
+    gpsOutput.groundSpeed = gpsData.groundSpeed;
+    gpsOutput.altitude = gpsData.altitude;
+    gpsOutput.heading = gpsData.heading;
+    gpsOutput.numSatellites = gpsData.numSatellites;
+    gpsOutput.fixStatus = gpsData.fixStatus;
+    gpsOutput.sensorStatus = gpsData.sensorStatus;
+    gpsOutput.timeIsNew = gpsData.timeIsNew;
+
+    return gpsOutput;
+}
+
+Altimeter_Data_t SF_GetRawAltimeter()
+{
+    AltimeterData_t altimeterData;
+    //altimeterObj->GetResult(altimeterData);
+
+    Altimeter_Data_t altimeterOutput;
+
+    altimeterOutput.pressure = altimeterData.pressure;
+    altimeterOutput.altitude = altimeterData.altitude;
+    altimeterOutput.temp = altimeterData.temp;
+    altimeterOutput.utcTime = altimeterData.utcTime;
+    altimeterOutput.isDataNew = altimeterData.isDataNew;
+    altimeterOutput.status = altimeterData.status;
+
+    return altimeterOutput;
 }

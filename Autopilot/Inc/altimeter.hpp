@@ -30,7 +30,7 @@ class Altimeter{
          * 2. Transfers raw data from variables to struct
          * 3. Updates utcTime and status values in struct as well
          * */
-        virtual void GetResult(AltimeterData_t *Data) = 0; //
+        virtual void GetResult(AltimeterData_t& Data) = 0; //
 };
 
 class MS5637 : public Altimeter {
@@ -38,7 +38,7 @@ class MS5637 : public Altimeter {
         MS5637(const MS5637*) = delete; //Apparently if you try to copy a singleton this will give you errors?
         static MS5637* GetInstance();
         void Begin_Measuring();
-        void GetResult(AltimeterData_t *Data);
+        void GetResult(AltimeterData_t& Data);
     private:
         MS5637(); //Constructor can never be called muwhahaha
         static MS5637* s_Instance;
@@ -62,7 +62,7 @@ class SimulatedAltimeter : public Altimeter
 {
     public :
         void Begin_Measuring();
-        void GetResult(AltimeterData_t *Data);
+        void GetResult(AltimeterData_t& Data);
 };
 #endif
 

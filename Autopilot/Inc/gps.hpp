@@ -55,7 +55,7 @@ class Gps
 		* or with old data (in case of old data, the dataIsNew flag of the result struct will be cleared).
 		* @param[out]		Data 		pointer to the result struct.
 		*/
-        virtual void GetResult(GpsData_t &Data) = 0;
+        virtual void GetResult(GpsData_t& Data) = 0;
 };
 
 /*
@@ -72,7 +72,7 @@ class NEOM8 : public Gps
 		 * 2. Transfers raw data from variables to struct
 		 * 3. Updates utcTime and status values in struct as well
 		 * */
-		void GetResult(GpsData_t &Data);
+		void GetResult(GpsData_t& Data);
 
 		/**
 		 * Returns the buffer used to receive GPS UART signals
@@ -138,7 +138,7 @@ class TestGps : public Gps {
         static TestGps* GetInstance();
 
         void Begin_Measuring();
-        void GetResult(GpsData_t &Data);
+        void GetResult(GpsData_t& Data);
 };
 
 #endif
@@ -149,7 +149,7 @@ class SimulatedGps : public Gps
 {
     public :
         void Begin_Measuring();
-        void GetResult(GpsData_t *Data);
+        void GetResult(GpsData_t& Data);
 };
 #endif
 

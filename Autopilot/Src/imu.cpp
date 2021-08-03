@@ -82,7 +82,7 @@ void BMX160::Begin_Measuring(void)
     Bmx160ReadReg(DATA_REG, rawImuData, 20);
 }
 
-void BMX160::GetResult(IMUData_t &Data)
+void BMX160::GetResult(IMUData_t& Data)
 {
     if (! dataIsNew)
     {

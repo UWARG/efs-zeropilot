@@ -424,7 +424,7 @@ void NEOM8::parse_gga(uint8_t* data) {
 	gpsData.altitude = (int)(tAltitude / multiplier);
 }
 
-void NEOM8::GetResult(GpsData_t &Data) {
+void NEOM8::GetResult(GpsData_t& Data) {
 
 	if (uartDataIsNew) {
 		parse_gpsData();

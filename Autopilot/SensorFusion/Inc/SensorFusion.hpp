@@ -72,7 +72,7 @@ typedef struct
 
     char sensorStatus; // 0 = no fix, 1 = gps fix, 2 = differential gps fix (DGPS) (other codes are possible)
     bool dataIsNew; // true if data has been refreshed since the previous time GetResult was called, false otherwise.
-    bool timeIsValid;
+	bool timeIsNew;
 
     //Added these so autopilot knows which data is new
     bool ggaDataIsNew; //Position, altitude, time, and number of satellites
