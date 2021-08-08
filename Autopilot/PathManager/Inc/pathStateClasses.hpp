@@ -11,6 +11,7 @@
 #include "CommsWithTelemetry.hpp"
 #include "SensorFusion.hpp"
 #include "AttitudePathInterface.hpp"
+#include "gimbal.hpp"
 
 /***********************************************************************************************************************
  * Definitions
@@ -78,20 +79,14 @@ class resetVariables : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-
     private:
         resetVariables() {}
         resetVariables(const resetVariables& other);
         resetVariables& operator =(const resetVariables& other);
-        void resetPassby(_PassbyControl* controlDetails)
-        {
-            controlDetails->rollPassby = false;
-            controlDetails->pitchPassby = false;
-            controlDetails->throttlePassby = false;
-            controlDetails->rudderPassby = false;
-        }
 
- };       
+        //resetPassby uses operator chaining, for more info, refer to the assignment operator chaining in the following link http://courses.cms.caltech.edu/cs11/material/cpp/donnie/cpp-ops.html
+        void resetPassby(_PassbyControl* controlDetails){controlDetails->rollPassby = controlDetails->pitchPassby = controlDetails->throttlePassby = controlDetails->rudderPassby = false;}
+};
 
 class takeoffRollStage : public pathManagerState
 {

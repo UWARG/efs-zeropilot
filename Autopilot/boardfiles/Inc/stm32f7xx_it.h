@@ -72,7 +72,6 @@ void DMA1_Stream2_IRQHandler(void);
 void DMA1_Stream4_IRQHandler(void);
 void TIM1_UP_TIM10_IRQHandler(void);
 void TIM4_IRQHandler(void);
-void I2C1_EV_IRQHandler(void);
 void SPI1_IRQHandler(void);
 void USART1_IRQHandler(void);
 void USART2_IRQHandler(void);
@@ -80,6 +79,7 @@ void USART3_IRQHandler(void);
 void UART4_IRQHandler(void);
 void SPI6_IRQHandler(void);
 void I2C4_EV_IRQHandler(void);
+void I2C4_ER_IRQHandler(void);
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */

@@ -1,4 +1,5 @@
 #include "attitudeStateClasses.hpp"
+
 /***********************************************************************************************************************
  * Definitions
  **********************************************************************************************************************/
@@ -15,7 +16,14 @@ PID_Output_t PIDloopMode::_PidOutput;
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {
 
-    GetFromPMToAM(&_PMInstructions);
+    //GetFromPMToAM(&_PMInstructions);
+
+    _PMInstructions.roll = 0;
+    _PMInstructions.pitch = 0;
+
+    _PMInstructions.passbyData.pitchPassby = false;
+    _PMInstructions.passbyData.rollPassby = false;
+
 
     // The support is also here for sending stuff to Path manager, but there's nothing I need to send atm.
 
@@ -101,6 +109,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
     PID_Output_t *PidOutput = PIDloopMode::GetPidOutput();
 
     OutputMixing_error_t ErrorStruct = OutputMixing_Execute(PidOutput, _channelOut);
+
     if (ErrorStruct.errorCode == 0)
     {
         attitudeMgr->setState(sendToSafetyMode::getInstance());
@@ -122,7 +131,7 @@ void sendToSafetyMode::execute(attitudeManager* attitudeMgr)
 {
     SendToSafety_error_t ErrorStruct;
     float *channelOut = OutputMixingMode::GetChannelOut();
-    for(int channel = 0; channel < 4; channel++)
+    for(int channel = 0; channel < 8; channel++) // currently using channels 0-7
     {
         ErrorStruct = SendToSafety_Execute(channel, channelOut[channel]);
         if(ErrorStruct.errorCode == 1)

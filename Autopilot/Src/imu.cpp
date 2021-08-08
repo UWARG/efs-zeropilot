@@ -67,6 +67,22 @@ static bool dataIsNew;
 static void AssertSlaveSelect(void);
 static void DeassertSlaveSelect(void);
 
+#ifdef TARGET_BUILD
+/********************TEMPORARY FOR DATA COLLECTION*****************************************/
+static int16_t accXLog[2000];
+static int16_t accYLog[2000];
+static int16_t accZLog[2000];
+
+static int16_t gyrXLog[2000];
+static int16_t gyrYLog[2000];
+static int16_t gyrZLog[2000];
+
+static uint16_t index;
+static uint8_t cnter;
+
+/********************TEMPORARY FOR DATA COLLECTION*****************************************/
+#endif
+
 /***********************************************************************************************************************
  * Public methods
  ***********************************************************************:D**********************************************/
@@ -84,11 +100,6 @@ void BMX160::Begin_Measuring(void)
 
 void BMX160::GetResult(IMUData_t &Data)
 {
-    if (! dataIsNew)
-    {
-        Data.isDataNew = false;
-        return;
-    }
 
     int16_t *intImuDataPtr = (int16_t *) &(rawImuData[1]); // first byte is garbage. It's just what was on the line when we asked the IMU for data, which it started sending as of the second byte.
 
@@ -104,13 +115,43 @@ void BMX160::GetResult(IMUData_t &Data)
 
     Data.magx = static_cast<float> (magx);
     Data.magy = static_cast<float> (magy);
-    Data.magz = static_cast<float> (magz);
-    Data.accx = static_cast<float> (accx) / ACC_RANGE_8_FACTOR;
-    Data.accy = static_cast<float> (accy) / ACC_RANGE_8_FACTOR;
-    Data.accz = static_cast<float> (accz) / ACC_RANGE_8_FACTOR;
-    Data.gyrx = static_cast<float> (gyrx) / GYRO_RANGE_1000_FACTOR;
-    Data.gyry = static_cast<float> (gyry) / GYRO_RANGE_1000_FACTOR;
-    Data.gyrz = static_cast<float> (gyrz) / GYRO_RANGE_1000_FACTOR;
+    Data.magz = static_cast<float> (magy);
+    Data.accx = (static_cast<float> (accx) / ACC_RANGE_8_FACTOR) - ImuCalibrationFinal.accx;
+    Data.accy = (static_cast<float> (accy) / ACC_RANGE_8_FACTOR) - ImuCalibrationFinal.accy;
+    Data.accz = (static_cast<float> (accz) / ACC_RANGE_8_FACTOR) - ImuCalibrationFinal.accz;
+    Data.gyrx = (static_cast<float> (gyrx) / GYRO_RANGE_1000_FACTOR) - ImuCalibrationFinal.gyrx;
+    Data.gyry = (static_cast<float> (gyry) / GYRO_RANGE_1000_FACTOR) - ImuCalibrationFinal.gyry;
+    Data.gyrz = (static_cast<float> (gyrz) / GYRO_RANGE_1000_FACTOR) - ImuCalibrationFinal.gyrz;
+
+#ifdef TARGET_BUILD
+
+/********************TEMPORARY FOR DATA COLLECTION*****************************************/
+    
+    cnter ++;
+
+    if( (cnter == 50) && (index < 2000) )
+    {
+        cnter = 0;
+
+        accXLog[index] = accx;
+        accYLog[index] = accy;
+        accZLog[index] = accz;
+
+        gyrXLog[index] = gyrx;
+        gyrYLog[index] = gyry;
+        gyrZLog[index] = gyrz;
+
+        index ++;
+    }
+
+/********************TEMPORARY FOR DATA COLLECTION*****************************************/
+#endif
+    
+    if (! dataIsNew)
+    {
+        Data.isDataNew = false;
+        return;
+    }
 
     Data.isDataNew = true;
     Data.sensorStatus = 0;
@@ -131,7 +172,63 @@ BMX160::BMX160()
     ConfigGyro();
     ConfigMag();
 
+    ImuCalibrationFinal.accx = 64.5476685f;
+    ImuCalibrationFinal.accy = 28.5623455f;
+    ImuCalibrationFinal.accz = -31.5992432f;
+    ImuCalibrationFinal.gyrx = 0.00373543333f;
+    ImuCalibrationFinal.gyry = -0.00117596972f;
+    ImuCalibrationFinal.gyrz = -0.00466663251f;
+    ImuCalibrationFinal.magx = 0.0f;
+    ImuCalibrationFinal.magy = 0.0f;
+    ImuCalibrationFinal.magz = 0.0f;
+
+    //this->Calibrate();
+
     dataIsNew = false;
+}
+
+void BMX160::Calibrate()
+{
+    const int nSamplesForReliableAverage = 100;
+    IMUData_t TempImuData;
+
+    ImuCalibration.accx = 0.0f;
+    ImuCalibration.accy = 0.0f;
+    ImuCalibration.accz = 0.0f;
+    ImuCalibration.gyrx = 0.0f;
+    ImuCalibration.gyry = 0.0f;
+    ImuCalibration.gyrz = 0.0f;
+    ImuCalibration.magx = 0.0f;
+    ImuCalibration.magy = 0.0f;
+    ImuCalibration.magz = 0.0f;
+
+    for (int i = 0; i < nSamplesForReliableAverage; i++)
+    {
+        this->Begin_Measuring();
+
+        HAL_Delay(7);
+
+        this->GetResult(TempImuData);
+
+        ImuCalibration.gyrx += TempImuData.gyrx;
+        ImuCalibration.gyry += TempImuData.gyry;
+        ImuCalibration.gyrz += TempImuData.gyrz;
+        ImuCalibration.accx += TempImuData.accx;
+        ImuCalibration.accy += TempImuData.accy;
+        ImuCalibration.accz += TempImuData.accz;
+
+    }
+
+    ImuCalibration.gyrx /= (float) nSamplesForReliableAverage;
+    ImuCalibration.gyry /= (float) nSamplesForReliableAverage;
+    ImuCalibration.gyrz /= (float) nSamplesForReliableAverage;
+    ImuCalibration.accx /= (float) nSamplesForReliableAverage;
+    ImuCalibration.accy /= (float) nSamplesForReliableAverage;
+    ImuCalibration.accz /= (float) nSamplesForReliableAverage;
+
+    ImuCalibration.accz -= 1000.0f;    // at calibration, Z needs to read 1g.
+
+    ImuCalibrationFinal = ImuCalibration;
 }
 
 void BMX160::SetAllPowerModesToNormal()
