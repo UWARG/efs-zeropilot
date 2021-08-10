@@ -75,8 +75,8 @@ void SF_Init(void)
 #elif defined(UNIT_TESTING)
     imuObj = TestIMU::GetInstance();
     gpsObj = TestGps::GetInstance();
-    //altimeterObj = TestAltimeter::GetInstance();
-    //airspeedObj = TestAirspeed::GetInstance();
+    altimeterObj = TestAltimeter::GetInstance();
+    airspeedObj = TestAirspeed::GetInstance();
 #endif
 
     //Set initial state to be unknown
@@ -447,8 +447,11 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
     double * latLongOut = cartesianToGPS(x[2], x[4]);
 
     Output->altitude = x[0];
+    Output->rateOfClimb = x[1];
     Output->latitude = latLongOut[0];
+    Output->latitudeSpeed = x[3];
     Output->longitude = latLongOut[1];
+    Output->longitudeSpeed = x[5];
 
     for (int i = 0; i < DIM*1; i++) iterdata->prevX[i] = newX[i];
     for (int i = 0; i < DIM*DIM; i++) iterdata->prevP[i] = newP[i];
@@ -467,8 +470,8 @@ SFError_t SF_GenerateNewResult()
     airspeedData_t airspeedData;
     imuObj->GetResult(imuData);
     gpsObj->GetResult(GpsData);
-    //altimeterObj->GetResult(altimeterData);
-    //airspeedObj->GetResult(airspeedData);
+    altimeterObj->GetResult(altimeterData);
+    airspeedObj->GetResult(airspeedData);
 
     //Send gps timestamp
     #ifndef UNIT_TESTING
@@ -537,7 +540,7 @@ IMU_Data_t SF_GetRawIMU()
 Airspeed_Data_t SF_GetRawAirspeed()
 {
     airspeedData_t airspeedData;
-    //airspeedData = airspeedObj->getResult();
+    airspeedObj->GetResult(airspeedData);
 
     Airspeed_Data_t airspeedOutput;
 
@@ -576,7 +579,7 @@ Gps_Data_t SF_GetRawGPS()
 Altimeter_Data_t SF_GetRawAltimeter()
 {
     AltimeterData_t altimeterData;
-    //altimeterObj->GetResult(altimeterData);
+    altimeterObj->GetResult(altimeterData);
 
     Altimeter_Data_t altimeterOutput;
 

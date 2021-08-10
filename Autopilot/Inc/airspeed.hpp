@@ -112,6 +112,14 @@ class MPXV7002DP : public airspeed {
 
 #ifdef UNIT_TESTING
 #include "airspeed_Mock.hpp"
+
+class TestAirspeed : public airspeed {
+    public:
+        static TestAirspeed* GetInstance();
+
+        void Begin_Measuring();
+        void GetResult(airspeedData_t& Data);
+};
 #endif
 
 #ifdef SIMULATION

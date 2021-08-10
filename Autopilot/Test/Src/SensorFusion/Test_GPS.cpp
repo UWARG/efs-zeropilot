@@ -12,7 +12,7 @@ void TestGps::Begin_Measuring()
 {
 }
 
-void TestGps::GetResult(GpsData_t &Data)
+void TestGps::GetResult(GpsData_t& Data)
 {
     Data.altitude = 0;
     Data.latitude = 0;
@@ -22,5 +22,8 @@ void TestGps::GetResult(GpsData_t &Data)
 
     Data.numSatellites = 3;
     Data.dataIsNew = true;
+    Data.timeIsNew = true;
+    Data.ggaDataIsNew = true;
+    Data.vtgDataIsNew = true;
     Data.sensorStatus = 0;
 }

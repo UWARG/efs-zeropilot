@@ -54,6 +54,14 @@ class MS5637 : public Altimeter {
 
 #ifdef UNIT_TESTING
 #include "airspeed_Mock.hpp"
+
+class TestAltimeter : public Altimeter {
+    public:
+        static TestAltimeter* GetInstance();
+
+        void Begin_Measuring();
+        void GetResult(AltimeterData_t& Data);
+};
 #endif
 
 #ifdef SIMULATION

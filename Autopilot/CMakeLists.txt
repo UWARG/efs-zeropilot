@@ -170,6 +170,8 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/lup.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_IMU.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_GPS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_Altimeter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_Airspeed.cpp
   )
 
   set(ATTITUDE_MANAGER_MODULES_UNIT_TEST_SOURCES
@@ -253,6 +255,8 @@ set(SENSOR_FUSION_MODULES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/lup.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_IMU.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_GPS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_Altimeter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_Airspeed.cpp
   )
 
   add_executable(sensorFusionModules ${SENSOR_FUSION_MODULES_SOURCES} ${SENSOR_FUSION_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
