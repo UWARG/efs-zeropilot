@@ -26,6 +26,7 @@
 
 TIM_HandleTypeDef htim10;
 TIM_HandleTypeDef htim11;
+TIM_HandleTypeDef htim14;
 
 /* TIM10 init function */
 void MX_TIM10_Init(void)
@@ -94,6 +95,35 @@ void MX_TIM11_Init(void)
   HAL_TIM_MspPostInit(&htim11);
 
 }
+/* TIM14 init function */
+ void MX_TIM14_Init(void)
+ {
+   TIM_OC_InitTypeDef sConfigOC = {0};
+
+   htim14.Instance = TIM14;
+   htim14.Init.Prescaler = 54000;
+   htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
+   htim14.Init.Period = 16000;
+   htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+   htim14.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+   if (HAL_TIM_Base_Init(&htim14) != HAL_OK)
+   {
+     Error_Handler();
+   }
+   if (HAL_TIM_OC_Init(&htim14) != HAL_OK)
+   {
+     Error_Handler();
+   }
+   sConfigOC.OCMode = TIM_OCMODE_TIMING;
+   sConfigOC.Pulse = 0;
+   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+   if (HAL_TIM_OC_ConfigChannel(&htim14, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+   {
+     Error_Handler();
+   }
+
+ }
 
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
 {
