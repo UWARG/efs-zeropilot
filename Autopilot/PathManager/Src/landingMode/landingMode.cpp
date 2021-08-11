@@ -17,6 +17,8 @@ void LandingMode::execute(Telemetry_PIGO_t telemetry_in, SFOutput_t sensor_fusio
     sf_data = sensor_fusion_in;
     imu_data = imu_data_in;
 
+    _mode_selector->setCurrentModeEnum(MODE_LANDING);
+
     current_stage->execute(this);
 }
 

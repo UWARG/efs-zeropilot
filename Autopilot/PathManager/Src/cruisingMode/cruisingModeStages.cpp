@@ -62,10 +62,6 @@ void CruisingFlight::execute(CruisingMode* cruise_mode) {
     cruise_mode->getModeSelector()->setHomeBaseInitialized(_return_to_ground.homeBaseInitialized);
     cruise_mode->getModeSelector()->setIsLanded(false); // Set to default
 
-    #ifdef UNIT_TESTING
-        cruise_mode->getModeSelector()->setCurrentModeEnum(MODE_CRUISING); // Used to check if method was actually called in unit tests
-    #endif
-
     // Set mode to landing if appropriate
     if (telem_data.beginLanding) {
         cruise_mode->getModeSelector()->setCurrentMode(LandingMode::getInstance());

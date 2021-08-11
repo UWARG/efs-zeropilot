@@ -33,6 +33,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
     PathManager/Inc
     PathManager/Inc/cruisingMode
     PathManager/Inc/landingMode
+    PathManager/Inc/takeoffMode
     TelemetryManager/Inc
     CControl/Inc
     SensorFusion/Inc
@@ -120,6 +121,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc/cruisingMode
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc/landingMode
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc/takeoffMode
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc
@@ -197,6 +199,8 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingModeStages.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingMode/landingMode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingMode/landingModeStages.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/takeoffMode/takeoffMode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/takeoffMode/takeoffModeStages.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Src/vectorClass.cpp
   )
 
@@ -222,12 +226,15 @@ set(PATH_MANAGER_MODES_FSM_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/cruisingMode/cruisingModeStages.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingMode/landingMode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/landingMode/landingModeStages.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/takeoffMode/takeoffMode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Src/takeoffMode/takeoffModeStages.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Src/vectorClass.cpp
 )
 
 set(PATH_MANAGER_MODES_FSM_UNIT_TEST_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_CruisingMode_Fsm.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_LandingMode_Fsm.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_TakeoffMode_Fsm.cpp
 )
 
 add_executable(pathManagerModesFsm ${PATH_MANAGER_MODES_FSM_SOURCES} ${PATH_MANAGER_MODES_FSM_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})

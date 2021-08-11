@@ -83,47 +83,6 @@ class modeExecutor : public pathManagerState {
         modeExecutor& operator =(const modeExecutor& other);
 };
 
-class takeoffRollStage : public pathManagerState
-{
-    public:
-        void enter(pathManager* pathMgr) {(void) pathMgr;}
-        void execute(pathManager* pathMgr);
-        void exit(pathManager* pathMgr) {(void) pathMgr;}
-        static pathManagerState& getInstance();
-        static WaypointManager takeoffPath;
-        static _PathData takeoffPoint;
-        static _WaypointStatus waypointStatus;
-        static _LandingTakeoffOutput* getControlOutput(){return &output;}
-
-    private:
-        static _PathData * pathArray[1];
-        static _PathData * currentLocation;
-        static _LandingTakeoffInput input;
-        static _LandingTakeoffOutput output;
-        static _WaypointManager_Data_Out waypointOutput;
-        takeoffRollStage() {}
-        takeoffRollStage(const takeoffRollStage& other);
-        takeoffRollStage& operator =(const takeoffRollStage& other);
-
-};
-
-class takeoffClimbStage : public pathManagerState
-{
-    public:
-        void enter(pathManager* pathMgr) {(void) pathMgr;}
-        void execute(pathManager* pathMgr);
-        void exit(pathManager* pathMgr) {(void) pathMgr;}
-        static pathManagerState& getInstance();
-        static _LandingTakeoffOutput* getControlOutput(){return &output;}
-    private:
-        static _LandingTakeoffInput input;
-        static _LandingTakeoffOutput output;
-        static _WaypointManager_Data_In waypointInput;
-        static _WaypointManager_Data_Out waypointOutput;
-        takeoffClimbStage() {}
-        takeoffClimbStage(const takeoffClimbStage& other);
-        takeoffClimbStage& operator =(const takeoffClimbStage& other);
-};
 
 class coordinateTurnElevation : public pathManagerState
 {

@@ -13,13 +13,13 @@ PathModeSelector* PathModeSelector::getInstance() {
 #ifdef UNIT_TESTING
 
 PathModeSelector::PathModeSelector() : current_mode_enum {MODE_TESTING_NONE} {
-    current_mode = nullptr; // Initialize to takeoff in real. Initialize to cruising for first test
+    current_mode = nullptr; 
 }
 
 #else
 
-PathModeSelector::PathModeSelector() : current_mode_enum {MODE_CRUISING} {
-    current_mode = &CruisingMode::getInstance(); // Initialize to takeoff in real. Initialize to cruising for first test
+PathModeSelector::PathModeSelector() : current_mode_enum {MODE_TAKEOFF} {
+    current_mode = &CruisingMode::getInstance(); 
 }
 
 #endif

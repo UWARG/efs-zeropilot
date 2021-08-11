@@ -17,6 +17,8 @@ void CruisingMode::execute(Telemetry_PIGO_t telemetry_in, SFOutput_t sensor_fusi
     sf_data = sensor_fusion_in;
     imu_data = imu_data_in;
 
+    _mode_selector->setCurrentModeEnum(MODE_CRUISING);
+
     current_stage->execute(this);
 }
 
