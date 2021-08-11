@@ -130,6 +130,7 @@ void modeExecutor::execute(pathManager* pathMgr)
         telem_data.modifyId = 0;
         telem_data.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
         telem_data.stoppingDirectionHeading = 10;
+        telem_data.beginLanding = false;
 
         SFOutput_t sf_data;
         sf_data.track = 100;
