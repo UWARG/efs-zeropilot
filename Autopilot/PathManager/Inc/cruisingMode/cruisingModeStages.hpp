@@ -6,7 +6,7 @@
 
 #include "waypointManager.hpp"
 #include "TelemPathInterface.hpp"
-#include "Autosteer.hpp"
+#include "AutoSteer.hpp"
 #include "cruisingFlight.hpp"
 
 class CruisingFlight : public CruisingModeStageManager {

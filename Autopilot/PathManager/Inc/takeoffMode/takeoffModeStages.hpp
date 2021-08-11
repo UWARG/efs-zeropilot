@@ -5,7 +5,7 @@
 #include "takeoffMode.hpp"
 
 #include "waypointManager.hpp"
-#include "Autosteer.hpp"
+#include "AutoSteer.hpp"
 #include "TelemPathInterface.hpp"
 #include "landingTakeoffManager.hpp"
 
