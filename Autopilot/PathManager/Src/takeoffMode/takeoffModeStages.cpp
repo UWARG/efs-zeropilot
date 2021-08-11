@@ -1,5 +1,5 @@
 #include "takeoffModeStages.hpp"
-#include "CruisingMode.hpp"
+#include "cruisingMode.hpp"
 #include "SensorFusion.hpp"
 
 /***********************************************************************************************************************
