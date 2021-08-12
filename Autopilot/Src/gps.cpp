@@ -200,9 +200,9 @@ void NEOM8::parse_gpsData() {
 			gpsData.dataIsNew = true;
 			gpsData.timeIsNew = true;
 			gpsData.ggaDataIsNew = true;
-			gpsData.sensorStatus = 0;
+			gpsData.sensorStatus = SENSOR_SUCCESS;
 		} else {
-			gpsData.sensorStatus = 1;
+			gpsData.sensorStatus = SENSOR_FAIL;
 		}
 	}
 
@@ -214,9 +214,9 @@ void NEOM8::parse_gpsData() {
 			dataAvailable = true;
 			gpsData.dataIsNew = true;
 			gpsData.vtgDataIsNew = true;
-			gpsData.sensorStatus = 0;
+			gpsData.sensorStatus = SENSOR_SUCCESS;
 		} else {
-			gpsData.sensorStatus = 1;
+			gpsData.sensorStatus = SENSOR_FAIL;
 		}
 	}
 }
