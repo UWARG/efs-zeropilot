@@ -6,15 +6,15 @@
 #include "cruisingFlight.hpp"
 
 // The following functions are used to update the ID array that is a part of the CruisingState class
-static void appendNewElement(int * idArray, int newId);             // Adds newId to the first free element in idArray
-static int indexOfDesiredId(int * idArray, int id);                 // Returns the index of id in idArray
-static void insertNewElement(int * idArray, int prevId, int newId); // Inserts newId after prevId in idArray
-static void updateElement(int * idArray, int oldId, int newId);     // Replaces oldId with newId in idArray
-static void removeElement(int * idArray, int id);                   // Removes id from idArray
-static void clearArray(int * idArray);                              // Resets all elements in idArray to 0
+static void appendNewElement(uint16_t * idArray, int newId);             // Adds newId to the first free element in idArray
+static int indexOfDesiredId(uint16_t * idArray, int id);                 // Returns the index of id in idArray
+static void insertNewElement(uint16_t * idArray, int prevId, int newId); // Inserts newId after prevId in idArray
+static void updateElement(uint16_t * idArray, int oldId, int newId);     // Replaces oldId with newId in idArray
+static void removeElement(uint16_t * idArray, int id);                   // Removes id from idArray
+static void clearArray(uint16_t * idArray);                              // Resets all elements in idArray to 0
 
 
-_ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingStateManager, int * idArray) {
+_ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingStateManager, uint16_t * idArray) {
     
     // If no commands given, just skip over this function
     if (telemetryData->waypointModifyFlightPathCommand == NO_FLIGHT_PATH_EDIT) {        
@@ -219,7 +219,7 @@ void setReturnValues(_CruisingState_Telemetry_Return * _returnToGround, Waypoint
     _returnToGround->pathFollowingErrorCode = (uint8_t) pathErrorCode;
 }
 
-void appendNewElement(int * idArray, int newId) {
+void appendNewElement(uint16_t * idArray, int newId) {
     int counter = 0;
     bool appended = false;
 
@@ -234,7 +234,7 @@ void appendNewElement(int * idArray, int newId) {
     }
 }
 
-int indexOfDesiredId(int * idArray, int id) {
+int indexOfDesiredId(uint16_t * idArray, int id) {
     int counter = 0;
 
     // Goes through array until desired index is found or we reach end of array
@@ -248,7 +248,7 @@ int indexOfDesiredId(int * idArray, int id) {
     return -1;
 }
 
-void insertNewElement(int * idArray, int prevId, int newId) {
+void insertNewElement(uint16_t * idArray, int prevId, int newId) {
     int index = indexOfDesiredId(idArray, prevId);
 
     if (index != -1) {
@@ -260,7 +260,7 @@ void insertNewElement(int * idArray, int prevId, int newId) {
     }
 }
 
-void removeElement(int * idArray, int id) {
+void removeElement(uint16_t * idArray, int id) {
     int index = indexOfDesiredId(idArray, id);
 
     if (index != -1) {
@@ -271,7 +271,7 @@ void removeElement(int * idArray, int id) {
     }
 }
 
-void updateElement(int * idArray, int oldId, int newId) {
+void updateElement(uint16_t * idArray, int oldId, int newId) {
     int counter = 0;
     bool updated = false;
 
@@ -285,7 +285,7 @@ void updateElement(int * idArray, int oldId, int newId) {
     }
 }
 
-void clearArray(int * idArray) {
+void clearArray(uint16_t * idArray) {
     for (int i = 0; i < PATH_BUFFER_SIZE; i++) {
         idArray[i] = 0;
     }
