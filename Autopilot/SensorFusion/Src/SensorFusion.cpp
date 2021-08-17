@@ -69,14 +69,14 @@ void SF_Init(void)
     imuObj = &BMX160::getInstance();
     gpsObj = NEOM8::GetInstance();
     //Waiting for definitions
-    //altimeterObj = MS5637::GetInstance();
-    //airspeedObj = dummyairspeed::GetInstance();
+    // altimeterObj = &MPL3115A2::getInstance();
+    // airspeedObj = MPXV7002DP::GetInstance();
 
 #elif defined(UNIT_TESTING)
     imuObj = TestIMU::GetInstance();
     gpsObj = TestGps::GetInstance();
-    //altimeterObj = TestAltimeter::GetInstance();
-    //airspeedObj = TestAirspeed::GetInstance();
+    // altimeterObj = TestAltimeter::GetInstance();
+    // airspeedObj = TestAirspeed::GetInstance();
 #endif
 
     //Set initial state to be unknown
@@ -479,8 +479,8 @@ SFError_t SF_GenerateNewResult()
     airspeedData_t airspeedData;
     imuObj->GetResult(imuData);
     gpsObj->GetResult(&GpsData);
-    //altimeterObj->GetResult(altimeterData);
-    //airspeedObj->GetResult(airspeedData);
+    altimeterObj->GetResult(altimeterData);
+    airspeedObj->GetResult(airspeedData);
 
     //Send gps timestamp
     #ifndef UNIT_TESTING
@@ -527,7 +527,7 @@ SFError_t SF_GetResult(SFOutput_t *output)
 IMU_Data_t SF_GetRawIMU()
 {
     IMUData_t imuData;
-    //imuData = imuObj->getResult();
+    imuObj->GetResult(imuData);
 
     IMU_Data_t imuOutput;
 
@@ -549,7 +549,7 @@ IMU_Data_t SF_GetRawIMU()
 Airspeed_Data_t SF_GetRawAirspeed()
 {
     airspeedData_t airspeedData;
-    //airspeedData = airspeedObj->getResult();
+    airspeedObj->GetResult(airspeedData);
 
     Airspeed_Data_t airspeedOutput;
 

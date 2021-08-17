@@ -1,3 +1,9 @@
+/**
+ * Interface header from imu driver (written in C++) to freertos (C).
+ * Author(s): Dhruv Upadhyay
+ */
+
+
 #ifndef IMU_THREAD_INTERFACE_H
 #define IMU_THREAD_INTERFACE_H
 

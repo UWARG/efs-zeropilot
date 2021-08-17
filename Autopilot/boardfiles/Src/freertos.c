@@ -52,7 +52,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "FreeRTOS.h"
 #include "Interchip_A.h"
+#include "airspeedThreadInterface.h"
+#include "altimeterThreadInterface.h"
 #include "portmacro.h"
+#include "stm32f7xx_hal_gpio.h"
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
@@ -90,8 +93,8 @@
 // TODO: Confirm the period at which each of the threads are to be run and update them
 static const int PERIOD_ATTITUDEMANAGER_MS = 5;
 static const int PERIOD_SENSORDATA_MS = 5;
-static const int PERIOD_PATHMANAGER_MS = 20; 
-static const int PERIOD_TELEMETRY_MS = 20; 
+static const int PERIOD_PATHMANAGER_MS = 200; 
+static const int PERIOD_TELEMETRY_MS = 200; 
 static const int PERIOD_INTERCHIP_MS = 20;
 
 static volatile bool catastrophicFailure = false;
@@ -103,8 +106,6 @@ osThreadId attitudeManagerHandle;
 osThreadId InterchipHandle;
 osThreadId pathManagerHandle;
 osThreadId telemetryRunHandle;
-// osThreadId sensorFusionHandle;
-// osThreadId IMUHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -149,6 +150,8 @@ void MX_FREERTOS_Init(void) {
     SensorFusionInterfaceInit();
     Interchip_Init();
     IMUThreadInterfaceInit();
+    AltimeterThreadInterfaceInit();
+    airspeedThreadInterfaceInit();
 
   /* USER CODE END Init */
 
@@ -171,7 +174,7 @@ void MX_FREERTOS_Init(void) {
   // /* Create the thread(s) */
 
   /* definition and creation of sensorDataRun (thread for IMU, sensor fusion, and altimeter) */
-  osThreadDef(sensorDataRun, sensorDataExecute, osPriorityNormal, 0, 1000);
+  osThreadDef(sensorDataRun, sensorDataExecute, osPriorityNormal, 0, 1800);
   sensorDataHandle = osThreadCreate(osThread(sensorDataRun), NULL);
 
   /* definition and creation of attitudeManager */
@@ -182,11 +185,11 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(pathManager, pathManagerExecute, osPriorityNormal, 0, 250);
   pathManagerHandle = osThreadCreate(osThread(pathManager), NULL);
 
-  // /* definition and creation of telemetryRun */
+  // // /* definition and creation of telemetryRun */
   osThreadDef(telemetryRun, telemetryRunExecute, osPriorityNormal, 0, 250);
   telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
 
-  /* definition and creation of Interchip */
+  // /* definition and creation of Interchip */
   osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 0, 250);
   InterchipHandle = osThreadCreate(osThread(interchip), NULL);
 
@@ -217,6 +220,7 @@ void attitudeManagerExecute(void const * argument)
       catastrophicFailure = true;
     }    
   }
+  
   /* USER CODE END attitudeManagerExecute */
 }
 
@@ -236,9 +240,11 @@ void pathManagerExecute(void const * argument)
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_PATHMANAGER_MS);
     bool status = PathManagerInterfaceExecute();
+    Interchip_Run();
     if (!status) {
       catastrophicFailure = true;
     }
+    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
   }
   
   /* USER CODE END pathManagerExecute */
@@ -286,7 +292,6 @@ void interchipRunExecute(void const * argument) {
     if (!catastrophicFailure) {
       Interchip_Run();
     }
-    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
     /* USER CODE END interchipRunExecute */ 
   }  
 }
@@ -306,6 +311,8 @@ void sensorDataExecute(void const * argument) {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_SENSORDATA_MS);
     IMUThreadInterfaceExecute();
+    AltimeterThreadInterfaceExecute();
+    airspeedThreadInterfaceExecute();
     SFError_t err = SensorFusionInterfaceExecute();
     if (err.errorCode == -1) {
       catastrophicFailure = true;

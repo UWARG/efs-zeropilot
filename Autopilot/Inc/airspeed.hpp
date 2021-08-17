@@ -25,14 +25,14 @@
     option should be added
 */
 
-struct airspeedData_t 
+typedef struct 
 {
     double airspeed;        // in m/s
 
     int sensorStatus;       // report any errors, possible malfunctions 
     bool isDataNew;         // is the data fresh?
     float utcTime;          // 4 Bytes. Time in seconds since 00:00 
-};
+} airspeedData_t;
 
 class airspeed {
     public:
