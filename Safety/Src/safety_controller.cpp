@@ -3,35 +3,31 @@
 #include "stdlib.h"
 #include "interchip_S.hpp"
 #include "RSSI.hpp"
+#include "safetyConfig.hpp"
 
 #include "gpio.h"
+
+#include <cstdint>
 
 /***********************************************************************************************************************
  * Definitions
  **********************************************************************************************************************/
 
-constexpr int MANUAL_OVERRIDE_CHANNEL = 4;
+constexpr uint8_t MANUAL_OVERRIDE_CHANNEL {4};
 // temporary grabber_rx and grabber_pwm channels. To be changed later.
-constexpr int grabber_rx_channel = 0;
-constexpr int grabber_pwm_channel = 9;
+constexpr uint8_t GRABBER_RX_CHANNEL {0};
+constexpr uint8_t GRABBER_PWM_CHANNEL {9};
 
+constexpr uint8_t MIN_REVERSE_THRUST_PPM_TO_ACTIVATE {50};
 
-        // pwm order: left tail, right tail, aileron, nose wheel, throttle, gimbal x, gimbal y, reverse thrust.
-#define PWM_CHANNEL_LEFT_TAIL 0
-#define PWM_CHANNEL_RIGHT_TAIL 1
-#define PWM_CHANNEL_AILERON 2
-#define PWM_CHANNEL_NOSE_WHEEL 3
-#define PWM_CHANNEL_THROTTLE 4
-#define PWM_CHANNEL_GIMBAL_YAW 5
-#define PWM_CHANNEL_GRABBER 6
+constexpr uint8_t MIN_OVERRIDE_CHANNEL_VALUE_TO_ACTIVATE {50};
 
 /***********************************************************************************************************************
  * Prototypes
  **********************************************************************************************************************/
 
 static void setPWMChannel(PWMChannel &pwm, int channel, int percentage);
-static int getPPM(PPMChannel &ppm, int channel);
-
+static uint8_t getPPM(PPMChannel &ppm, int channel);
 static bool AutoPilotEngaged(PPMChannel &ppm);
 
 /***********************************************************************************************************************
@@ -58,22 +54,22 @@ void safety_run(PWMChannel &pwm, PPMChannel &ppm)
 
     volatile int16_t *AutoPilotPwmChannel = getPWM();
 
-    int elevatorAutoPilot = AutoPilotPwmChannel[0];
-    int aileronAutoPilot = AutoPilotPwmChannel[1];
-    int throttleAutoPilot =  AutoPilotPwmChannel[2];
-    int rudderAutoPilot= AutoPilotPwmChannel[3];
+    uint8_t elevatorAutoPilot = AutoPilotPwmChannel[0];
+    uint8_t aileronAutoPilot = AutoPilotPwmChannel[1];
+    uint8_t throttleAutoPilot =  AutoPilotPwmChannel[2];
+    uint8_t rudderAutoPilot= AutoPilotPwmChannel[3];
 
-    int elevatorPPM = getPPM(ppm, 0);
-    int aileronPPM = getPPM(ppm, 1);
-    int throttlePPM =  getPPM(ppm, 2);
-    int rudderPPM = getPPM(ppm, 3);
-    int gimbalYawPPM = getPPM(ppm, 5);
-    int reverseThrustPPM = getPPM(ppm, 6);
+    uint8_t elevatorPPM = getPPM(ppm, 0);
+    uint8_t aileronPPM = getPPM(ppm, 1);
+    uint8_t throttlePPM =  getPPM(ppm, 2);
+    uint8_t rudderPPM = getPPM(ppm, 3);
+    uint8_t gimbalYawPPM = getPPM(ppm, 5);
+    uint8_t reverseThrustPPM = getPPM(ppm, 6);
 
-    int leftTailMix = 0;
-    int rightTailMix = 0;
-    int aileronMix = 0;
-    int noseWheelMix = 0;
+    uint16_t leftTailMix = 0;
+    uint16_t rightTailMix = 0;
+    uint16_t aileronMix = 0;
+    uint16_t noseWheelMix = 0;
 
     noseWheelMix = 100 - rudderPPM;
 
@@ -93,7 +89,6 @@ void safety_run(PWMChannel &pwm, PPMChannel &ppm)
 
     /************Reverse thrust**************/
 
-
     setPWMChannel(pwm, PWM_CHANNEL_LEFT_TAIL, leftTailMix);
     setPWMChannel(pwm, PWM_CHANNEL_RIGHT_TAIL, rightTailMix);
     setPWMChannel(pwm, PWM_CHANNEL_AILERON, aileronMix);
@@ -101,7 +96,7 @@ void safety_run(PWMChannel &pwm, PPMChannel &ppm)
     setPWMChannel(pwm, PWM_CHANNEL_THROTTLE, throttlePPM);
     setPWMChannel(pwm, PWM_CHANNEL_GIMBAL_YAW, gimbalYawPPM);
 
-    if (reverseThrustPPM > 50)
+    if (reverseThrustPPM > MIN_REVERSE_THRUST_PPM_TO_ACTIVATE)
     {
         HAL_GPIO_WritePin(LED3_GPIO_Port,LED3_Pin, GPIO_PIN_SET);
     }
@@ -128,7 +123,7 @@ static bool AutoPilotEngaged(PPMChannel &ppm)
 
     uint8_t overrideChannelValue = getPPM(ppm, MANUAL_OVERRIDE_CHANNEL);
 
-    if(overrideChannelValue > 50)
+    if(overrideChannelValue > MIN_OVERRIDE_CHANNEL_VALUE_TO_ACTIVATE)
     {
         return true;
     }
@@ -147,7 +142,7 @@ static void setPWMChannel(PWMChannel &pwm, int channel, int percentage)
     pwm.set(channel, percentage);
 }
 
-static int getPPM(PPMChannel &ppm, int channel)
+static uint8_t getPPM(PPMChannel &ppm, int channel)
 {
     return ppm.get(channel);
 }
