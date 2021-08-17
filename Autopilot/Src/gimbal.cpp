@@ -28,3 +28,4 @@ void setYawPercent(float yawTarget){
     }
     Interchip_SetPWM(7, gimbalPercentYaw);
 }
+

@@ -20,7 +20,7 @@
  * Prototypes
  **********************************************************************************************************************/
 
-static int checkInputValidity(PID_Output_t *PidOutput);
+static OutputMixingErrorCodes checkInputValidity(PID_Output_t *PidOutput);
 static void constrainOutput(float *channelOut);
 
 static float map(float num, float minInput, float maxInput, float minOutput, float maxOutput);
@@ -66,21 +66,21 @@ OutputMixing_error_t OutputMixing_Execute(PID_Output_t *PidOutput, float *channe
 	return error;
 }
 
-static int checkInputValidity(PID_Output_t *PidOutput)
+static OutputMixingErrorCodes checkInputValidity(PID_Output_t *PidOutput)
 {
-	int errorCode;
+	OutputMixingErrorCodes errorCode;
 
 	if ( (PidOutput->rollPercent < -100.0f) || (PidOutput->pitchPercent < -100.0f) || (PidOutput->rudderPercent < -100.0f) || (PidOutput->throttlePercent < 0.0f) )
 	{
-		errorCode = 1;
+		errorCode = OUTPUT_MIXING_VALUE_TOO_LOW;
 	}
 	else if ( (PidOutput->rollPercent > 100.0f) || (PidOutput->pitchPercent > 100.0f) || (PidOutput->rudderPercent > 100.0f) || (PidOutput->throttlePercent > 100.0f) )
 	{
-		errorCode = 2;
+		errorCode = OUTPUT_MIXING_VALUE_TOO_HIGH;
 	}
 	else
 	{
-		errorCode = 0;
+		errorCode = OUTPUT_MIXING_SUCCESS;
 	}
 
 	return errorCode;
