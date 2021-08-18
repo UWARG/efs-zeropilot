@@ -20,7 +20,6 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O3")
 
-
   get_filename_component(PARENT_DIR ../ ABSOLUTE)
 
   include_directories(
@@ -119,7 +118,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc/
+    ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Inc
   )
 
@@ -312,6 +311,8 @@ endif()
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc
 
     ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw
     ${SIM_ROOT_DIR}/GeneratedCCode/Headers/extern/include
@@ -371,7 +372,6 @@ endif()
 
   # Libraries
   add_subdirectory(DataStructures)
-
 
   add_executable(sim ${SIM_MAIN} ${PATH_MANAGER_SOURCES} ${ATTITUDE_MANAGER_SOURCES} ${AUTOPILOT_INTERCEPT_SOURCES} ${ZERO_PILOT_HOOK_SOURCES} ${OTHER_SOURCES} ${SIMULINK_GENERATED_SOURCES})
 

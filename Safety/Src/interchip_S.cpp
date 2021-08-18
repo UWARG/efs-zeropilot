@@ -1,14 +1,20 @@
 #include "spi.h"
 #include "interchip_S.hpp"
 
-static  Interchip_Packet rxData;
-static  Interchip_Packet txData;
-static  bool dataNew;
+static volatile Interchip_Packet rxData;
+static volatile Interchip_Packet txData;
+static volatile bool dataNew;
 
 // Get the pwm signal that has been recieved.
 volatile int16_t* getPWM() {
     dataNew = false;
-    txData = rxData;
+
+    // Cause the structs are volatile, I've gotta use this to set them equal.
+    txData.safetyLevel = rxData.safetyLevel;
+    for (int i = 0; i < 12; i++) {
+        txData.PWM[i] = rxData.PWM[i];
+    }
+
     return rxData.PWM;
 }
 
