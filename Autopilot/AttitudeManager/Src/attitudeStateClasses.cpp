@@ -1,4 +1,5 @@
 #include "attitudeStateClasses.hpp"
+
 /***********************************************************************************************************************
  * Definitions
  **********************************************************************************************************************/
@@ -14,13 +15,10 @@ PID_Output_t PIDloopMode::_PidOutput;
 
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {
-
     GetFromPMToAM(&_PMInstructions);
 
     // The support is also here for sending stuff to Path manager, but there's nothing I need to send atm.
-
     attitudeMgr->setState(sensorFusionMode::getInstance());
-
 }
 
 attitudeState& fetchInstructionsMode::getInstance()
@@ -101,6 +99,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
     PID_Output_t *PidOutput = PIDloopMode::GetPidOutput();
 
     OutputMixing_error_t ErrorStruct = OutputMixing_Execute(PidOutput, _channelOut);
+
     if (ErrorStruct.errorCode == 0)
     {
         attitudeMgr->setState(sendToSafetyMode::getInstance());
@@ -122,17 +121,17 @@ void sendToSafetyMode::execute(attitudeManager* attitudeMgr)
 {
     SendToSafety_error_t ErrorStruct;
     float *channelOut = OutputMixingMode::GetChannelOut();
-    for(int channel = 0; channel < 4; channel++)
+    for(int channel = 0; channel < NUM_PWM_CHANNELS; channel++) // currently using channels 0-7
     {
         ErrorStruct = SendToSafety_Execute(channel, channelOut[channel]);
-        if(ErrorStruct.errorCode == 1)
+        if(ErrorStruct.errorCode == OUTPUT_MIXING_VALUE_TOO_LOW)
         {
             attitudeMgr->setState(FatalFailureMode::getInstance());
             break;
         }
     }
 
-    if (ErrorStruct.errorCode == 0)
+    if (ErrorStruct.errorCode == OUTPUT_MIXING_SUCCESS)
     {
         attitudeMgr->setState(fetchInstructionsMode::getInstance());
     }

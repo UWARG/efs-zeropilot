@@ -6,6 +6,8 @@
 extern "C" {
 #endif
 
+void PathManagerInterfaceInit(void);
+
 bool PathManagerInterfaceExecute(void);
 
 

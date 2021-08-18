@@ -1,6 +1,8 @@
 #ifndef ATTITUDE_DATATYPES_HPP
 #define ATTITUDE_DATATYPES_HPP
 
+#include <cstdint>
+
 // Output of the PID module and input to the OutputMixing module
 typedef struct
 {
@@ -12,15 +14,17 @@ typedef struct
 } PID_Output_t;
 
 #ifdef SPIKE
-    #define L_TAIL_OUT_CHANNEL 0 // Spike has ruddervators
-    #define R_TAIL_OUT_CHANNEL 1
+    constexpr static uint8_t L_TAIL_OUT_CHANNEL {0}; // Spike has ruddervators
+    constexpr static uint8_t R_TAIL_OUT_CHANNEL {1};
 #else
-    #define ELEVATOR_OUT_CHANNEL 0
-    #define RUDDER_OUT_CHANNEL 1
+    constexpr static uint8_t ELEVATOR_OUT_CHANNEL {0};
+    constexpr static uint8_t RUDDER_OUT_CHANNEL {1};
 #endif
 
-#define AILERON_OUT_CHANNEL 2
-#define THROTTLE_OUT_CHANNEL 3
+constexpr static uint8_t AILERON_OUT_CHANNEL {2};
+constexpr static uint8_t THROTTLE_OUT_CHANNEL {3};
+
+constexpr static uint8_t NUM_PWM_CHANNELS {8};
 
 #endif
 

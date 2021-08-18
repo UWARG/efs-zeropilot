@@ -11,7 +11,7 @@
 #ifdef SPIKE
 	#define TAIL_TYPE INV_V_TAIL
 	static const float RUDDER_PROPORTION = 0.75f; // has to do with the angle of the inverse V tail, 0.75 means spike's tail is at 45 degrees.
-	static const float ELEVATOR_PROPORTION 0.75f;
+	static const float ELEVATOR_PROPORTION = 0.75f;
 #else
 	#define TAIL_TYPE CONVENTIONAL_TAIL
 #endif
@@ -20,8 +20,10 @@
  * Prototypes
  **********************************************************************************************************************/
 
-static int checkInputValidity(PID_Output_t *PidOutput);
+static OutputMixingErrorCodes checkInputValidity(PID_Output_t *PidOutput);
 static void constrainOutput(float *channelOut);
+
+static float map(float num, float minInput, float maxInput, float minOutput, float maxOutput);
 
 /***********************************************************************************************************************
  * Code
@@ -48,24 +50,37 @@ OutputMixing_error_t OutputMixing_Execute(PID_Output_t *PidOutput, float *channe
 
     constrainOutput(channelOut);
 
+#ifdef TARGET_BUILD
+
+    float adjustedAileron = map(channelOut[AILERON_OUT_CHANNEL], -100, 100, 0, 100);
+    float adjustedElevator = map(channelOut[ELEVATOR_OUT_CHANNEL], -100, 100, 0, 100);
+
+    channelOut[ELEVATOR_OUT_CHANNEL] = adjustedElevator;
+    channelOut[AILERON_OUT_CHANNEL] = adjustedAileron;
+
+#endif
+
+
+
+
 	return error;
 }
 
-static int checkInputValidity(PID_Output_t *PidOutput)
+static OutputMixingErrorCodes checkInputValidity(PID_Output_t *PidOutput)
 {
-	int errorCode;
+	OutputMixingErrorCodes errorCode;
 
 	if ( (PidOutput->rollPercent < -100.0f) || (PidOutput->pitchPercent < -100.0f) || (PidOutput->rudderPercent < -100.0f) || (PidOutput->throttlePercent < 0.0f) )
 	{
-		errorCode = 1;
+		errorCode = OUTPUT_MIXING_VALUE_TOO_LOW;
 	}
 	else if ( (PidOutput->rollPercent > 100.0f) || (PidOutput->pitchPercent > 100.0f) || (PidOutput->rudderPercent > 100.0f) || (PidOutput->throttlePercent > 100.0f) )
 	{
-		errorCode = 2;
+		errorCode = OUTPUT_MIXING_VALUE_TOO_HIGH;
 	}
 	else
 	{
-		errorCode = 0;
+		errorCode = OUTPUT_MIXING_SUCCESS;
 	}
 
 	return errorCode;
@@ -85,3 +100,9 @@ static void constrainOutput(float *channelOut)
 		}
 	}
 }
+
+static float map(float num, float minInput, float maxInput, float minOutput, float maxOutput)
+{
+    return minOutput + ((num - minInput) * ((maxOutput - minOutput) / (maxInput - minInput)));
+}
+

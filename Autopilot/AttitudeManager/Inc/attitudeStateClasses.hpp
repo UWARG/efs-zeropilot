@@ -3,6 +3,7 @@
 #include "attitudeStateManager.hpp"
 #include "attitudeManager.hpp"
 #include "AttitudeDatatypes.hpp"
+#include "attitudeConfig.hpp"
 
 #include "CommWithPathManager.hpp"
 #include "SensorFusion.hpp"
@@ -56,8 +57,10 @@ class PIDloopMode : public attitudeState
         PIDloopMode() {}
         PIDloopMode(const PIDloopMode& other);
         PIDloopMode& operator =(const PIDloopMode& other);
-        PIDController _rollPid{400, 0, 40, 0,-100, 100}; //60, -50, 0.3, 0.1,-100, 100
-        PIDController _pitchPid{400, 0, 40, 0, -100, 100}; //-100, 90, -0.09, 0.1, -100, 100
+        PIDController _rollPid{ROLL_PID_KP, ROLL_PID_KI, ROLL_PID_KD, ROLL_PID_INTEGRAL_MAX, ROLL_PID_MIN, ROLL_PID_MAX}; // Proportional, integral, derivative, min, max
+        PIDController _pitchPid{PITCH_PID_KP, PITCH_PID_KI, PITCH_PID_KD, PITCH_PID_INTEGRAL_MAX, PITCH_PID_MIN, PITCH_PID_MAX};
+        PIDController _yawPid{YAW_PID_KP, YAW_PID_KI, YAW_PID_KD, YAW_PID_INTEGRAL_MAX, YAW_PID_MIN, YAW_PID_MAX};
+        PIDController _airspeedPid{AIRSPEED_PID_KP, AIRSPEED_PID_KI, AIRSPEED_PID_KD, AIRSPEED_PID_INTEGRAL_MAX, AIRSPEED_PID_MIN, AIRSPEED_PID_MAX};
         static PID_Output_t _PidOutput;
 };
 

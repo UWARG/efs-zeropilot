@@ -91,7 +91,7 @@ class AttitudeManagerDataHandoff : public ::testing::Test
 static float channelOut_custom[4];
 static OutputMixing_error_t OutputMixing_Execute_GivesChannelOutCustom(PID_Output_t *PidOutput, float *channelOut)
 {
-	OutputMixing_error_t dummyError = {0};
+	OutputMixing_error_t dummyError = {OUTPUT_MIXING_SUCCESS};
 
 	(void) PidOutput;
 
@@ -224,7 +224,7 @@ TEST(AttitudeManagerFSM, IfOutputMixingSucceedsTransitionToSendToSafety) {
 
 	attitudeManager attMng;
 	OutputMixing_error_t OutputMixingNoError;
-	OutputMixingNoError.errorCode = 0;
+	OutputMixingNoError.errorCode = OUTPUT_MIXING_SUCCESS;
 
 	/********************DEPENDENCIES*******************/
 
@@ -248,7 +248,7 @@ TEST(AttitudeManagerFSM, IfOutputMixingFailsTransitionToFailed) {
 
 	attitudeManager attMng;
 	OutputMixing_error_t OutputMixingError;
-	OutputMixingError.errorCode = 1;
+	OutputMixingError.errorCode = OUTPUT_MIXING_VALUE_TOO_LOW;
 
 	/********************DEPENDENCIES*******************/
 
