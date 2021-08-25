@@ -522,17 +522,7 @@ IMU_Data_t SF_GetRawIMU()
     
     IMU_Data_t imuOutput;
 
-    imuOutput.accx = imuData.accx;
-    imuOutput.accy = imuData.accy;
-    imuOutput.accz = imuData.accz;
-    imuOutput.gyrx = imuData.gyrx;
-    imuOutput.gyry = imuData.gyry;
-    imuOutput.gyrz = imuData.gyrz;
-    imuOutput.magx = imuData.magx;
-    imuOutput.magy = imuData.magy;
-    imuOutput.magz = imuData.magz;
-    imuOutput.isDataNew = imuData.isDataNew;
-    imuOutput.sensorStatus = imuData.sensorStatus;
+    std:memcpy(&imuOutput, &imuData, sizeof(imuOutput));
 
     return imuOutput;
 }
@@ -544,10 +534,7 @@ Airspeed_Data_t SF_GetRawAirspeed()
 
     Airspeed_Data_t airspeedOutput;
 
-    airspeedOutput.airspeed = airspeedData.airspeed;
-    airspeedOutput.utcTime = airspeedData.utcTime;
-    airspeedOutput.isDataNew = airspeedData.isDataNew;
-    airspeedOutput.sensorStatus = airspeedData.sensorStatus;
+    std:memcpy(&airspeedOutput, &airspeedData, sizeof(airspeedOutput));
 
     return airspeedOutput;
 }
@@ -559,19 +546,7 @@ Gps_Data_t SF_GetRawGPS()
 
     Gps_Data_t gpsOutput;
 
-    gpsOutput.dataIsNew = gpsData.dataIsNew;
-    gpsOutput.ggaDataIsNew = gpsData.ggaDataIsNew;
-    gpsOutput.vtgDataIsNew = gpsData.vtgDataIsNew;
-    gpsOutput.latitude = gpsData.latitude;
-    gpsOutput.longitude = gpsData.longitude;
-    gpsOutput.utcTime = gpsData.utcTime;
-    gpsOutput.groundSpeed = gpsData.groundSpeed;
-    gpsOutput.altitude = gpsData.altitude;
-    gpsOutput.heading = gpsData.heading;
-    gpsOutput.numSatellites = gpsData.numSatellites;
-    gpsOutput.fixStatus = gpsData.fixStatus;
-    gpsOutput.sensorStatus = gpsData.sensorStatus;
-    gpsOutput.timeIsNew = gpsData.timeIsNew;
+    std:memcpy(&gpsOutput, &gpsData, sizeof(gpsOutput));
 
     return gpsOutput;
 }
@@ -583,12 +558,7 @@ Altimeter_Data_t SF_GetRawAltimeter()
 
     Altimeter_Data_t altimeterOutput;
 
-    altimeterOutput.pressure = altimeterData.pressure;
-    altimeterOutput.altitude = altimeterData.altitude;
-    altimeterOutput.temp = altimeterData.temp;
-    altimeterOutput.utcTime = altimeterData.utcTime;
-    altimeterOutput.isDataNew = altimeterData.isDataNew;
-    altimeterOutput.status = altimeterData.status;
+    std:memcpy(&altimeterOutput, &altimeterData, sizeof(altimeterOutput));
 
     return altimeterOutput;
 }

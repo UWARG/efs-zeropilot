@@ -47,7 +47,6 @@ typedef struct
 
     bool isDataNew; 
     int sensorStatus; 
-    float utcTime; 
 } IMU_Data_t;
 
 typedef struct 
@@ -65,8 +64,8 @@ typedef struct
     long double longitude; // 8 Bytes
     float utcTime;     // 4 Bytes. Time in seconds since 00:00 (midnight)
     float groundSpeed; // in m/s
-    short heading; // in degrees. Should be between 0-360 at all times, but using integer just in case
     int altitude; // in m
+    short heading; // in degrees. Should be between 0-360 at all times, but using integer just in case
     char numSatellites;    // 1 Byte
     char fixStatus; //0 = No GPS, 1 = GPS fix, 2 = DGSP Fix, 3 = Estimated/Dead Recoking Fix
 
