@@ -45,6 +45,7 @@
 #include "usart.h"
 #include "gpio.h"
 #include "interchip_S.hpp"
+#include "RSSI.hpp"
 
 /* USER CODE BEGIN Includes */
 
@@ -135,7 +136,7 @@ int main(void)
   /* MCU Configuration----------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+       HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -168,6 +169,7 @@ int main(void)
 
   // start the IC in interrupt mode
 
+
   PPMChannel ppm;
   ppm.setNumChannels(8);
 
@@ -175,8 +177,12 @@ int main(void)
   pwm.setup();
   safety_controller_init();
 
-  testSetup();
   interchipInit();
+
+
+  HAL_NVIC_SetPriority(TIM15_IRQn, 1, 0);
+  HAL_NVIC_SetPriority(SPI1_IRQn, 0, 0);
+
 
 
   /* USER CODE END 2 */
@@ -188,8 +194,9 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-
+    RSSI_Check();
     safety_run(pwm, ppm);
+    HAL_Delay(1);
 
   }
   /* USER CODE END 3 */

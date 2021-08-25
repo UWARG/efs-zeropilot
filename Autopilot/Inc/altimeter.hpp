@@ -1,55 +1,86 @@
 /**
- * Altimeter Sensor Functions
- * Author: Lucy Gong
+ * Altimeter Sensor Functions and Part Number Selection.
+ * Available Altimeter driver(s): MPL3115A2
+ * Authors: Lucy Gong, Anthony Berbari
  */
 
 #ifndef ALTIMETER_HPP
 #define ALTIMETER_HPP
 
-#include <ctime>
 #include <cstdint>
 
-struct AltimeterData_t {
+/***********************************************************************************************************************
+ * Definitions
+ **********************************************************************************************************************/
 
+struct AltimeterData_t 
+{
     float pressure, altitude, temp;
-
+    
     bool isDataNew; 
     int status; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
     uint32_t utcTime; //Last time GetResult was called
 };
 
-class Altimeter{
+/**
+ * This union is of no use to the user.
+ * It is for internal use by the module only.
+ * */
+union AltimeterAltitudeRepresentation
+{
+    uint8_t byte[3];
+    int32_t Q16point4;
+};
+
+/***********************************************************************************************************************
+ * Prototypes
+ *********************************************************************************************************************/
+
+class Altimeter {
     public:
         /**
-         * Triggers interrupt for new altimeter measurement - stores raw data in variables and returns right away
+         * Begins a transaction with the Altimeter.
+         * This function is non blocking and returns right away, data will be stored inside the module as it arrives.
+         * To achieve synchronous data, this function must be called synchronously.
          * */
         virtual void Begin_Measuring() = 0; 
 
-        /**GetResult should:
-         * 1. Reset dataIsNew flag
-         * 2. Transfers raw data from variables to struct
-         * 3. Updates utcTime and status values in struct as well
+        /**
+         * Retrieves any data already sent by the altimeter.
+         * If no new data is available, the appropriate flag will be set in the return struct.
+         * All contents of the return struct, apart from the isDataNew flag, are undefined unless isDataNew is set to 1.
+         * This function is non blocking and returns right away.
+         * @param[in]       Data        reference to the results struct.
          * */
         virtual void GetResult(AltimeterData_t& Data) = 0; //
 };
 
-class MS5637 : public Altimeter {
+class MPL3115A2 : public Altimeter {
     public:
-        MS5637(const MS5637*) = delete; //Apparently if you try to copy a singleton this will give you errors?
-        static MS5637* GetInstance();
+        /**
+         * This module is built as a singleton. Thus to access an MPL3115A2 object, this function must be called.
+         * Only a single MPL3115A2 object will ever be created and will be shared by all callers of this function.
+         * @return      Altimeter        reference to the singleton object.
+         * */
+        static Altimeter& getInstance();
+
+        /**
+         * Deletes the constructor to disallow users to instantiate objects.
+         * */
+        MPL3115A2(const MPL3115A2*) = delete;
+
         void Begin_Measuring();
         void GetResult(AltimeterData_t& Data);
     private:
-        MS5637(); //Constructor can never be called muwhahaha
-        static MS5637* s_Instance;
-        uint32_t readFromMS5637(uint32_t commandToWrite);
-        void getRawPressureAndTemperature(float *displayPressure, float *displayTemperature, float *displayAltitude);
-        uint32_t getCurrentTime();
-        uint32_t timeOfResult;
-        bool dataIsNew = false;
-        float altitudeMeasured = 0, pressureMeasured = 0, temperatureMeasured = 0;
+        
+        MPL3115A2();
 
+        void ConfigAltimeter(void);
 
+        void Calibrate(void);
+
+        union AltimeterAltitudeRepresentation rawAltimeter;
+        float altimeterCalibrationFinal;
 };
 
 #ifdef UNIT_TESTING
@@ -59,16 +90,6 @@ class TestAltimeter : public Altimeter {
     public:
         static TestAltimeter* GetInstance();
 
-        void Begin_Measuring();
-        void GetResult(AltimeterData_t& Data);
-};
-#endif
-
-#ifdef SIMULATION
-// This derived class hooks into the Simulink simulation rather than hardware
-class SimulatedAltimeter : public Altimeter
-{
-    public :
         void Begin_Measuring();
         void GetResult(AltimeterData_t& Data);
 };

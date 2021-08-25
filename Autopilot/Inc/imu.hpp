@@ -79,8 +79,12 @@ class BMX160: public IMU{
         void Bmx160WriteReg(uint8_t reg, uint8_t val);
         void Bmx160ReadReg(uint8_t const regAddr, uint8_t *pData, uint8_t len);
 
+        void Calibrate(void);
+
         //Variables
         uint8_t rawImuData[21];
+        IMUData_t ImuCalibration;
+        IMUData_t ImuCalibrationFinal;
 
 };
 

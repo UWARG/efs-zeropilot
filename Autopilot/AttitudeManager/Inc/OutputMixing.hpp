@@ -8,14 +8,21 @@
 #define	OUTPUT_MIXING_HPP
 
 #include "AttitudeDatatypes.hpp"
+#include "attitudeConfig.hpp"
 
 /***********************************************************************************************************************
  * Definitions
  **********************************************************************************************************************/
 
+enum OutputMixingErrorCodes { 
+	OUTPUT_MIXING_SUCCESS = 0,
+	OUTPUT_MIXING_VALUE_TOO_LOW,
+	OUTPUT_MIXING_VALUE_TOO_HIGH
+};
+
 typedef struct
 {
-	int errorCode;
+	OutputMixingErrorCodes errorCode;
 
 }OutputMixing_error_t;
 
