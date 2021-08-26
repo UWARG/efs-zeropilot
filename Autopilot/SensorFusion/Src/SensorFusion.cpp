@@ -522,7 +522,7 @@ IMU_Data_t SF_GetRawIMU()
     
     IMU_Data_t imuOutput;
 
-    std:memcpy(&imuOutput, &imuData, sizeof(imuOutput));
+    std:memcpy(&imuOutput, &imuData, sizeof(IMU_Data_t));
 
     return imuOutput;
 }
@@ -534,7 +534,7 @@ Airspeed_Data_t SF_GetRawAirspeed()
 
     Airspeed_Data_t airspeedOutput;
 
-    std:memcpy(&airspeedOutput, &airspeedData, sizeof(airspeedOutput));
+    std:memcpy(&airspeedOutput, &airspeedData, sizeof(Airspeed_Data_t));
 
     return airspeedOutput;
 }
@@ -546,7 +546,7 @@ Gps_Data_t SF_GetRawGPS()
 
     Gps_Data_t gpsOutput;
 
-    std:memcpy(&gpsOutput, &gpsData, sizeof(gpsOutput));
+    std:memcpy(&gpsOutput, &gpsData, sizeof(Gps_Data_t));
 
     return gpsOutput;
 }
@@ -558,7 +558,7 @@ Altimeter_Data_t SF_GetRawAltimeter()
 
     Altimeter_Data_t altimeterOutput;
 
-    std:memcpy(&altimeterOutput, &altimeterData, sizeof(altimeterOutput));
+    std:memcpy(&altimeterOutput, &altimeterData, sizeof(Altimeter_Data_t));
 
     return altimeterOutput;
 }

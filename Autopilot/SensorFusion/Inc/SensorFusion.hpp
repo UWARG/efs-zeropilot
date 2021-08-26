@@ -44,7 +44,8 @@ typedef struct
     float magx, magy, magz;
     float accx, accy, accz;
     float gyrx, gyry, gyrz; 
-
+    float temp;
+    
     bool isDataNew; 
     int sensorStatus; 
 } IMU_Data_t;
@@ -65,11 +66,11 @@ typedef struct
     float utcTime;     // 4 Bytes. Time in seconds since 00:00 (midnight)
     float groundSpeed; // in m/s
     int altitude; // in m
-    short heading; // in degrees. Should be between 0-360 at all times, but using integer just in case
-    char numSatellites;    // 1 Byte
-    char fixStatus; //0 = No GPS, 1 = GPS fix, 2 = DGSP Fix, 3 = Estimated/Dead Recoking Fix
+    int16_t heading; // in degrees. Should be between 0-360 at all times, but using integer just in case
+    uint8_t numSatellites;    // 1 Byte
+    uint8_t fixStatus; //0 = No GPS, 1 = GPS fix, 2 = DGSP Fix, 3 = Estimated/Dead Recoking Fix
 
-    char sensorStatus; // 0 = no fix, 1 = gps fix, 2 = differential gps fix (DGPS) (other codes are possible)
+    uint8_t sensorStatus; // 0 = no fix, 1 = gps fix, 2 = differential gps fix (DGPS) (other codes are possible)
     bool dataIsNew; // true if data has been refreshed since the previous time GetResult was called, false otherwise.
 	bool timeIsNew;
 
