@@ -9,7 +9,12 @@ void interchipInit();
 
 // Get the pwm signals that have been recieved. The length of the array returned will 
 // always be 12.
+
+// todo: change this to be int8_t as well
 volatile int16_t* getPWM();
+
+
+// todo: set safety level to uint8_t as well?!?!?
 
 // Get the safety level that is currently being sent out.
 uint16_t getSafetyLevel();

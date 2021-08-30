@@ -5,6 +5,7 @@
 #define INTERCHIP_H
 
 typedef struct {
+    // todo: set safety level to uint8_t
 	uint16_t safetyLevel;
 
     // to be converted to be int8_t
