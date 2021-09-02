@@ -6,7 +6,7 @@ static volatile Interchip_Packet txData;
 static volatile bool dataNew;
 
 // Get the pwm signal that has been recieved.
-volatile int8_t* getPWM() {
+volatile int8_t *getPWM() {
     dataNew = false;
 
     // Cause the structs are volatile, I've gotta use this to set them equal.
@@ -36,13 +36,13 @@ bool isDataNew() {
 // Starts interchip interrupt. Call this once, not in a loop, each interchip callback
 // sets up another interrupt.
 void interchipInit() {
-    HAL_SPI_TransmitReceive_IT(&hspi1,(uint8_t *)&txData,(uint8_t *)&rxData, sizeof(Interchip_Packet));
+    HAL_SPI_TransmitReceive_IT(&hspi1, (uint8_t * ) & txData, (uint8_t * ) & rxData, sizeof(Interchip_Packet));
 }
 
 // spi callback that starts up another interrupt.
-void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef* hspi) {
+void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
     // Start Listening after the previous exchange.
-    HAL_GPIO_TogglePin(LED1_GPIO_Port,LED1_Pin);
-    HAL_SPI_TransmitReceive_IT(&hspi1,(uint8_t *)&txData,(uint8_t *)&rxData, sizeof(Interchip_Packet));
+    HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+    HAL_SPI_TransmitReceive_IT(&hspi1, (uint8_t * ) & txData, (uint8_t * ) & rxData, sizeof(Interchip_Packet));
     dataNew = true;
 }

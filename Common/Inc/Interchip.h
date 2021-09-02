@@ -6,10 +6,10 @@
 
 typedef struct {
     // todo: set safety level to uint8_t
-	uint16_t safetyLevel;
+    uint16_t safetyLevel;
 
     // to be converted to be int8_t
     // do we need signed integers? It seems like we might?
-	int8_t PWM[12];
-} Interchip_Packet;  
+    int8_t PWM[12];
+} Interchip_Packet;
 #endif

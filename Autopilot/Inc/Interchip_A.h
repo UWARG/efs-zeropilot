@@ -10,13 +10,16 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
- 
+
 // Sets the NSS line to high.
 void Interchip_Init();
+
 // Called in a freertos thread, this initiates the exchange of data over SPI.
 void Interchip_Run();
+
 // Allows for PWM values to be set.
-void Interchip_SetPWM(int index,int data);
+void Interchip_SetPWM(int index, int data);
+
 // Gets the safety level that is being sent by the safety chip.
 uint16_t Interchip_GetAutonomousLevel(void);
 

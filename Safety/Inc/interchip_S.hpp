@@ -1,4 +1,5 @@
 #include "../../Common/Inc/Interchip.h"
+
 #ifndef INC_INTERCHIP_HPP_
 #define INC_INTERCHIP_HPP_
 
@@ -11,7 +12,7 @@ void interchipInit();
 // always be 12.
 
 // todo: change this to be int8_t as well
-volatile int8_t* getPWM();
+volatile int8_t *getPWM();
 
 
 // todo: set safety level to uint8_t as well?!?!?
