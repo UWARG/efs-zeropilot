@@ -34,13 +34,17 @@ void Interchip_Init() {
 // Sets a PWM channel
 void Interchip_SetPWM(int index, int data) {
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-    txData.PWM[index] = (int16_t) data;
+    txData.PWM[index] = (int8_t) data;
 }
 
 // returns the safetyLevel
 uint16_t Interchip_GetAutonomousLevel(void) {
     dataNew = false;
     return rxData.safetyLevel;
+}
+
+void Interchip_CRC_Compute(int data, int polynomial) {
+
 }
 
 // called during the SPI TxRx interrupt

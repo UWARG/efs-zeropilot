@@ -26,6 +26,10 @@ void setSafetyLevel(uint16_t level);
 // Return whether the data is new.
 bool isDataNew();
 
+// function for calculating CRC on received data
+
+// function for comparing CRC values
+
 // used to populate the interchip packet with fake data.
 void testSetup();
 
