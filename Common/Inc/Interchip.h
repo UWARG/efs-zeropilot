@@ -10,6 +10,6 @@ typedef struct {
 
     // to be converted to be int8_t
     // do we need signed integers? It seems like we might?
-	int16_t PWM[12];
+	int8_t PWM[12];
 } Interchip_Packet;  
 #endif

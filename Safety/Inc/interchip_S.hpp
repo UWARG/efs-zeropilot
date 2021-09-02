@@ -11,7 +11,7 @@ void interchipInit();
 // always be 12.
 
 // todo: change this to be int8_t as well
-volatile int16_t* getPWM();
+volatile int8_t* getPWM();
 
 
 // todo: set safety level to uint8_t as well?!?!?
