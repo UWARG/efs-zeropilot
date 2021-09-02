@@ -6,7 +6,7 @@ static volatile Interchip_Packet txData;
 static volatile bool dataNew;
 
 // Get the pwm signal that has been recieved.
-volatile int16_t* getPWM() {
+volatile int8_t* getPWM() {
     dataNew = false;
 
     // Cause the structs are volatile, I've gotta use this to set them equal.
