@@ -15,11 +15,11 @@
 
 struct AltimeterData_t 
 {
-
-    float altitude;
-
+    float pressure, altitude, temp;
+    
     bool isDataNew; 
-    int status;
+    int status; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
+    uint32_t utcTime; //Last time GetResult was called
 };
 
 /**
@@ -52,7 +52,7 @@ class Altimeter {
          * This function is non blocking and returns right away.
          * @param[in]       Data        reference to the results struct.
          * */
-        virtual void GetResult(AltimeterData_t &Data) = 0;
+        virtual void GetResult(AltimeterData_t& Data) = 0; //
 };
 
 class MPL3115A2 : public Altimeter {
@@ -70,8 +70,7 @@ class MPL3115A2 : public Altimeter {
         MPL3115A2(const MPL3115A2*) = delete;
 
         void Begin_Measuring();
-        void GetResult(AltimeterData_t &Data);
-    
+        void GetResult(AltimeterData_t& Data);
     private:
         
         MPL3115A2();
@@ -83,5 +82,17 @@ class MPL3115A2 : public Altimeter {
         union AltimeterAltitudeRepresentation rawAltimeter;
         float altimeterCalibrationFinal;
 };
+
+#ifdef UNIT_TESTING
+#include "airspeed_Mock.hpp"
+
+class TestAltimeter : public Altimeter {
+    public:
+        static TestAltimeter* GetInstance();
+
+        void Begin_Measuring();
+        void GetResult(AltimeterData_t& Data);
+};
+#endif
 
 #endif

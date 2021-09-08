@@ -51,7 +51,7 @@ class airspeed {
          *  ensure that data acquired makes sense, has been
          *  gathered recently within reason (past 10s?)
          * */
-        virtual void GetResult(airspeedData_t &Data) = 0; 
+        virtual void GetResult(airspeedData_t& Data) = 0; 
 };
 
 /***********************************************************************************************************************
@@ -66,7 +66,7 @@ class MPXV7002DP : public airspeed {
          * Moves values from the variables to the airspeed data struct.
          * Sets the dataNew variable to false after that.
          */
-        void GetResult(airspeedData_t &Data);
+        void GetResult(airspeedData_t& Data);
 
         /**
          *  Don't use this function, the GetResult function is non blocking.
@@ -112,6 +112,14 @@ class MPXV7002DP : public airspeed {
 
 #ifdef UNIT_TESTING
 #include "airspeed_Mock.hpp"
+
+class TestAirspeed : public airspeed {
+    public:
+        static TestAirspeed* GetInstance();
+
+        void Begin_Measuring();
+        void GetResult(airspeedData_t& Data);
+};
 #endif
 
 #ifdef SIMULATION
@@ -120,7 +128,7 @@ class SimulatedAirspeed : public airspeed
 {
     public :
         void Begin_Measuring();
-        void GetResult(airspeedData_t &Data);
+        void GetResult(airspeedData_t& Data);
 };
 #endif
 

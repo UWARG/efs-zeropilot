@@ -44,7 +44,7 @@ class IMU {
          * This function is non blocking and returns right away.
          * @param[in]       Data        reference to the results struct.
          * */
-        virtual void GetResult(IMUData_t &Data) = 0;
+        virtual void GetResult(IMUData_t& Data) = 0;
 };
 
 class BMX160: public IMU{
@@ -63,7 +63,7 @@ class BMX160: public IMU{
         BMX160(const BMX160*) = delete;
 
         void Begin_Measuring();
-        void GetResult(IMUData_t &Data);
+        void GetResult(IMUData_t& Data);
 
     private:
 
@@ -103,7 +103,7 @@ class TestIMU : public IMU {
 
         void Begin_Measuring();
 
-        void GetResult(IMUData_t &Data);
+        void GetResult(IMUData_t& Data);
 
 };
 

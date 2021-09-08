@@ -98,7 +98,7 @@ void BMX160::Begin_Measuring(void)
     Bmx160ReadReg(DATA_REG, rawImuData, 20);
 }
 
-void BMX160::GetResult(IMUData_t &Data)
+void BMX160::GetResult(IMUData_t& Data)
 {
 
     int16_t *intImuDataPtr = (int16_t *) &(rawImuData[1]); // first byte is garbage. It's just what was on the line when we asked the IMU for data, which it started sending as of the second byte.
