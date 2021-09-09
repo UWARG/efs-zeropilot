@@ -1,4 +1,5 @@
 #include "../../Common/Inc/Interchip.h"
+#include "../../Common/Inc/CRC.h"
 
 #ifndef INC_INTERCHIP_HPP_
 #define INC_INTERCHIP_HPP_

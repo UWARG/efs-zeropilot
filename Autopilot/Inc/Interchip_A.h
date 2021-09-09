@@ -3,6 +3,7 @@
 
 #include "stm32f7xx_hal.h"
 #include "Interchip.h"
+#include "CRC.h"
 #include <stdint.h>
 
 #define INTERCHIP_TRANSMIT_DELAY 5
