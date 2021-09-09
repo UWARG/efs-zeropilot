@@ -35,6 +35,7 @@ void Interchip_Init() {
 void Interchip_SetPWM(int index, int data) {
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
     txData.PWM[index] = (int8_t) data;
+	txData.crc = Interchip_CRC_Compute(data);
 }
 
 // returns the safetyLevel
@@ -43,8 +44,9 @@ uint16_t Interchip_GetAutonomousLevel(void) {
     return rxData.safetyLevel;
 }
 
-void Interchip_CRC_Compute(int data, int polynomial) {
-
+uint32_t Interchip_CRC_Compute(int data) {
+	uint32_t crc = CRC::Calculate(data, sizeof(data), CRC::CRC_32());
+	return crc;
 }
 
 // called during the SPI TxRx interrupt

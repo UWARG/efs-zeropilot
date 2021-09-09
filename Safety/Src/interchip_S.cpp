@@ -15,6 +15,8 @@ volatile int8_t *getPWM() {
         txData.PWM[i] = rxData.PWM[i];
     }
 
+    txData.crc = rxData.crc;
+
     return rxData.PWM;
 }
 

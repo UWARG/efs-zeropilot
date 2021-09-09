@@ -11,5 +11,6 @@ typedef struct {
     // to be converted to be int8_t
     // do we need signed integers? It seems like we might?
     int8_t PWM[12];
+    uint32_t crc;
 } Interchip_Packet;
 #endif
