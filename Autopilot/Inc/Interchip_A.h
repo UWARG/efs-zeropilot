@@ -25,7 +25,7 @@ void Interchip_SetPWM(int index, int data);
 uint16_t Interchip_GetAutonomousLevel(void);
 
 // Function for calculating our CRC value
-void Interchip_CRC_Compute(int data, int polynomial);
+uint32_t Interchip_CRC_Compute(int data, int polynomial);
 
 /**
 * Callback for exclusive use by the SPI ISR.

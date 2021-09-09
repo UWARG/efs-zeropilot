@@ -15,6 +15,9 @@ void interchipInit();
 // todo: change this to be int8_t as well
 volatile int8_t *getPWM();
 
+// CRC checker
+
+bool Interchip_CRC_Checker(int data, uint32_t rx_crc);
 
 // todo: set safety level to uint8_t as well?!?!?
 

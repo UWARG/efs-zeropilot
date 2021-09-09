@@ -20,6 +20,15 @@ volatile int8_t *getPWM() {
     return rxData.PWM;
 }
 
+bool Interchip_CRC_Checker(int data, uint32_t rx_crc) {
+    uint32_t crc = CRC::Calculate(data, sizeof(data), CRC::CRC_32());
+    if (crc == rx_crc) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 // Get the safety level that is currently being sent out.
 uint16_t getSafetyLevel() {
     return txData.safetyLevel;
