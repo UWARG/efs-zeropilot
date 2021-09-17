@@ -48,12 +48,8 @@ typedef struct
     float temp;
     
     bool isDataNew; 
-<<<<<<< HEAD
-    int sensorStatus; 
-=======
     enum SensorErrorCodes sensorStatus; 
     float utcTime; 
->>>>>>> Changes to SensorFusion hpp and cpp
 } IMU_Data_t;
 
 typedef struct 
@@ -76,11 +72,7 @@ typedef struct
     uint8_t numSatellites;    // 1 Byte
     uint8_t fixStatus; //0 = No GPS, 1 = GPS fix, 2 = DGSP Fix, 3 = Estimated/Dead Recoking Fix
 
-<<<<<<< HEAD
-    uint8_t sensorStatus; // 0 = no fix, 1 = gps fix, 2 = differential gps fix (DGPS) (other codes are possible)
-=======
     enum SensorErrorCodes sensorStatus; // 0 = no fix, 1 = gps fix, 2 = differential gps fix (DGPS) (other codes are possible)
->>>>>>> Changes to SensorFusion hpp and cpp
     bool dataIsNew; // true if data has been refreshed since the previous time GetResult was called, false otherwise.
 	bool timeIsNew;
 

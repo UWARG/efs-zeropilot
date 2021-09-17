@@ -19,6 +19,6 @@ void TestAltimeter::GetResult(AltimeterData_t &Data)
     Data.temp = 0;
 
     Data.isDataNew = true;
-    Data.status = 0;
+    Data.status = SENSOR_SUCCESS;
     Data.utcTime = 0;
 }
