@@ -18,7 +18,7 @@
 #define AIRSPEED_HPP
 
 #include <cstdint>
-
+#include "CommonDataTypes.hpp"
 /*
     Currently there is only one airspeed sensor used, if this is 
     changed to a different sensor, part numbers and a selection
@@ -29,7 +29,7 @@ struct airspeedData_t
 {
     double airspeed;        // in m/s
 
-    int sensorStatus;       // report any errors, possible malfunctions 
+    SensorErrorCodes sensorStatus;       // report any errors, possible malfunctions 
     bool isDataNew;         // is the data fresh?
     float utcTime;          // 4 Bytes. Time in seconds since 00:00 
 };
@@ -104,7 +104,7 @@ class MPXV7002DP : public airspeed {
         int offset = 0;
         float airspeed = 0;
         float utcTime = 0;
-        int sensorStatus = 0;
+        SensorErrorCodes sensorStatus = SENSOR_SUCCESS;
         bool dataNew = false;
         
 };

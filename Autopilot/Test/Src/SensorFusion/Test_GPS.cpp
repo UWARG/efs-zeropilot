@@ -1,6 +1,7 @@
 //Provides skeleton GPS definitions for testing sensor fusion
 
 #include "gps.hpp"
+#include "CommonDataTypes.hpp"
 
 TestGps* TestGps::GetInstance()
 {
@@ -25,5 +26,5 @@ void TestGps::GetResult(GpsData_t& Data)
     Data.timeIsNew = true;
     Data.ggaDataIsNew = true;
     Data.vtgDataIsNew = true;
-    Data.sensorStatus = 0;
+    Data.sensorStatus = SENSOR_SUCCESS;
 }

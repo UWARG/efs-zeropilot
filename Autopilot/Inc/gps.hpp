@@ -7,7 +7,7 @@
 #define	GPS_HPP
 
 #include <stdint.h>
-
+#include "CommonDataTypes.hpp"
 /** What UART interface the device is connected to */
 #define GPS_UART_INTERFACE 1
 
@@ -30,7 +30,7 @@ struct GpsData_t{
     uint8_t numSatellites;    // 1 Byte
 	uint8_t fixStatus; //0 = No GPS, 1 = GPS fix, 2 = DGSP Fix, 3 = Estimated/Dead Recoking Fix
 
-    uint8_t sensorStatus; // 0 = good, 1 = error
+    SensorErrorCodes sensorStatus; // 0 = good, 1 = error
     bool dataIsNew; // true if data has been refreshed since the previous time GetResult was called, false otherwise.
 	bool timeIsNew;
 

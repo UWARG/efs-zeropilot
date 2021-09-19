@@ -154,7 +154,7 @@ void BMX160::GetResult(IMUData_t& Data)
     }
 
     Data.isDataNew = true;
-    Data.sensorStatus = 0;
+    Data.sensorStatus = SENSOR_SUCCESS;
 
     dataIsNew = false;
 }

@@ -8,7 +8,7 @@
 #define ALTIMETER_HPP
 
 #include <cstdint>
-
+#include "CommonDataTypes.hpp"
 /***********************************************************************************************************************
  * Definitions
  **********************************************************************************************************************/
@@ -18,8 +18,8 @@ struct AltimeterData_t
     float pressure, altitude, temp;
     
     bool isDataNew; 
-    int status; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
-    uint32_t utcTime; //Last time GetResult was called
+    SensorErrorCodes status;
+    uint32_t utcTime;
 };
 
 /**

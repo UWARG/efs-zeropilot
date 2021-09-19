@@ -142,8 +142,10 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata) {
     float imu_PitchRate = 0;
     float imu_YawRate = 0;
     
-    //Abort if imu sensor is busy or failed data collection
-    if(imudata->sensorStatus != 0 )
+    //Airspeed checks are temporarily disabled until an airspeed driver is implemented
+
+    //Abort if both sensors are busy or failed data collection
+    if(imudata->sensorStatus != SENSOR_SUCCESS ) // || airspeeddata->sensorStatus != 0)
     {  
 
         /************************************************************************************************

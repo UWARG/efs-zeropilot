@@ -17,6 +17,6 @@ void TestAirspeed::GetResult(airspeedData_t& Data)
     Data.airspeed = 0;
 
     Data.isDataNew = true;
-    Data.sensorStatus = 0;
+    Data.sensorStatus = SENSOR_SUCCESS;
     Data.utcTime = 0;
 }

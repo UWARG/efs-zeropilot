@@ -16,7 +16,7 @@ MPXV7002DP::MPXV7002DP() {
     //constructor
     HAL_StatusTypeDef status = HAL_ADC_Start(&hadc3);
     if(status != HAL_OK) {
-        sensorStatus = 1;
+        sensorStatus = SENSOR_FAIL;
     }
     CalcOffset();
 }
@@ -67,10 +67,10 @@ float MPXV7002DP::GetAirspeed() {
 	float dp = GetDiffPressure();
 
     if(dp < 0) {
-        sensorStatus = 1;
+        sensorStatus = SENSOR_FAIL;
         return 0.0;
     } else {
-        sensorStatus = 0;
+        sensorStatus = SENSOR_SUCCESS;
         double z = (2 * dp)/DENSITY_AIR;
         return sqrt(z);
     }
