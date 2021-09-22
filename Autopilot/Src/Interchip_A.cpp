@@ -9,6 +9,11 @@ static volatile bool dataNew;
 // freertos run function
 void Interchip_Run() {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+    data = 0;
+    for(int i=0; i<12; i++) {
+        data += txData.PWM[i];
+    }
+    txData.crc = Interchip_CRC_Compute(data);
     HAL_StatusTypeDef result = HAL_SPI_TransmitReceive_IT(&hspi6, (uint8_t * ) & txData, (uint8_t * ) & rxData, 26);
 }
 
@@ -28,6 +33,7 @@ void Interchip_Init() {
     txData.PWM[9] = 0;
     txData.PWM[10] = 0;
     txData.PWM[11] = 0;
+    txData.crc = 0;
 }
 
 
@@ -35,7 +41,6 @@ void Interchip_Init() {
 void Interchip_SetPWM(int index, int data) {
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
     txData.PWM[index] = (int8_t) data;
-	txData.crc = Interchip_CRC_Compute(data);
 }
 
 // returns the safetyLevel

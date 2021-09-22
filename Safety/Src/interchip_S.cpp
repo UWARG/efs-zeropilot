@@ -1,6 +1,8 @@
 #include "spi.h"
 #include "interchip_S.hpp"
 
+constexpr uint8_t MANUAL_OVERRIDE_CHANNEL {4};
+
 static volatile Interchip_Packet rxData;
 static volatile Interchip_Packet txData;
 static volatile bool dataNew;
@@ -25,6 +27,8 @@ bool Interchip_CRC_Checker(int data, uint32_t rx_crc) {
     if (crc == rx_crc) {
         return true;
     } else {
+        // somehow override to manual control
+         // ppm.set(MANUAL_OVERRIDE_CHANNEL, 100);
         return false;
     }
 }
