@@ -9,11 +9,15 @@ static volatile bool dataNew;
 // freertos run function
 void Interchip_Run() {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-    data = 0;
+
+    // I will put this into a function later - anni
+    // for now this is a quick way to compute crc and send it on our run.
+    int data = 0;
     for(int i=0; i<12; i++) {
         data += txData.PWM[i];
     }
     txData.crc = Interchip_CRC_Compute(data);
+
     HAL_StatusTypeDef result = HAL_SPI_TransmitReceive_IT(&hspi6, (uint8_t * ) & txData, (uint8_t * ) & rxData, 26);
 }
 
