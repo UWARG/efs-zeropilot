@@ -40,7 +40,7 @@ void safety_controller_init()
 
 void safety_run(PWMChannel &pwm, PPMChannel &ppm)
 {
-
+    
     if(CommsFailed()) {
         setPWMChannel(pwm, PWM_CHANNEL_LEFT_TAIL, 0);
         setPWMChannel(pwm, PWM_CHANNEL_RIGHT_TAIL, 100);
@@ -53,6 +53,14 @@ void safety_run(PWMChannel &pwm, PPMChannel &ppm)
     }
 
     volatile int16_t *AutoPilotPwmChannel = getPWM();
+
+    int data = 0;
+    for(int i=0; i<12; i++) {
+        data += AutoPilotPwmChannel[i];
+    }
+
+    rx_crc = AutoPilotPwmChannel[12];
+    bool disengage = Interchip_CRC_Checker(int data, uint32_t rx_crc);
 
     uint8_t elevatorAutoPilot = AutoPilotPwmChannel[0];
     uint8_t aileronAutoPilot = AutoPilotPwmChannel[1];
@@ -73,7 +81,7 @@ void safety_run(PWMChannel &pwm, PPMChannel &ppm)
 
     noseWheelMix = 100 - rudderPPM;
 
-    if(AutoPilotEngaged(ppm))
+    if(AutoPilotEngaged(ppm) && !disengage)
     {
         leftTailMix = (0.7 * (100 - elevatorAutoPilot)) + (0.2 * rudderAutoPilot);
         rightTailMix = (0.7 * elevatorAutoPilot) + (0.2 * rudderAutoPilot);
@@ -145,4 +153,13 @@ static void setPWMChannel(PWMChannel &pwm, int channel, int percentage)
 static uint8_t getPPM(PPMChannel &ppm, int channel)
 {
     return ppm.get(channel);
+}
+
+bool Interchip_CRC_Checker(int data, uint32_t rx_crc) {
+    uint32_t crc = CRC::Calculate(data, sizeof(data), CRC::CRC_32());
+    if (crc == rx_crc) {
+        return true;
+    } else {
+        return false;
+    }
 }
