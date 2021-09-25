@@ -86,6 +86,7 @@ class BMX160: public IMU{
 
 /**
 * Callback for exclusive use by the SPI ISR.
+
 * Users of this module should never call this function.
 * Any manipulation of this function by the higher level voids all guarantees made by this module.
 * */
