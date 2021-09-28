@@ -13,17 +13,20 @@ September 2021
 #include "stdint.h"
 #include "stdbool.h"
 #include "stm32f765xx.h"
+#include "stm32f7xx_hal_tim.h"
 
-struct ultrasonicData_t {
+typedef struct ultrasonicData_t {
     float distance;
     bool isDataNew; // Records whether the data has been refreshed since the last time getResult was called
     GPIO_TypeDef * triggerPin;
     GPIO_TypeDef * echoPin;
-};
+    TIM_HandleTypeDef htim;
+} ultrasonicData_t;
  
 class ultrasonic {
     public:
         virtual void getDistance(ultrasonicData_t * data) = 0;
+        static ultrasonicData_t data;
     
 };
 
