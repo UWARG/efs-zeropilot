@@ -42,12 +42,6 @@ static char auchCRCLo[] = {
 void Interchip_Run() {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
 
-    // I will put this into a function later - anni
-    // for now this is a quick way to compute crc and send it on our run.
-    int data = 0;
-    for(int i=0; i<12; i++) {
-        data += txData.PWM[i];
-    }
     txData.crc = crc_calc_modbus(txData.PWM, 12);
 
     HAL_StatusTypeDef result = HAL_SPI_TransmitReceive_IT(&hspi6, (uint8_t * ) & txData, (uint8_t * ) & rxData, 26);
@@ -69,7 +63,6 @@ void Interchip_Init() {
     txData.PWM[9] = 0;
     txData.PWM[10] = 0;
     txData.PWM[11] = 0;
-    txData.crc = 0;
 }
 
 
@@ -80,7 +73,7 @@ void Interchip_SetPWM(int index, int data) {
 }
 
 // returns the safetyLevel
-uint16_t Interchip_GetAutonomousLevel(void) {
+uint8_t Interchip_GetAutonomousLevel(void) {
     dataNew = false;
     return rxData.safetyLevel;
 }
@@ -99,7 +92,7 @@ uint8_t InterchipIsDataNew() {
     return 0;
 }
 
-uint16_t crc_calc_modbus(const uint8_t msgBuffer[], size_t len) {
+uint16_t crc_calc_modbus(const int16_t msgBuffer[], size_t len) {
     {
         uint8_t low_byte_crc = 0xFF;  /* low byte of CRC initialized */
         uint8_t high_byte_crc = 0xFF; /* high byte of CRC initialized */

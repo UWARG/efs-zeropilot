@@ -52,10 +52,10 @@ void safety_run(PWMChannel &pwm, PPMChannel &ppm)
         return;
     }
 
-    volatile int8_t *AutoPilotPwmChannel = getPWM();
+    volatile int16_t *AutoPilotPwmChannel = getPWM();
     bool disengage = false;
-    volatile int8_t *rxCRC = getRXCRC();
-    volatile int8_t *txCRC = getTXCRC();
+    volatile uint16_t *rxCRC = getRXCRC();
+    volatile uint16_t *txCRC = getTXCRC();
 
     static crc_error_count = 0;
     if (*rxCRC = *txCRC) {

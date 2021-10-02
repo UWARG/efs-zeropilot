@@ -40,7 +40,7 @@ static char auchCRCLo[] = {
         0x86, 0x82, 0x42, 0x43, 0x83, 0x41, 0x81, 0x80, 0x40};
 
 // Get the pwm signal that has been recieved.
-volatile int8_t *getPWM() {
+volatile int16_t *getPWM() {
     dataNew = false;
 
     // Cause the structs are volatile, I've gotta use this to set them equal.
@@ -56,10 +56,10 @@ volatile int8_t *getPWM() {
     return rxData.PWM;
 }
 
-volatile int8_t *getRXCRC() {
+volatile uint16_t *getRXCRC() {
     return rxData.crc;
 }
-volatile int8_t *getTXCRC() {
+volatile uint16_t *getTXCRC() {
     return txData.crc;
 }
 // Get the safety level that is currently being sent out.
@@ -68,7 +68,7 @@ uint16_t getSafetyLevel() {
 }
 
 // Set the safety level that is currently being sent out.
-void setSafetyLevel(uint16_t level) {
+void setSafetyLevel(uint8_t level) {
     txData.safetyLevel = level;
 }
 
@@ -91,7 +91,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
     dataNew = true;
 }
 
-uint16_t crc_calc_modbus(const uint8_t msgBuffer[], size_t len) {
+uint16_t crc_calc_modbus(const int16_t msgBuffer[], size_t len) {
     {
         uint8_t low_byte_crc = 0xFF;  /* low byte of CRC initialized */
         uint8_t high_byte_crc = 0xFF; /* high byte of CRC initialized */

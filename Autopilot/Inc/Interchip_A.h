@@ -24,7 +24,7 @@ void Interchip_SetPWM(int index, int data);
 uint16_t Interchip_GetAutonomousLevel(void);
 
 // Function for calculating our CRC value
-uint16_t crc_calc_modbus(const uint8_t msgBuffer[], size_t len);
+uint16_t crc_calc_modbus(const int16_t msgBuffer[], size_t len);
 
 /**
 * Callback for exclusive use by the SPI ISR.

@@ -12,16 +12,14 @@ void interchipInit();
 // always be 12.
 
 // todo: change this to be int8_t as well
-volatile int8_t *getPWM();
+volatile int16_t *getPWM();
 
-
-// todo: set safety level to uint8_t as well?!?!?
 
 // Get the safety level that is currently being sent out.
 uint16_t getSafetyLevel();
 
 // Set the safety level that is currently being sent out.
-void setSafetyLevel(uint16_t level);
+void setSafetyLevel(uint8_t level);
 
 // Return whether the data is new.
 bool isDataNew();
@@ -34,8 +32,8 @@ bool isDataNew();
 void testSetup();
 
 // CRC checking functions
-volatile int8_t *getRXCRC();
-volatile int8_t *getTXCRC();
+volatile uint8_t *getRXCRC();
+volatile uint8_t *getTXCRC();
 
-uint16_t crc_calc_modbus(const uint8_t msgBuffer[], size_t len);
+uint16_t crc_calc_modbus(const int16_t msgBuffer[], size_t len);
 #endif /* INC_INTERCHIP_HPP_ */
