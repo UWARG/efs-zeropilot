@@ -20,9 +20,13 @@ volatile int8_t *getPWM() {
     // call CRC everytime PWM data is called.
     // generate rx Data CRC.
     rxData.crc = crc_calc_modbus(rxData.PWM, 12);
-    // call CRC comparator
+    // call CRC counter
 
     return rxData.PWM;
+}
+
+volatile int8_t *getCRC() {
+    return rxData.crc;
 }
 
 // Get the safety level that is currently being sent out.
