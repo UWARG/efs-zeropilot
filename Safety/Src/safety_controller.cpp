@@ -52,14 +52,9 @@ void safety_run(PWMChannel &pwm, PPMChannel &ppm)
         return;
     }
 
-    volatile int16_t *AutoPilotPwmChannel = getPWM();
+    volatile int8_t *AutoPilotPwmChannel = getPWM();
 
-    int data = 0;
-    for(int i=0; i<12; i++) {
-        data += AutoPilotPwmChannel[i];
-    }
-
-    rx_crc = AutoPilotPwmChannel[12];
+    // call crc checking.
     bool disengage = Interchip_CRC_Checker(int data, uint32_t rx_crc);
 
     uint8_t elevatorAutoPilot = AutoPilotPwmChannel[0];
@@ -161,5 +156,20 @@ bool Interchip_CRC_Checker(int data, uint32_t rx_crc) {
         return true;
     } else {
         return false;
+    }
+}
+
+uint16_t crc_calc_modbus(const uint8_t msgBuffer[], size_t len) {
+    {
+        uint8_t low_byte_crc = 0xFF;  /* low byte of CRC initialized */
+        uint8_t high_byte_crc = 0xFF; /* high byte of CRC initialized */
+        uint8_t uIndex = 0;           /* will index into CRC lookup table */
+        while (len--)                 /* pass through message buffer */
+        {
+            uIndex = high_byte_crc ^ *msgBuffer++; /* calculate the CRC */
+            high_byte_crc = low_byte_crc ^ auchCRCHi[uIndex];
+            low_byte_crc = auchCRCLo[uIndex];
+        }
+        return (high_byte_crc << 8) | low_byte_crc;
     }
 }

@@ -3,7 +3,6 @@
 
 #include "stm32f7xx_hal.h"
 #include "Interchip.h"
-#include "CRC.h"
 #include <stdint.h>
 
 #define INTERCHIP_TRANSMIT_DELAY 5
@@ -25,7 +24,7 @@ void Interchip_SetPWM(int index, int data);
 uint16_t Interchip_GetAutonomousLevel(void);
 
 // Function for calculating our CRC value
-uint32_t Interchip_CRC_Compute(int data, int polynomial);
+uint16_t crc_calc_modbus(const uint8_t msgBuffer[], size_t len);
 
 /**
 * Callback for exclusive use by the SPI ISR.

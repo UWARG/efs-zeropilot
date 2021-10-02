@@ -17,7 +17,10 @@ volatile int8_t *getPWM() {
         txData.PWM[i] = rxData.PWM[i];
     }
 
-    txData.crc = rxData.crc;
+    // call CRC everytime PWM data is called.
+    // generate rx Data CRC.
+    rxData.crc = crc_calc_modbus(rxData.PWM, 12);
+    // call CRC comparator
 
     return rxData.PWM;
 }
@@ -49,4 +52,19 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
     HAL_SPI_TransmitReceive_IT(&hspi1, (uint8_t * ) & txData, (uint8_t * ) & rxData, sizeof(Interchip_Packet));
     dataNew = true;
+}
+
+uint16_t crc_calc_modbus(const uint8_t msgBuffer[], size_t len) {
+    {
+        uint8_t low_byte_crc = 0xFF;  /* low byte of CRC initialized */
+        uint8_t high_byte_crc = 0xFF; /* high byte of CRC initialized */
+        uint8_t uIndex = 0;           /* will index into CRC lookup table */
+        while (len--)                 /* pass through message buffer */
+        {
+            uIndex = high_byte_crc ^ *msgBuffer++; /* calculate the CRC */
+            high_byte_crc = low_byte_crc ^ auchCRCHi[uIndex];
+            low_byte_crc = auchCRCLo[uIndex];
+        }
+        return (high_byte_crc << 8) | low_byte_crc;
+    }
 }

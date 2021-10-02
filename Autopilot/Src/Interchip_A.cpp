@@ -16,7 +16,7 @@ void Interchip_Run() {
     for(int i=0; i<12; i++) {
         data += txData.PWM[i];
     }
-    txData.crc = Interchip_CRC_Compute(data);
+    txData.crc = crc_calc_modbus(txData.PWM, 12);
 
     HAL_StatusTypeDef result = HAL_SPI_TransmitReceive_IT(&hspi6, (uint8_t * ) & txData, (uint8_t * ) & rxData, 26);
 }
@@ -53,11 +53,6 @@ uint16_t Interchip_GetAutonomousLevel(void) {
     return rxData.safetyLevel;
 }
 
-uint32_t Interchip_CRC_Compute(int data) {
-	uint32_t crc = CRC::Calculate(data, sizeof(data), CRC::CRC_32());
-	return crc;
-}
-
 // called during the SPI TxRx interrupt
 void InterchipTxRxCallback() {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
@@ -70,4 +65,19 @@ uint8_t InterchipIsDataNew() {
         return 1;
     }
     return 0;
+}
+
+uint16_t crc_calc_modbus(const uint8_t msgBuffer[], size_t len) {
+    {
+        uint8_t low_byte_crc = 0xFF;  /* low byte of CRC initialized */
+        uint8_t high_byte_crc = 0xFF; /* high byte of CRC initialized */
+        uint8_t uIndex = 0;           /* will index into CRC lookup table */
+        while (len--)                 /* pass through message buffer */
+        {
+            uIndex = high_byte_crc ^ *msgBuffer++; /* calculate the CRC */
+            high_byte_crc = low_byte_crc ^ auchCRCHi[uIndex];
+            low_byte_crc = auchCRCLo[uIndex];
+        }
+        return (high_byte_crc << 8) | low_byte_crc;
+    }
 }

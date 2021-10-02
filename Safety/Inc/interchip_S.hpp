@@ -1,5 +1,4 @@
 #include "../../Common/Inc/Interchip.h"
-#include "../../Common/Inc/CRC.h"
 
 #ifndef INC_INTERCHIP_HPP_
 #define INC_INTERCHIP_HPP_
@@ -15,9 +14,6 @@ void interchipInit();
 // todo: change this to be int8_t as well
 volatile int8_t *getPWM();
 
-// CRC checker
-
-bool Interchip_CRC_Checker(int data, uint32_t rx_crc);
 
 // todo: set safety level to uint8_t as well?!?!?
 
@@ -37,4 +33,6 @@ bool isDataNew();
 // used to populate the interchip packet with fake data.
 void testSetup();
 
+// CRC checking functions
+uint16_t crc_calc_modbus(const uint8_t msgBuffer[], size_t len);
 #endif /* INC_INTERCHIP_HPP_ */
