@@ -34,5 +34,8 @@ bool isDataNew();
 void testSetup();
 
 // CRC checking functions
+volatile int8_t *getRXCRC();
+volatile int8_t *getTXCRC();
+
 uint16_t crc_calc_modbus(const uint8_t msgBuffer[], size_t len);
 #endif /* INC_INTERCHIP_HPP_ */

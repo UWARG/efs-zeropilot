@@ -67,7 +67,7 @@ uint8_t InterchipIsDataNew() {
     return 0;
 }
 
-uint16_t crc_calc_modbus(const uint8_t msgBuffer[], size_t len) {
+uint16_t crc_calc_modbus(int8_t msgBuffer[], size_t len) {
     {
         uint8_t low_byte_crc = 0xFF;  /* low byte of CRC initialized */
         uint8_t high_byte_crc = 0xFF; /* high byte of CRC initialized */
