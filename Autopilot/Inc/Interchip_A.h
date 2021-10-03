@@ -21,10 +21,10 @@ void Interchip_Run();
 void Interchip_SetPWM(int index, int data);
 
 // Gets the safety level that is being sent by the safety chip.
-uint16_t Interchip_GetAutonomousLevel(void);
+uint8_t Interchip_GetAutonomousLevel(void);
 
 // Function for calculating our CRC value
-uint16_t crc_calc_modbus(const int16_t msgBuffer[], size_t len);
+uint16_t crc_calc_modbus(volatile int16_t msgBuffer[], size_t len);
 
 /**
 * Callback for exclusive use by the SPI ISR.

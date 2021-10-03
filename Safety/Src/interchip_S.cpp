@@ -56,14 +56,14 @@ volatile int16_t *getPWM() {
     return rxData.PWM;
 }
 
-volatile uint16_t *getRXCRC() {
+uint16_t getRXCRC() {
     return rxData.crc;
 }
-volatile uint16_t *getTXCRC() {
+uint16_t getTXCRC() {
     return txData.crc;
 }
 // Get the safety level that is currently being sent out.
-uint16_t getSafetyLevel() {
+uint8_t getSafetyLevel() {
     return txData.safetyLevel;
 }
 
@@ -91,7 +91,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
     dataNew = true;
 }
 
-uint16_t crc_calc_modbus(const int16_t msgBuffer[], size_t len) {
+uint16_t crc_calc_modbus(volatile int16_t msgBuffer[], size_t len) {
     {
         uint8_t low_byte_crc = 0xFF;  /* low byte of CRC initialized */
         uint8_t high_byte_crc = 0xFF; /* high byte of CRC initialized */

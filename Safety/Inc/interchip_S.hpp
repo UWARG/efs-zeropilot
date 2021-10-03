@@ -1,4 +1,6 @@
 #include "../../Common/Inc/Interchip.h"
+#include <stdint.h>
+#include <cstddef>
 
 #ifndef INC_INTERCHIP_HPP_
 #define INC_INTERCHIP_HPP_
@@ -16,7 +18,7 @@ volatile int16_t *getPWM();
 
 
 // Get the safety level that is currently being sent out.
-uint16_t getSafetyLevel();
+uint8_t getSafetyLevel();
 
 // Set the safety level that is currently being sent out.
 void setSafetyLevel(uint8_t level);
@@ -32,8 +34,8 @@ bool isDataNew();
 void testSetup();
 
 // CRC checking functions
-volatile uint8_t *getRXCRC();
-volatile uint8_t *getTXCRC();
+uint16_t getRXCRC();
+uint16_t getTXCRC();
 
-uint16_t crc_calc_modbus(const int16_t msgBuffer[], size_t len);
+uint16_t crc_calc_modbus(volatile int16_t msgBuffer[], std::size_t len);
 #endif /* INC_INTERCHIP_HPP_ */
