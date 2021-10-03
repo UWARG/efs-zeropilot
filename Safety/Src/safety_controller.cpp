@@ -63,7 +63,7 @@ void safety_run(PWMChannel &pwm, PPMChannel &ppm)
     } else {
         crc_error_count += 1;
     }
-    if(crc_error_count > 5) {
+    if(crc_error_count >= 5) {
         disengage = true;
     }
 
