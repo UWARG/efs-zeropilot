@@ -105,6 +105,7 @@ TEST(CRCTest, CRCCalculation) {
 
 
 // TODO: tests for safety
+// >> easier to do on a chip.
 // - Make sure CRC is being received?
 // - Verify that CRC is being calculated
 // - Verify that CRC is being cross-checked
