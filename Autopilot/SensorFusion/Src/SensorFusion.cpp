@@ -117,7 +117,7 @@ void localToGlobalAccel(SFAttitudeOutput_t *attitudeData, float uAccel[3])
     mul(rotation, xyzAccel, newAccel, 3, 3, 1);
     
     //Convert result to original format of u
-    uAccel[0] = -xyzAccel[2];
+    uAccel[0] = -(xyzAccel[2] - 9.81);
     uAccel[1] = xyzAccel[0];
     uAccel[2] = xyzAccel[1];
 }
