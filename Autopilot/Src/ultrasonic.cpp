@@ -19,6 +19,22 @@ uint8_t distance = 0; // computed distance based on the length of the ECHO
 HCSR04 :: HCSR04() {
     HAL_TIM_IC_Start_IT(&htim11, TIM_CHANNEL_1); // Starts the timer (to be changed after pin configuration)
     data.htim = htim11;
+
+    // Set all local variables to default values:
+    IC_Val1 = 0;
+    IC_Val2 = 0;
+    difference = 0;
+    isFirstCaptured = 0; // Is the first value captured
+    distance = 0; // computed distance based on the length of the ECHO 
+}
+
+HCSR04* HCSR04::ultrasonicInstance = nullptr;
+
+HCSR04* HCSR04::GetInstance() {
+    if (!ultrasonicInstance) {
+        ultrasonicInstance = new HCSR04 {};
+    }
+    return ultrasonicInstance;
 }
 
 void HCSR04::trigger(GPIO_TypeDef * triggerPin, uint32_t pinName) {

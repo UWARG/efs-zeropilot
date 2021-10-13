@@ -33,6 +33,7 @@ class ultrasonic {
 class HCSR04 : public ultrasonic {
     public:
         HCSR04(const HCSR04*) = delete;
+        static *HCSR04 getInstance();
         void getDistance(ultrasonicData_t * data);
 
     private:
