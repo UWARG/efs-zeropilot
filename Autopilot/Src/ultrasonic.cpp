@@ -9,6 +9,14 @@
 
 #define SPEED_OF_SOUND 0.034f  
 #define TRIG_PIN   5 // temporary value, to be changed when pin configs completed
+#define TIMER_MAX 0xffff // used to account for possible overflow values with the timer
+
+// Defining pins for echo and trig pins re sensor
+GPIO_TypeDef * triggerPin;
+GPIO_TypeDef * echoPin;
+TIM_HandleTypeDef * htim = htim11;
+
+
 
 uint32_t IC_Val1 = 0;
 uint32_t IC_Val2 = 0;
@@ -18,8 +26,6 @@ uint8_t distance = 0; // computed distance based on the length of the ECHO
 
 HCSR04 :: HCSR04() {
     HAL_TIM_IC_Start_IT(&htim11, TIM_CHANNEL_1); // Starts the timer (to be changed after pin configuration)
-    data.htim = htim11;
-
     // Set all local variables to default values:
     IC_Val1 = 0;
     IC_Val2 = 0;
@@ -49,8 +55,8 @@ void HCSR04::delayMicroseconds(uint32_t us) {
 }
 
 void HCSR04 :: getDistance(ultrasonicData_t * data) {
-    trigger(data -> triggerPin, TRIG_PIN); // Sends trigger pulse 
-    __HAL_TIM_ENABLE_IT(data -> htim, TIM_IT_CC1);
+    trigger(triggerPin, TRIG_PIN); // Sends trigger pulse 
+    __HAL_TIM_ENABLE_IT(htim, TIM_IT_CC1);
 }
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
