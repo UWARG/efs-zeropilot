@@ -2,6 +2,8 @@
 #include "stm32f765xx.h"
 #include "stm32f7xx_hal_tim.h"
 #include "stm32f7xx_hal_gpio.h"
+#include "stm32f765xx.h"
+#include "stm32f7xx_hal_tim.h"
 #include "tim.h"
 #include <cstdint>
 

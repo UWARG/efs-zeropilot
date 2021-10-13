@@ -18,9 +18,9 @@ September 2021
 typedef struct ultrasonicData_t {
     float distance;
     bool isDataNew; // Records whether the data has been refreshed since the last time getResult was called
-    GPIO_TypeDef * triggerPin;
-    GPIO_TypeDef * echoPin;
-    TIM_HandleTypeDef htim;
+    // GPIO_TypeDef * triggerPin;
+    // GPIO_TypeDef * echoPin;
+    // TIM_HandleTypeDef htim;
 } ultrasonicData_t;
  
 class ultrasonic {
@@ -39,5 +39,9 @@ class HCSR04 : public ultrasonic {
         HCSR04();
         void trigger(GPIO_TypeDef * triggerPin, uint32_t pinName);
         void delayMicroseconds(uint32_t us);
-
+        uint32_t IC_Val1;
+        uint32_t IC_Val2;
+        uint32_t difference;
+        uint8_t isFirstCaptured; // Is the first value captured
+        uint8_t distance; // computed distance based on the length of the ECHO 
 };
