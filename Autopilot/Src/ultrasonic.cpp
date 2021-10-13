@@ -1,3 +1,4 @@
+
 #include "ultrasonic.hpp"
 #include "stm32f765xx.h"
 #include "stm32f7xx_hal_tim.h"
@@ -14,7 +15,7 @@
 // Defining pins for echo and trig pins re sensor
 GPIO_TypeDef * triggerPin;
 GPIO_TypeDef * echoPin;
-TIM_HandleTypeDef * htim = htim11;
+TIM_HandleTypeDef * htim;
 
 
 
@@ -25,6 +26,7 @@ uint8_t isFirstCaptured = 0; // Is the first value captured
 uint8_t distance = 0; // computed distance based on the length of the ECHO 
 
 HCSR04 :: HCSR04() {
+    htim = htim11;
     HAL_TIM_IC_Start_IT(&htim11, TIM_CHANNEL_1); // Starts the timer (to be changed after pin configuration)
     // Set all local variables to default values:
     IC_Val1 = 0;
