@@ -2,11 +2,7 @@
 // Created by antho on 10/27/2021.
 //
 
-// Inputs will be setvalues for:
-//      - Roll  (Degree)
-//      - Pitch (Degree)
-//      - Yaw   (Degree)
-//      - Elevation (Change from prev, unsure?)
+// Inputs will be setvalues for a point to fly to (to be determined).
 
 // should output 4 PWM values for:
 //      - Left Front    (LF)
