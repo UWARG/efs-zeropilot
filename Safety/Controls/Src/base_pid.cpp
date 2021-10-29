@@ -2,12 +2,14 @@
 // Created by antho on 10/27/2021.
 //
 
-// Inputs will be setvalues for a point to fly to (to be determined).
-
-// should output 4 PWM values for:
-//      - Left Front    (LF)
-//      - Right Front   (RF)
-//      - Left Rear     (LR)
-//      - Right Rear    (RR)
+/*
+ * Inputs:
+ *      - Setval (target distance forward?)
+ *      - IMU data (how much we have moved ? -> I don't think this is necessary but I'll double check).
+ *
+ * Outputs:
+ *      - PWM Value (% of max)
+ */
 
 // pika
+
