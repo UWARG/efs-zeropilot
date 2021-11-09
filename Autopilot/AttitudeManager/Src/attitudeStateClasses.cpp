@@ -5,7 +5,7 @@
  **********************************************************************************************************************/
 
 float OutputMixingMode::_channelOut[4];
-CommandsForAM fetchInstructionsMode::_PMInstructions;
+CommandsForAM fetchInstructionsMode::_MovementInstructions;
 SFOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t PIDloopMode::_PidOutput;
 
@@ -15,9 +15,19 @@ PID_Output_t PIDloopMode::_PidOutput;
 
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {
-    GetFromPMToAM(&_PMInstructions);
+    // Needs to be rewritten over interchip since AM and PM are on different chips now
+    // GetFromPMToAM(&_PMInstructions);
 
     // The support is also here for sending stuff to Path manager, but there's nothing I need to send atm.
+
+    if (this -> autonomous) {
+        // run GetFromPMTOAM function, get instructions from interchip
+    }
+
+    else {
+        // get PPM values from RC, convert into struct
+    }
+
     attitudeMgr->setState(sensorFusionMode::getInstance());
 }
 

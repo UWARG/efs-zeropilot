@@ -22,12 +22,13 @@ class fetchInstructionsMode : public attitudeState
         void execute(attitudeManager* attitudeMgr);
         void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
-        static CommandsForAM *GetPMInstructions(void) {return &_PMInstructions;}
+        static CommandsForAM *GetMovementInstructions(void) {return &_MovementInstructions;}
+        static CommandsForAM *GetTeleopInstructions(void) {return }
     private:
         fetchInstructionsMode() {CommFromAMToPMInit();}
         fetchInstructionsMode(const fetchInstructionsMode& other);
         fetchInstructionsMode& operator =(const fetchInstructionsMode& other);
-        static CommandsForAM _PMInstructions;
+        static CommandsForAM _MovementInstructions;
 };
 
 class sensorFusionMode : public attitudeState

@@ -18,7 +18,8 @@ typedef struct CommandsForAM{
     _PassbyControl passbyData;
 } CommandsForAM;
 
-//Data for attitude manager to send to path manager.
+//Data for attitude manager to send to path manager
+// TODO: Needs to be removed since is unnecessary now because Autopilot also has an IMU 
 typedef struct AttitudeData{
 	float roll,pitch,yaw;	// current orientation (radians)
 	float airspeed;			// current airspeed (m/s)
