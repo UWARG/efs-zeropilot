@@ -5,6 +5,7 @@
  **********************************************************************************************************************/
 
 float OutputMixingMode::_channelOut[4];
+bool decisionModuleMode::_autonomous;
 CommandsForAM fetchInstructionsMode::_MovementInstructions;
 SFOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t PIDloopMode::_PidOutput;
@@ -15,7 +16,16 @@ PID_Output_t PIDloopMode::_PidOutput;
 
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {
-    GetFromPMToAM(&_MovementInstructions);
+
+    bool autonomous = decisionModuleMode::getAutonomousMode();
+
+    if (autonomous) {
+        GetFromPMToAM(&_MovementInstructions); // data sent from path manager
+    }
+
+    else {
+        GetFromTeleop(&_MovementInstructions); // data from RC transmitter
+    }
 
     // The support is also here for sending stuff to Path manager, but there's nothing I need to send atm.
     attitudeMgr->setState(sensorFusionMode::getInstance());

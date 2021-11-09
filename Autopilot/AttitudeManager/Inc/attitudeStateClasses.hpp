@@ -15,6 +15,21 @@
  * Code
  **********************************************************************************************************************/
 
+class decisionModuleMode : public attitudeState
+{
+    public:
+        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;};
+        void execute(attitudeManager* attitudeMgr);
+        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;};
+        static attitudeState& getInstance() { return &autonomous };
+        static bool getAutonomousMode();
+        // any other required functions (for Tony)
+
+    private:
+        bool autonomous; // boolean flag indicating if the drone is in autonomous mode (1) or teleop (0)
+    
+};
+
 class fetchInstructionsMode : public attitudeState
 {
     public:
@@ -22,8 +37,8 @@ class fetchInstructionsMode : public attitudeState
         void execute(attitudeManager* attitudeMgr);
         void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
-        static CommandsForAM *GetMovementInstructions(void) {return &_MovementInstructions;}
-        static CommandsForAM *GetTeleopInstructions(void) {return }
+        static CommandsForAM *GetPMInstructions(void) {return &_MovementInstructions;} // get data from Path Manager over interchip
+        static CommandsForAM *GetTeleopInstructions(void) {return &_MovementInstructions;} // get data from RC transmitter through teleop control
     private:
         fetchInstructionsMode() {CommFromAMToPMInit();}
         fetchInstructionsMode(const fetchInstructionsMode& other);
