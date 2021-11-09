@@ -5,7 +5,7 @@
  **********************************************************************************************************************/
 
 float OutputMixingMode::_channelOut[4];
-CommandsForAM fetchInstructionsMode::_PMInstructions;
+CommandsForAM fetchInstructionsMode::_MovementInstructions;
 SFOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t PIDloopMode::_PidOutput;
 
@@ -15,7 +15,7 @@ PID_Output_t PIDloopMode::_PidOutput;
 
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {
-    GetFromPMToAM(&_PMInstructions);
+    GetFromPMToAM(&_MovementInstructions);
 
     // The support is also here for sending stuff to Path manager, but there's nothing I need to send atm.
     attitudeMgr->setState(sensorFusionMode::getInstance());
