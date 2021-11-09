@@ -4,10 +4,9 @@
 //
 
 /* Inputs:
- * - Safety IMU data (fast updates)
- * - PM Localization data (to be confirmed)
- * - Target values (currently just angles/vector -> Perhaps to be changed later)
- * - Flight Status
+ * - Global position -> not sure who will track diff from prev
+ * - New set values
+ * - New set value tick
 */
 
 /* Outputs:
