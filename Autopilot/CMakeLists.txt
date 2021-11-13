@@ -18,8 +18,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
     -DARM_MATH_CM7
   )
 
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
-
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O3")
 
   get_filename_component(PARENT_DIR ../ ABSOLUTE)
 
@@ -50,7 +49,8 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
   add_subdirectory(DataStructures)
 
   file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/Src/*.c boardfiles/Src/*.c CControl/Src/*.c)
-file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp AttitudeManager/Src/cruisingMode/*.cpp PathManager/Src/*.cpp TelemetryManager/Src/*.cpp SensorFusion/Src/*.cpp)
+
+file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp PathManager/Src/*.cpp TelemetryManager/Src/*.cpp SensorFusion/Src/*.cpp SensorFusion/Src/*.c)
   if(NOT NUCLEO)
     set(STARTUP_ASM startup_stm32f765xx.s)
     set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F765ZGTx_FLASH.ld)
@@ -168,17 +168,19 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
   set(ATTITUDE_MANAGER_MODULES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/OutputMixing.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Src/SensorFusion.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MahonyAHRS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Src/MahonyAHRS.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/mul.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/tran.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/inv.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/lup.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_IMU.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_GPS.cpp
   )
 
   set(ATTITUDE_MANAGER_MODULES_UNIT_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/AttitudeManager/Test_OutputMixing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_IMU.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_GPS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_Altimeter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_Airspeed.cpp
   )
 
   add_executable(attitudeManagerModules ${ATTITUDE_MANAGER_MODULES_SOURCES} ${ATTITUDE_MANAGER_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
@@ -283,17 +285,20 @@ target_link_libraries(pathManagerModesFsm ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_L
 
 set(SENSOR_FUSION_MODULES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Src/SensorFusion.cpp
-  )  
-
-  set(SENSOR_FUSION_MODULES_UNIT_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_SF.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MahonyAHRS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Src/MahonyAHRS.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/mul.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/tran.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/inv.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Src/lup.c
+  )  
+
+  set(SENSOR_FUSION_MODULES_UNIT_TEST_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_SF.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_IMU.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_GPS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_Altimeter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/SensorFusion/Test_Airspeed.cpp
   )
 
   add_executable(sensorFusionModules ${SENSOR_FUSION_MODULES_SOURCES} ${SENSOR_FUSION_MODULES_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
@@ -352,6 +357,7 @@ endif()
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/PathManager/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/TelemetryManager/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc
 
     ${SIM_ROOT_DIR}/GeneratedCCode/SimulinkModel/Infinion_grt_rtw
@@ -385,7 +391,6 @@ endif()
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/attitudeStateClasses.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/OutputMixing.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AttitudeManager/Src/MahonyAHRS.cpp
   )
 
   set(OTHER_SOURCES
@@ -412,7 +417,6 @@ endif()
 
   # Libraries
   add_subdirectory(DataStructures)
-
 
   add_executable(sim ${SIM_MAIN} ${PATH_MANAGER_SOURCES} ${ATTITUDE_MANAGER_SOURCES} ${AUTOPILOT_INTERCEPT_SOURCES} ${ZERO_PILOT_HOOK_SOURCES} ${OTHER_SOURCES} ${SIMULINK_GENERATED_SOURCES})
 

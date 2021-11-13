@@ -46,6 +46,11 @@ void commsWithTelemetry::execute(pathManager* pathMgr)
 {
     GetTelemetryCommands(&_incomingData);
 
+    #ifndef SIMULATION
+    setPitchPercent(_incomingData.gimbalPitch);
+    setYawPercent(_incomingData.gimbalYaw);
+    #endif
+
     if(pathMgr->isError)
     {
         pathMgr->setState(fatalFailureMode::getInstance());
@@ -220,7 +225,5 @@ pathManagerState& fatalFailureMode::getInstance()
     static fatalFailureMode singleton;
     return singleton;
 }
-
-
 
 

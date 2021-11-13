@@ -14,9 +14,9 @@ extern "C"
 #ifndef SENSORFUSION_HPP
 #define SENSORFUSION_HPP
 
+#include "CommonDataTypes.hpp"
 //Frequency of SF calculations in Hz
-// constexpr int SF_FREQ = 512;
-const int SF_FREQ = 512;
+const int SF_FREQ = 200;
 
 // -1 = FAILED
 // 0 = SUCCESS
@@ -45,9 +45,10 @@ typedef struct
     float magx, magy, magz;
     float accx, accy, accz;
     float gyrx, gyry, gyrz; 
-
+    float temp;
+    
     bool isDataNew; 
-    int sensorStatus; 
+    enum SensorErrorCodes sensorStatus; 
     float utcTime; 
 } IMU_Data_t;
 
@@ -55,7 +56,7 @@ typedef struct
 {
     double airspeed;        
 
-    int sensorStatus;       
+    enum SensorErrorCodes sensorStatus;       
     bool isDataNew;         
     float utcTime;          
 } Airspeed_Data_t;
@@ -66,14 +67,14 @@ typedef struct
     long double longitude; // 8 Bytes
     float utcTime;     // 4 Bytes. Time in seconds since 00:00 (midnight)
     float groundSpeed; // in m/s
-    short heading; // in degrees. Should be between 0-360 at all times, but using integer just in case
     int altitude; // in m
-    char numSatellites;    // 1 Byte
-    char fixStatus; //0 = No GPS, 1 = GPS fix, 2 = DGSP Fix, 3 = Estimated/Dead Recoking Fix
+    int16_t heading; // in degrees. Should be between 0-360 at all times, but using integer just in case
+    uint8_t numSatellites;    // 1 Byte
+    uint8_t fixStatus; //0 = No GPS, 1 = GPS fix, 2 = DGSP Fix, 3 = Estimated/Dead Recoking Fix
 
-    char sensorStatus; // 0 = no fix, 1 = gps fix, 2 = differential gps fix (DGPS) (other codes are possible)
+    enum SensorErrorCodes sensorStatus; // 0 = no fix, 1 = gps fix, 2 = differential gps fix (DGPS) (other codes are possible)
     bool dataIsNew; // true if data has been refreshed since the previous time GetResult was called, false otherwise.
-    bool timeIsValid;
+	bool timeIsNew;
 
     //Added these so autopilot knows which data is new
     bool ggaDataIsNew; //Position, altitude, time, and number of satellites
@@ -85,7 +86,7 @@ typedef struct  {
     float pressure, altitude, temp;
 
     bool isDataNew; 
-    int status; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
+    enum SensorErrorCodes status; //TBD but probably 0 = SUCCESS, -1 = FAIL, 1 = BUSY 
     int utcTime; //Last time GetResult was called
 } Altimeter_Data_t;
 

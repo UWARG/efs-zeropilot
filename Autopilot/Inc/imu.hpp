@@ -8,7 +8,7 @@
 #define IMU_HPP
 
 #include <cstdint>
-
+#include "CommonDataTypes.hpp"
 /***********************************************************************************************************************
  * Definitions
  **********************************************************************************************************************/
@@ -21,7 +21,7 @@ struct IMUData_t {
     float temp; 
 
     bool isDataNew;
-    int sensorStatus; // 0 = SUCCESS, -1 = FAIL, 1 = BUSY
+    SensorErrorCodes sensorStatus; // 0 = SUCCESS, -1 = FAIL, 1 = BUSY
 };
 
 /***********************************************************************************************************************
@@ -44,7 +44,7 @@ class IMU {
          * This function is non blocking and returns right away.
          * @param[in]       Data        reference to the results struct.
          * */
-        virtual void GetResult(IMUData_t &Data) = 0;
+        virtual void GetResult(IMUData_t& Data) = 0;
 };
 
 class BMX160: public IMU{
@@ -63,7 +63,7 @@ class BMX160: public IMU{
         BMX160(const BMX160*) = delete;
 
         void Begin_Measuring();
-        void GetResult(IMUData_t &Data);
+        void GetResult(IMUData_t& Data);
 
     private:
 
@@ -79,8 +79,12 @@ class BMX160: public IMU{
         void Bmx160WriteReg(uint8_t reg, uint8_t val);
         void Bmx160ReadReg(uint8_t const regAddr, uint8_t *pData, uint8_t len);
 
+        void Calibrate(void);
+
         //Variables
         uint8_t rawImuData[21];
+        IMUData_t ImuCalibration;
+        IMUData_t ImuCalibrationFinal;
 
 };
 
@@ -99,7 +103,7 @@ class TestIMU : public IMU {
 
         void Begin_Measuring();
 
-        void GetResult(IMUData_t &Data);
+        void GetResult(IMUData_t& Data);
 
 };
 

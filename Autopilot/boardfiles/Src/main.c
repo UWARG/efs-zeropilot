@@ -130,6 +130,8 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
 
+  HAL_Delay(100);
+
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -137,7 +139,6 @@ int main(void)
   MX_DMA_Init();
   MX_SPI5_Init();
   MX_SPI4_Init();
-  MX_I2C1_Init();
   MX_I2C4_Init();
   MX_USART2_UART_Init();
   MX_SPI1_Init();
@@ -150,9 +151,10 @@ int main(void)
   MX_TIM10_Init();
   MX_TIM11_Init();
   MX_CRC_Init();
-  MX_I2C2_Init();
   MX_SPI6_Init();
   MX_TIM14_Init();
+  MX_I2C1_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */

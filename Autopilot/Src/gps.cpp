@@ -200,9 +200,9 @@ void NEOM8::parse_gpsData() {
 			gpsData.dataIsNew = true;
 			gpsData.timeIsNew = true;
 			gpsData.ggaDataIsNew = true;
-			gpsData.sensorStatus = 0;
+			gpsData.sensorStatus = SENSOR_SUCCESS;
 		} else {
-			gpsData.sensorStatus = 1;
+			gpsData.sensorStatus = SENSOR_FAIL;
 		}
 	}
 
@@ -214,9 +214,9 @@ void NEOM8::parse_gpsData() {
 			dataAvailable = true;
 			gpsData.dataIsNew = true;
 			gpsData.vtgDataIsNew = true;
-			gpsData.sensorStatus = 0;
+			gpsData.sensorStatus = SENSOR_SUCCESS;
 		} else {
-			gpsData.sensorStatus = 1;
+			gpsData.sensorStatus = SENSOR_FAIL;
 		}
 	}
 }
@@ -424,7 +424,7 @@ void NEOM8::parse_gga(uint8_t* data) {
 	gpsData.altitude = (int)(tAltitude / multiplier);
 }
 
-void NEOM8::GetResult(GpsData_t * Data) {
+void NEOM8::GetResult(GpsData_t& Data) {
 
 	if (uartDataIsNew) {
 		parse_gpsData();
@@ -432,19 +432,19 @@ void NEOM8::GetResult(GpsData_t * Data) {
 	}
 
 	if (dataAvailable) {
-		Data->dataIsNew = gpsData.dataIsNew;
-		Data->ggaDataIsNew = gpsData.ggaDataIsNew;
-		Data->vtgDataIsNew = gpsData.vtgDataIsNew;
-		Data->latitude = gpsData.latitude;
-		Data->longitude = gpsData.longitude;
-		Data->utcTime = gpsData.utcTime;
-		Data->groundSpeed = gpsData.groundSpeed;
-		Data->altitude = gpsData.altitude;
-		Data->heading = gpsData.heading;
-		Data->numSatellites = gpsData.numSatellites;
-		Data->fixStatus = gpsData.fixStatus;
-		Data->sensorStatus = gpsData.sensorStatus;
-		Data->timeIsNew = gpsData.timeIsNew;
+		Data.dataIsNew = gpsData.dataIsNew;
+		Data.ggaDataIsNew = gpsData.ggaDataIsNew;
+		Data.vtgDataIsNew = gpsData.vtgDataIsNew;
+		Data.latitude = gpsData.latitude;
+		Data.longitude = gpsData.longitude;
+		Data.utcTime = gpsData.utcTime;
+		Data.groundSpeed = gpsData.groundSpeed;
+		Data.altitude = gpsData.altitude;
+		Data.heading = gpsData.heading;
+		Data.numSatellites = gpsData.numSatellites;
+		Data.fixStatus = gpsData.fixStatus;
+		Data.sensorStatus = gpsData.sensorStatus;
+		Data.timeIsNew = gpsData.timeIsNew;
 
 		gpsData.vtgDataIsNew = false;
 		gpsData.ggaDataIsNew = false;

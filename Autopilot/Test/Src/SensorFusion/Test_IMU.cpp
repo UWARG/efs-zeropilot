@@ -1,6 +1,7 @@
 //Provides skeleton IMU definitions for testing sensor fusion
 
 #include "imu.hpp"
+#include "CommonDataTypes.hpp"
 
 TestIMU* TestIMU::GetInstance()
 {
@@ -27,5 +28,5 @@ void TestIMU::GetResult(IMUData_t &Data)
     Data.temp = 0;
 
     Data.isDataNew = true;
-    Data.sensorStatus = 0;
+    Data.sensorStatus = SENSOR_SUCCESS;
 }

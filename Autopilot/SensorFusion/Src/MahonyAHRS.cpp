@@ -15,12 +15,13 @@
 // Header files
 
 #include "MahonyAHRS.h"
+#include "SensorFusion.hpp"
 #include <math.h>
 
 //---------------------------------------------------------------------------------------------------
 // Definitions
 
-#define sampleFreq	200.0f			// sample frequency in Hz
+#define sampleFreq	SF_FREQ			// sample frequency in Hz
 #define twoKpDef	(2.0f * .5f)	// 2 * proportional gain
 #define twoKiDef	(2.0f * 0.1f)	// 2 * integral gain
 

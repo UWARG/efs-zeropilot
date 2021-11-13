@@ -18,7 +18,7 @@
 #define AIRSPEED_HPP
 
 #include <cstdint>
-
+#include "CommonDataTypes.hpp"
 /*
     Currently there is only one airspeed sensor used, if this is 
     changed to a different sensor, part numbers and a selection
@@ -29,7 +29,7 @@ struct airspeedData_t
 {
     double airspeed;        // in m/s
 
-    int sensorStatus;       // report any errors, possible malfunctions 
+    SensorErrorCodes sensorStatus;       // report any errors, possible malfunctions 
     bool isDataNew;         // is the data fresh?
     float utcTime;          // 4 Bytes. Time in seconds since 00:00 
 };
@@ -51,7 +51,7 @@ class airspeed {
          *  ensure that data acquired makes sense, has been
          *  gathered recently within reason (past 10s?)
          * */
-        virtual void GetResult(airspeedData_t &Data) = 0; 
+        virtual void GetResult(airspeedData_t& Data) = 0; 
 };
 
 /***********************************************************************************************************************
@@ -66,7 +66,7 @@ class MPXV7002DP : public airspeed {
          * Moves values from the variables to the airspeed data struct.
          * Sets the dataNew variable to false after that.
          */
-        void GetResult(airspeedData_t &Data);
+        void GetResult(airspeedData_t& Data);
 
         /**
          *  Don't use this function, the GetResult function is non blocking.
@@ -104,7 +104,7 @@ class MPXV7002DP : public airspeed {
         int offset = 0;
         float airspeed = 0;
         float utcTime = 0;
-        int sensorStatus = 0;
+        SensorErrorCodes sensorStatus = SENSOR_SUCCESS;
         bool dataNew = false;
         
 };
@@ -112,6 +112,14 @@ class MPXV7002DP : public airspeed {
 
 #ifdef UNIT_TESTING
 #include "airspeed_Mock.hpp"
+
+class TestAirspeed : public airspeed {
+    public:
+        static TestAirspeed* GetInstance();
+
+        void Begin_Measuring();
+        void GetResult(airspeedData_t& Data);
+};
 #endif
 
 #ifdef SIMULATION
@@ -120,7 +128,7 @@ class SimulatedAirspeed : public airspeed
 {
     public :
         void Begin_Measuring();
-        void GetResult(airspeedData_t &Data);
+        void GetResult(airspeedData_t& Data);
 };
 #endif
 

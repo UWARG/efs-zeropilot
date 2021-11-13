@@ -37,6 +37,8 @@ FAKE_VALUE_FUNC(bool, GetTelemetryCommands, Telemetry_PIGO_t*);
 FAKE_VALUE_FUNC(bool, GetAttitudeData, AttitudeData*);
 FAKE_VOID_FUNC(AutoSteer_ComputeCoordinatedTurn, CoordinatedTurnInput_t*, CoordinatedTurnAttitudeManagerCommands_t*);
 FAKE_VOID_FUNC(AutoSteer_ComputeAltitudeAndAirspeed, AltitudeAirspeedInput_t*, AltitudeAirspeedCommands_t*);
+FAKE_VOID_FUNC(setPitchPercent, float);
+FAKE_VOID_FUNC(setYawPercent, float);
 
 class PathManagerFSM : public ::testing::Test
 {
@@ -55,6 +57,8 @@ class PathManagerFSM : public ::testing::Test
 			RESET_FAKE(GetAttitudeData);
 			RESET_FAKE(AutoSteer_ComputeCoordinatedTurn);
 			RESET_FAKE(AutoSteer_ComputeAltitudeAndAirspeed);
+			RESET_FAKE(setPitchPercent);
+			RESET_FAKE(setYawPercent);
 		}
 
 		virtual void TearDown()

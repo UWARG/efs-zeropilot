@@ -90,14 +90,14 @@
 // TODO: Confirm the period at which each of the threads are to be run and update them
 static const int PERIOD_ATTITUDEMANAGER_MS = 5;
 static const int PERIOD_SENSORDATA_MS = 5;
-static const int PERIOD_PATHMANAGER_MS = 20; 
-static const int PERIOD_TELEMETRY_MS = 20; 
+static const int PERIOD_PATHMANAGER_MS = 20;
+static const int PERIOD_TELEMETRY_MS = 20;
 static const int PERIOD_INTERCHIP_MS = 20;
 
 static volatile bool catastrophicFailure = false;
 
 
-/* USER CODE END Variables */ 
+/* USER CODE END Variables */
 osThreadId sensorDataHandle;
 osThreadId attitudeManagerHandle;
 osThreadId InterchipHandle;
@@ -179,12 +179,12 @@ void MX_FREERTOS_Init(void) {
   attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of pathManager */
-  osThreadDef(pathManager, pathManagerExecute, osPriorityNormal, 0, 250);
-  pathManagerHandle = osThreadCreate(osThread(pathManager), NULL);
+  //osThreadDef(pathManager, pathManagerExecute, osPriorityNormal, 0, 250);
+  //pathManagerHandle = osThreadCreate(osThread(pathManager), NULL);
 
   // /* definition and creation of telemetryRun */
-  osThreadDef(telemetryRun, telemetryRunExecute, osPriorityNormal, 0, 250);
-  telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
+  //osThreadDef(telemetryRun, telemetryRunExecute, osPriorityNormal, 0, 250);
+  //telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
 
   /* definition and creation of Interchip */
   osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 0, 250);
@@ -215,7 +215,7 @@ void attitudeManagerExecute(void const * argument)
     bool status = AttitudeManagerInterfaceExecute();
     if (!status) {
       catastrophicFailure = true;
-    }    
+    }
   }
   /* USER CODE END attitudeManagerExecute */
 }
@@ -240,7 +240,7 @@ void pathManagerExecute(void const * argument)
       catastrophicFailure = true;
     }
   }
-  
+
   /* USER CODE END pathManagerExecute */
 }
 
@@ -265,7 +265,7 @@ void telemetryRunExecute(void const * argument)
     }
     HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
   }
-  
+
   /* USER CODE END telemetryRunExecute */
 }
 
@@ -287,8 +287,8 @@ void interchipRunExecute(void const * argument) {
       Interchip_Run();
     }
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-    /* USER CODE END interchipRunExecute */ 
-  }  
+    /* USER CODE END interchipRunExecute */
+  }
 }
 
 /* USER CODE BEGIN Header_sensorDataExecute */
@@ -306,11 +306,8 @@ void sensorDataExecute(void const * argument) {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_SENSORDATA_MS);
     IMUThreadInterfaceExecute();
-    SFError_t err = SensorFusionInterfaceExecute();
-    if (err.errorCode == -1) {
-      catastrophicFailure = true;
-    }
-    HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin); 
+    SensorFusionInterfaceExecute();
+    HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
   }
 }
 
