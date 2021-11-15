@@ -32,6 +32,7 @@ struct _CruisingState_Telemetry_Return {
  *
  * @return error code indicating success of operation
  */
+
 _ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingStateManager, uint16_t * idArray);
 
 /**

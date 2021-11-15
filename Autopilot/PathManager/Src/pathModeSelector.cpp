@@ -29,7 +29,7 @@ void PathModeSelector::execute(Telemetry_PIGO_t telemetry_in, SFOutput_t sensor_
     current_mode->execute(telemetry_in, sensor_fusion_in, imu_data_in);
 }
 
-void PathModeSelector::setAltitdeAirspeedInput(AltitudeAirspeedInput_t alt_airspeed_input) {     
+void PathModeSelector::setAltitudeAirspeedInput(AltitudeAirspeedInput_t alt_airspeed_input) {
     memcpy(&altitude_airspeed_input, &alt_airspeed_input, sizeof(AltitudeAirspeedInput_t));
 }
 

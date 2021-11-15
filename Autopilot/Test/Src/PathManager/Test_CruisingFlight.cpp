@@ -22,7 +22,7 @@ using ::testing::Test;
         - Incorrect telemetry commands     
         
         // Editing
-        - Initialzing the flight path      
+        - Initializing the flight path
         - Nuking the flight path
         - Appending (also test failing)    
         - Inserting (also test failing)    
