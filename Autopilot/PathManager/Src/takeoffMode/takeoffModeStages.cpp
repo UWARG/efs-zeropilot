@@ -84,7 +84,7 @@ void TakeoffRollStage::execute(TakeoffMode* takeoff_mode) {
     LandingTakeoffManager::translateLTSFCommandsToCoordTurns(*landing_takeoff_output, sf_data, imu_data, coord_turn_input, alt_airspeed_input);
 
     takeoff_mode->getModeSelector()->setCoordinatedTurnInput(coord_turn_input);
-    takeoff_mode->getModeSelector()->setAltitdeAirspeedInput(alt_airspeed_input);
+    takeoff_mode->getModeSelector()->setAltitudeAirspeedInput(alt_airspeed_input);
     takeoff_mode->getModeSelector()->setPassbyControl(_output.controlDetails);
 
     // Set output telemetry data
@@ -157,7 +157,7 @@ void TakeoffClimbStage::execute(TakeoffMode* takeoff_mode) {
     LandingTakeoffManager::translateLTSFCommandsToCoordTurns(*landing_takeoff_output, sf_data, imu_data, coord_turn_input, alt_airspeed_input);
 
     takeoff_mode->getModeSelector()->setCoordinatedTurnInput(coord_turn_input);
-    takeoff_mode->getModeSelector()->setAltitdeAirspeedInput(alt_airspeed_input);
+    takeoff_mode->getModeSelector()->setAltitudeAirspeedInput(alt_airspeed_input);
     takeoff_mode->getModeSelector()->setPassbyControl(_output.controlDetails);
 
     // Set output telemetry data
@@ -174,8 +174,3 @@ TakeoffModeStageManager& TakeoffClimbStage::getInstance() {
     static TakeoffClimbStage singleton;
     return singleton;
 }
-
-
-
-
-

@@ -51,7 +51,7 @@ void CruisingFlight::execute(CruisingMode* cruise_mode) {
     passby_control.throttlePassby = false;
 
     cruise_mode->getModeSelector()->setCoordinatedTurnInput(coord_turn_input);
-    cruise_mode->getModeSelector()->setAltitdeAirspeedInput(alt_airspeed_input);
+    cruise_mode->getModeSelector()->setAltitudeAirspeedInput(alt_airspeed_input);
     cruise_mode->getModeSelector()->setPassbyControl(passby_control);
 
     // Set output data to be sent back to PM commsWithTelemetry state
@@ -75,4 +75,3 @@ CruisingModeStageManager& CruisingFlight::getInstance() {
     static CruisingFlight singleton;
     return singleton;
 }
-

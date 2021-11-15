@@ -118,7 +118,7 @@ void LandingTransitionStage::execute(LandingMode* land_mode) {
     LandingTakeoffManager::translateLTSFCommandsToCoordTurns(*landing_takeoff_output, sf_data, imu_data, coord_turn_input, alt_airspeed_input);
 
     land_mode->getModeSelector()->setCoordinatedTurnInput(coord_turn_input);
-    land_mode->getModeSelector()->setAltitdeAirspeedInput(alt_airspeed_input);
+    land_mode->getModeSelector()->setAltitudeAirspeedInput(alt_airspeed_input);
     land_mode->getModeSelector()->setPassbyControl(_output.controlDetails);
 
     // Set output telemetry data
@@ -192,7 +192,7 @@ void LandingSlopeStage::execute(LandingMode* land_mode) {
     LandingTakeoffManager::translateLTSFCommandsToCoordTurns(*landing_takeoff_output, sf_data, imu_data, coord_turn_input, alt_airspeed_input);
 
     land_mode->getModeSelector()->setCoordinatedTurnInput(coord_turn_input);
-    land_mode->getModeSelector()->setAltitdeAirspeedInput(alt_airspeed_input);
+    land_mode->getModeSelector()->setAltitudeAirspeedInput(alt_airspeed_input);
     land_mode->getModeSelector()->setPassbyControl(_output.controlDetails);
 
     // Set output telemetry data
@@ -270,7 +270,7 @@ void LandingFlareStage::execute(LandingMode* land_mode) {
     LandingTakeoffManager::translateLTSFCommandsToCoordTurns(*landing_takeoff_output, sf_data, imu_data, coord_turn_input, alt_airspeed_input);
 
     land_mode->getModeSelector()->setCoordinatedTurnInput(coord_turn_input);
-    land_mode->getModeSelector()->setAltitdeAirspeedInput(alt_airspeed_input);
+    land_mode->getModeSelector()->setAltitudeAirspeedInput(alt_airspeed_input);
     land_mode->getModeSelector()->setPassbyControl(_output.controlDetails);
 
     // Set output telemetry data
@@ -332,7 +332,7 @@ void LandingDecrabStage::execute(LandingMode* land_mode) {
     LandingTakeoffManager::translateLTSFCommandsToCoordTurns(*landing_takeoff_output, sf_data, imu_data, coord_turn_input, alt_airspeed_input);
 
     land_mode->getModeSelector()->setCoordinatedTurnInput(coord_turn_input);
-    land_mode->getModeSelector()->setAltitdeAirspeedInput(alt_airspeed_input);
+    land_mode->getModeSelector()->setAltitudeAirspeedInput(alt_airspeed_input);
     land_mode->getModeSelector()->setPassbyControl(_output.controlDetails);
 
     land_mode->getModeSelector()->setIsError(false); // Set error value
@@ -387,7 +387,7 @@ void LandingTouchdownStage::execute(LandingMode* land_mode) {
     LandingTakeoffManager::translateLTSFCommandsToCoordTurns(*landing_takeoff_output, sf_data, imu_data, coord_turn_input, alt_airspeed_input);
 
     land_mode->getModeSelector()->setCoordinatedTurnInput(coord_turn_input);
-    land_mode->getModeSelector()->setAltitdeAirspeedInput(alt_airspeed_input);
+    land_mode->getModeSelector()->setAltitudeAirspeedInput(alt_airspeed_input);
     land_mode->getModeSelector()->setPassbyControl(_output.controlDetails);
 
     land_mode->getModeSelector()->setIsError(false); // Set error value
@@ -421,5 +421,3 @@ LandingModeStageManager& LandingTouchdownStage::getInstance() {
     static LandingTouchdownStage singleton;
     return singleton;
 }
-
-
