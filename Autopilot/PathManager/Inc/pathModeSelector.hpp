@@ -75,7 +75,7 @@ class PathModeSelector {
          * 
          * @return none
          */
-        void setAltitdeAirspeedInput(AltitudeAirspeedInput_t alt_airspeed_input);
+        void setAltitudeAirspeedInput(AltitudeAirspeedInput_t alt_airspeed_input);
 
         /**
          * get the altitude_airspeed_input parameter, which will be used by coordinateTurnElevation 
@@ -187,4 +187,3 @@ class PathModeSelector {
 };
 
 #endif
-
