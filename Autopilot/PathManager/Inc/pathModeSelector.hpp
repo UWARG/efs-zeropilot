@@ -41,10 +41,17 @@ class PathModeSelector {
         void execute(Telemetry_PIGO_t telemetry_in, SFOutput_t sensor_fusion_in, IMU_Data_t imu_data_in);
         
         /**
-         * Dequeue instruction the most urgent instruction from the instructionQueue. Make sure that queue is not empty
-         * before dequeing.
+         * Checks whether the instruction queue is empty.
          * 
-         * @return the most urgent telemetryData
+         * @return true if the queue is empty. Else return false
+         */
+        bool instructionQueueIsEmpty();
+
+        /**
+         * Dequeues the first(a.k.a. most urgent) instruction from the instruction queue. Make sure that queue is not empty
+         * before dequeing by running instructionQueueIsEmpty() beforehand.
+         * 
+         * @return telemetry data
          */
         Telemetry_PIGO_t dequeueInstruction();
 
@@ -179,6 +186,9 @@ class PathModeSelector {
         PathModeSelector();
         static PathModeSelector* singleton;
         
+        /*
+         * Function to enqueue a new instruction onto the instruction queue.
+         */
         void enqueueInstruction(Telemetry_PIGO_t newInstruction);
         instructionQueueNode* first_instr;
 

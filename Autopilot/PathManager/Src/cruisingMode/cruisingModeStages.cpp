@@ -17,6 +17,7 @@ _CruisingState_Telemetry_Return CruisingFlight::_return_to_ground;
 void CruisingFlight::execute(CruisingMode* cruise_mode) {
     Telemetry_PIGO_t telem_data = cruise_mode->getTelemetryData();
     SFOutput_t sf_data = cruise_mode->getSensorFusionData();
+    
 
     // Set waypoint manager input struct
     _input_data.track = sf_data.track; // Gets track
@@ -24,9 +25,17 @@ void CruisingFlight::execute(CruisingMode* cruise_mode) {
     _input_data.latitude = sf_data.latitude;
     _input_data.altitude = sf_data.altitude;
 
-    _ModifyFlightPathErrorCode edit_error = editFlightPath(&telem_data, cruising_state_manager, waypoint_id_array); // Edit flight path if applicable
-    _GetNextDirectionsErrorCode path_error = pathFollow(&telem_data, cruising_state_manager, _input_data, &_output_data, going_home, in_hold); // Get next direction or modify flight behaviour pattern
-    setReturnValues(&_return_to_ground, cruising_state_manager, edit_error, path_error); // Set error codes
+
+    Telemetry_PIGO_t instr;
+    //Go over all instructions on the instruction queue
+    while (!cruise_mode->getModeSelector()->instructionQueueIsEmpty()) {
+        instr = cruise_mode->getModeSelector()->dequeueInstruction();
+
+        _ModifyFlightPathErrorCode edit_error = editFlightPath(&instr, cruising_state_manager, waypoint_id_array); // Edit flight path if applicable
+        _GetNextDirectionsErrorCode path_error = pathFollow(&instr, cruising_state_manager, _input_data, &_output_data, going_home, in_hold); // Get next direction or modify flight behaviour pattern
+        setReturnValues(&_return_to_ground, cruising_state_manager, edit_error, path_error); // Set error codes
+    }
+
 
     // Set output data to be sent back to PM coordinatedTurnsElevation state
     CoordinatedTurnInput_t coord_turn_input;

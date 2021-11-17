@@ -28,11 +28,24 @@ PathModeSelector::PathModeSelector() : current_mode_enum {MODE_TAKEOFF} {
 #endif
 
 void PathModeSelector::execute(Telemetry_PIGO_t telemetry_in, SFOutput_t sensor_fusion_in, IMU_Data_t imu_data_in) {
+    
+    //Check whether the telemetry_in has an editflightPath command. If so, we enqueue it into our InstructionQueue
+    if (telemetry_in.waypointModifyFlightPathCommand != NO_FLIGHT_PATH_EDIT) {        
+        PathModeSelector::enqueueInstruction(telemetry_in);
+    }
 
     current_mode->execute(telemetry_in, sensor_fusion_in, imu_data_in);
 }
 
 //TODO: 
+
+bool PathModeSelector::instructionQueueIsEmpty() {
+    if (first_instr == nullptr) {
+        return true;
+    } else {
+        return false;
+    }
+}
 Telemetry_PIGO_t PathModeSelector::dequeueInstruction() {
     ///Assumes that Queue is non empty.
         instructionQueueNode* newFirstInstruction = first_instr->nextInstruction; //Store temporary new head
