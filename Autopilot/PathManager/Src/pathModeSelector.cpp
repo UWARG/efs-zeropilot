@@ -37,8 +37,6 @@ void PathModeSelector::execute(Telemetry_PIGO_t telemetry_in, SFOutput_t sensor_
     current_mode->execute(telemetry_in, sensor_fusion_in, imu_data_in);
 }
 
-//TODO: 
-
 bool PathModeSelector::instructionQueueIsEmpty() {
     if (first_instr == nullptr) {
         return true;
@@ -46,6 +44,7 @@ bool PathModeSelector::instructionQueueIsEmpty() {
         return false;
     }
 }
+
 Telemetry_PIGO_t PathModeSelector::dequeueInstruction() {
     ///Assumes that Queue is non empty.
         instructionQueueNode* newFirstInstruction = first_instr->nextInstruction; //Store temporary new head
@@ -77,7 +76,6 @@ void PathModeSelector::enqueueInstruction(Telemetry_PIGO_t newInstruction) {
         latestInstruction->nextInstruction = newInstructionQueueNode;
     }
 };
-
 
 void PathModeSelector::setAltitudeAirspeedInput(AltitudeAirspeedInput_t alt_airspeed_input) {     
     memcpy(&altitude_airspeed_input, &alt_airspeed_input, sizeof(AltitudeAirspeedInput_t));
