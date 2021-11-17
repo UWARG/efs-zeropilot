@@ -15,19 +15,56 @@ PathModeSelector* PathModeSelector::getInstance() {
 
 PathModeSelector::PathModeSelector() : current_mode_enum {MODE_TESTING_NONE} {
     current_mode = nullptr; 
+    first_instr = nullptr;
 }
 
 #else
 
 PathModeSelector::PathModeSelector() : current_mode_enum {MODE_TAKEOFF} {
     current_mode = &TakeoffMode::getInstance(); 
+    first_instr = nullptr;
 }
 
 #endif
 
 void PathModeSelector::execute(Telemetry_PIGO_t telemetry_in, SFOutput_t sensor_fusion_in, IMU_Data_t imu_data_in) {
+
     current_mode->execute(telemetry_in, sensor_fusion_in, imu_data_in);
 }
+
+//TODO: 
+Telemetry_PIGO_t PathModeSelector::dequeueInstruction() {
+    ///Assumes that Queue is non empty.
+        instructionQueueNode* newFirstInstruction = first_instr->nextInstruction; //Store temporary new head
+        Telemetry_PIGO_t instruction = first_instr->instruction;
+        free(first_instr); //Not sure if this the right way to free variables
+        first_instr = newFirstInstruction; //Update the head of the instructionQueue
+        return instruction;
+};
+
+void PathModeSelector::enqueueInstruction(Telemetry_PIGO_t newInstruction) {
+    if (first_instr == nullptr) { //If our Queue is empty, make it the first
+        first_instr = new instructionQueueNode{};
+        first_instr->instruction = newInstruction;
+        first_instr->nextInstruction = nullptr;
+
+    } else {
+        instructionQueueNode* latestInstruction = first_instr;
+        
+        while (latestInstruction->nextInstruction != nullptr) {
+            latestInstruction = latestInstruction->nextInstruction;
+        };
+
+        //Create new instructionQueueNode
+        instructionQueueNode* newInstructionQueueNode = new instructionQueueNode{};
+        newInstructionQueueNode->instruction = newInstruction;
+        newInstructionQueueNode->nextInstruction = nullptr;
+        
+        //Add new instructionQueueNode to the entire queue
+        latestInstruction->nextInstruction = newInstructionQueueNode;
+    }
+};
+
 
 void PathModeSelector::setAltitudeAirspeedInput(AltitudeAirspeedInput_t alt_airspeed_input) {     
     memcpy(&altitude_airspeed_input, &alt_airspeed_input, sizeof(AltitudeAirspeedInput_t));

@@ -14,6 +14,11 @@
     enum PathModeEnum {MODE_TAKEOFF = 0, MODE_CRUISING, MODE_LANDING, MODE_TAXIING};
 #endif
 
+struct instructionQueueNode {
+    Telemetry_PIGO_t instruction;
+    instructionQueueNode* nextInstruction;
+};
+
 // ModeSelector in https://uwarg-docs.atlassian.net/wiki/spaces/ZP/pages/1866989569/Proposed+Redesign
 class PathModeSelector {
     public:
@@ -34,6 +39,14 @@ class PathModeSelector {
          * @return none
          */
         void execute(Telemetry_PIGO_t telemetry_in, SFOutput_t sensor_fusion_in, IMU_Data_t imu_data_in);
+        
+        /**
+         * Dequeue instruction the most urgent instruction from the instructionQueue. Make sure that queue is not empty
+         * before dequeing.
+         * 
+         * @return the most urgent telemetryData
+         */
+        Telemetry_PIGO_t dequeueInstruction();
 
         /**
          * Returns a pointer to the current mode of flight. Note that a PathMode object is returned, which is the
@@ -165,6 +178,9 @@ class PathModeSelector {
     private: 
         PathModeSelector();
         static PathModeSelector* singleton;
+        
+        void enqueueInstruction(Telemetry_PIGO_t newInstruction);
+        instructionQueueNode* first_instr;
 
         PathMode* current_mode;
         PathModeEnum current_mode_enum;
