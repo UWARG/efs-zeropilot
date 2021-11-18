@@ -11,11 +11,15 @@ add_definitions(
 )
 
 include_directories(
+    Inc
+    ${PARENT_DIR}/Common/Inc
     boardfiles/Inc
     boardfiles/Drivers/STM32F0xx_HAL_Driver/Inc
     boardfiles/Drivers/CMSIS/Device/ST/STM32F0xx/Include
     boardfiles/Drivers/CMSIS/Include
-    Inc
+    AttitudeManager/Inc
+    Controls/Inc
+    SensorFusion/Inc
 )
 
 # Libraries
