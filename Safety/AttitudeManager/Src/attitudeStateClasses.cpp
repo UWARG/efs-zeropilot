@@ -47,7 +47,7 @@ void sensorFusionMode::execute(attitudeManager* attitudeMgr)
 attitudeState& sensorFusionMode::getInstance()
 {
     static sensorFusionMode singleton;
-    return singleton;
+    return singleton;   
 }
 
 void PIDloopMode::execute(attitudeManager* attitudeMgr)
