@@ -24,6 +24,9 @@ include_directories(
 
 # Libraries
 add_subdirectory(Libraries/STM32F0xx_HAL_Driver)
+file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/Src/*.c boardfiles/Src/*.c)
+file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp SensorFusion/Src/*.cpp SensorFusion/Src/*.c)
+
 
 # Tests
 #add_subdirectory(Tests)
