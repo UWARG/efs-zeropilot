@@ -1,7 +1,7 @@
 #ifndef SAFETY_CONFIG_HPP
 #define SAFETY_CONFIG_HPP
 
-// ppm channels so we can set and forget here:
+// ppm channels so we can set and forget here.
 constexpr uint8_t LONGITUDE_PPM_CHANNEL {0};
 constexpr uint8_t LATITUDE_PPM_CHANNEL {1};
 constexpr uint8_t VERTICAL_PPM_CHANNEL {2};

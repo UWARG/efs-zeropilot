@@ -47,7 +47,11 @@ void new_safety_run(PWMChannel &pwm, PPMChannel &ppm) {
     volatile int16_t *AutoPilotPwmChannel = getPWM();
 
     // get RC PPM?
-    uint8_t lrPPM = getPPM(ppm, lrPPMChannel);
+    uint8_t lat_PPM = getPPM(ppm, LATITUDE_PPM_CHANNEL);
+    uint8_t lng_PPM = getPPM(ppm, LONGITUDE_PPM_CHANNEL);
+    uint8_t vrt_PPM = getPPM(ppm, VERTICAL_PPM_CHANNEL);
+    uint8_t yaw_PPM = getPPM(ppm, YAW_PPM_CHANNEL);
+
 
 
 }
