@@ -15,14 +15,14 @@ PathModeSelector* PathModeSelector::getInstance() {
 
 PathModeSelector::PathModeSelector() : current_mode_enum {MODE_TESTING_NONE} {
     current_mode = nullptr; 
-    first_instr = nullptr;
+    first_flight_path_edit_instr = nullptr;
 }
 
 #else
 
 PathModeSelector::PathModeSelector() : current_mode_enum {MODE_TAKEOFF} {
     current_mode = &TakeoffMode::getInstance(); 
-    first_instr = nullptr;
+    first_flight_path_edit_instr = nullptr;
 }
 
 #endif
@@ -31,44 +31,45 @@ void PathModeSelector::execute(Telemetry_PIGO_t telemetry_in, SFOutput_t sensor_
     
     //Check whether the telemetry_in has an editflightPath command. If so, we enqueue it into our InstructionQueue
     if (telemetry_in.waypointModifyFlightPathCommand != NO_FLIGHT_PATH_EDIT) {        
-        PathModeSelector::enqueueInstruction(telemetry_in);
+        enqueueFlightPathEditInstructions(telemetry_in);
     }
 
     current_mode->execute(telemetry_in, sensor_fusion_in, imu_data_in);
 }
 
-bool PathModeSelector::instructionQueueIsEmpty() {
-    if (first_instr == nullptr) {
+bool PathModeSelector::flightPathEditInstructionsIsEmpty() {
+    if (first_flight_path_edit_instr == nullptr) {
         return true;
     } else {
         return false;
     }
 }
 
-Telemetry_PIGO_t PathModeSelector::dequeueInstruction() {
+Telemetry_PIGO_t PathModeSelector::dequeueflightPathEditInstructions() {
     ///Assumes that Queue is non empty.
-        instructionQueueNode* newFirstInstruction = first_instr->nextInstruction; //Store temporary new head
-        Telemetry_PIGO_t instruction = first_instr->instruction;
-        free(first_instr); //Not sure if this the right way to free variables
-        first_instr = newFirstInstruction; //Update the head of the instructionQueue
+        flightPathEditInstructionNode* newFirstInstruction = first_flight_path_edit_instr->nextInstruction; //Store temporary new head
+        Telemetry_PIGO_t instruction = first_flight_path_edit_instr->instruction;
+        first_flight_path_edit_instr->nextInstruction = nullptr;
+        delete first_flight_path_edit_instr; //Not sure if this the right way to free variables
+        first_flight_path_edit_instr = newFirstInstruction; //Update the head of the queue
         return instruction;
 };
 
-void PathModeSelector::enqueueInstruction(Telemetry_PIGO_t newInstruction) {
-    if (first_instr == nullptr) { //If our Queue is empty, make it the first
-        first_instr = new instructionQueueNode{};
-        first_instr->instruction = newInstruction;
-        first_instr->nextInstruction = nullptr;
+void PathModeSelector::enqueueFlightPathEditInstructions(Telemetry_PIGO_t newInstruction) {
+    if (first_flight_path_edit_instr == nullptr) { //If our Queue is empty (i.e. there are no editflightpath instructions), make it the first
+        first_flight_path_edit_instr = new flightPathEditInstructionNode{};
+        first_flight_path_edit_instr->instruction = newInstruction;
+        first_flight_path_edit_instr->nextInstruction = nullptr;
 
     } else {
-        instructionQueueNode* latestInstruction = first_instr;
+        flightPathEditInstructionNode* latestInstruction = first_flight_path_edit_instr;
         
         while (latestInstruction->nextInstruction != nullptr) {
             latestInstruction = latestInstruction->nextInstruction;
         };
 
         //Create new instructionQueueNode
-        instructionQueueNode* newInstructionQueueNode = new instructionQueueNode{};
+        flightPathEditInstructionNode* newInstructionQueueNode = new flightPathEditInstructionNode{};
         newInstructionQueueNode->instruction = newInstruction;
         newInstructionQueueNode->nextInstruction = nullptr;
         

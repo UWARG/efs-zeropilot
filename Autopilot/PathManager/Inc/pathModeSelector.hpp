@@ -14,9 +14,10 @@
     enum PathModeEnum {MODE_TAKEOFF = 0, MODE_CRUISING, MODE_LANDING, MODE_TAXIING};
 #endif
 
-struct instructionQueueNode {
+//Implementated as a queue, where each editFlightPath instruction is a node in the queue
+struct flightPathEditInstructionNode {
     Telemetry_PIGO_t instruction;
-    instructionQueueNode* nextInstruction;
+    flightPathEditInstructionNode* nextInstruction;
 };
 
 // ModeSelector in https://uwarg-docs.atlassian.net/wiki/spaces/ZP/pages/1866989569/Proposed+Redesign
@@ -45,7 +46,7 @@ class PathModeSelector {
          * 
          * @return true if the queue is empty. Else return false
          */
-        bool instructionQueueIsEmpty();
+        bool flightPathEditInstructionsIsEmpty();
 
         /**
          * Dequeues the first(a.k.a. most urgent) instruction from the instruction queue. Make sure that queue is not empty
@@ -53,7 +54,7 @@ class PathModeSelector {
          * 
          * @return telemetry data
          */
-        Telemetry_PIGO_t dequeueInstruction();
+        Telemetry_PIGO_t dequeueflightPathEditInstructions();
 
         /**
          * Returns a pointer to the current mode of flight. Note that a PathMode object is returned, which is the
@@ -186,11 +187,17 @@ class PathModeSelector {
         PathModeSelector();
         static PathModeSelector* singleton;
         
-        /*
+
+        /**
          * Function to enqueue a new instruction onto the instruction queue.
+         *
+         * @param newInstruction -> new instruciton to add onto the instruction queue
+         * 
+         * @return none
          */
-        void enqueueInstruction(Telemetry_PIGO_t newInstruction);
-        instructionQueueNode* first_instr;
+        void enqueueFlightPathEditInstructions(Telemetry_PIGO_t newInstruction);
+        //Make a pointer to the first instruction node, which will be the head of the flightPathEditInstructions (a queue).
+        flightPathEditInstructionNode* first_flight_path_edit_instr;
 
         PathMode* current_mode;
         PathModeEnum current_mode_enum;

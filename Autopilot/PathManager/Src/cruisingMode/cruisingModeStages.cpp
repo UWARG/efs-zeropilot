@@ -27,15 +27,20 @@ void CruisingFlight::execute(CruisingMode* cruise_mode) {
 
 
     Telemetry_PIGO_t instr;
+    _ModifyFlightPathErrorCode edit_error = MODIFY_CRUISING_SUCCESS; // Initialize to success, else if the instruction queue is empty, edit_error would not be initialized
     //Go over all instructions on the instruction queue
-    while (!cruise_mode->getModeSelector()->instructionQueueIsEmpty()) {
-        instr = cruise_mode->getModeSelector()->dequeueInstruction();
+    while (!cruise_mode->getModeSelector()->flightPathEditInstructionsIsEmpty()) {
+        instr = cruise_mode->getModeSelector()->dequeueflightPathEditInstructions();
 
-        _ModifyFlightPathErrorCode edit_error = editFlightPath(&instr, cruising_state_manager, waypoint_id_array); // Edit flight path if applicable
-        _GetNextDirectionsErrorCode path_error = pathFollow(&instr, cruising_state_manager, _input_data, &_output_data, going_home, in_hold); // Get next direction or modify flight behaviour pattern
-        setReturnValues(&_return_to_ground, cruising_state_manager, edit_error, path_error); // Set error codes
+        edit_error = editFlightPath(&instr, cruising_state_manager, waypoint_id_array); // Edit flight path if applicable
+        
+        if (edit_error != MODIFY_CRUISING_SUCCESS) { //There has been an error, get out of the loop and handle the error first
+            break;
+        }
     }
 
+    _GetNextDirectionsErrorCode path_error = pathFollow(&telem_data, cruising_state_manager, _input_data, &_output_data, going_home, in_hold); // Get next direction or modify flight behaviour pattern
+    setReturnValues(&_return_to_ground, cruising_state_manager, edit_error, path_error); // Set error codes
 
     // Set output data to be sent back to PM coordinatedTurnsElevation state
     CoordinatedTurnInput_t coord_turn_input;
