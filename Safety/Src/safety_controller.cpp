@@ -13,12 +13,9 @@
  * Definitions
  **********************************************************************************************************************/
 
-constexpr uint8_t MANUAL_OVERRIDE_CHANNEL {4};
+// TODO: move to safetyConfig.hpp
 
-// ppm channels so we can set and forget here:
-constexpr uint8_t LONGITUDINAL_PPM_CHANNEL {0};
-constexpr uint8_t FB_PPM_CHANNEL {1};
-constexpr uint8_t UD_PPM_CHANNEL {2};
+constexpr uint8_t MANUAL_OVERRIDE_CHANNEL {4};
 
 // temporary grabber_rx and grabber_pwm channels. To be changed later.
 constexpr uint8_t GRABBER_RX_CHANNEL {0};
