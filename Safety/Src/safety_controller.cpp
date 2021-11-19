@@ -14,6 +14,12 @@
  **********************************************************************************************************************/
 
 constexpr uint8_t MANUAL_OVERRIDE_CHANNEL {4};
+
+// ppm channels so we can set and forget here:
+constexpr uint8_t LONGITUDINAL_PPM_CHANNEL {0};
+constexpr uint8_t FB_PPM_CHANNEL {1};
+constexpr uint8_t UD_PPM_CHANNEL {2};
+
 // temporary grabber_rx and grabber_pwm channels. To be changed later.
 constexpr uint8_t GRABBER_RX_CHANNEL {0};
 constexpr uint8_t GRABBER_PWM_CHANNEL {9};
@@ -36,6 +42,17 @@ static bool AutoPilotEngaged(PPMChannel &ppm);
 
 void safety_controller_init()
 {
+}
+
+void new_safety_run(PWMChannel &pwm, PPMChannel &ppm) {
+
+    // ?get current pwm?
+    volatile int16_t *AutoPilotPwmChannel = getPWM();
+
+    // get RC PPM?
+    uint8_t lrPPM = getPPM(ppm, lrPPMChannel);
+
+
 }
 
 void safety_run(PWMChannel &pwm, PPMChannel &ppm)
