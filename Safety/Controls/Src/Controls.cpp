@@ -38,6 +38,12 @@ typedef struct {
     double heading;                     // degree from true north, cw
 } PositionTargets;
 
+typedef struct {
+    float f_stick, lr_stick;
+    float a_stick;
+    float a_heading;
+} StickDistance;
+
 static SFOutput_t curr_sf; // current
 static SFOutput_t temp_sf; // temp new targs
 static SFError_t sf_err;   // sf err
@@ -48,6 +54,10 @@ long double x_targ; // x target
 long double y_targ; // y target
 float a_targ;       // altitude target
 double h_targ;      // heading target
+
+StickDistance translatePPM(){
+    // translates PPM into distances to move in each direction wrt % max
+}
 
 void updateTargets(float f_stick, float lr_stick, float a_stick, float a_heading) {
     // update target position to go to. 
