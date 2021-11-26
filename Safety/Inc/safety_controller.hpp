@@ -12,7 +12,7 @@ void safety_controller_init();
 */
 
 /** new_safety_run
- * Grabs newest PPM values or target from Path Manager and creates new target location for Controls.
+ * Grabs newest PPM values or target from Path Manager and updates target location for Controls.
  * @param [PWMChannel &pwm] PWMChannel. To be replaced with Path Manager instructions.
  * @param [PPMChannel &ppm] PPMChannel from RC Control.
  */
