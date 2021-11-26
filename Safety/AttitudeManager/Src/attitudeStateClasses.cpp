@@ -132,7 +132,8 @@ attitudeState& PIDloopMode::getInstance()
 
 void OutputMixingMode::execute(attitudeManager* attitudeMgr)
 {
-    PID_Output_t *PidOutput = PIDloopMode::GetPidOutput();
+    // *PIDOutput an array of four values corresponding to motor percentages for the 
+    PID_Output_t *PidOutput = PIDloopMode::GetPidOutput(); 
 
     OutputMixing_error_t ErrorStruct = OutputMixing_Execute(PidOutput, _channelOut);
 
