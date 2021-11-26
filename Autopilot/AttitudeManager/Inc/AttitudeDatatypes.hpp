@@ -6,10 +6,10 @@
 // Output of the PID module and input to the OutputMixing module
 typedef struct
 {
-    float rollPercent;
-    float pitchPercent;
-    float rudderPercent;
-    float throttlePercent;
+    float motor1Percent;
+    float motor2Percent;
+    float motor3Percent;
+    float motor4Percent;
 
 } PID_Output_t;
 
