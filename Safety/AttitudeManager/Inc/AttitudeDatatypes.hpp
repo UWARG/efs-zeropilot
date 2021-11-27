@@ -18,6 +18,8 @@ constexpr static uint8_t FRONT_RIGHT_MOTOR_CHANNEL {1};
 constexpr static uint8_t BACK_LEFT_MOTOR_CHANNEL {2};
 constexpr static uint8_t BACK_RIGHT_MOTOR_CHANNEL {3};
 
+constexpr static uint8_t NUM_PWM_CHANNELS {4}; // keeping them at 4 motors only for now, will def be changed as more elements added
+
 /*
 Commented out for now to allow for just quadcopter channel mapping
 */
