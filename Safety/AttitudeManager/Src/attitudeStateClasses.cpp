@@ -141,7 +141,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
 
     if (ErrorStruct.errorCode == 0)
     {
-        attitudeMgr->setState(sendToSafetyMode::getInstance());
+        attitudeMgr->setState(sendToSafetyMode::getInstance()); // instead of this just set PWM directly hehe
     }
     else
     {
@@ -160,9 +160,9 @@ void sendToSafetyMode::execute(attitudeManager* attitudeMgr)
 {
     SendToSafety_error_t ErrorStruct;
     float *channelOut = OutputMixingMode::GetChannelOut();
-    for(int channel = 0; channel < NUM_PWM_CHANNELS; channel++) // currently using channels 0-7
+    for(int channel = 0; channel < NUM_PWM_CHANNELS; channel++) // currently using channels 0-3
     {
-        ErrorStruct = SendToSafety_Execute(channel, channelOut[channel]);
+        // ErrorStruct = SendToSafety_Execute(channel, channelOut[channel]);
         if(ErrorStruct.errorCode == OUTPUT_MIXING_VALUE_TOO_LOW)
         {
             attitudeMgr->setState(FatalFailureMode::getInstance());

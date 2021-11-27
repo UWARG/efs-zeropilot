@@ -41,28 +41,36 @@ OutputMixing_error_t OutputMixing_Execute(PID_Output_t *PidOutput, float *channe
 	OutputMixing_error_t error;
 	error.errorCode = checkInputValidity(PidOutput);
 
-#if TAIL_TYPE == INV_V_TAIL
-    channelOut[L_TAIL_OUT_CHANNEL] =  (PidOutput->yawPercent * RUDDER_PROPORTION) - (PidOutput->pitchPercent * ELEVATOR_PROPORTION); //Tail Output Left
-    channelOut[R_TAIL_OUT_CHANNEL] =  (PidOutput->yawPercent * RUDDER_PROPORTION) + (PidOutput->pitchPercent * ELEVATOR_PROPORTION); //Tail Output Right
-#else
-    channelOut[ELEVATOR_OUT_CHANNEL] =  PidOutput->pitchPercent;
-    channelOut[RUDDER_OUT_CHANNEL] =  PidOutput->rudderPercent;
-#endif
+	// Populating the channel array with the outputted motor percentages and constraining them from 0 to 100%
+	channelOut[FRONT_LEFT_MOTOR_CHANNEL] = PidOutput -> frontLeftMotorPercent;
+	channelOut[FRONT_RIGHT_MOTOR_CHANNEL] = PidOutput -> frontRightMotorPercent;
+	channelOut[BACK_LEFT_MOTOR_CHANNEL] = PidOutput -> backLeftMotorPercent;
+	channelOut[BACK_RIGHT_MOTOR_CHANNEL] = PidOutput -> backRightMotorPercent;
 
-    channelOut[AILERON_OUT_CHANNEL] = PidOutput->rollPercent;
-    channelOut[THROTTLE_OUT_CHANNEL] = PidOutput->throttlePercent;
+	constrainOutput(channelOut);
 
-    constrainOutput(channelOut);
+// #if TAIL_TYPE == INV_V_TAIL
+//     channelOut[L_TAIL_OUT_CHANNEL] =  (PidOutput->yawPercent * RUDDER_PROPORTION) - (PidOutput->pitchPercent * ELEVATOR_PROPORTION); //Tail Output Left
+//     channelOut[R_TAIL_OUT_CHANNEL] =  (PidOutput->yawPercent * RUDDER_PROPORTION) + (PidOutput->pitchPercent * ELEVATOR_PROPORTION); //Tail Output Right
+// #else
+//     channelOut[ELEVATOR_OUT_CHANNEL] =  PidOutput->pitchPercent;
+//     channelOut[RUDDER_OUT_CHANNEL] =  PidOutput->rudderPercent;
+// #endif
 
-#ifdef TARGET_BUILD
+//     channelOut[AILERON_OUT_CHANNEL] = PidOutput->rollPercent;
+//     channelOut[THROTTLE_OUT_CHANNEL] = PidOutput->throttlePercent;
 
-    float adjustedAileron = map(channelOut[AILERON_OUT_CHANNEL], -100, 100, 0, 100);
-    float adjustedElevator = map(channelOut[ELEVATOR_OUT_CHANNEL], -100, 100, 0, 100);
+    
 
-    channelOut[ELEVATOR_OUT_CHANNEL] = adjustedElevator;
-    channelOut[AILERON_OUT_CHANNEL] = adjustedAileron;
+// #ifdef TARGET_BUILD
 
-#endif
+//     float adjustedAileron = map(channelOut[AILERON_OUT_CHANNEL], -100, 100, 0, 100);
+//     float adjustedElevator = map(channelOut[ELEVATOR_OUT_CHANNEL], -100, 100, 0, 100);
+
+//     channelOut[ELEVATOR_OUT_CHANNEL] = adjustedElevator;
+//     channelOut[AILERON_OUT_CHANNEL] = adjustedAileron;
+
+// #endif
 
 
 
@@ -74,7 +82,7 @@ static OutputMixingErrorCodes checkInputValidity(PID_Output_t *PidOutput)
 {
 	OutputMixingErrorCodes errorCode;
 
-	if ( (PidOutput->rollPercent < -100.0f) || (PidOutput->pitchPercent < -100.0f) || (PidOutput->rudderPercent < -100.0f) || (PidOutput->throttlePercent < 0.0f) )
+	if ( (PidOutput->frontLeft < -100.0f) || (PidOutput->pitchPercent < -100.0f) || (PidOutput->rudderPercent < -100.0f) || (PidOutput->throttlePercent < 0.0f) )
 	{
 		errorCode = OUTPUT_MIXING_VALUE_TOO_LOW;
 	}
