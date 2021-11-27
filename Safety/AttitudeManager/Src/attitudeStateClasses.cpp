@@ -27,7 +27,8 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
     }
     else
     {
-        teleopTimeoutCount++;
+        if(teleopTimeoutCount < TIMEOUT_THRESHOLD)
+            teleopTimeoutCount++;
     }
 
     //TODO: Determine if RC is commanding to go autonomous
@@ -39,7 +40,8 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
     }
     else
     {
-        PMTimeoutCount++;
+        if(PMTimeoutCount < TIMEOUT_THRESHOLD)
+            PMTimeoutCount++;
     }
     
     if(teleopTimeoutCount < TIMEOUT_THRESHOLD && !CommsFailed())
