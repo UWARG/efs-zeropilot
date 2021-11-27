@@ -4,17 +4,21 @@
  * Definitions
  **********************************************************************************************************************/
 
-// tails supported by this module
-#define CONVENTIONAL_TAIL 0
-#define INV_V_TAIL 1
 
-#ifdef SPIKE
-	#define TAIL_TYPE INV_V_TAIL
-	static const float RUDDER_PROPORTION = 0.75f; // has to do with the angle of the inverse V tail, 0.75 means spike's tail is at 45 degrees.
-	static const float ELEVATOR_PROPORTION = 0.75f;
-#else
-	#define TAIL_TYPE CONVENTIONAL_TAIL
-#endif
+// All fixed wing directives being commented out for now, will be added back eventually when proper
+// preprocessor directives are used
+
+// tails supported by this module
+// #define CONVENTIONAL_TAIL 0
+// #define INV_V_TAIL 1
+
+// #ifdef SPIKE
+// 	#define TAIL_TYPE INV_V_TAIL
+// 	static const float RUDDER_PROPORTION = 0.75f; // has to do with the angle of the inverse V tail, 0.75 means spike's tail is at 45 degrees.
+// 	static const float ELEVATOR_PROPORTION = 0.75f;
+// #else
+// 	#define TAIL_TYPE CONVENTIONAL_TAIL
+// #endif
 
 /***********************************************************************************************************************
  * Prototypes
