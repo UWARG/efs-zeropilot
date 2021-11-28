@@ -45,6 +45,12 @@ long double y_targ; // y target
 float a_targ;       // altitude target
 double h_targ;      // heading target
 
+/** Determines whether to use P-loop, or PID, or something else.
+ * 0 = base_pid
+ * 1 = simple_p
+ */
+const int PID_method = 0;
+
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
@@ -109,11 +115,6 @@ PID_Output_t *runControlsAndGetPWM(Instruction_t * instructions, SFOutput_t * SF
     // to use or not to use pointers?
     curr_sf = *SF_pos;
 
-    static float dist_lat; // latitude
-    static float dist_lon; // longitude
-    static float dist_alt; // altitude
-    static float angl_hdn; // heading
-
     StickDistance *internal_targets = translatePPM(instructions);
 
     updateTargets(internal_targets);
@@ -128,16 +129,43 @@ PID_Output_t *runControlsAndGetPWM(Instruction_t * instructions, SFOutput_t * SF
      * pid lat
      * pid lon
      * pid alt
-     * pid head
+     * pid hdn
      * ===============
      * mux signals and send back out
      */
 
-    dist_lat = pos_targ.latitude - curr_sf.latitude;
-    dist_lon = pos_targ.longitude - curr_sf.longitude;
-    dist_alt = pos_targ.altitude - curr_sf.altitude;
-    angl_hdn = pos_targ.heading - curr_sf.heading;
+    static float pid_fb;
+    static float pid_lr;
+    static float pid_alt;
+    static float pid_hdn;
+
+    // PIDController controller(float _kp, float _ki, float _kd, float _i_max, float _min_output, float _max_output);
+    
+    PIDController fb_controller(0.7, 0.3, 0.2, 100, 10, 100);
 
     // calculate and run through PID's or just simple difference....?
     // ensure some safety somewhere?
+
+    if (PID_method == 0) {
+        // use the base pid written without extensive scaling.
+
+        // TODO: tune pid values
+        pid_fb =
+
+    } else if (PID_method == 1) {
+        // use a simple p-loop integrator
+
+        // only needed if we're going to be using p-scalers
+        static float dist_lat; // latitude
+        static float dist_lon; // longitude
+        static float dist_alt; // altitude
+        static float angl_hdn; // heading
+
+        dist_lat = pos_targ.latitude - curr_sf.latitude;
+        dist_lon = pos_targ.longitude - curr_sf.longitude;
+        dist_alt = pos_targ.altitude - curr_sf.altitude;
+        angl_hdn = pos_targ.heading - curr_sf.heading;
+    } else {
+        // not sure yet
+    }
 }
