@@ -26,7 +26,6 @@ struct PID_Output_t{
     float motor2Percent;
     float motor3Percent;
     float motor4Percent;
-
 };
 
 struct Instruction_t{
