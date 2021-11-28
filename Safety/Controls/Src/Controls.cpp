@@ -41,8 +41,27 @@ typedef struct {
 typedef struct {
     float f_stick, lr_stick;
     float a_stick;
-    float a_heading;
+    float h_stick;
 } StickDistance;
+
+
+// temporary structs which will be imported from AM soon.
+typedef struct
+{
+    float motor1Percent;
+    float motor2Percent;
+    float motor3Percent;
+    float motor4Percent;
+
+} PID_Output_t;
+
+typedef struct
+{
+    float input1;
+    float input2;
+    float input3;
+    float input4;
+} Instruction_t;
 
 static SFOutput_t curr_sf; // current
 static SFOutput_t temp_sf; // temp new targs
@@ -55,11 +74,12 @@ long double y_targ; // y target
 float a_targ;       // altitude target
 double h_targ;      // heading target
 
-StickDistance translatePPM(){
+StickDistance *translatePPM(Instruction_t * instructions){
     // translates PPM into distances to move in each direction wrt % max
+
 }
 
-void updateTargets(float f_stick, float lr_stick, float a_stick, float a_heading) {
+void updateTargets(StickDistance *stick) {
     // update target position to go to. 
     // todo: make inputs not temporary floats (maybe a struct?)
     
@@ -72,6 +92,10 @@ void updateTargets(float f_stick, float lr_stick, float a_stick, float a_heading
      * newy = + forward sin(heading) + leftright cos(heading)
      * ~ might have to flip LR to match SF? ~
      */
+    int f_stick = *stick->f_stick;
+    int lr_stick = *stick->lr_stick;
+    int a_stick = *stick->a_stick;
+    int h_stick = *stick->h_stick;
 
     updatePosition();
 
@@ -80,7 +104,7 @@ void updateTargets(float f_stick, float lr_stick, float a_stick, float a_heading
 
     pos_targ.altitude   = curr_sf.altitude + a_stick;
 
-    pos_targ.heading    = curr_sf.heading + a_heading;
+    pos_targ.heading    = curr_sf.heading + h_stick;
 }
 
 void updatePosition() {
@@ -99,4 +123,47 @@ void evalControls(){
 
     // run PID's on our target positions.
 
+    // to be used in the future!
+}
+
+/*
+ * pwmValues = runControlsAndGetPWM(instructions, SF_position)
+ */
+
+PID_Output_t *runControlsAndGetPWM(Instruction_t * instructions, SFOutput_t * SF_pos, bool NEWDATA) {
+    // to use or not to use pointers?
+    curr_sf = *SF_pos;
+
+    static float dist_lat; // latitude
+    static float dist_lon; // longitude
+    static float dist_alt; // altitude
+    static float angl_hdn; // heading
+
+    if (NEWDATA):
+        StickDistance *internal_targets = translatePPM(instructions);
+
+    updateTargets(internal_targets);
+
+    /**
+     * Now we need to get distances and run pids.
+     * dist lat
+     * dist lon
+     * dist alt
+     * angl hdn
+     * ===============
+     * pid lat
+     * pid lon
+     * pid alt
+     * pid head
+     * ===============
+     * mux signals and send back out
+     */
+
+    dist_lat = pos_targ.latitude - curr_sf.latitude;
+    dist_lon = pos_targ.longitude - curr_sf.longitude;
+    dist_alt = pos_targ.altitude - curr_sf.altitude;
+    angl_hdn = pos_targ.heading - curr_sf.heading;
+
+    // calculate and run through PID's or just simple difference....?
+    // ensure some safety somewhere?
 }
