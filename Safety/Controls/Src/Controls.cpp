@@ -30,38 +30,9 @@
  * Define traditional XYZ coordinates: x forward, y left, z up, cw +
 */
 
-// static volatile global position.
-// follows formats from SFOutput_t
-typedef struct {
-    long double latitude, longitude;    //meters from where we started originally
-    float altitude;                     // meters above start point (hopefully the ground?)
-    double heading;                     // degree from true north, cw
-} PositionTargets;
-
-typedef struct {
-    float f_stick, lr_stick;
-    float a_stick;
-    float h_stick;
-} StickDistance;
-
-
-// temporary structs which will be imported from AM soon.
-typedef struct
-{
-    float motor1Percent;
-    float motor2Percent;
-    float motor3Percent;
-    float motor4Percent;
-
-} PID_Output_t;
-
-typedef struct
-{
-    float input1;
-    float input2;
-    float input3;
-    float input4;
-} Instruction_t;
+/***********************************************************************************************************************
+ * Defs
+ **********************************************************************************************************************/
 
 static SFOutput_t curr_sf; // current
 static SFOutput_t temp_sf; // temp new targs
@@ -73,6 +44,10 @@ long double x_targ; // x target
 long double y_targ; // y target
 float a_targ;       // altitude target
 double h_targ;      // heading target
+
+/***********************************************************************************************************************
+ * Code
+ **********************************************************************************************************************/
 
 StickDistance *translatePPM(Instruction_t * instructions){
     // translates PPM into distances to move in each direction wrt % max
@@ -92,10 +67,10 @@ void updateTargets(StickDistance *stick) {
      * newy = + forward sin(heading) + leftright cos(heading)
      * ~ might have to flip LR to match SF? ~
      */
-    int f_stick = *stick->f_stick;
-    int lr_stick = *stick->lr_stick;
-    int a_stick = *stick->a_stick;
-    int h_stick = *stick->h_stick;
+    int f_stick = stick->f_stick;
+    int lr_stick = stick->lr_stick;
+    int a_stick = stick->a_stick;
+    int h_stick = stick->h_stick;
 
     updatePosition();
 
@@ -130,7 +105,7 @@ void evalControls(){
  * pwmValues = runControlsAndGetPWM(instructions, SF_position)
  */
 
-PID_Output_t *runControlsAndGetPWM(Instruction_t * instructions, SFOutput_t * SF_pos, bool NEWDATA) {
+PID_Output_t *runControlsAndGetPWM(Instruction_t * instructions, SFOutput_t * SF_pos) {
     // to use or not to use pointers?
     curr_sf = *SF_pos;
 
@@ -139,8 +114,7 @@ PID_Output_t *runControlsAndGetPWM(Instruction_t * instructions, SFOutput_t * SF
     static float dist_alt; // altitude
     static float angl_hdn; // heading
 
-    if (NEWDATA):
-        StickDistance *internal_targets = translatePPM(instructions);
+    StickDistance *internal_targets = translatePPM(instructions);
 
     updateTargets(internal_targets);
 
