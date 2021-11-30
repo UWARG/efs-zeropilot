@@ -237,6 +237,7 @@ set(PATH_MANAGER_MODES_FSM_UNIT_TEST_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_CruisingMode_Fsm.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_LandingMode_Fsm.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_TakeoffMode_Fsm.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Test/Src/PathManager/Test_ModeSelectorQueue.cpp
 )
 
 add_executable(pathManagerModesFsm ${PATH_MANAGER_MODES_FSM_SOURCES} ${PATH_MANAGER_MODES_FSM_UNIT_TEST_SOURCES} ${UNIT_TEST_MAIN})
