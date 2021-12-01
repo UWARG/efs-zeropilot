@@ -45,13 +45,30 @@ bool PathModeSelector::flightPathEditInstructionsIsEmpty() {
     }
 }
 
+int PathModeSelector::checkflightPathEditInstructionsLength() {
+    int count = 0;
+    if (flightPathEditInstructionsIsEmpty()) {
+        return count;
+    } else {
+        flightPathEditInstructionNode* latestInstruction = first_flight_path_edit_instr;
+        
+        while (latestInstruction->nextInstruction != nullptr) {
+            latestInstruction = latestInstruction->nextInstruction;
+            count += 1;
+        };
+        return count;
+
+    }
+
+}
+
 Telemetry_PIGO_t PathModeSelector::dequeueflightPathEditInstructions() {
     // Assumes that Queue is non empty.
-        flightPathEditInstructionNode* newFirstInstruction = first_flight_path_edit_instr->nextInstruction; //Store temporary new head
-        Telemetry_PIGO_t instruction = first_flight_path_edit_instr->instruction;
-        first_flight_path_edit_instr->nextInstruction = nullptr;
-        delete first_flight_path_edit_instr; //Not sure if this the right way to free variables
-        first_flight_path_edit_instr = newFirstInstruction; //Update the head of the queue
+        flightPathEditInstructionNode* old_first_instruction = first_flight_path_edit_instr;
+        Telemetry_PIGO_t instruction = old_first_instruction->instruction;
+        old_first_instruction->nextInstruction = nullptr;
+        first_flight_path_edit_instr = first_flight_path_edit_instr->nextInstruction; //Update the head of the queue
+        delete old_first_instruction; //Delete the old node
         return instruction;
 };
 
@@ -60,7 +77,6 @@ void PathModeSelector::enqueueFlightPathEditInstructions(Telemetry_PIGO_t newIns
         first_flight_path_edit_instr = new flightPathEditInstructionNode{};
         first_flight_path_edit_instr->instruction = newInstruction;
         first_flight_path_edit_instr->nextInstruction = nullptr;
-
     } else {
         flightPathEditInstructionNode* latestInstruction = first_flight_path_edit_instr;
         

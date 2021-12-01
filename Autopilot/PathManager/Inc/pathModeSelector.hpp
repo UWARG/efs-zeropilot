@@ -47,6 +47,13 @@ class PathModeSelector {
          * @return true if the queue is empty. Else return false
          */
         bool flightPathEditInstructionsIsEmpty();
+        
+        /**
+         * Checks the length of the instruction queue.
+         * 
+         * @return its length.
+         */
+        int checkflightPathEditInstructionsLength();
 
         /**
          * Dequeues the first(a.k.a. most urgent) instruction from the instruction queue. Make sure that queue is not empty
