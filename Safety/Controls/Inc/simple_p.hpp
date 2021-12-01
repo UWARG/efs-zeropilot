@@ -1,0 +1,8 @@
+//
+// Created by antho on 28-Nov-21.
+//
+
+#ifndef ZEROPILOT_SW_ALUO_SIMPLE_P_HPP
+#define ZEROPILOT_SW_ALUO_SIMPLE_P_HPP
+
+#endif //ZEROPILOT_SW_ALUO_SIMPLE_P_HPP
