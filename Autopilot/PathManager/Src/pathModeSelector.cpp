@@ -66,7 +66,7 @@ Telemetry_PIGO_t PathModeSelector::dequeueflightPathEditInstructions() {
     // Assumes that Queue is non empty.
         flightPathEditInstructionNode* old_first_instruction = first_flight_path_edit_instr;
         Telemetry_PIGO_t instruction = old_first_instruction->instruction;
-        old_first_instruction->nextInstruction = nullptr;
+        // old_first_instruction->nextInstruction = nullptr;
         first_flight_path_edit_instr = first_flight_path_edit_instr->nextInstruction; //Update the head of the queue
         delete old_first_instruction; //Delete the old node
         return instruction;

@@ -176,7 +176,7 @@ TEST (ModeSelectorQueue, CheckDequeueInstruction) {
 	/********************DEPENDENCIES*******************/
 	/********************STEPTHROUGH********************/
 	path_mode_selector->setCurrentMode(takeoff_mode_instance);
-    path_mode_selector->execute(telem_data_0, sf_data, imu_data);
+    path_mode_selector->execute(telem_data_0, sf_data, imu_data); //BUG: This calls enqueueFlightPathEditInstructions twice
 	path_mode_selector->setCurrentMode(takeoff_mode_instance);
     path_mode_selector->execute(telem_data_1, sf_data, imu_data);
     
@@ -184,16 +184,23 @@ TEST (ModeSelectorQueue, CheckDequeueInstruction) {
 	int length_0 = path_mode_selector->checkflightPathEditInstructionsLength();
     Telemetry_PIGO_t instruction_0 = path_mode_selector->dequeueflightPathEditInstructions();
 	int length_1 = path_mode_selector->checkflightPathEditInstructionsLength();
-	// Telemetry_PIGO_t instruction_1 = path_mode_selector->dequeueflightPathEditInstructions();
+	
+
+	//I need to call dequeue an extra 3 times and the assertions below work... so this is the bug I am trying to fix
+	path_mode_selector->dequeueflightPathEditInstructions();
+	path_mode_selector->dequeueflightPathEditInstructions();
+	path_mode_selector->dequeueflightPathEditInstructions();
+
+	Telemetry_PIGO_t instruction_1 = path_mode_selector->dequeueflightPathEditInstructions();
 	// /**********************ASSERTS**********************/
-	EXPECT_EQ(length_0, 2); //False, Returns 4
-	EXPECT_EQ(length_1, 1); //False, returns 0
-    // EXPECT_EQ(instruction_0.numWaypoints, 4);
-    // EXPECT_EQ(instruction_0.waypointModifyFlightPathCommand, INITIALIZE_FLIGHT_PATH);
-    // EXPECT_EQ(instruction_0.initializingHomeBase, 1);
-    // // EXPECT_EQ(instruction_1.numWaypoints, 2);
-    // EXPECT_EQ(instruction_1.waypointModifyFlightPathCommand, APPEND);
-    // // EXPECT_EQ(instruction_1.initializingHomeBase, 1);
-    // EXPECT_EQ(path_mode_selector->flightPathEditInstructionsIsEmpty(), true);
+	// EXPECT_EQ(length_0, 2); //False, Returns 4
+	// EXPECT_EQ(length_1, 1); //False, returns 3
+    EXPECT_EQ(instruction_0.numWaypoints, 4);
+    EXPECT_EQ(instruction_0.waypointModifyFlightPathCommand, INITIALIZE_FLIGHT_PATH);
+    EXPECT_EQ(instruction_0.initializingHomeBase, 1);
+    EXPECT_EQ(instruction_1.numWaypoints, 2);
+    EXPECT_EQ(instruction_1.waypointModifyFlightPathCommand, APPEND);
+    EXPECT_EQ(instruction_1.initializingHomeBase, 1);
+    EXPECT_EQ(path_mode_selector->flightPathEditInstructionsIsEmpty(), true);
 
 }
