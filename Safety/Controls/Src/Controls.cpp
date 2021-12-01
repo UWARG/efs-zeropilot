@@ -37,6 +37,7 @@
 static SFOutput_t curr_sf; // current
 static SFOutput_t temp_sf; // temp new targs
 static SFError_t sf_err;   // sf err
+static PID_Output_t TEMPORARY_OUT_REMOVE_THIS;
 
 static PositionTargets pos_targ;
 
@@ -180,4 +181,6 @@ PID_Output_t *runControlsAndGetPWM(Instruction_t * instructions, SFOutput_t * SF
     } else {
         // not sure yet
     }
+
+    return TEMPORARY_OUT_REMOVE_THIS;
 }
