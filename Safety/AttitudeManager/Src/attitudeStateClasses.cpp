@@ -80,10 +80,24 @@ attitudeState& sensorFusionMode::getInstance()
 
 void PIDloopMode::execute(attitudeManager* attitudeMgr)
 {
-
-    CommandsForAM *PMInstructions = fetchInstructionsMode::GetPMInstructions();
+    CommandsForAM *PMInstructions = nullptr;
     SFOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
 
+    PID_Output_t *pidOut = nullptr;
+    if(fetchInstructionsMode::isAutonomous())
+    {
+        PMInstructions = fetchInstructionsMode::GetPMInstructions();
+        //TODO: Run controls module with PMInstructions
+    }
+    else
+    {
+        CommandsForAM *teleopInstructions = fetchInstructionsMode::GetTeleopInstructions();
+        _PidOutput = getPIDFromControls(teleopInstructions, SFOutput);
+    }
+
+    #ifdef FIXED_WING
+    PMInstructions = fetchInstructionsMode::GetPMInstructions();
+    
     //executes PID's to acheive desired roll, pitch angle
     //if manual control is needed, use loaded in percents instead!
     if(PMInstructions->passbyData.pitchPassby)
@@ -121,6 +135,7 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     {
         _PidOutput.throttlePercent = PMInstructions->throttlePercent;
     }
+    #endif
 
     attitudeMgr->setState(OutputMixingMode::getInstance());
 
