@@ -33,12 +33,7 @@ void TakeoffRollStage::execute(TakeoffMode* takeoff_mode) {
     Telemetry_PIGO_t telem_data = takeoff_mode->getTelemetryData();
     _input.telemetryData = &telem_data;
 
-    SFOutput_t sf_data;
-    #ifdef UNIT_TESTING
-        sf_data.airspeed = 15; // So we transition to climb stage
-    #else
-        sf_data = takeoff_mode->getSensorFusionData();
-    #endif
+    SFOutput_t sf_data = takeoff_mode->getSensorFusionData();
     _input.sensorOutput = &sf_data;
 
     //max throttle
@@ -108,13 +103,8 @@ void TakeoffClimbStage::execute(TakeoffMode* takeoff_mode) {
     Telemetry_PIGO_t telem_data = takeoff_mode->getTelemetryData();
     _input.telemetryData = &telem_data;
 
-       SFOutput_t sf_data;
-    #ifdef UNIT_TESTING
-        sf_data.altitude = 50; // So we transition to cruising mode
-        TakeoffRollStage::_takeoff_point.altitude = 0; // Should initialize this to prevent undefined behaviour
-    #else
-        sf_data = takeoff_mode->getSensorFusionData();
-    #endif
+    SFOutput_t sf_data;
+    sf_data = takeoff_mode->getSensorFusionData();
     _input.sensorOutput = &sf_data;
 
     if (_input.sensorOutput->altitude > (TakeoffRollStage::_takeoff_point.altitude + EXIT_TAKEOFF_ALTITUDE)) {

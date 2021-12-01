@@ -29,7 +29,7 @@ PathModeSelector::PathModeSelector() : current_mode_enum {MODE_TAKEOFF} {
 
 void PathModeSelector::execute(Telemetry_PIGO_t telemetry_in, SFOutput_t sensor_fusion_in, IMU_Data_t imu_data_in) {
     
-    //Check whether the telemetry_in has an editflightPath command. If so, we enqueue it into our InstructionQueue
+    // Check whether the telemetry_in has an editflightPath command. If so, we enqueue it into our InstructionQueue
     if (telemetry_in.waypointModifyFlightPathCommand != NO_FLIGHT_PATH_EDIT) {        
         enqueueFlightPathEditInstructions(telemetry_in);
     }
@@ -46,7 +46,7 @@ bool PathModeSelector::flightPathEditInstructionsIsEmpty() {
 }
 
 Telemetry_PIGO_t PathModeSelector::dequeueflightPathEditInstructions() {
-    ///Assumes that Queue is non empty.
+    // Assumes that Queue is non empty.
         flightPathEditInstructionNode* newFirstInstruction = first_flight_path_edit_instr->nextInstruction; //Store temporary new head
         Telemetry_PIGO_t instruction = first_flight_path_edit_instr->instruction;
         first_flight_path_edit_instr->nextInstruction = nullptr;
@@ -56,7 +56,7 @@ Telemetry_PIGO_t PathModeSelector::dequeueflightPathEditInstructions() {
 };
 
 void PathModeSelector::enqueueFlightPathEditInstructions(Telemetry_PIGO_t newInstruction) {
-    if (first_flight_path_edit_instr == nullptr) { //If our Queue is empty (i.e. there are no editflightpath instructions), make it the first
+    if (flightPathEditInstructionsIsEmpty()) { //If our Queue is empty (i.e. there are no editflightpath instructions), make it the first
         first_flight_path_edit_instr = new flightPathEditInstructionNode{};
         first_flight_path_edit_instr->instruction = newInstruction;
         first_flight_path_edit_instr->nextInstruction = nullptr;
@@ -68,12 +68,12 @@ void PathModeSelector::enqueueFlightPathEditInstructions(Telemetry_PIGO_t newIns
             latestInstruction = latestInstruction->nextInstruction;
         };
 
-        //Create new instructionQueueNode
+        // Create new instructionQueueNode
         flightPathEditInstructionNode* newInstructionQueueNode = new flightPathEditInstructionNode{};
         newInstructionQueueNode->instruction = newInstruction;
         newInstructionQueueNode->nextInstruction = nullptr;
         
-        //Add new instructionQueueNode to the entire queue
+        // Add new instructionQueueNode to the entire queue
         latestInstruction->nextInstruction = newInstructionQueueNode;
     }
 };

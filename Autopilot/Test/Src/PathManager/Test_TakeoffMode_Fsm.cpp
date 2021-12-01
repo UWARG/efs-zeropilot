@@ -68,7 +68,8 @@ TEST(TakeoffModeFSM, TakeoffRollTransitionsToTakeoffClimb) {
 
     Telemetry_PIGO_t telem_data;
 
-	SFOutput_t sf_data {};
+	SFOutput_t sf_data;
+    sf_data.airspeed = 15; // So we transition to climb stage
 
 	IMU_Data_t imu_data {};
 
@@ -98,7 +99,10 @@ TEST(TakeoffModeFSM, TakeoffClimbTransitionsToCruising) {
     Telemetry_PIGO_t telem_data;
 	telem_data.holdingAltitude = 20;
 
-	SFOutput_t sf_data {};
+	SFOutput_t sf_data;
+	sf_data.altitude = 50; // So we transition to cruising mode
+	TakeoffRollStage::_takeoff_point.altitude = 0; // Should initialize this to prevent undefined behaviour
+	
 
 	IMU_Data_t imu_data {};
 

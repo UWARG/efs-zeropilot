@@ -144,11 +144,7 @@ void LandingSlopeStage::execute(LandingMode* land_mode) {
     _input.telemetryData = &telem_data;
 
     SFOutput_t sf_data;
-    #ifdef UNIT_TESTING
-        sf_data.altitude = 1;
-    #else
-        sf_data = land_mode->getSensorFusionData();
-    #endif
+    sf_data = land_mode->getSensorFusionData();
     _input.sensorOutput = &sf_data;
 
     if(_input.sensorOutput->altitude <= (FLARE_ALTITUDE + _input.telemetryData->stoppingAltitude)) { //if less than flare altitude
@@ -218,11 +214,7 @@ void LandingFlareStage::execute(LandingMode* land_mode) {
     _input.telemetryData = &telem_data;
 
     SFOutput_t sf_data;
-    #ifdef UNIT_TESTING
-        sf_data.altitude = 0.3;
-    #else
-        sf_data = land_mode->getSensorFusionData();
-    #endif
+    sf_data = land_mode->getSensorFusionData();
     _input.sensorOutput = &sf_data;
 
     if(_input.sensorOutput->altitude <= (DECRAB_ALTITUDE + _input.telemetryData->stoppingAltitude)) //altitude is below 70 cm
@@ -296,11 +288,7 @@ void LandingDecrabStage::execute(LandingMode* land_mode) {
     _input.telemetryData = &telem_data;
 
     SFOutput_t sf_data;
-    #ifdef UNIT_TESTING
-        sf_data.altitude = 0.02;
-    #else
-        sf_data = land_mode->getSensorFusionData();
-    #endif
+    sf_data = land_mode->getSensorFusionData();
     _input.sensorOutput = &sf_data;
 
     if(_input.sensorOutput->altitude <= (TOUCHDOWN_ALTITUDE + _input.telemetryData->stoppingAltitude)) { //altitude is 5 cm or less/ultrasonic sensor sensed 5cm or less 
