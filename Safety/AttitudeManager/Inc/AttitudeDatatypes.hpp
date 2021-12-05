@@ -13,6 +13,12 @@ typedef struct
 
 } PID_Output_t;
 
+// PPM Instructions for attitude manager
+typedef struct PPM_Instructions_t
+{
+    uint8_t PPMValues[NUM_PWM_CHANNELS];
+} PPM_Instructions_t;
+
 #ifdef SPIKE
     constexpr static uint8_t L_TAIL_OUT_CHANNEL {0}; // Spike has ruddervators
     constexpr static uint8_t R_TAIL_OUT_CHANNEL {1};
