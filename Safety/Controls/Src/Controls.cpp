@@ -182,5 +182,6 @@ PID_Output_t *runControlsAndGetPWM(Instruction_t * instructions, SFOutput_t * SF
         // not sure yet
     }
 
-    return TEMPORARY_OUT_REMOVE_THIS;
+    // to return PID
+    return &TEMPORARY_OUT_REMOVE_THIS;
 }
