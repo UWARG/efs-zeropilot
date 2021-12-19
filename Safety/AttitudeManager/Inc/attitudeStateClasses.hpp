@@ -10,6 +10,7 @@
 #include "OutputMixing.hpp"
 #include "PID.hpp"
 #include "SendInstructionsToSafety.hpp"
+#include "PWM.hpp"
 
 /***********************************************************************************************************************
  * Code
