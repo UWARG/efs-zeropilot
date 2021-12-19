@@ -1,4 +1,5 @@
 #include "attitudeStateClasses.hpp"
+#include "PWM.hpp"
 
 /***********************************************************************************************************************
  * Definitions
@@ -112,6 +113,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
 
     if (ErrorStruct.errorCode == 0)
     {
+        // Need to set the PWM values of the motors        
         attitudeMgr->setState(sendToSafetyMode::getInstance()); // instead of this just set PWM directly hehe
     }
     else
