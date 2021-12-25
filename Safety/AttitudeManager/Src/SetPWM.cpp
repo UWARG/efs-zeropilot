@@ -1,5 +1,4 @@
 #include "SendInstructionsToSafety.hpp"
-#include "Interchip_A.h"
 #include <cstdint>
 #define PWM_CHANNELS 12
 

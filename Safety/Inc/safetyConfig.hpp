@@ -13,5 +13,12 @@ constexpr static uint8_t PWM_CHANNEL_MOTOR_2 {1};
 constexpr static uint8_t PWM_CHANNEL_MOTOR_3 {2};
 constexpr static uint8_t PWM_CHANNEL_MOTOR_4 {3};
 
+
+// PWM channels for the 4 motors of the quadcopter
+constexpr static uint8_t FRONT_LEFT_MOTOR_CHANNEL {0};
+constexpr static uint8_t FRONT_RIGHT_MOTOR_CHANNEL {1};
+constexpr static uint8_t BACK_LEFT_MOTOR_CHANNEL {2};
+constexpr static uint8_t BACK_RIGHT_MOTOR_CHANNEL {3};
+
 #endif
 

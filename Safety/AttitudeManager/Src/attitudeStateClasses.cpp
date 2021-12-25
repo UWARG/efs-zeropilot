@@ -9,12 +9,21 @@
 float OutputMixingMode::_channelOut[4];
 SFOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t PIDloopMode::_PidOutput;
+PWMChannel pwm; 
 
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
 
 //Populate instruction data and decide between manual and auto flight modes
+void pwmSetup::execute(attitudeManager* attitudeMgr) 
+{
+    pwm.setup(); // setup PWM channel, only done once
+
+    // set state to fetchInstructionsMode, this state will not be set again unless the system is restarted
+    attitudeMgr -> setState(fetchInstructionsMode::getInstance());
+}
+
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {    
     const uint8_t TIMEOUT_THRESHOLD = 2; //Max cycles without data until connection is considered broken
