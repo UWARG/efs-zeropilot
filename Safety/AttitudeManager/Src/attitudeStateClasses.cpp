@@ -24,6 +24,12 @@ void pwmSetup::execute(attitudeManager* attitudeMgr)
     attitudeMgr -> setState(fetchInstructionsMode::getInstance());
 }
 
+attitudeState& pwmSetup::getInstance()
+{
+    static pwmSetup singleton;
+    return singleton;
+}
+
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {    
     const uint8_t TIMEOUT_THRESHOLD = 2; //Max cycles without data until connection is considered broken
@@ -184,7 +190,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
         pwm.set(1, PID_Output_t -> frontRightPercent);
         pwm.set(2, PID_Output_t -> backLeftPercent);
         pwm.set(3, PID_Output_t -> backRightPercent);
-        attitudeMgr->setState(sendToSafetyMode::getInstance()); // instead of this just set PWM directly hehe
+        attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
     }o
     else
     {
@@ -196,33 +202,6 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
 attitudeState& OutputMixingMode::getInstance()
 {
     static OutputMixingMode singleton;
-    return singleton;
-}
-
-void sendToSafetyMode::execute(attitudeManager* attitudeMgr)
-{
-    SendToSafety_error_t ErrorStruct;
-    float *channelOut = OutputMixingMode::GetChannelOut();
-    for(int channel = 0; channel < NUM_PWM_CHANNELS; channel++) // currently using channels 0-3
-    {
-        // ErrorStruct = SendToSafety_Execute(channel, channelOut[channel]);
-        if(ErrorStruct.errorCode == OUTPUT_MIXING_VALUE_TOO_LOW)
-        {
-            attitudeMgr->setState(FatalFailureMode::getInstance());
-            break;
-        }
-    }
-
-    if (ErrorStruct.errorCode == OUTPUT_MIXING_SUCCESS)
-    {
-        attitudeMgr->setState(fetchInstructionsMode::getInstance());
-    }
-
-}
-
-attitudeState& sendToSafetyMode::getInstance()
-{
-    static sendToSafetyMode singleton;
     return singleton;
 }
 
