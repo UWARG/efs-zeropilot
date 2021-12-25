@@ -1,6 +1,7 @@
 #include "attitudeStateClasses.hpp"
 #include "PWM.hpp"
 #include "PWMChannel.hpp"
+#include "safetyConfig.hpp"
 
 /***********************************************************************************************************************
  * Definitions
@@ -130,10 +131,10 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
     if (ErrorStruct.errorCode == 0)
     {
         // setting PWM channel values
-        pwm.set(0, PID_Output_t -> frontLeftPercent);
-        pwm.set(1, PID_Output_t -> frontRightPercent);
-        pwm.set(2, PID_Output_t -> backLeftPercent);
-        pwm.set(3, PID_Output_t -> backRightPercent);
+        pwm.set(FRONT_LEFT_MOTOR_CHANNEL, PID_Output_t -> frontLeftPercent);
+        pwm.set(FRONT_RIGHT_MOTOR_CHANNEL, PID_Output_t -> frontRightPercent);
+        pwm.set(BACK_LEFT_MOTOR_CHANNEL, PID_Output_t -> backLeftPercent);
+        pwm.set(BACK_RIGHT_MOTOR_CHANNEL, PID_Output_t -> backRightPercent);
         attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
     }o
     else

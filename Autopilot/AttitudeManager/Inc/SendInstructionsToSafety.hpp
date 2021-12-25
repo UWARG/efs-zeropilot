@@ -36,6 +36,6 @@ void SendToSafety_Init(void);
 * @param[in]		percent 		the percentage between 0-100 that the PWM channel should be set to
 * @return							the error struct, containing all info about any errors that may have occured.
 */
-SendToSafety_error_t updatePWM(int channel, int percent);
+SendToSafety_error_t SendToSafety_Execute(int channel, int percent);
 
 #endif
