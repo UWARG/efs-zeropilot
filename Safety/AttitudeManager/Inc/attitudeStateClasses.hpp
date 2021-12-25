@@ -89,19 +89,6 @@ class OutputMixingMode : public attitudeState
         static float _channelOut[4];
 };
 
-class sendToSafetyMode : public attitudeState
-{
-    public:
-        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
-        void execute(attitudeManager* attitudeMgr);
-        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
-        static attitudeState& getInstance();
-    private:
-        sendToSafetyMode() {SendToSafety_Init();} // Calls C-style initialization function
-        sendToSafetyMode(const sendToSafetyMode& other);
-        sendToSafetyMode& operator =(const sendToSafetyMode& other);
-};
-
 class FatalFailureMode : public attitudeState
 {
     public:
