@@ -16,6 +16,15 @@
  * Code
  **********************************************************************************************************************/
 
+class pwmSetup : public attitudeState
+{
+    public:
+        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
+        void execute(attitudeManager* attitudeMgr);
+        void exit(attitudeManager* attitudeMgr);
+        static attitudeState& getInstance();
+}
+
 class fetchInstructionsMode : public attitudeState
 {
     public:

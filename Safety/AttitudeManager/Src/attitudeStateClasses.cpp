@@ -1,5 +1,6 @@
 #include "attitudeStateClasses.hpp"
 #include "PWM.hpp"
+#include "PWMChannel.hpp"
 
 /***********************************************************************************************************************
  * Definitions
@@ -10,10 +11,19 @@ bool decisionModuleMode::_autonomous;
 CommandsForAM fetchInstructionsMode::_MovementInstructions;
 SFOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t PIDloopMode::_PidOutput;
+PWMChannel pwm; 
 
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
+
+void pwmSetup::execute(attitudeManager* attitudeMgr) 
+{
+    pwm.setup(); // setup PWM channel, only done once
+
+    // set state to fetchInstructionsMode, this state will not be set again unless the system is restarted
+    attitudeMgr -> setState(fetchInstructionsMode::getInstance());
+}
 
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {

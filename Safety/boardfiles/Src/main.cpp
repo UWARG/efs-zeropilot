@@ -46,6 +46,7 @@
 #include "gpio.h"
 #include "interchip_S.hpp"
 #include "RSSI.hpp"
+#include "attitudeManager.hpp"
 
 /* USER CODE BEGIN Includes */
 
@@ -174,7 +175,7 @@ int main(void)
   ppm.setNumChannels(8);
 
   PWMChannel pwm;
-  pwm.setup();
+  pwm.setup(); 
   safety_controller_init();
 
   interchipInit();
