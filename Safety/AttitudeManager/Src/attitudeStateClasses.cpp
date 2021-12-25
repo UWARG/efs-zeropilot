@@ -123,9 +123,13 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
 
     if (ErrorStruct.errorCode == 0)
     {
-        // Need to set the PWM values of the motors        
+        // setting PWM channel values
+        pwm.set(0, PID_Output_t -> frontLeftPercent);
+        pwm.set(1, PID_Output_t -> frontRightPercent);
+        pwm.set(2, PID_Output_t -> backLeftPercent);
+        pwm.set(3, PID_Output_t -> backRightPercent);
         attitudeMgr->setState(sendToSafetyMode::getInstance()); // instead of this just set PWM directly hehe
-    }
+    }o
     else
     {
         attitudeMgr->setState(FatalFailureMode::getInstance());
