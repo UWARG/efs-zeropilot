@@ -46,7 +46,6 @@
 #include "gpio.h"
 #include "interchip_S.hpp"
 #include "RSSI.hpp"
-#include "attitudeManager.hpp"
 
 /* USER CODE BEGIN Includes */
 
@@ -196,7 +195,7 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
     RSSI_Check();
-    safety_run(pwm, ppm);
+    // afety_run(pwm, ppm);
     HAL_Delay(1);
 
   }
