@@ -41,104 +41,85 @@ void safety_controller_init()
 {
 }
 
-void new_safety_run(PWMChannel &pwm, PPMChannel &ppm) {
+// void safety_run(PWMChannel &pwm, PPMChannel &ppm)
+// {
 
-    // ?get current pwm?
-    // PWM Values to be changed?
-    volatile int16_t *AutoPilotPwmChannel = getPWM();
+//     if(CommsFailed()) {
+//         setPWMChannel(pwm, PWM_CHANNEL_LEFT_TAIL, 0);
+//         setPWMChannel(pwm, PWM_CHANNEL_RIGHT_TAIL, 100);
+//         setPWMChannel(pwm, PWM_CHANNEL_AILERON, 100);
+//         setPWMChannel(pwm, PWM_CHANNEL_THROTTLE, 0);
+//         setPWMChannel(pwm, PWM_CHANNEL_GIMBAL_YAW, 50);
+//         setPWMChannel(pwm, PWM_CHANNEL_NOSE_WHEEL, 0);
 
-    // get RC PPM?
-    uint8_t lat_PPM = getPPM(ppm, LATITUDE_PPM_CHANNEL);
-    uint8_t lng_PPM = getPPM(ppm, LONGITUDE_PPM_CHANNEL);
-    uint8_t vrt_PPM = getPPM(ppm, VERTICAL_PPM_CHANNEL);
-    uint8_t yaw_PPM = getPPM(ppm, YAW_PPM_CHANNEL);
+//         return;
+//     }
 
-    // somehow convert PPM into directionnnn?
-    // for teleop controls, add target to current
-    // for auton, Path Manager should give new total direction but idk.
+//     volatile int16_t *AutoPilotPwmChannel = getPWM();
 
+//     uint8_t elevatorAutoPilot = AutoPilotPwmChannel[0];
+//     uint8_t aileronAutoPilot = AutoPilotPwmChannel[1];
+//     uint8_t throttleAutoPilot =  AutoPilotPwmChannel[2];
+//     uint8_t rudderAutoPilot= AutoPilotPwmChannel[3];
 
-}
+//     uint8_t elevatorPPM = getPPM(ppm, 0);
+//     uint8_t aileronPPM = getPPM(ppm, 1);
+//     uint8_t throttlePPM =  getPPM(ppm, 2);
+//     uint8_t rudderPPM = getPPM(ppm, 3);
+//     uint8_t gimbalYawPPM = getPPM(ppm, 5);
+//     uint8_t reverseThrustPPM = getPPM(ppm, 6);
 
-void safety_run(PWMChannel &pwm, PPMChannel &ppm)
-{
+//     uint16_t leftTailMix = 0;
+//     uint16_t rightTailMix = 0;
+//     uint16_t aileronMix = 0;
+//     uint16_t noseWheelMix = 0;
 
-    if(CommsFailed()) {
-        setPWMChannel(pwm, PWM_CHANNEL_LEFT_TAIL, 0);
-        setPWMChannel(pwm, PWM_CHANNEL_RIGHT_TAIL, 100);
-        setPWMChannel(pwm, PWM_CHANNEL_AILERON, 100);
-        setPWMChannel(pwm, PWM_CHANNEL_THROTTLE, 0);
-        setPWMChannel(pwm, PWM_CHANNEL_GIMBAL_YAW, 50);
-        setPWMChannel(pwm, PWM_CHANNEL_NOSE_WHEEL, 0);
+//     noseWheelMix = 100 - rudderPPM;
 
-        return;
-    }
+//     if(AutoPilotEngaged(ppm))
+//     {
+//         leftTailMix = (0.7 * (100 - elevatorAutoPilot)) + (0.2 * rudderAutoPilot);
+//         rightTailMix = (0.7 * elevatorAutoPilot) + (0.2 * rudderAutoPilot);
+//         aileronMix = aileronAutoPilot;
+//     }
 
-    volatile int16_t *AutoPilotPwmChannel = getPWM();
+//     else
+//     {
+//         leftTailMix = (0.7 * (100 - elevatorPPM)) + (0.2 * rudderPPM);
+//         rightTailMix = (0.7 * elevatorPPM) + (0.2 * rudderPPM);
+//         aileronMix = aileronPPM;
+//     }
 
-    uint8_t elevatorAutoPilot = AutoPilotPwmChannel[0];
-    uint8_t aileronAutoPilot = AutoPilotPwmChannel[1];
-    uint8_t throttleAutoPilot =  AutoPilotPwmChannel[2];
-    uint8_t rudderAutoPilot= AutoPilotPwmChannel[3];
+//     /************Reverse thrust**************/
 
-    uint8_t elevatorPPM = getPPM(ppm, 0);
-    uint8_t aileronPPM = getPPM(ppm, 1);
-    uint8_t throttlePPM =  getPPM(ppm, 2);
-    uint8_t rudderPPM = getPPM(ppm, 3);
-    uint8_t gimbalYawPPM = getPPM(ppm, 5);
-    uint8_t reverseThrustPPM = getPPM(ppm, 6);
+//     setPWMChannel(pwm, PWM_CHANNEL_LEFT_TAIL, leftTailMix);
+//     setPWMChannel(pwm, PWM_CHANNEL_RIGHT_TAIL, rightTailMix);
+//     setPWMChannel(pwm, PWM_CHANNEL_AILERON, aileronMix);
+//     setPWMChannel(pwm, PWM_CHANNEL_NOSE_WHEEL, noseWheelMix);
+//     setPWMChannel(pwm, PWM_CHANNEL_THROTTLE, throttlePPM);
+//     setPWMChannel(pwm, PWM_CHANNEL_GIMBAL_YAW, gimbalYawPPM);
 
-    uint16_t leftTailMix = 0;
-    uint16_t rightTailMix = 0;
-    uint16_t aileronMix = 0;
-    uint16_t noseWheelMix = 0;
+//     if (reverseThrustPPM > MIN_REVERSE_THRUST_PPM_TO_ACTIVATE)
+//     {
+//         HAL_GPIO_WritePin(LED3_GPIO_Port,LED3_Pin, GPIO_PIN_SET);
+//     }
+//     else
+//     {
+//         HAL_GPIO_WritePin(LED3_GPIO_Port,LED3_Pin, GPIO_PIN_RESET); 
+//     }
 
-    noseWheelMix = 100 - rudderPPM;
-
-    if(AutoPilotEngaged(ppm))
-    {
-        leftTailMix = (0.7 * (100 - elevatorAutoPilot)) + (0.2 * rudderAutoPilot);
-        rightTailMix = (0.7 * elevatorAutoPilot) + (0.2 * rudderAutoPilot);
-        aileronMix = aileronAutoPilot;
-    }
-
-    else
-    {
-        leftTailMix = (0.7 * (100 - elevatorPPM)) + (0.2 * rudderPPM);
-        rightTailMix = (0.7 * elevatorPPM) + (0.2 * rudderPPM);
-        aileronMix = aileronPPM;
-    }
-
-    /************Reverse thrust**************/
-
-    setPWMChannel(pwm, PWM_CHANNEL_LEFT_TAIL, leftTailMix);
-    setPWMChannel(pwm, PWM_CHANNEL_RIGHT_TAIL, rightTailMix);
-    setPWMChannel(pwm, PWM_CHANNEL_AILERON, aileronMix);
-    setPWMChannel(pwm, PWM_CHANNEL_NOSE_WHEEL, noseWheelMix);
-    setPWMChannel(pwm, PWM_CHANNEL_THROTTLE, throttlePPM);
-    setPWMChannel(pwm, PWM_CHANNEL_GIMBAL_YAW, gimbalYawPPM);
-
-    if (reverseThrustPPM > MIN_REVERSE_THRUST_PPM_TO_ACTIVATE)
-    {
-        HAL_GPIO_WritePin(LED3_GPIO_Port,LED3_Pin, GPIO_PIN_SET);
-    }
-    else
-    {
-        HAL_GPIO_WritePin(LED3_GPIO_Port,LED3_Pin, GPIO_PIN_RESET); 
-    }
-
-    /************ Grabber**************/
-    if (gimbalYawPPM < 40)
-    {
-        setPWMChannel(pwm, PWM_CHANNEL_GRABBER, 0);
-        setPWMChannel(pwm, PWM_CHANNEL_GIMBAL_YAW, 50);
-    }
-    else if (gimbalYawPPM > 60)
-    {
-        setPWMChannel(pwm, PWM_CHANNEL_GRABBER, 65);
-        setPWMChannel(pwm, PWM_CHANNEL_GIMBAL_YAW, 50);
-    }
-}
+//     /************ Grabber**************/
+//     if (gimbalYawPPM < 40)
+//     {
+//         setPWMChannel(pwm, PWM_CHANNEL_GRABBER, 0);
+//         setPWMChannel(pwm, PWM_CHANNEL_GIMBAL_YAW, 50);
+//     }
+//     else if (gimbalYawPPM > 60)
+//     {
+//         setPWMChannel(pwm, PWM_CHANNEL_GRABBER, 65);
+//         setPWMChannel(pwm, PWM_CHANNEL_GIMBAL_YAW, 50);
+//     }
+// }
 
 static bool AutoPilotEngaged(PPMChannel &ppm)
 {
