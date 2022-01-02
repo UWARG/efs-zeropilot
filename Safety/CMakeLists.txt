@@ -26,7 +26,7 @@ add_subdirectory(Libraries/STM32F0xx_HAL_Driver)
 
 # Tests
 #add_subdirectory(Tests)
-file(GLOB_RECURSE C_SOURCES  "boardfiles/Drivers/STM32F0xx_HAL_Driver/Src*.c" "boardfiles/Src/*.c")
+file(GLOB_RECURSE C_SOURCES  "boardfiles/Drivers/STM32F0xx_HAL_Driver/Src*.c" "boardfiles/Src/*.c" "AttitudeManager/Src/*.cpp" "Controls/Src/*.cpp" "SensorFusion/Src/*.cpp" "Src/*.cpp")
 file(GLOB_RECURSE CXX_SOURCES "boardfiles/Src/*.cpp" "Src/*.cpp")
 
 
