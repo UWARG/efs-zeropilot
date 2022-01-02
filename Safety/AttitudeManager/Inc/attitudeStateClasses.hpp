@@ -10,10 +10,20 @@
 #include "OutputMixing.hpp"
 #include "PID.hpp"
 #include "SendInstructionsToSafety.hpp"
+#include "PWM.hpp"
 
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
+
+class pwmSetup : public attitudeState
+{
+    public:
+        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
+        void execute(attitudeManager* attitudeMgr);
+        void exit(attitudeManager* attitudeMgr);
+        static attitudeState& getInstance();
+}
 
 class fetchInstructionsMode : public attitudeState
 {
@@ -83,19 +93,6 @@ class OutputMixingMode : public attitudeState
         OutputMixingMode(const OutputMixingMode& other);
         OutputMixingMode& operator =(const OutputMixingMode& other);
         static float _channelOut[4];
-};
-
-class sendToSafetyMode : public attitudeState
-{
-    public:
-        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
-        void execute(attitudeManager* attitudeMgr);
-        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
-        static attitudeState& getInstance();
-    private:
-        sendToSafetyMode() {SendToSafety_Init();} // Calls C-style initialization function
-        sendToSafetyMode(const sendToSafetyMode& other);
-        sendToSafetyMode& operator =(const sendToSafetyMode& other);
 };
 
 class FatalFailureMode : public attitudeState

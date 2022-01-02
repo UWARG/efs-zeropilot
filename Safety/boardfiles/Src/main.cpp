@@ -174,7 +174,7 @@ int main(void)
   ppm.setNumChannels(8);
 
   PWMChannel pwm;
-  pwm.setup();
+  pwm.setup(); 
   safety_controller_init();
 
   interchipInit();
@@ -195,7 +195,7 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
     RSSI_Check();
-    safety_run(pwm, ppm);
+    // afety_run(pwm, ppm);
     HAL_Delay(1);
 
   }
