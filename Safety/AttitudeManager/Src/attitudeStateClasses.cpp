@@ -192,7 +192,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
         pwm.set(BACK_LEFT_MOTOR_CHANNEL, PID_Output_t -> backLeftPercent);
         pwm.set(BACK_RIGHT_MOTOR_CHANNEL, PID_Output_t -> backRightPercent);
         attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
-    }o
+    }
     else
     {
         attitudeMgr->setState(FatalFailureMode::getInstance());
