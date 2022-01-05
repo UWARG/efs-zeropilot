@@ -1,6 +1,10 @@
 #include "attitudeStateClasses.hpp"
+#include "PWM.hpp"
+#include "PWMChannel.hpp"
+#include "safetyConfig.hpp"
 #include "RSSI.hpp"
 #include "PPM.hpp"
+
 
 /***********************************************************************************************************************
  * Definitions
@@ -9,12 +13,29 @@
 float OutputMixingMode::_channelOut[4];
 SFOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t PIDloopMode::_PidOutput;
+PWMChannel pwm; 
 
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
 
+void pwmSetup::execute(attitudeManager* attitudeMgr) 
+{
+    pwm.setup(); // setup PWM channel, only done once
+
+    // set state to fetchInstructionsMode, this state will not be set again unless the system is restarted
+    attitudeMgr -> setState(fetchInstructionsMode::getInstance());
+}
+
+attitudeState& pwmSetup::getInstance()
+{
+    static pwmSetup singleton;
+    return singleton;
+}
+
+
 //Populate instruction data and decide between manual and auto flight modes
+
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {    
     const uint8_t TIMEOUT_THRESHOLD = 2; //Max cycles without data until connection is considered broken
@@ -170,7 +191,12 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
 
     if (ErrorStruct.errorCode == 0)
     {
-        attitudeMgr->setState(sendToSafetyMode::getInstance());
+        // setting PWM channel values
+        pwm.set(FRONT_LEFT_MOTOR_CHANNEL, PID_Output_t -> frontLeftPercent);
+        pwm.set(FRONT_RIGHT_MOTOR_CHANNEL, PID_Output_t -> frontRightPercent);
+        pwm.set(BACK_LEFT_MOTOR_CHANNEL, PID_Output_t -> backLeftPercent);
+        pwm.set(BACK_RIGHT_MOTOR_CHANNEL, PID_Output_t -> backRightPercent);
+        attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
     }
     else
     {
@@ -182,33 +208,6 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
 attitudeState& OutputMixingMode::getInstance()
 {
     static OutputMixingMode singleton;
-    return singleton;
-}
-
-void sendToSafetyMode::execute(attitudeManager* attitudeMgr)
-{
-    SendToSafety_error_t ErrorStruct;
-    float *channelOut = OutputMixingMode::GetChannelOut();
-    for(int channel = 0; channel < NUM_PWM_CHANNELS; channel++) // currently using channels 0-7
-    {
-        ErrorStruct = SendToSafety_Execute(channel, channelOut[channel]);
-        if(ErrorStruct.errorCode == OUTPUT_MIXING_VALUE_TOO_LOW)
-        {
-            attitudeMgr->setState(FatalFailureMode::getInstance());
-            break;
-        }
-    }
-
-    if (ErrorStruct.errorCode == OUTPUT_MIXING_SUCCESS)
-    {
-        attitudeMgr->setState(fetchInstructionsMode::getInstance());
-    }
-
-}
-
-attitudeState& sendToSafetyMode::getInstance()
-{
-    static sendToSafetyMode singleton;
     return singleton;
 }
 
