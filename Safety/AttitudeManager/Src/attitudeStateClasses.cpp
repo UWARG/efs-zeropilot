@@ -1,8 +1,8 @@
 #include "attitudeStateClasses.hpp"
 #include "PWM.hpp"
-#include "PWMChannel.hpp"
 #include "safetyConfig.hpp"
 #include "RSSI.hpp"
+#include "PID.hpp"
 
 
 /***********************************************************************************************************************
@@ -107,41 +107,41 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
 
     //executes PID's to acheive desired roll, pitch angle
     //if manual control is needed, use loaded in percents instead!
-    if(PMInstructions->passbyData.pitchPassby)
-    {
-        _PidOutput.pitchPercent = PMInstructions->passbyData.pitchPercent;
-    }
-    else
-    {
-        _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->pitch, SFOutput->pitchRate);
-    }
+    // if(PMInstructions->passbyData.pitchPassby)
+    // {
+    //     _PidOutput.pitchPercent = PMInstructions->passbyData.pitchPercent;
+    // }
+    // else
+    // {
+    //     _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->pitch, SFOutput->pitchRate);
+    // }
 
-    if(PMInstructions->passbyData.rollPassby)
-    {
-        _PidOutput.rollPercent = PMInstructions->passbyData.rollPercent;
-    }
-    else
-    {
-        _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->roll, SFOutput->rollRate);
-    }
+    // if(PMInstructions->passbyData.rollPassby)
+    // {
+    //     _PidOutput.rollPercent = PMInstructions->passbyData.rollPercent;
+    // }
+    // else
+    // {
+    //     _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->roll, SFOutput->rollRate);
+    // }
 
-    if(PMInstructions->passbyData.rudderPassby)
-    {
-        _PidOutput.rudderPercent = PMInstructions->passbyData.rudderPercent;
-    }
-    else
-    {
-        _PidOutput.rudderPercent = PMInstructions->rudderPercent;
-    }
+    // if(PMInstructions->passbyData.rudderPassby)
+    // {
+    //     _PidOutput.rudderPercent = PMInstructions->passbyData.rudderPercent;
+    // }
+    // else
+    // {
+    //     _PidOutput.rudderPercent = PMInstructions->rudderPercent;
+    // }
 
-    if(PMInstructions->passbyData.throttlePassby)
-    {
-        _PidOutput.throttlePercent = PMInstructions->passbyData.throttlePercent;
-    }
-    else
-    {
-        _PidOutput.throttlePercent = PMInstructions->throttlePercent;
-    }
+    // if(PMInstructions->passbyData.throttlePassby)
+    // {
+    //     _PidOutput.throttlePercent = PMInstructions->passbyData.throttlePercent;
+    // }
+    // else
+    // {
+    //     _PidOutput.throttlePercent = PMInstructions->throttlePercent;
+    // }
 
     attitudeMgr->setState(OutputMixingMode::getInstance());
 
@@ -163,10 +163,10 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
     if (ErrorStruct.errorCode == 0)
     {
         // setting PWM channel values
-        pwm.set(FRONT_LEFT_MOTOR_CHANNEL, PID_Output_t -> frontLeftPercent);
-        pwm.set(FRONT_RIGHT_MOTOR_CHANNEL, PID_Output_t -> frontRightPercent);
-        pwm.set(BACK_LEFT_MOTOR_CHANNEL, PID_Output_t -> backLeftPercent);
-        pwm.set(BACK_RIGHT_MOTOR_CHANNEL, PID_Output_t -> backRightPercent);
+        pwm.set(FRONT_LEFT_MOTOR_CHANNEL, PidOutput -> frontLeftMotorPercent);
+        pwm.set(FRONT_RIGHT_MOTOR_CHANNEL, PidOutput -> frontRightMotorPercent);
+        pwm.set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
+        pwm.set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
         attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
     }
     else

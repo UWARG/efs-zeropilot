@@ -5,6 +5,8 @@
 #ifndef ZEROPILOT_SW_CONTROLS_H
 #define ZEROPILOT_SW_CONTROLS_H
 
+#include "SensorFusion.hpp"
+
 // static volatile global position.
 // follows formats from SFOutput_t
 
