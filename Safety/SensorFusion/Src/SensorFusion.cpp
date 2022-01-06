@@ -8,11 +8,7 @@
 #include "MahonyAHRS.h"
 #include <cmath>
 #include "MathConstants.hpp"
-#include "imu.hpp"
-#include "gps.hpp"
-#include "altimeter.hpp"
-#include "airspeed.hpp"
-#include "timeStampingPOGI.hpp"
+#include "mpu6050_driver.hpp"
 
 #ifdef __cplusplus
 extern "C"

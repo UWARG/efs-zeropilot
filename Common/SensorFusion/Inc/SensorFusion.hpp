@@ -15,6 +15,7 @@ extern "C"
 #define SENSORFUSION_HPP
 
 #include "CommonDataTypes.hpp"
+#include "stdint.h"
 //Frequency of SF calculations in Hz
 const int SF_FREQ = 200;
 
