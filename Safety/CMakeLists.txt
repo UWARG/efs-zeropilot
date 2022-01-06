@@ -19,7 +19,6 @@ include_directories(
     AttitudeManager/Inc
     Controls/Inc
     SensorFusion/Inc
-    ${PARENT_DIR}/Common/Inc
 )
 
 # Libraries
@@ -27,8 +26,9 @@ add_subdirectory(Libraries/STM32F0xx_HAL_Driver)
 
 # Tests
 #add_subdirectory(Tests)
-file(GLOB_RECURSE C_SOURCES "../Common/Src/*.c"  "boardfiles/Drivers/STM32F0xx_HAL_Driver/Src*.c" "boardfiles/Src/*.c")
-file(GLOB_RECURSE CXX_SOURCES "../Common/Src/*.cpp" "boardfiles/Src/*.cpp" "Src/*.cpp" "AttitudeManager/Src/*.cpp" "Controls/Src/*.cpp" "SensorFusion/Src/*.cpp" "Src/*.cpp")
+file(GLOB_RECURSE C_SOURCES  "boardfiles/Drivers/STM32F0xx_HAL_Driver/Src*.c" "boardfiles/Src/*.c")
+file(GLOB_RECURSE CXX_SOURCES "boardfiles/Src/*.cpp" "Src/*.cpp" "AttitudeManager/Src/*.cpp" "Controls/Src/*.cpp" "SensorFusion/Src/*.cpp" "Src/*.cpp")
+
 
 if( EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/boardfiles/Src/main.c")
   message( FATAL_ERROR "Hey Bub, you screwed up, but it's all good. You see, CubeMx generates a main.c rather than a main.cpp, so before generation, you need to change the extension of boardfiles/Src/main.cpp to boardfiles/Src/main.c, allowing cubeMX to update your main file. Then, after generation, rename the file to boardfiles/Src/main.cpp." )
