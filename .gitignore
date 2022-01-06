@@ -81,3 +81,5 @@ cmake-build-*/
 **/SimulationBuild/**
 
 .idea/
+
+.vscode/settings.json

@@ -13,7 +13,10 @@
  * Definitions
  **********************************************************************************************************************/
 
+// TODO: move to safetyConfig.hpp
+
 constexpr uint8_t MANUAL_OVERRIDE_CHANNEL {4};
+
 // temporary grabber_rx and grabber_pwm channels. To be changed later.
 constexpr uint8_t GRABBER_RX_CHANNEL {0};
 constexpr uint8_t GRABBER_PWM_CHANNEL {9};
@@ -36,6 +39,26 @@ static bool AutoPilotEngaged(PPMChannel &ppm);
 
 void safety_controller_init()
 {
+}
+
+
+void new_safety_run(PWMChannel &pwm, PPMChannel &ppm) {
+
+    // ?get current pwm?
+    // PWM Values to be changed?
+    volatile int16_t *AutoPilotPwmChannel = getPWM();
+
+    // get RC PPM?
+    uint8_t lat_PPM = getPPM(ppm, LATITUDE_PPM_CHANNEL);
+    uint8_t lng_PPM = getPPM(ppm, LONGITUDE_PPM_CHANNEL);
+    uint8_t vrt_PPM = getPPM(ppm, VERTICAL_PPM_CHANNEL);
+    uint8_t yaw_PPM = getPPM(ppm, YAW_PPM_CHANNEL);
+
+    // somehow convert PPM into directionnnn?
+    // for teleop controls, add target to current
+    // for auton, Path Manager should give new total direction but idk.
+
+
 }
 
 void safety_run(PWMChannel &pwm, PPMChannel &ppm)

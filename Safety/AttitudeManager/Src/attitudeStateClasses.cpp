@@ -1,30 +1,79 @@
 #include "attitudeStateClasses.hpp"
+#include "PWM.hpp"
+#include "PWMChannel.hpp"
+#include "safetyConfig.hpp"
+#include "RSSI.hpp"
+
 
 /***********************************************************************************************************************
  * Definitions
  **********************************************************************************************************************/
 
 float OutputMixingMode::_channelOut[4];
-bool decisionModuleMode::_autonomous;
-CommandsForAM fetchInstructionsMode::_MovementInstructions;
 SFOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t PIDloopMode::_PidOutput;
+PWMChannel pwm; 
 
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
 
-void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
+void pwmSetup::execute(attitudeManager* attitudeMgr) 
 {
+    pwm.setup(); // setup PWM channel, only done once
 
-    bool autonomous = decisionModuleMode::getAutonomousMode();
+    // set state to fetchInstructionsMode, this state will not be set again unless the system is restarted
+    attitudeMgr -> setState(fetchInstructionsMode::getInstance());
+}
 
-    if (autonomous) {
-        GetFromPMToAM(&_MovementInstructions); // data sent from path manager
+attitudeState& pwmSetup::getInstance()
+{
+    static pwmSetup singleton;
+    return singleton;
+}
+
+
+//Populate instruction data and decide between manual and auto flight modes
+
+void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
+{    
+    const uint8_t TIMEOUT_THRESHOLD = 2; //Max cycles without data until connection is considered broken
+    _isAutonomous = false;
+
+    //Note: GetFromTeleop and GetFromPM should leave their corresponding instructions unchanged and return false when they fail
+    
+    if(GetFromTeleop(&_TeleopInstructions))
+    {
+        teleopTimeoutCount = 0;
+    }
+    else
+    {
+        if(teleopTimeoutCount < TIMEOUT_THRESHOLD)
+            teleopTimeoutCount++;
     }
 
-    else {
-        GetFromTeleop(&_MovementInstructions); // data from RC transmitter
+    //TODO: Determine if RC is commanding to go autonomous
+    bool isTeleopCommandingAuto = false;
+    
+    if(!isTeleopCommandingAuto || GetFromPM(&_PMInstructions))
+    {
+        PMTimeoutCount = 0;
+    }
+    else
+    {
+        if(PMTimeoutCount < TIMEOUT_THRESHOLD)
+            PMTimeoutCount++;
+    }
+    
+    if(teleopTimeoutCount < TIMEOUT_THRESHOLD && !CommsFailed())
+    {
+        _isAutonomous = (isTeleopCommandingAuto && PMTimeoutCount < TIMEOUT_THRESHOLD);
+    }
+    else
+    {   
+        //Abort due to teleop failure
+        attitudeMgr->setState(FatalFailureMode::getInstance());
+        return;
     }
 
     // The support is also here for sending stuff to Path manager, but there's nothing I need to send atm.
@@ -106,13 +155,19 @@ attitudeState& PIDloopMode::getInstance()
 
 void OutputMixingMode::execute(attitudeManager* attitudeMgr)
 {
-    PID_Output_t *PidOutput = PIDloopMode::GetPidOutput();
+    // *PIDOutput an array of four values corresponding to motor percentages for the 
+    PID_Output_t *PidOutput = PIDloopMode::GetPidOutput(); 
 
     OutputMixing_error_t ErrorStruct = OutputMixing_Execute(PidOutput, _channelOut);
 
     if (ErrorStruct.errorCode == 0)
     {
-        attitudeMgr->setState(sendToSafetyMode::getInstance());
+        // setting PWM channel values
+        pwm.set(FRONT_LEFT_MOTOR_CHANNEL, PID_Output_t -> frontLeftPercent);
+        pwm.set(FRONT_RIGHT_MOTOR_CHANNEL, PID_Output_t -> frontRightPercent);
+        pwm.set(BACK_LEFT_MOTOR_CHANNEL, PID_Output_t -> backLeftPercent);
+        pwm.set(BACK_RIGHT_MOTOR_CHANNEL, PID_Output_t -> backRightPercent);
+        attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
     }
     else
     {
@@ -124,33 +179,6 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
 attitudeState& OutputMixingMode::getInstance()
 {
     static OutputMixingMode singleton;
-    return singleton;
-}
-
-void sendToSafetyMode::execute(attitudeManager* attitudeMgr)
-{
-    SendToSafety_error_t ErrorStruct;
-    float *channelOut = OutputMixingMode::GetChannelOut();
-    for(int channel = 0; channel < NUM_PWM_CHANNELS; channel++) // currently using channels 0-7
-    {
-        ErrorStruct = SendToSafety_Execute(channel, channelOut[channel]);
-        if(ErrorStruct.errorCode == OUTPUT_MIXING_VALUE_TOO_LOW)
-        {
-            attitudeMgr->setState(FatalFailureMode::getInstance());
-            break;
-        }
-    }
-
-    if (ErrorStruct.errorCode == OUTPUT_MIXING_SUCCESS)
-    {
-        attitudeMgr->setState(fetchInstructionsMode::getInstance());
-    }
-
-}
-
-attitudeState& sendToSafetyMode::getInstance()
-{
-    static sendToSafetyMode singleton;
     return singleton;
 }
 
