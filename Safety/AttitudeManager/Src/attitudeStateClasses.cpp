@@ -3,6 +3,7 @@
 #include "PWMChannel.hpp"
 #include "safetyConfig.hpp"
 #include "RSSI.hpp"
+#include "PPM.hpp"
 
 
 /***********************************************************************************************************************
@@ -42,7 +43,7 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 
     //Note: GetFromTeleop and GetFromPM should leave their corresponding instructions unchanged and return false when they fail
     
-    if(GetFromTeleop(&_TeleopInstructions))
+    if(ReceiveTeleopInstructions())
     {
         teleopTimeoutCount = 0;
     }
@@ -86,6 +87,19 @@ attitudeState& fetchInstructionsMode::getInstance()
     return singleton;
 }
 
+bool fetchInstructionsMode::ReceiveTeleopInstructions(void)
+{
+    if(PPMChannel::is_disconnected(HAL_GetTick()))
+    {
+        return false;
+    }
+    
+    for(int i = 0; i < MAX_PPM_CHANNELS; i++)
+    {
+        _TeleopInstructions.PPMValues[i] = PPMChannel::get(i);
+    }
+}
+
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
 {
     SFError_t _SFError = SF_GetResult(&_SFOutput);
@@ -101,10 +115,24 @@ attitudeState& sensorFusionMode::getInstance()
 
 void PIDloopMode::execute(attitudeManager* attitudeMgr)
 {
-
-    CommandsForAM *PMInstructions = fetchInstructionsMode::GetPMInstructions();
+    CommandsForAM *PMInstructions = nullptr;
     SFOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
 
+    PID_Output_t *pidOut = nullptr;
+    if(fetchInstructionsMode::isAutonomous())
+    {
+        PMInstructions = fetchInstructionsMode::GetPMInstructions();
+        //TODO: Run controls module with PMInstructions
+    }
+    else
+    {
+        PPM_Instructions_t *teleopInstructions = fetchInstructionsMode::GetTeleopInstructions();
+        _PidOutput = getPIDFromControls(teleopInstructions, SFOutput);
+    }
+
+    #ifdef FIXED_WING
+    PMInstructions = fetchInstructionsMode::GetPMInstructions();
+    
     //executes PID's to acheive desired roll, pitch angle
     //if manual control is needed, use loaded in percents instead!
     if(PMInstructions->passbyData.pitchPassby)
@@ -142,6 +170,7 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     {
         _PidOutput.throttlePercent = PMInstructions->throttlePercent;
     }
+    #endif
 
     attitudeMgr->setState(OutputMixingMode::getInstance());
 
