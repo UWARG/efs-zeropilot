@@ -184,7 +184,11 @@ attitudeState& OutputMixingMode::getInstance()
 
 void FatalFailureMode::execute(attitudeManager* attitudeMgr)
 {
-    attitudeMgr->setState(FatalFailureMode::getInstance());
+    //setting PWM channel values to 0
+    pwm.set(FRONT_LEFT_MOTOR_CHANNEL, 0);
+    pwm.set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
+    pwm.set(BACK_LEFT_MOTOR_CHANNEL, 0);
+    pwm.set(BACK_RIGHT_MOTOR_CHANNEL, 0);
 }
 
 attitudeState& FatalFailureMode::getInstance()
