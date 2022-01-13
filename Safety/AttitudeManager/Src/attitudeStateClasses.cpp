@@ -39,7 +39,7 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 
     //Note: GetFromTeleop and GetFromPM should leave their corresponding instructions unchanged and return false when they fail
     
-    if(ReceiveTeleopInstructions())
+    if(GetTeleopInstructions(&_TeleopInstructions))
     {
         teleopTimeoutCount = 0;
     }
@@ -52,7 +52,7 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
     //TODO: Determine if RC is commanding to go autonomous
     bool isTeleopCommandingAuto = false;
     
-    if(!isTeleopCommandingAuto || GetFromPM(&_PMInstructions))
+    if(!isTeleopCommandingAuto || GetFromPMToAM(&_PMInstructions))
     {
         PMTimeoutCount = 0;
     }

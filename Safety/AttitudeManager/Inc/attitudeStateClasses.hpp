@@ -4,6 +4,8 @@
 #include "attitudeManager.hpp"
 #include "AttitudeDatatypes.hpp"
 #include "attitudeConfig.hpp"
+#include "../../Common/Inc/AttitudePathInterface.hpp"
+#include "../../Common/Inc/CommWithPathManager.hpp"
 
 #include "SensorFusion.hpp"
 #include "OutputMixing.hpp"
@@ -27,15 +29,17 @@ class fetchInstructionsMode : public attitudeState
 {
     public:
         void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
-        void exevercute(attitudeManager* attitudeMgr);
+        void execute(attitudeManager* attitudeMgr);
         void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
         // TODO: fix GetPMInstructions to send data over interchip
-        // static CommandsForAM *GetPMInstructions(void) {return &_PMInstructions;}
+        static CommandsForAM *GetPMInstructions(void) {return &_PMInstructions;}
         static CommandsForAM *GetTeleopInstructions(void) {return &_TeleopInstructions;}
         static bool isAutonomous(void) {return _isAutonomous;}
     private:
-        fetchInstructionsMode() {CommFromAMToPMInit();}
+        fetchInstructionsMode() {
+            //CommFromAMToPMInit();
+            }
         fetchInstructionsMode(const fetchInstructionsMode& other);
         fetchInstructionsMode& operator =(const fetchInstructionsMode& other);
         static bool *ReceiveTeleopInstructions(void);

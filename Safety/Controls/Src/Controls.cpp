@@ -9,7 +9,7 @@
 #include "../../Inc/PPM.hpp"
 #include "../../Inc/PWM.hpp"
 #include "base_pid.hpp"
-#include "../../SensorFusion/Inc/sensorFusion.hpp"
+#include "../../../Common/SensorFusion/Inc/SensorFusion.hpp"
 
 
 
