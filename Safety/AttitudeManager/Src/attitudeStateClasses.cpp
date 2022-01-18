@@ -13,6 +13,8 @@ float OutputMixingMode::_channelOut[4];
 SFOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t PIDloopMode::_PidOutput;
 PWMChannel pwm; 
+CommandsForAM fetchInstructionsMode::_PMInstructions;
+CommandsForAM fetchInstructionsMode::_TeleopInstructions;
 
 /***********************************************************************************************************************
  * Code

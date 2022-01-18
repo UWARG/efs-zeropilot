@@ -9,10 +9,12 @@
 #include <cmath>
 #include "MathConstants.hpp"
 #include "imu.hpp"
+#ifdef AUTOPILOT
 #include "gps.hpp"
 #include "altimeter.hpp"
 #include "airspeed.hpp"
 #include "timeStampingPOGI.hpp"
+#endif
 
 #ifdef __cplusplus
 extern "C"
@@ -50,9 +52,11 @@ struct SFIterationData_t{
 };
 
 static IMU *imuObj;
+#ifdef AUTOPILOT
 static Gps *gpsObj;
 static Altimeter *altimeterObj;
 static airspeed *airspeedObj;
+#endif
 static SFIterationData_t iterData;
 static SFOutput_t SFOutput;
 
@@ -171,7 +175,8 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata) {
     float imu_RollRate = 0;
     float imu_PitchRate = 0;
     float imu_YawRate = 0;
-    
+
+#ifdef AUTOPILOT //Safety is not compatible with the old error checking
     //Airspeed checks are temporarily disabled until an airspeed driver is implemented
 
     //Abort if both sensors are busy or failed data collection
@@ -206,6 +211,9 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata) {
     }
 
     MahonyAHRSupdate(imudata->gyrx, imudata->gyry, imudata->gyrz, imudata->accx, imudata->accy, imudata->accz, imudata->magx, imudata->magy, imudata->magz);
+#else //Safety does not currently use a magnetometer
+    MahonyAHRSupdateIMU(imudata->gyro_x, imudata->gyro_y, imudata->gyro_z, imudata->accel_x, imudata->accel_y, imudata->accel_z);
+#endif
 
     //Convert quaternion output to angles (in deg)
     imu_RollAngle = RAD_TO_DEG(atan2f(q0 * q1 + q2 * q3, 0.5f - q1 * q1 - q2 * q2));
@@ -239,7 +247,12 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata) {
     return SFError;
 }
 
-SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata, GpsData_t *gpsdata, IMUData_t *imudata, SFAttitudeOutput_t *attitudedata,  SFIterationData_t *iterdata)
+SFError_t SF_GetPosition(
+    SFPathOutput_t *Output,
+#ifdef Autopilot
+    AltimeterData_t *altimeterdata, GpsData_t *gpsdata, //Params used not used in Safety
+#endif
+    IMUData_t *imudata, SFAttitudeOutput_t *attitudedata, SFIterationData_t *iterdata)
 {
     //Error output
     SFError_t SFError;
@@ -249,10 +262,12 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
     float dt = 1/freq;
 
     //Set currently unused sensors to zero
+#ifdef Autopilot
     altimeterdata->altitude = 0;
-    imudata->accx = 0;
-    imudata->accy = 0;
-    imudata->accz = 0;
+#endif
+    imudata->accel_x = 0;
+    imudata->accel_y = 0;
+    imudata->accel_z = 0;
 
     //Define the covariance of sensors
     float baroCovar = HIGH_COVAR + 1;
@@ -298,9 +313,9 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
     float u[U_DIM] =
     {
         //TODO: Verify the directions of reported acceleration by the imu
-        imudata->accy, //Vertical acceleration
-        imudata->accx, //Latitudinal acceleration
-        imudata->accz  //Longitudinal acceleration
+        imudata->accel_y, //Vertical acceleration
+        imudata->accel_x, //Latitudinal acceleration
+        imudata->accel_z  //Longitudinal acceleration
     };
     localToGlobalAccel(attitudedata, u);
 
@@ -365,13 +380,23 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
     //List of sensor measurements
     float z[NUM_MEASUREMENTS] =
     {
+#ifdef Autopilot
         altimeterdata->altitude,
         (float) gpsdata->altitude,
+#else //These sensor measurements are not used in Safety
+        0,
+        0,
+#endif
         xyPos[0], //Latitude
         xyPos[1], //Longitude
         0, //Vertical speed (Currently unused)
+#ifdef Autopilot
         gpsdata->groundSpeed * cos(DEG_TO_RAD(gpsdata->heading)), //North speed
         gpsdata->groundSpeed * sin(DEG_TO_RAD(gpsdata->heading)) //East speed
+#else
+        0,
+        0,
+#endif
     };
 
     //Defines the confidence to have in each sensor variable
@@ -527,11 +552,11 @@ SFError_t SF_GenerateNewResult()
     SFError.errorCode = 0;
     
     IMUData_t imuData;
+    imuObj->GetResult(imuData);
+#ifdef AUTOPILOT
     GpsData_t GpsData;
     AltimeterData_t altimeterData;
     airspeedData_t airspeedData;
-    imuObj->GetResult(imuData);
-#ifdef AUTOPILOT
     gpsObj->GetResult(GpsData);
     altimeterObj->GetResult(altimeterData);
     airspeedObj->GetResult(airspeedData);
@@ -553,7 +578,12 @@ SFError_t SF_GenerateNewResult()
     SFError = SF_GetAttitude(&attitudeOutput, &imuData);
     if(SFError.errorCode != 0) return SFError;
 
-    SFError = SF_GetPosition(&pathOutput, &altimeterData, &GpsData, &imuData, &attitudeOutput, &iterData);
+    SFError = SF_GetPosition(
+        &pathOutput,
+#ifdef AUTOPILOT
+        &altimeterData, &GpsData,
+#endif
+        &imuData, &attitudeOutput, &iterData);
     if(SFError.errorCode != 0) return SFError;
 
     SFOutput.pitch = attitudeOutput.pitch;

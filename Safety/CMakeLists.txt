@@ -28,14 +28,12 @@ include_directories(
 
 # Libraries
 add_subdirectory(Libraries/STM32F0xx_HAL_Driver)
-file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/CControl/Src/mul.c ../Common/CControl/Src/tran.c ../Common/CControl/Src/inv.c ../Common/CControl/Src/lup.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/Src/*.c boardfiles/Src/*.c)
-file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp ../Common/SensorFusion/Src/MahoneyAHRS.cpp ../Common/SensorFusion/Src/SensorFusion.cpp ../Common/SensorFusion/SensorFusionInterface.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp SensorFusion/Src/*.cpp SensorFusion/Src/*.c)
-
 
 # Tests
 #add_subdirectory(Tests)
-file(GLOB_RECURSE C_SOURCES  "boardfiles/Drivers/STM32F0xx_HAL_Driver/Src*.c" "boardfiles/Src/*.c")
-file(GLOB_RECURSE CXX_SOURCES "boardfiles/Src/*.cpp" "Src/*.cpp" "AttitudeManager/Src/*.cpp" "Controls/Src/*.cpp" "SensorFusion/Src/*.cpp" "Src/*.cpp")
+
+file(GLOB_RECURSE C_SOURCES  ../Common/Src/*.c ../Common/CControl/Src/mul.c ../Common/CControl/Src/tran.c ../Common/CControl/Src/inv.c ../Common/CControl/Src/lup.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/Src/*.c boardfiles/Src/*.c "boardfiles/Drivers/STM32F0xx_HAL_Driver/Src*.c" "boardfiles/Src/*.c")
+file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp ../Common/SensorFusion/Src/MahoneyAHRS.cpp ../Common/SensorFusion/Src/SensorFusion.cpp ../Common/SensorFusion/SensorFusionInterface.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp SensorFusion/Src/*.cpp SensorFusion/Src/*.c "boardfiles/Src/*.cpp" "Src/*.cpp" "AttitudeManager/Src/*.cpp" "Controls/Src/*.cpp" "SensorFusion/Src/*.cpp" "Src/*.cpp")
 
 
 if( EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/boardfiles/Src/main.c")

@@ -12,25 +12,25 @@
 void Error_Handler(void);
 
 
-struct ImuData {
+struct IMUData_t {
   double gyro_x, gyro_y, gyro_z; 
   double accel_x, accel_y, accel_z;
 }; 
 
-class Imu {
+class IMU {
   public: 
-    virtual void getResult(ImuData& Data) = 0; 
+    virtual void GetResult(IMUData_t& Data) = 0; 
 }; 
 
-class MPU6050 : public Imu {
+class MPU6050 : public IMU {
   
   public: 
   
-    static Imu& getInstance(); 
+    static IMU& getInstance(); 
 
     MPU6050(const MPU6050*)=delete; 
 
-    void getResult(ImuData& Data); 
+    void GetResult(IMUData_t& Data); 
 
   private:
 
