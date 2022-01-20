@@ -8,7 +8,7 @@ Don't forget to add reviewers on github and mention the PR in the appropriate di
 
 # How Has This Been Tested?
 
-Please describe the tests that you ran to verify your changes. Provide instructions and details so the changes can be tested if required.
+Please describe the tests that you ran to verify your changes. Provide instructions and details so the changes can be tested if required. Also mention who performed the testing.
 
 # Documentation
 
@@ -20,5 +20,5 @@ https://uwarg-docs.atlassian.net/wiki/spaces/ZP/overview?homepageId=20217925
 
 - [ ] The changes have been well commented, particularly in hard-to-understand areas.
 - [ ] The code has been tested on hardware, either by me or somone else.
-- [ ] corresponding changes to documentation have been created links to this documentation are provided within the pull request.
-- [ ] The changes generate no new warnings and compile.
+- [ ] Corresponding changes to documentation have been created links to this documentation are provided within the pull request.
+- [ ] The changes generate no new warnings and compile and run; A screenshot of a successful compile message is attached to the PR.
