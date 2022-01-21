@@ -16,9 +16,9 @@ Include links to changes in documentation on confluence that you have created, i
 
 https://uwarg-docs.atlassian.net/wiki/spaces/ZP/overview?homepageId=20217925
 
-# Checklist:
+# Merge Checklist:
 
 - [ ] The changes have been well commented, particularly in hard-to-understand areas.
 - [ ] The code has been tested on hardware, either by me or somone else.
-- [ ] Corresponding changes to documentation have been created links to this documentation are provided within the pull request.
+- [ ] Corresponding changes to documentation have been created and links to this documentation are provided within the pull request.
 - [ ] The changes generate no new warnings and compile and run; A screenshot of a successful compile message is attached to the PR.
