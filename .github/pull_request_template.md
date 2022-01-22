@@ -6,11 +6,11 @@ Include the Asana link, or relevant issue. (https://app.asana.com/0/187002107997
 
 Don't forget to add reviewers on github and mention the PR in the appropriate discord channel.
 
-# How Has This Been Tested?
+## Testing
 
 Please describe the tests that you ran to verify your changes. Provide instructions and details so the changes can be tested if required. Also mention who performed the testing.
 
-# Documentation
+## Documentation
 
 Include links to changes in documentation on confluence that you have created, if it was required.
 
