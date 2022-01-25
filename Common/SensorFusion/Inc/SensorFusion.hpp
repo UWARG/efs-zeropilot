@@ -26,8 +26,8 @@ typedef struct {
 } SFError_t;
 
 typedef struct {
-    float roll, pitch, yaw; //rad
-    float rollRate, pitchRate, yawRate; //rad/s
+    float roll, pitch, yaw; //Degrees. Yaw of 180 is north.
+    float rollRate, pitchRate, yawRate; //Degrees/second
     float airspeed; //m/s
     float altitude; //m
     float rateOfClimb; //m/s
@@ -35,8 +35,9 @@ typedef struct {
     float latitudeSpeed; //m/s
     long double longitude; //Decimal degrees
     float longitudeSpeed; //m/s
-    double track; // degrees
-    double heading; //degrees
+    double track; //Degrees. Track of 0 is north.
+    float groundSpeed; //m/s
+    double heading; //Degrees. Heading of 0 is north.
 } SFOutput_t;
 
 //Following structs store the raw sensor data so other modules can have direct access to them without including sensor header files
@@ -114,6 +115,7 @@ SFError_t SF_GetResult(SFOutput_t *SFoutput);
  */ 
 IMU_Data_t SF_GetRawIMU();
 
+#ifdef AUTOPILOT
 /**
  * Get raw Airspeed data. Can be called any time raw data is needed.
  * @return Airspeed struct.
@@ -131,5 +133,6 @@ Gps_Data_t SF_GetRawGPS();
  * @return Altimeter struct.
  */ 
 Altimeter_Data_t SF_GetRawAltimeter();
-
 #endif
+
+#endif // SENSOR_FUSION_HPP

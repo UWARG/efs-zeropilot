@@ -82,11 +82,17 @@ static OutputMixingErrorCodes checkInputValidity(PID_Output_t *PidOutput)
 {
 	OutputMixingErrorCodes errorCode;
 
-	if ( (PidOutput->frontLeft < -100.0f) || (PidOutput->pitchPercent < -100.0f) || (PidOutput->rudderPercent < -100.0f) || (PidOutput->throttlePercent < 0.0f) )
+	if ( (PidOutput->frontLeftMotorPercent < -100.0f) 
+	|| (PidOutput->frontRightMotorPercent < -100.0f) 
+	|| (PidOutput->backLeftMotorPercent < -100.0f) 
+	|| (PidOutput->backRightMotorPercent < 0.0f) )
 	{
 		errorCode = OUTPUT_MIXING_VALUE_TOO_LOW;
 	}
-	else if ( (PidOutput->rollPercent > 100.0f) || (PidOutput->pitchPercent > 100.0f) || (PidOutput->rudderPercent > 100.0f) || (PidOutput->throttlePercent > 100.0f) )
+	else if ( (PidOutput->frontLeftMotorPercent > 100.0f) 
+	|| (PidOutput->frontRightMotorPercent > 100.0f) 
+	|| (PidOutput->backLeftMotorPercent > 100.0f) 
+	|| (PidOutput->backRightMotorPercent > 100.0f) )
 	{
 		errorCode = OUTPUT_MIXING_VALUE_TOO_HIGH;
 	}

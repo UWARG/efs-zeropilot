@@ -1,6 +1,6 @@
 
 /* Includes ------------------------------------------------------------------*/
-#include "mpu6050_driver.hpp"
+#include "imu.hpp"
 #include "stm32f0xx_hal.h"
 
 /* Private define ------------------------------------------------------------*/
@@ -42,13 +42,13 @@ I2C_HandleTypeDef hi2c1;
 
 /* Public Methods  ---------------------------------------------------------*/
 
-Imu& MPU6050::getInstance(){
+IMU& MPU6050::getInstance(){
   static MPU6050 singleton; 
   return singleton; 
 
 }
 
-void MPU6050::getResult(ImuData& Data){
+void MPU6050::GetResult(IMUData_t& Data){
 	uint8_t data[6];
 	int16_t raw_x = 0, raw_y = 0, raw_z = 0;
 	HAL_StatusTypeDef status = HAL_OK;

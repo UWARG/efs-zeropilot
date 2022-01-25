@@ -9,7 +9,6 @@
 #include "SensorFusion.hpp"
 #include "OutputMixing.hpp"
 #include "PID.hpp"
-#include "SendInstructionsToSafety.hpp"
 
 /***********************************************************************************************************************
  * Code

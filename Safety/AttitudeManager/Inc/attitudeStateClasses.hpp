@@ -4,12 +4,12 @@
 #include "attitudeManager.hpp"
 #include "AttitudeDatatypes.hpp"
 #include "attitudeConfig.hpp"
-
+#include "AttitudePathInterface.hpp"
 #include "CommWithPathManager.hpp"
+
 #include "SensorFusion.hpp"
 #include "OutputMixing.hpp"
 #include "PID.hpp"
-#include "SendInstructionsToSafety.hpp"
 #include "PWM.hpp"
 
 /***********************************************************************************************************************
@@ -23,7 +23,7 @@ class pwmSetup : public attitudeState
         void execute(attitudeManager* attitudeMgr);
         void exit(attitudeManager* attitudeMgr);
         static attitudeState& getInstance();
-}
+};
 
 class fetchInstructionsMode : public attitudeState
 {
@@ -32,11 +32,14 @@ class fetchInstructionsMode : public attitudeState
         void execute(attitudeManager* attitudeMgr);
         void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
+        // TODO: fix GetPMInstructions to send data over interchip
         static CommandsForAM *GetPMInstructions(void) {return &_PMInstructions;}
         static CommandsForAM *GetTeleopInstructions(void) {return &_TeleopInstructions;}
         static bool isAutonomous(void) {return _isAutonomous;}
     private:
-        fetchInstructionsMode() {CommFromAMToPMInit();}
+        fetchInstructionsMode() {
+            //CommFromAMToPMInit();
+            }
         fetchInstructionsMode(const fetchInstructionsMode& other);
         fetchInstructionsMode& operator =(const fetchInstructionsMode& other);
         static CommandsForAM _PMInstructions;

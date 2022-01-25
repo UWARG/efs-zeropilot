@@ -195,7 +195,7 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
     RSSI_Check();
-    // afety_run(pwm, ppm);
+    // safety_run(pwm, ppm);
     HAL_Delay(1);
 
   }

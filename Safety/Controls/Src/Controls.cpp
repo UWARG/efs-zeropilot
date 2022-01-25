@@ -6,10 +6,10 @@
 #include "Controls.hpp"
 #include <cmath>
 
-#include "../../Inc/PPM.hpp"
-#include "../../Inc/PWM.hpp"
+#include "PPM.hpp"
+#include "PWM.hpp"
 #include "base_pid.hpp"
-#include "../../SensorFusion/Inc/sensorFusion.hpp"
+#include "SensorFusion.hpp"
 
 
 
