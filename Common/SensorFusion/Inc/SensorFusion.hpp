@@ -136,4 +136,4 @@ Gps_Data_t SF_GetRawGPS();
 Altimeter_Data_t SF_GetRawAltimeter();
 #endif
 
-#endif
+#endif // SENSOR_FUSION_HPP

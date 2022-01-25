@@ -4,8 +4,8 @@
 #include "attitudeManager.hpp"
 #include "AttitudeDatatypes.hpp"
 #include "attitudeConfig.hpp"
-#include "../../Common/Inc/AttitudePathInterface.hpp"
-#include "../../Common/Inc/CommWithPathManager.hpp"
+#include "AttitudePathInterface.hpp"
+#include "CommWithPathManager.hpp"
 
 #include "SensorFusion.hpp"
 #include "OutputMixing.hpp"
