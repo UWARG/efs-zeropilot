@@ -111,13 +111,14 @@ void modeExecutor::execute(pathManager* pathMgr)
             mode_selector->setCurrentMode(CruisingMode::getInstance());
         }
 
-        Telemetry_PIGO_t telem_data;
+        Telemetry_PIGO_t telem_data {};
 
+        // These were added to ensure CruisingMode_Fsm tests pass.
+        // TODO: Ensure CruisingMode tests don't depend on this so we can delete this garbage
         telem_data.waypoints[0] = createTelemetryWaypoint(0.0, 0.0, 6, 0.0, 0);
         telem_data.waypoints[1] = createTelemetryWaypoint(0.0, 0.0, 7, 0.0, 0);
         telem_data.waypoints[2] = createTelemetryWaypoint(0.0, 0.0, 8, 0.0, 0);
         telem_data.waypoints[3] = createTelemetryWaypoint(0.0, 0.0, 9, 0.0, 0);
-
         telem_data.numWaypoints = 4;
         telem_data.waypointModifyFlightPathCommand = INITIALIZE_FLIGHT_PATH;
         telem_data.initializingHomeBase = 1;
@@ -220,5 +221,3 @@ pathManagerState& fatalFailureMode::getInstance()
     static fatalFailureMode singleton;
     return singleton;
 }
-
-

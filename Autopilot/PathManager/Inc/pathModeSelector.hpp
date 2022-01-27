@@ -190,6 +190,10 @@ class PathModeSelector {
 
          bool getIsLanded() { return is_landed; }
 
+        void enqueueFlightPathEditInstructions(Telemetry_PIGO_t newInstruction);
+        //Make a pointer to the first instruction node, which will be the head of the flightPathEditInstructions (a queue).
+        flightPathEditInstructionNode* first_flight_path_edit_instr;
+
     private: 
         PathModeSelector();
         static PathModeSelector* singleton;
@@ -202,9 +206,9 @@ class PathModeSelector {
          * 
          * @return none
          */
-        void enqueueFlightPathEditInstructions(Telemetry_PIGO_t newInstruction);
-        //Make a pointer to the first instruction node, which will be the head of the flightPathEditInstructions (a queue).
-        flightPathEditInstructionNode* first_flight_path_edit_instr;
+        // void enqueueFlightPathEditInstructions(Telemetry_PIGO_t newInstruction);
+        // //Make a pointer to the first instruction node, which will be the head of the flightPathEditInstructions (a queue).
+        // flightPathEditInstructionNode* first_flight_path_edit_instr;
 
         PathMode* current_mode;
         PathModeEnum current_mode_enum;

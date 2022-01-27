@@ -46,11 +46,7 @@ void LandingTransitionStage::execute(LandingMode* land_mode) {
     _input.telemetryData = &telem_data;
 
     SFOutput_t sf_data;
-    #ifdef UNIT_TESTING
-        sf_data.track = 1;
-    #else
-        sf_data = land_mode->getSensorFusionData();
-    #endif
+    sf_data = land_mode->getSensorFusionData();
     _input.sensorOutput = &sf_data;
 
     //making sure landing points are only made once

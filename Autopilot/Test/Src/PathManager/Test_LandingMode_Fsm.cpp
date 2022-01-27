@@ -68,7 +68,8 @@ TEST(LandingModeFSM, LandingTransitionTransitionsToLandingTransition) {
     Telemetry_PIGO_t telem_data;
     telem_data.stoppingDirectionHeading = 100;
 
-	SFOutput_t sf_data {};
+	SFOutput_t sf_data;
+	sf_data.track = 1;
 
 	IMU_Data_t imu_data {};
 
