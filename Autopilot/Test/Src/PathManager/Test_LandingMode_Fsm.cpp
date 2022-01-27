@@ -68,7 +68,8 @@ TEST(LandingModeFSM, LandingTransitionTransitionsToLandingTransition) {
     Telemetry_PIGO_t telem_data;
     telem_data.stoppingDirectionHeading = 100;
 
-	SFOutput_t sf_data {};
+	SFOutput_t sf_data;
+	sf_data.track = 1;
 
 	IMU_Data_t imu_data {};
 
@@ -96,7 +97,8 @@ TEST(LandingModeFSM, LandingTransitionTransitionsToLandingSlope) {
     Telemetry_PIGO_t telem_data;
     telem_data.stoppingDirectionHeading = 0;
 
-	SFOutput_t sf_data {};
+	SFOutput_t sf_data;
+    sf_data.altitude = 1;
 
 	IMU_Data_t imu_data {};
 
@@ -123,7 +125,8 @@ TEST(LandingModeFSM, LandingSlopeTransitionToLandingSlope) {
     Telemetry_PIGO_t telem_data;
     telem_data.stoppingAltitude = -100;
 
-	SFOutput_t sf_data {};
+	SFOutput_t sf_data;
+    sf_data.altitude = 1;
 
 	IMU_Data_t imu_data {};
 
@@ -150,7 +153,8 @@ TEST(LandingModeFSM, LandingSlopeTransitionToLandingFlare) {
     Telemetry_PIGO_t telem_data;
     telem_data.stoppingAltitude = 0;
 
-	SFOutput_t sf_data {};
+	SFOutput_t sf_data;
+    sf_data.altitude = 0.3;
 
 	IMU_Data_t imu_data {};
 
@@ -177,7 +181,8 @@ TEST(LandingModeFSM, LandingFlareTransitionToLandingFlare) {
     Telemetry_PIGO_t telem_data;
     telem_data.stoppingAltitude = -100;
 
-	SFOutput_t sf_data {};
+	SFOutput_t sf_data;
+    sf_data.altitude = 0.3;
 
 	IMU_Data_t imu_data {};
 
@@ -204,7 +209,8 @@ TEST(LandingModeFSM, LandingFlareTransitionToLandingDecrab) {
     Telemetry_PIGO_t telem_data;
     telem_data.stoppingAltitude = 0;
 
-	SFOutput_t sf_data {};
+	SFOutput_t sf_data; 
+	sf_data.altitude = 0.02;
 
 	IMU_Data_t imu_data {};
 
@@ -231,7 +237,8 @@ TEST(LandingModeFSM, LandingDecrabTransitionToLandingDecrab) {
     Telemetry_PIGO_t telem_data;
     telem_data.stoppingAltitude = -100;
 
-	SFOutput_t sf_data {};
+	SFOutput_t sf_data;
+	sf_data.altitude = 0.02;
 
 	IMU_Data_t imu_data {};
 
@@ -258,7 +265,8 @@ TEST(LandingModeFSM, LandingDecrabTransitionToLandingTouchdown) {
     Telemetry_PIGO_t telem_data;
     telem_data.stoppingAltitude = 0;
 
-	SFOutput_t sf_data {};
+	SFOutput_t sf_data;
+	sf_data.altitude = 0.02;
 
 	IMU_Data_t imu_data {};
 

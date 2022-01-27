@@ -17,6 +17,7 @@ _CruisingState_Telemetry_Return CruisingFlight::_return_to_ground;
 void CruisingFlight::execute(CruisingMode* cruise_mode) {
     Telemetry_PIGO_t telem_data = cruise_mode->getTelemetryData();
     SFOutput_t sf_data = cruise_mode->getSensorFusionData();
+    
 
     // Set waypoint manager input struct
     _input_data.track = sf_data.track; // Gets track
@@ -24,7 +25,20 @@ void CruisingFlight::execute(CruisingMode* cruise_mode) {
     _input_data.latitude = sf_data.latitude;
     _input_data.altitude = sf_data.altitude;
 
-    _ModifyFlightPathErrorCode edit_error = editFlightPath(&telem_data, cruising_state_manager, waypoint_id_array); // Edit flight path if applicable
+
+    Telemetry_PIGO_t instr;
+    _ModifyFlightPathErrorCode edit_error = MODIFY_CRUISING_SUCCESS; // Initialize to success, else if the instruction queue is empty, edit_error would not be initialized
+    //Go over all instructions on the instruction queue
+    while (!cruise_mode->getModeSelector()->flightPathEditInstructionsIsEmpty()) {
+        instr = cruise_mode->getModeSelector()->dequeueflightPathEditInstructions();
+
+        edit_error = editFlightPath(&instr, cruising_state_manager, waypoint_id_array); // Edit flight path if applicable
+        
+        if (edit_error != MODIFY_CRUISING_SUCCESS) { //There has been an error, get out of the loop and handle the error first
+            break;
+        }
+    }
+
     _GetNextDirectionsErrorCode path_error = pathFollow(&telem_data, cruising_state_manager, _input_data, &_output_data, going_home, in_hold); // Get next direction or modify flight behaviour pattern
     setReturnValues(&_return_to_ground, cruising_state_manager, edit_error, path_error); // Set error codes
 
@@ -51,7 +65,7 @@ void CruisingFlight::execute(CruisingMode* cruise_mode) {
     passby_control.throttlePassby = false;
 
     cruise_mode->getModeSelector()->setCoordinatedTurnInput(coord_turn_input);
-    cruise_mode->getModeSelector()->setAltitdeAirspeedInput(alt_airspeed_input);
+    cruise_mode->getModeSelector()->setAltitudeAirspeedInput(alt_airspeed_input);
     cruise_mode->getModeSelector()->setPassbyControl(passby_control);
 
     // Set output data to be sent back to PM commsWithTelemetry state
@@ -75,4 +89,3 @@ CruisingModeStageManager& CruisingFlight::getInstance() {
     static CruisingFlight singleton;
     return singleton;
 }
-

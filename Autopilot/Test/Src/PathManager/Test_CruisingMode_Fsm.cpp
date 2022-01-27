@@ -204,5 +204,3 @@ TEST(CruisingModeFSM, CruisingFlightTransitionToLandingTransitionModeWhenDone) {
 	EXPECT_EQ(*(path_mode_selector->getCurrentMode()), LandingMode::getInstance());
 	EXPECT_EQ(path_mode_selector->getCurrentModeEnum(), MODE_LANDING);
 }
-
-

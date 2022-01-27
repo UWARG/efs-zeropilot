@@ -14,6 +14,12 @@
     enum PathModeEnum {MODE_TAKEOFF = 0, MODE_CRUISING, MODE_LANDING, MODE_TAXIING};
 #endif
 
+//Implementated as a queue, where each editFlightPath instruction is a node in the queue
+struct flightPathEditInstructionNode {
+    Telemetry_PIGO_t instruction;
+    flightPathEditInstructionNode* nextInstruction;
+};
+
 // ModeSelector in https://uwarg-docs.atlassian.net/wiki/spaces/ZP/pages/1866989569/Proposed+Redesign
 class PathModeSelector {
     public:
@@ -34,6 +40,28 @@ class PathModeSelector {
          * @return none
          */
         void execute(Telemetry_PIGO_t telemetry_in, SFOutput_t sensor_fusion_in, IMU_Data_t imu_data_in);
+        
+        /**
+         * Checks whether the instruction queue is empty.
+         * 
+         * @return true if the queue is empty. Else return false
+         */
+        bool flightPathEditInstructionsIsEmpty();
+        
+        /**
+         * Checks the length of the instruction queue.
+         * 
+         * @return its length.
+         */
+        int checkflightPathEditInstructionsLength();
+
+        /**
+         * Dequeues the first(a.k.a. most urgent) instruction from the instruction queue. Make sure that queue is not empty
+         * before dequeing by running instructionQueueIsEmpty() beforehand.
+         * 
+         * @return telemetry data
+         */
+        Telemetry_PIGO_t dequeueflightPathEditInstructions();
 
         /**
          * Returns a pointer to the current mode of flight. Note that a PathMode object is returned, which is the
@@ -75,7 +103,7 @@ class PathModeSelector {
          * 
          * @return none
          */
-        void setAltitdeAirspeedInput(AltitudeAirspeedInput_t alt_airspeed_input);
+        void setAltitudeAirspeedInput(AltitudeAirspeedInput_t alt_airspeed_input);
 
         /**
          * get the altitude_airspeed_input parameter, which will be used by coordinateTurnElevation 
@@ -162,9 +190,25 @@ class PathModeSelector {
 
          bool getIsLanded() { return is_landed; }
 
+        void enqueueFlightPathEditInstructions(Telemetry_PIGO_t newInstruction);
+        //Make a pointer to the first instruction node, which will be the head of the flightPathEditInstructions (a queue).
+        flightPathEditInstructionNode* first_flight_path_edit_instr;
+
     private: 
         PathModeSelector();
         static PathModeSelector* singleton;
+        
+
+        /**
+         * Function to enqueue a new instruction onto the instruction queue.
+         *
+         * @param newInstruction -> new instruciton to add onto the instruction queue
+         * 
+         * @return none
+         */
+        // void enqueueFlightPathEditInstructions(Telemetry_PIGO_t newInstruction);
+        // //Make a pointer to the first instruction node, which will be the head of the flightPathEditInstructions (a queue).
+        // flightPathEditInstructionNode* first_flight_path_edit_instr;
 
         PathMode* current_mode;
         PathModeEnum current_mode_enum;
@@ -187,4 +231,3 @@ class PathModeSelector {
 };
 
 #endif
-
