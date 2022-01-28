@@ -1,6 +1,11 @@
 
 /* Includes ------------------------------------------------------------------*/
+<<<<<<< HEAD:Safety/Src/imu.cpp
 #include "imu.hpp"
+=======
+#include "mpu6050_driver.hpp"
+#include "i2c.h"
+>>>>>>> 2ac372122bb825aa8f51705d39eab6195a5f3817:Safety/Src/mpu6050_driver.cpp
 #include "stm32f0xx_hal.h"
 
 /* Private define ------------------------------------------------------------*/
@@ -37,7 +42,6 @@ const double kAccelCorrector = 16384.0;
 
 
 /* Private variables ---------------------------------------------------------*/
-I2C_HandleTypeDef hi2c1;
 
 
 /* Public Methods  ---------------------------------------------------------*/

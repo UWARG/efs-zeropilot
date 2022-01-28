@@ -34,7 +34,7 @@ class fetchInstructionsMode : public attitudeState
         static attitudeState& getInstance();
         // TODO: fix GetPMInstructions to send data over interchip
         static CommandsForAM *GetPMInstructions(void) {return &_PMInstructions;}
-        static CommandsForAM *GetTeleopInstructions(void) {return &_TeleopInstructions;}
+        static PPM_Instructions_t *GetTeleopInstructions(void) {return &_TeleopInstructions;}
         static bool isAutonomous(void) {return _isAutonomous;}
     private:
         fetchInstructionsMode() {
@@ -42,8 +42,9 @@ class fetchInstructionsMode : public attitudeState
             }
         fetchInstructionsMode(const fetchInstructionsMode& other);
         fetchInstructionsMode& operator =(const fetchInstructionsMode& other);
+        static bool *ReceiveTeleopInstructions(void);
         static CommandsForAM _PMInstructions;
-        static CommandsForAM _TeleopInstructions;
+        static PPM_Instructions_t _TeleopInstructions;
         static bool _isAutonomous;
         static uint8_t teleopTimeoutCount;
         static uint8_t PMTimeoutCount;

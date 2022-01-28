@@ -37,4 +37,8 @@ Commented out for now to allow for just quadcopter channel mapping
 
 // constexpr static uint8_t NUM_PWM_CHANNELS {8};
 
+<<<<<<< HEAD
 #endif // ATTITUDE_DATATYPES_HPP
+=======
+// #endif
+>>>>>>> 2ac372122bb825aa8f51705d39eab6195a5f3817

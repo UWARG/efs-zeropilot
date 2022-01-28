@@ -2,7 +2,11 @@
 #include "PWM.hpp"
 #include "safetyConfig.hpp"
 #include "RSSI.hpp"
+<<<<<<< HEAD
 #include "PID.hpp"
+=======
+#include "PPM.hpp"
+>>>>>>> 2ac372122bb825aa8f51705d39eab6195a5f3817
 
 
 /***********************************************************************************************************************
@@ -44,7 +48,11 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 
     //Note: GetFromTeleop and GetFromPM should leave their corresponding instructions unchanged and return false when they fail
     
+<<<<<<< HEAD
     if(GetTeleopInstructions(&_TeleopInstructions))
+=======
+    if(ReceiveTeleopInstructions())
+>>>>>>> 2ac372122bb825aa8f51705d39eab6195a5f3817
     {
         teleopTimeoutCount = 0;
     }
@@ -88,6 +96,19 @@ attitudeState& fetchInstructionsMode::getInstance()
     return singleton;
 }
 
+bool fetchInstructionsMode::ReceiveTeleopInstructions(void)
+{
+    if(PPMChannel::is_disconnected(HAL_GetTick()))
+    {
+        return false;
+    }
+    
+    for(int i = 0; i < MAX_PPM_CHANNELS; i++)
+    {
+        _TeleopInstructions.PPMValues[i] = PPMChannel::get(i);
+    }
+}
+
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
 {
     SFError_t _SFError = SF_GetResult(&_SFOutput);
@@ -103,12 +124,27 @@ attitudeState& sensorFusionMode::getInstance()
 
 void PIDloopMode::execute(attitudeManager* attitudeMgr)
 {
-
-    CommandsForAM *PMInstructions = fetchInstructionsMode::GetPMInstructions();
+    CommandsForAM *PMInstructions = nullptr;
     SFOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
 
+    PID_Output_t *pidOut = nullptr;
+    if(fetchInstructionsMode::isAutonomous())
+    {
+        PMInstructions = fetchInstructionsMode::GetPMInstructions();
+        //TODO: Run controls module with PMInstructions
+    }
+    else
+    {
+        PPM_Instructions_t *teleopInstructions = fetchInstructionsMode::GetTeleopInstructions();
+        _PidOutput = getPIDFromControls(teleopInstructions, SFOutput);
+    }
+
+    #ifdef FIXED_WING
+    PMInstructions = fetchInstructionsMode::GetPMInstructions();
+    
     //executes PID's to acheive desired roll, pitch angle
     //if manual control is needed, use loaded in percents instead!
+<<<<<<< HEAD
     // if(PMInstructions->passbyData.pitchPassby)
     // {
     //     _PidOutput.pitchPercent = PMInstructions->passbyData.pitchPercent;
@@ -144,6 +180,44 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     // {
     //     _PidOutput.throttlePercent = PMInstructions->throttlePercent;
     // }
+=======
+    if(PMInstructions->passbyData.pitchPassby)
+    {
+        _PidOutput.pitchPercent = PMInstructions->passbyData.pitchPercent;
+    }
+    else
+    {
+        _PidOutput.pitchPercent = _pitchPid.execute(PMInstructions->pitch, SFOutput->pitch, SFOutput->pitchRate);
+    }
+
+    if(PMInstructions->passbyData.rollPassby)
+    {
+        _PidOutput.rollPercent = PMInstructions->passbyData.rollPercent;
+    }
+    else
+    {
+        _PidOutput.rollPercent = _rollPid.execute(PMInstructions->roll, SFOutput->roll, SFOutput->rollRate);
+    }
+
+    if(PMInstructions->passbyData.rudderPassby)
+    {
+        _PidOutput.rudderPercent = PMInstructions->passbyData.rudderPercent;
+    }
+    else
+    {
+        _PidOutput.rudderPercent = PMInstructions->rudderPercent;
+    }
+
+    if(PMInstructions->passbyData.throttlePassby)
+    {
+        _PidOutput.throttlePercent = PMInstructions->passbyData.throttlePercent;
+    }
+    else
+    {
+        _PidOutput.throttlePercent = PMInstructions->throttlePercent;
+    }
+    #endif
+>>>>>>> 2ac372122bb825aa8f51705d39eab6195a5f3817
 
     attitudeMgr->setState(OutputMixingMode::getInstance());
 
@@ -186,7 +260,11 @@ attitudeState& OutputMixingMode::getInstance()
 
 void FatalFailureMode::execute(attitudeManager* attitudeMgr)
 {
-    attitudeMgr->setState(FatalFailureMode::getInstance());
+    //setting PWM channel values to 0
+    pwm.set(FRONT_LEFT_MOTOR_CHANNEL, 0);
+    pwm.set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
+    pwm.set(BACK_LEFT_MOTOR_CHANNEL, 0);
+    pwm.set(BACK_RIGHT_MOTOR_CHANNEL, 0);
 }
 
 attitudeState& FatalFailureMode::getInstance()
