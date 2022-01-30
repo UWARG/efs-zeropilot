@@ -31,7 +31,7 @@ uint8_t fetchInstructionsMode::PMTimeoutCount;
 void pwmSetup::execute(attitudeManager* attitudeMgr) 
 {
     pwm.setup(); // setup PWM channel, only done once
-    ppm.setNumChannels(8); // setup PPM channel, only done once
+    ppm.setNumChannels(MAX_PPM_CHANNELS); // setup PPM channel, only done once
 
     // set state to fetchInstructionsMode, this state will not be set again unless the system is restarted
     attitudeMgr -> setState(fetchInstructionsMode::getInstance());
@@ -49,7 +49,7 @@ attitudeState& pwmSetup::getInstance()
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {    
     const uint8_t TIMEOUT_THRESHOLD = 2; //Max cycles without data until connection is considered broken
-    fetchInstructionsMode::_isAutonomous = false;
+    fetchInstructionsMode::_isAutonomous = false; // assumed to be in teleop
 
     //Note: GetFromTeleop and GetFromPM should leave their corresponding instructions unchanged and return false when they fail
     
@@ -66,7 +66,9 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
     //TODO: Determine if RC is commanding to go autonomous
     bool isTeleopCommandingAuto = false;
     
-    if(!isTeleopCommandingAuto /* || GetFromPMToAM(&_PMInstructions)*/)
+    // If drone receives instructions from RC indicating autonomous mode or instructions from PM,
+    // then it is in autonomous mode
+    if(!isTeleopCommandingAuto /* || GetFromPMToAM(&_PMInstructions)*/) 
     {
         PMTimeoutCount = 0;
     }
@@ -107,6 +109,7 @@ bool fetchInstructionsMode::ReceiveTeleopInstructions(void)
     for(int i = 0; i < MAX_PPM_CHANNELS; i++)
     {
         _TeleopInstructions.PPMValues[i] = ppm.get(i);
+        return true;
     }
 }
 
@@ -184,7 +187,7 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     {
         _PidOutput.throttlePercent = PMInstructions->throttlePercent;
     }
-    #endif
+    #endif // endif FIXED_WING
 
     attitudeMgr->setState(OutputMixingMode::getInstance());
 
@@ -227,7 +230,7 @@ attitudeState& OutputMixingMode::getInstance()
 
 void FatalFailureMode::execute(attitudeManager* attitudeMgr)
 {
-    //setting PWM channel values to 0
+    //setting PWM channel values to 0 as per CONOPS guidelines for multicopters
     pwm.set(FRONT_LEFT_MOTOR_CHANNEL, 0);
     pwm.set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
     pwm.set(BACK_LEFT_MOTOR_CHANNEL, 0);
