@@ -6,6 +6,7 @@
 #define ZEROPILOT_SW_CONTROLS_H
 
 #include "SensorFusion.hpp"
+#include "AttitudeDatatypes.hpp"
 
 // static volatile global position.
 // follows formats from SFOutput_t
@@ -22,15 +23,7 @@ struct StickDistance{
     float h_stick;
 };
 
-// temporary structs which will be imported from AM soon.
-struct PID_Output_t{
-    float motor1Percent;
-    float motor2Percent;
-    float motor3Percent;
-    float motor4Percent;
-};
-
-struct Instruction_t{
+struct Instructions_t{
     float input1;
     float input2;
     float input3;
@@ -43,7 +36,7 @@ struct Instruction_t{
  * @param instructions outputs from PPM driver
  * @return StickDistance*
  */
-StickDistance *translatePPM(Instruction_t *instructions);
+StickDistance *translatePPM(Instructions_t *instructions);
 
 /**
  * @brief Updates targets to fly to
@@ -71,7 +64,7 @@ void evalControls();
  * @param SF_pos Current SF position
  * @return PID_Output_t* 
  */
-PID_Output_t *runControlsAndGetPWM(Instruction_t * instructions, SFOutput_t * SF_pos);
+PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * SF_pos);
 
 
 #endif //ZEROPILOT_SW_CONTROLS_H

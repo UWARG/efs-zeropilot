@@ -77,6 +77,13 @@ uint32_t PPMChannel::get_us(PWMChannelNum num)
 	return static_cast<uint32_t>(ppm_values[num]);
 }
 
+bool PPMChannel::is_disconnected(uint32_t sys_time) {
+	// TODO: To be implemented, currently returns false only
+
+	return false;
+}
+
+
 
 
 uint8_t PPMChannel::get(PWMChannelNum num)

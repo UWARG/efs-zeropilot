@@ -7,9 +7,10 @@
 /* Includes ------------------------------------------------------------------*/
 
 #include <stdint.h>
+#include "../boardfiles/Inc/i2c.h"
 
 /* Exported functions prototypes ---------------------------------------------*/
-void Error_Handler(void);
+// void Error_Handler();
 
 
 struct IMUData_t {

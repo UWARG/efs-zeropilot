@@ -46,6 +46,7 @@
 #include "gpio.h"
 #include "interchip_S.hpp"
 #include "RSSI.hpp"
+#include "attitudeManager.hpp"
 
 /* USER CODE BEGIN Includes */
 
@@ -91,6 +92,8 @@ uint32_t IC_Val1 = 0;
 uint32_t IC_Val2 = 0;
 uint32_t Frequency = 0;
 uint32_t Duty_Cycle = 0;
+
+attitudeManager *attMng;
 
 // write the input capture callback
 #if 0
@@ -171,7 +174,7 @@ int main(void)
 
 
   PPMChannel ppm;
-  ppm.setNumChannels(8);
+  ppm.setNumChannels(MAX_PPM_CHANNELS);
 
   PWMChannel pwm;
   pwm.setup(); 
@@ -194,9 +197,11 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-    RSSI_Check();
+    // RSSI_Check();
     // safety_run(pwm, ppm);
-    HAL_Delay(1);
+    // HAL_Delay(1);
+
+    attMng -> execute();
 
   }
   /* USER CODE END 3 */

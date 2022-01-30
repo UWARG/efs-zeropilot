@@ -56,7 +56,7 @@ const int PID_method = 0;
  * Code
  **********************************************************************************************************************/
 
-StickDistance *translatePPM(Instruction_t * instructions){
+StickDistance *translatePPM(Instructions_t * instructions){
     // translates PPM into distances to move in each direction wrt % max
 
 }
@@ -112,7 +112,7 @@ void evalControls(){
  * pwmValues = runControlsAndGetPWM(instructions, SF_position)
  */
 
-PID_Output_t *runControlsAndGetPWM(Instruction_t * instructions, SFOutput_t * SF_pos) {
+PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * SF_pos) {
     // to use or not to use pointers?
     curr_sf = *SF_pos;
 

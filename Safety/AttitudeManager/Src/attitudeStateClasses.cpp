@@ -1,8 +1,10 @@
 #include "attitudeStateClasses.hpp"
+#include "Controls.hpp"
 #include "PWM.hpp"
 #include "safetyConfig.hpp"
 #include "RSSI.hpp"
 #include "PID.hpp"
+// #include "CommFromPMToAM.hpp"
 
 /***********************************************************************************************************************
  * Definitions
@@ -10,10 +12,15 @@
 
 float OutputMixingMode::_channelOut[4];
 SFOutput_t sensorFusionMode::_SFOutput;
-PID_Output_t PIDloopMode::_PidOutput;
+PID_Output_t *PIDloopMode::_PidOutput;
+Instructions_t *_ControlsInstructions;
 PWMChannel pwm; 
+PPMChannel ppm;
 CommandsForAM fetchInstructionsMode::_PMInstructions;
-CommandsForAM fetchInstructionsMode::_TeleopInstructions;
+PPM_Instructions_t fetchInstructionsMode::_TeleopInstructions;
+bool fetchInstructionsMode::_isAutonomous = false;
+uint8_t fetchInstructionsMode::teleopTimeoutCount;
+uint8_t fetchInstructionsMode::PMTimeoutCount;
 
 /***********************************************************************************************************************
  * Code
@@ -23,6 +30,7 @@ CommandsForAM fetchInstructionsMode::_TeleopInstructions;
 void pwmSetup::execute(attitudeManager* attitudeMgr) 
 {
     pwm.setup(); // setup PWM channel, only done once
+    ppm.setNumChannels(8); // setup PPM channel, only done once
 
     // set state to fetchInstructionsMode, this state will not be set again unless the system is restarted
     attitudeMgr -> setState(fetchInstructionsMode::getInstance());
@@ -37,7 +45,7 @@ attitudeState& pwmSetup::getInstance()
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 {    
     const uint8_t TIMEOUT_THRESHOLD = 2; //Max cycles without data until connection is considered broken
-    _isAutonomous = false;
+    fetchInstructionsMode::_isAutonomous = false;
 
     //Note: GetFromTeleop and GetFromPM should leave their corresponding instructions unchanged and return false when they fail
     
@@ -54,7 +62,7 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
     //TODO: Determine if RC is commanding to go autonomous
     bool isTeleopCommandingAuto = false;
     
-    if(!isTeleopCommandingAuto || GetFromPMToAM(&_PMInstructions))
+    if(!isTeleopCommandingAuto /* || GetFromPMToAM(&_PMInstructions)*/)
     {
         PMTimeoutCount = 0;
     }
@@ -66,7 +74,7 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
     
     if(teleopTimeoutCount < TIMEOUT_THRESHOLD && !CommsFailed())
     {
-        _isAutonomous = (isTeleopCommandingAuto && PMTimeoutCount < TIMEOUT_THRESHOLD);
+        fetchInstructionsMode::_isAutonomous = (isTeleopCommandingAuto && PMTimeoutCount < TIMEOUT_THRESHOLD);
     }
     else
     {   
@@ -87,14 +95,14 @@ attitudeState& fetchInstructionsMode::getInstance()
 
 bool fetchInstructionsMode::ReceiveTeleopInstructions(void)
 {
-    if(PPMChannel::is_disconnected(HAL_GetTick()))
+    if(ppm.is_disconnected(HAL_GetTick()))
     {
         return false;
     }
     
     for(int i = 0; i < MAX_PPM_CHANNELS; i++)
     {
-        _TeleopInstructions.PPMValues[i] = PPMChannel::get(i);
+        _TeleopInstructions.PPMValues[i] = ppm.get(i);
     }
 }
 
@@ -125,7 +133,11 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     else
     {
         PPM_Instructions_t *teleopInstructions = fetchInstructionsMode::GetTeleopInstructions();
-        _PidOutput = getPIDFromControls(teleopInstructions, SFOutput);
+        _ControlsInstructions -> input1 = teleopInstructions->PPMValues[0];
+        _ControlsInstructions -> input2 = teleopInstructions->PPMValues[1];
+        _ControlsInstructions -> input3 = teleopInstructions->PPMValues[2];
+        _ControlsInstructions -> input4 = teleopInstructions->PPMValues[3];
+        _PidOutput = runControlsAndGetPWM(_ControlsInstructions, SFOutput);
     }
 
     #ifdef FIXED_WING
