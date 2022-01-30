@@ -102,16 +102,6 @@ NEOM8::NEOM8() : gpsData {},
 	HAL_UART_Receive_DMA(&huart4, byte_collection_buffer, GPS_UART_BUFFER_SIZE);
 }
 
-/**
- * Method is called when our uart buffer (byte_collection_buffer) is full
- */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	NEOM8 * neoM8N = NEOM8::GetInstance();
-
-	neoM8N->set_uart_data_is_new(true);
-
-	HAL_UART_Receive_DMA(&huart4, neoM8N->get_byte_collection_buffer(), GPS_UART_BUFFER_SIZE);
-}
 
 uint8_t* NEOM8::get_byte_collection_buffer() {
 	return byte_collection_buffer;

@@ -1,6 +1,5 @@
 #ifndef XBEE_HPP
 #define XBEE_HPP
-#include <cstdint>
 
 #define START                 0x7E
 #define TRANSMIT_TYPE         0x10
@@ -97,5 +96,5 @@ class Comms {
     static Comms* instance;
 
 };
-
+void TestComms(void);
 #endif

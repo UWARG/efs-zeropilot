@@ -1,4 +1,4 @@
-#include "xbee.hpp"
+#include "comms.hpp"
 #include "usart.h"
 
 uint8_t pogiData::getPMState() {
@@ -57,9 +57,11 @@ void Comms::transmitMessage() {
 
     // send the data
 
-    HAL_UART_Transmit_DMA(&huart4, rawData, size);
+    HAL_UART_Transmit_DMA(&huart2, rawData, size);
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-    HAL_UART_Receive_DMA(&huart4, Comms::GetInstance()->rxBuffer, 22);
+void TestComms(void) {
+    Comms::GetInstance()->tx.outputs[0] = 10;
+
+    Comms::GetInstance()->transmitMessage();
 }
