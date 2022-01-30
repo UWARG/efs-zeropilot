@@ -93,7 +93,6 @@ uint32_t IC_Val2 = 0;
 uint32_t Frequency = 0;
 uint32_t Duty_Cycle = 0;
 
-attitudeManager *attMng;
 
 // write the input capture callback
 #if 0
@@ -172,7 +171,7 @@ int main(void)
 
   // start the IC in interrupt mode
 
-
+  attitudeManager *attMng;
   PPMChannel ppm;
   ppm.setNumChannels(MAX_PPM_CHANNELS);
 
@@ -197,10 +196,7 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-    // RSSI_Check();
-    // safety_run(pwm, ppm);
-    // HAL_Delay(1);
-
+    RSSI_Check(); // Run every time to update CommsFailed value
     attMng -> execute();
 
   }

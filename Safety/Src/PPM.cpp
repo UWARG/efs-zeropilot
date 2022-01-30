@@ -1,6 +1,7 @@
 #include "PPM.hpp"
 #include "tim.h"
 #include <stdint.h>
+#include "RSSI.hpp"
 
 /***********************************************************************************************************************
  * Definitions
@@ -79,8 +80,7 @@ uint32_t PPMChannel::get_us(PWMChannelNum num)
 
 bool PPMChannel::is_disconnected(uint32_t sys_time) {
 	// TODO: To be implemented, currently returns false only
-
-	return false;
+	return CommsFailed(); // return result of RSSI Check
 }
 
 
