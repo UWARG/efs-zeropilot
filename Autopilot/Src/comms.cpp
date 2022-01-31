@@ -55,65 +55,80 @@ void Comms::transmitMessage() {
     frame.id = 1;
 
     uint8_t rawData[40] = { 0 };
+    uint8_t checksum = 0xFF;
 
     rawData[0] = frame.startDelim;
 
     uint8_t *castedVal = (uint8_t*)&frame.length;
     rawData[1] = castedVal[1];
     rawData[2] = castedVal[0];
+    
     rawData[3] = frame.type;
     rawData[4] = frame.id;
+    checksum -= frame.type;
+    checksum -= frame.id;
 
+    uint8_t index = 5;
     castedVal = (uint8_t*)&frame.address64;
-    rawData[5] = castedVal[7];
-    rawData[6] = castedVal[6];
-    rawData[7] = castedVal[5];
-    rawData[8] = castedVal[4];
-    rawData[9] = castedVal[3];
-    rawData[10] = castedVal[2];
-    rawData[11] = castedVal[1];
-    rawData[12] = castedVal[0];
+    for(int i = 7; i > -1; i--) {
+        rawData[index] = castedVal[i];
+        checksum -= castedVal[i];
+        index++;
+    }
 
     castedVal = (uint8_t*)&frame.address16;
-    rawData[13] = castedVal[1];
-    rawData[14] = castedVal[0];
+    for (int i = 1; i > -1; i--) {
+        rawData[index] = castedVal[i];
+        checksum -= castedVal[i];
+        index++;
+    }
 
     rawData[15] = frame.broadcastRadius;
+    checksum -= frame.broadcastRadius;
     rawData[16] = frame.options;
+    checksum -= frame.broadcastRadius;
 
-    rawData[17] = frame.payload.outputs[0];
-    rawData[18] = frame.payload.outputs[1];
-    rawData[19] = frame.payload.outputs[2];
-    rawData[20] = frame.payload.outputs[3];
+    index = 17;
+    for( int i = 0; i < 4; i++) {
+        rawData[index] = frame.payload.outputs[i];
+        checksum -= frame.payload.outputs[i];
+        index++;
+    }
 
     rawData[21] = frame.payload.grabberPos;
-
+    index = 22;
     castedVal = (uint8_t*)&frame.payload.pitch;
-    rawData[22] = castedVal[3];
-    rawData[23] = castedVal[2];
-    rawData[24] = castedVal[1];
-    rawData[25] = castedVal[0];
+    for( int i = 3; i > -1; i--) {
+        rawData[index] = castedVal[i];
+        checksum -= castedVal[1];
+        index++;
+    }
 
     castedVal = (uint8_t*)&frame.payload.yaw;
-    rawData[26] = castedVal[3];
-    rawData[27] = castedVal[2];
-    rawData[28] = castedVal[1];
-    rawData[29] = castedVal[0];
+    for( int i = 3; i > -1; i--) {
+        rawData[index] = castedVal[i];
+        checksum -= castedVal[1];
+        index++;
+    }
 
     castedVal = (uint8_t*)&frame.payload.roll;
-    rawData[30] = castedVal[3];
-    rawData[31] = castedVal[2];
-    rawData[32] = castedVal[1];
-    rawData[33] = castedVal[0];
+    for( int i = 3; i > -1; i--) {
+        rawData[index] = castedVal[i];
+        checksum -= castedVal[1];
+        index++;
+    }
 
     rawData[34] = frame.payload.statusDisplay;
+    checksum -= frame.payload.statusDisplay;
 
-    rawData[35] = frame.payload.spareChannels[0];
-    rawData[36] = frame.payload.spareChannels[1];
-    rawData[37] = frame.payload.spareChannels[2];
-    rawData[38] = frame.payload.spareChannels[3];
+    index = 35;
+    for( int i = 0; i < 4; i++) {
+        rawData[index] = castedVal[i];
+        checksum -= castedVal[1];
+        index++;
+    }
 
-    rawData[39] = 0xFF - calculateChecksum(rawData, 3, 39);
+    rawData[39] = checksum;
     uint8_t size = sizeof(rawData);
 
     // send the data
