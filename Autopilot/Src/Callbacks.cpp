@@ -23,6 +23,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	    HAL_UART_Receive_DMA(&huart4, neoM8N->get_byte_collection_buffer(), GPS_UART_BUFFER_SIZE);
     }
     if(huart == &huart2) {
-        HAL_UART_Receive_DMA(&huart4, Comms::GetInstance()->rxBuffer, 22);
+        HAL_UART_Receive_DMA(&huart2, Comms::GetInstance()->rxBuffer, 40);
     }
 }
