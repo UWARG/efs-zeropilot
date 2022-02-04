@@ -17,6 +17,8 @@
 
 #define PATH_BUFFER_SIZE 100
 
+constexpr int CRUISING_AIRSPEED {15};
+
 struct _WaypointManager_Data_In {
     long double latitude;
     long double longitude;

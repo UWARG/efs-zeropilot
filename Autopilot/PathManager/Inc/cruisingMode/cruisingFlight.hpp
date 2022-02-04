@@ -3,14 +3,13 @@
 * Author: Dhruv Rawat
 */
 
-#include "TelemPathInterface.hpp"
-#include "waypointManager.hpp"
-#include <cstdint>
-
 #ifndef CRUISING_STATE
 #define CRUISING_STATE
 
-constexpr int CRUISING_AIRSPEED {15};
+#include "TelemPathInterface.hpp"
+#include "waypointManager.hpp"
+
+#include <cstdint>
 
 enum _ModifyFlightPathErrorCode { MODIFY_CRUISING_SUCCESS = 0, MODIFY_CRUISING_ERROR, MODIFY_CRUISING_INCORRECT_TELEMETRY_COMMAND };
 enum _GetNextDirectionsErrorCode { PATH_CRUISING_SUCCESS = 0, PATH_CRUISING_ERROR, PATH_CRUISING_INCORRECT_TELEMETRY_COMMAND, PATH_CRUISING_UNINITIALIZED_HOMEBASE };
@@ -33,7 +32,8 @@ struct _CruisingState_Telemetry_Return {
  *
  * @return error code indicating success of operation
  */
-_ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingStateManager, int * idArray);
+
+_ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingStateManager, uint16_t * idArray);
 
 /**
  * Function retrieves the next desired path for the aircraft

@@ -4,10 +4,12 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
+
 #include "pathManager.hpp"
 #include "pathStateClasses.hpp"
 #include "waypointManager.hpp"
-#include "cruisingState.hpp"
+#include "cruisingFlight.hpp"
 #include "pathDatatypes.hpp"
 
 using namespace std; 
@@ -20,7 +22,7 @@ using ::testing::Test;
         - Incorrect telemetry commands     
         
         // Editing
-        - Initialzing the flight path      
+        - Initializing the flight path
         - Nuking the flight path
         - Appending (also test failing)    
         - Inserting (also test failing)    
@@ -48,7 +50,7 @@ enum _ReturnToGroundStatus {RETURN_SUCCESS = 0, RETURN_DIFFERENT};
 enum _OutputStatus {OUTPUT_CORRECT = 0, OUTPUT_INCORRECT};
 enum _WaypointSt {WAYPOINT_CORRECT = 0, WAYPOINT_INCORRECT};
 
-static _ArrayStatus compare_id_arrays (int * toCheck, int * ans) {
+static _ArrayStatus compare_id_arrays (uint16_t * toCheck, uint16_t * ans) {
     for (int i = 0; i < PATH_BUFFER_SIZE; i++) {
         if (toCheck[i] != ans[i]) {
             // cout << i << " | " << toCheck[i] << " ; ans: " << ans[i] << endl;
@@ -171,7 +173,7 @@ TEST (CruisingState, IncorrectTelemetryCommandsReturnErrorCode) {
 	/********************DEPENDENCIES*******************/	
 	/********************STEPTHROUGH********************/
 
-    int idArray[PATH_BUFFER_SIZE];
+    uint16_t idArray[PATH_BUFFER_SIZE];
     WaypointManager cruisingStateManager;
     bool goingHome = false, inHold = false; 
 
@@ -216,7 +218,7 @@ TEST (CruisingState, InitializeFlightPathSuccess) {
     TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
-    int idTestArray[PATH_BUFFER_SIZE];
+    uint16_t idTestArray[PATH_BUFFER_SIZE];
     idTestArray[0] = 1;
     idTestArray[1] = 2;
     idTestArray[2] = 3;
@@ -249,7 +251,7 @@ TEST (CruisingState, InitializeFlightPathSuccess) {
     _PathData * testHomeBase = testWaypointManager.initialize_waypoint(0.0, 0.0, 100, PATH_FOLLOW);
     
     // Variables that will be modified as we go
-    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idArray[PATH_BUFFER_SIZE] = { 0 };
     bool goingHome = false, inHold = false; 
 
 	/********************DEPENDENCIES*******************/	
@@ -311,7 +313,7 @@ TEST (CruisingState, NukeFlightPathSuccess) {
     TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
-    int idTestArray[PATH_BUFFER_SIZE];
+    uint16_t idTestArray[PATH_BUFFER_SIZE];
 
     // Set up flight path array (desired result)
 
@@ -326,7 +328,7 @@ TEST (CruisingState, NukeFlightPathSuccess) {
     }
     
     // Variables that will be modified as we go
-    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idArray[PATH_BUFFER_SIZE] = { 0 };
     bool goingHome = false, inHold = false; 
 
 	/********************DEPENDENCIES*******************/	
@@ -385,7 +387,7 @@ TEST (CruisingState, AppendWaypointSuccess) {
     TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
-    int idTestArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idTestArray[PATH_BUFFER_SIZE] = { 0 };
     idTestArray[0] = 1;
     idTestArray[1] = 2;
     idTestArray[2] = 3;
@@ -416,7 +418,7 @@ TEST (CruisingState, AppendWaypointSuccess) {
     }
     
     // Variables that will be modified as we go
-    int idArray[PATH_BUFFER_SIZE] = {0};
+    uint16_t idArray[PATH_BUFFER_SIZE] = {0};
     bool goingHome = false, inHold = false; 
 
 	/********************DEPENDENCIES*******************/	
@@ -481,7 +483,7 @@ TEST (CruisingState, AppendWaypointFail) {
     TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
-    int idTestArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idTestArray[PATH_BUFFER_SIZE] = { 0 };
     idTestArray[0] = 1;
     idTestArray[1] = 2;
     idTestArray[2] = 3;
@@ -509,7 +511,7 @@ TEST (CruisingState, AppendWaypointFail) {
     }
     
     // Variables that will be modified as we go
-    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idArray[PATH_BUFFER_SIZE] = { 0 };
     bool goingHome = false, inHold = false; 
 
 	/********************DEPENDENCIES*******************/	
@@ -574,7 +576,7 @@ TEST (CruisingState, InsertWaypointSuccess) {
     TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
-    int idTestArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idTestArray[PATH_BUFFER_SIZE] = { 0 };
     idTestArray[0] = 1;
     idTestArray[1] = 2;
     idTestArray[2] = 3;
@@ -605,7 +607,7 @@ TEST (CruisingState, InsertWaypointSuccess) {
     }
     
     // Variables that will be modified as we go
-    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idArray[PATH_BUFFER_SIZE] = { 0 };
     bool goingHome = false, inHold = false; 
 
 	/********************DEPENDENCIES*******************/	
@@ -670,7 +672,7 @@ TEST (CruisingState, InsertWaypointFail) {
     TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
-    int idTestArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idTestArray[PATH_BUFFER_SIZE] = { 0 };
     idTestArray[0] = 1;
     idTestArray[1] = 2;
     idTestArray[2] = 3;
@@ -698,7 +700,7 @@ TEST (CruisingState, InsertWaypointFail) {
     }
     
     // Variables that will be modified as we go
-    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idArray[PATH_BUFFER_SIZE] = { 0 };
     bool goingHome = false, inHold = false; 
 
 	/********************DEPENDENCIES*******************/	
@@ -763,7 +765,7 @@ TEST (CruisingState, UpdateWaypointSuccess) {
     TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
-    int idTestArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idTestArray[PATH_BUFFER_SIZE] = { 0 };
     idTestArray[0] = 1;
     idTestArray[1] = 2;
     idTestArray[2] = 5;
@@ -792,7 +794,7 @@ TEST (CruisingState, UpdateWaypointSuccess) {
     }
     
     // Variables that will be modified as we go
-    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idArray[PATH_BUFFER_SIZE] = { 0 };
     bool goingHome = false, inHold = false; 
 
 	/********************DEPENDENCIES*******************/	
@@ -857,7 +859,7 @@ TEST (CruisingState, UpdateWaypointFail) {
     TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
-    int idTestArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idTestArray[PATH_BUFFER_SIZE] = { 0 };
     idTestArray[0] = 1;
     idTestArray[1] = 2;
     idTestArray[2] = 3;
@@ -885,7 +887,7 @@ TEST (CruisingState, UpdateWaypointFail) {
     }
     
     // Variables that will be modified as we go
-    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idArray[PATH_BUFFER_SIZE] = { 0 };
     bool goingHome = false, inHold = false; 
 
 	/********************DEPENDENCIES*******************/	
@@ -950,7 +952,7 @@ TEST (CruisingState, DeleteWaypointSuccess) {
     TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
-    int idTestArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idTestArray[PATH_BUFFER_SIZE] = { 0 };
     idTestArray[0] = 1;
     idTestArray[1] = 2;
     idTestArray[2] = 4;
@@ -978,7 +980,7 @@ TEST (CruisingState, DeleteWaypointSuccess) {
     }
     
     // Variables that will be modified as we go
-    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idArray[PATH_BUFFER_SIZE] = { 0 };
     bool goingHome = false, inHold = false; 
 
 	/********************DEPENDENCIES*******************/	
@@ -1041,7 +1043,7 @@ TEST (CruisingState, DeleteWaypointFail) {
     TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);
 
     // Set up id test array (desired result)
-    int idTestArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idTestArray[PATH_BUFFER_SIZE] = { 0 };
     idTestArray[0] = 1;
     idTestArray[1] = 2;
     idTestArray[2] = 3;
@@ -1069,7 +1071,7 @@ TEST (CruisingState, DeleteWaypointFail) {
     }
     
     // Variables that will be modified as we go
-    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idArray[PATH_BUFFER_SIZE] = { 0 };
     bool goingHome = false, inHold = false; 
 
 	/********************DEPENDENCIES*******************/	
@@ -1132,7 +1134,7 @@ TEST (CruisingState, NextDirectionsRegularCorrect) {
     TelemetryTestData.homebase = createTelemetryWaypoint(0.0, 0.0, 100, 0.0, 0);    
       
     // Variables that will be modified as we go
-    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idArray[PATH_BUFFER_SIZE] = { 0 };
     bool goingHome = false, inHold = false; 
 
     // Set up input data for waypoint manager:
@@ -1205,7 +1207,7 @@ TEST (CruisingState, NextDirectionsGoingHomeCorrect) {
     TelemetryTestData.homebase = createTelemetryWaypoint(-80.537331184, 43.467998128, 45, 0.0, 2);
     
     // Variables that will be modified as we go
-    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idArray[PATH_BUFFER_SIZE] = { 0 };
     bool goingHome = false, inHold = false; 
 
     // Set up input data for waypoint manager:
@@ -1293,7 +1295,7 @@ TEST (CruisingState, GoingHomeHomeBaseUndefined) {
     TelemetryTestData.homebase = createTelemetryWaypoint(-80.537331184, 43.467998128, 45, 0.0, 2);
     
     // Variables that will be modified as we go
-    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idArray[PATH_BUFFER_SIZE] = { 0 };
     bool goingHome = false, inHold = false; 
 
     // Set up input data for waypoint manager:
@@ -1366,7 +1368,7 @@ TEST (CruisingState, NextDirectionsStartHoldingCorrect) {
     TelemetryTestData.homebase = createTelemetryWaypoint(-80.537331184, 43.467998128, 45, 0.0, 2);
     
     // Variables that will be modified as we go
-    int idArray[PATH_BUFFER_SIZE] = { 0 };
+    uint16_t idArray[PATH_BUFFER_SIZE] = { 0 };
     bool goingHome = false, inHold = false; 
 
     // Set up input data for waypoint manager:
