@@ -15,18 +15,19 @@ typedef struct PWMPinConfig {
 	GPIO_TypeDef* port;
 	TIM_HandleTypeDef *timer;
 	uint16_t timer_channel;
+    bool isUsingDshot;
 } PWMPinConfig;
 
 static const PWMPinConfig PWM_CONFIG[MAX_CHANNELS] =
 {
-    {PWM1_Pin, PWM1_GPIO_Port, &htim1, TIM_CHANNEL_1},
-    {PWM2_Pin, PWM2_GPIO_Port, &htim1, TIM_CHANNEL_2},
-    {PWM3_Pin, PWM3_GPIO_Port, &htim1, TIM_CHANNEL_3},
-    {PWM4_Pin, PWM4_GPIO_Port, &htim1, TIM_CHANNEL_4},
-    {PWM6_Pin, PWM6_GPIO_Port, &htim3, TIM_CHANNEL_1},
-    {PWM10_Pin, PWM10_GPIO_Port, &htim3, TIM_CHANNEL_2},
-    {PWM11_Pin, PWM11_GPIO_Port, &htim3, TIM_CHANNEL_3},
-    {PWM12_Pin, PWM12_GPIO_Port, &htim3, TIM_CHANNEL_4}
+    {PWM1_Pin, PWM1_GPIO_Port, &htim1, TIM_CHANNEL_1, true},
+    {PWM2_Pin, PWM2_GPIO_Port, &htim1, TIM_CHANNEL_2, true},
+    {PWM3_Pin, PWM3_GPIO_Port, &htim1, TIM_CHANNEL_3, true},
+    {PWM4_Pin, PWM4_GPIO_Port, &htim1, TIM_CHANNEL_4, true},
+    {PWM6_Pin, PWM6_GPIO_Port, &htim3, TIM_CHANNEL_1, false},
+    {PWM10_Pin, PWM10_GPIO_Port, &htim3, TIM_CHANNEL_2, false},
+    {PWM11_Pin, PWM11_GPIO_Port, &htim3, TIM_CHANNEL_3, false},
+    {PWM12_Pin, PWM12_GPIO_Port, &htim3, TIM_CHANNEL_4, false}
 
 };
 

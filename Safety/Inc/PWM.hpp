@@ -23,6 +23,9 @@
 
 #include <stdint.h>
 
+#define DSHOT_DATA_FRAME_LEN 16
+#define DSHOT_DMA_BUFFER_SIZE 18
+
 typedef uint8_t PWMChannelNum;
 
 /**
@@ -44,6 +47,12 @@ typedef struct PWMGroupSetting {
 	bool inverted = false;
 } PWMGroupSetting;
 
+typedef enum dshotType
+{
+    DSHOT150,
+    DSHOT300,
+    DSHOT600
+} dshotType;
 
 class PWMChannel {
 public:
@@ -54,4 +63,29 @@ private:
 	uint32_t pwmPeriod = 20000;
 	uint32_t min_signal = 950; //standard for 50hz pwm signal, with a 100 Hz margin added to ensure we can reach the extreme values.
 	uint32_t max_signal = 2050;
+
+	/**
+  * @brief Prepares the Dshot data frame including the data, telemetry bit, and checksum
+  * @param throttlePercentage Trottle percentage output from the PID loop, 0-100%
+  * @param telemetry Bool indicating whether to set the telemetry bit or not
+  * @retval 16 bit dshot data frame
+  */    
+    uint16_t dshotPrepareFrame(uint8_t throttlePercentage, bool telemetry);
+
+/**
+  * @brief Prepares the DMA buffer using the data frame
+  * @param dmaBuffer Pointer to the DMA buffer
+  * @param frame DSHOT data frame
+  * @retval None
+  */    
+    void dshotPrepareDMABuffer(uint32_t * dmaBuffer, uint16_t frame);
+
+/**
+  * @brief Starts PWM generation of channels 1-4 on TIM1
+  * @param dmaBuffer Pointer to the DMA buffer
+  * @param None
+  * @retval None
+  */
+    void DshotStartPWM();
+
 };

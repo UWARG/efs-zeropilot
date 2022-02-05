@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #define DSHOT_DATA_FRAME_LEN 16
+#define DSHOT_DMA_BUFFER_SIZE 18
 
 typedef enum dshotType
 {
@@ -51,7 +52,7 @@ private:
   * @param telemetry Bool indicating whether to set the telemetry bit or not
   * @retval 16 bit dshot data frame
   */    
-    uint16_t prepareFrame(uint8_t throttlePercentage, bool telemetry);
+    uint16_t prepareDshotFrame(uint8_t throttlePercentage, bool telemetry);
 
 /**
   * @brief Prepares the DMA buffer using the data frame
@@ -61,6 +62,13 @@ private:
   */    
     void prepareDMABuffer(uint32_t * dmaBuffer, uint16_t frame);
 
+/**
+  * @brief Starts PWM generation of channels 1-4 on TIM1
+  * @param dmaBuffer Pointer to the DMA buffer
+  * @param None
+  * @retval None
+  */
+    void startDshotPWM();
 
 
 };
