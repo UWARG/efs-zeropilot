@@ -84,7 +84,18 @@ void PWMChannel::set(uint8_t channel, uint8_t percent)
 
 void dshotPrepareDMABuffer(uint32_t * dmaBuffer, uint8_t throttlePercentage)
 {
+    uint16_t frame = dshotPrepareFrame(throttlePercentage, false);
 
+    for (int i = 0; i < DSHOT_DATA_FRAME_LEN; i++)
+    {
+        //TO DO: ACTUALLY FIND OUT THESE BIT VALUES SHOULD BE
+        dmaBuffer[i] = (frame & 0x8000 ? DSHOT_BIT_1 : DSHOT_BIT_0); //using the frame, populate the buffer with the duty cycle value corresponding to a 1 and 0
+
+        frame <<= 1;
+    }
+
+    dmaBuffer[16] = 0;
+    dmaBuffer[17] = 0;
 }
 
 uint16_t dshotPrepareFrame(uint8_t throttlePercentage, bool telemetry)
