@@ -66,8 +66,7 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
     //TODO: Determine if RC is commanding to go autonomous
     bool isTeleopCommandingAuto = false;
     
-    // If drone receives instructions from RC indicating autonomous mode or instructions from PM,
-    // then it is in autonomous mode
+    // PM will timeout if it fails to report data while autonomous mode is triggered
     if(!isTeleopCommandingAuto /* || GetFromPMToAM(&_PMInstructions)*/) 
     {
         PMTimeoutCount = 0;
