@@ -175,10 +175,6 @@ int main(void)
   PPMChannel ppm;
   ppm.setNumChannels(MAX_PPM_CHANNELS);
 
-  PWMChannel pwm;
-  pwm.setup(); 
-  safety_controller_init();
-
   interchipInit();
 
 
