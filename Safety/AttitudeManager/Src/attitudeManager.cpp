@@ -3,7 +3,7 @@
 
 attitudeManager::attitudeManager()
 {
-    currentState = &fetchInstructionsMode::getInstance();
+    currentState = &setup::getInstance();
     status = AttMan::COMPLETED_CYCLE;
 }
 
