@@ -17,7 +17,7 @@ SFOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t *PIDloopMode::_PidOutput;
 Instructions_t *_ControlsInstructions;
 PWMChannel pwm; 
-PPMChannel ppm;
+PPMChannel ppm (MAX_PPM_CHANNELS, 0);
 CommandsForAM fetchInstructionsMode::_PMInstructions;
 PPM_Instructions_t fetchInstructionsMode::_TeleopInstructions;
 bool fetchInstructionsMode::_isAutonomous = false;
