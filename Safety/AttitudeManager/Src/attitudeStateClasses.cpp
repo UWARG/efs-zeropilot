@@ -28,7 +28,7 @@ uint8_t fetchInstructionsMode::PMTimeoutCount;
  * Code
  **********************************************************************************************************************/
 
-void pwmSetup::execute(attitudeManager* attitudeMgr) 
+void setup::execute(attitudeManager* attitudeMgr) 
 {
     pwm.setup(); // setup PWM channel, only done once
     ppm.setNumChannels(MAX_PPM_CHANNELS); // setup PPM channel, only done once
@@ -37,9 +37,9 @@ void pwmSetup::execute(attitudeManager* attitudeMgr)
     attitudeMgr -> setState(fetchInstructionsMode::getInstance());
 }
 
-attitudeState& pwmSetup::getInstance()
+attitudeState& setup::getInstance()
 {
-    static pwmSetup singleton;
+    static setup singleton;
     return singleton;
 }
 

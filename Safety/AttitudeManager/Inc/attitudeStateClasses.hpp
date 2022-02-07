@@ -18,12 +18,12 @@
  * Code
  **********************************************************************************************************************/
 
-class pwmSetup : public attitudeState
+class setup : public attitudeState
 {
     public:
         void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         void execute(attitudeManager* attitudeMgr);
-        void exit(attitudeManager* attitudeMgr);
+        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
 };
 
