@@ -1,10 +1,12 @@
 #include "attitudeManager.hpp"
 #include "attitudeStateClasses.hpp"
 
-attitudeManager::attitudeManager()
+attitudeManager::attitudeManager(PPMChannel &ppmChannel, PWMChannel &pwmChannel)
 {
-    currentState = &setup::getInstance();
+    currentState = &fetchInstructionsMode::getInstance();
     status = AttMan::COMPLETED_CYCLE;
+    ppm = ppmChannel;
+    pwm = pwmChannel;
 }
 
 void attitudeManager::setState(attitudeState& newState)

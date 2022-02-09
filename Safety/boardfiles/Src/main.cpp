@@ -165,23 +165,17 @@ int main(void)
   MX_USART2_UART_Init();
 
   /* USER CODE BEGIN 2 */
-
-  //testSetup();
-
-
-  // start the IC in interrupt mode
-
-  attitudeManager *attMng;
   PPMChannel ppm;
   ppm.setNumChannels(MAX_PPM_CHANNELS);
+  PWMChannel pwm;
+  pwm.setup();
+
+  attitudeManager attMng(ppm, pwm);
 
   interchipInit();
 
-
   HAL_NVIC_SetPriority(TIM15_IRQn, 1, 0);
   HAL_NVIC_SetPriority(SPI1_IRQn, 0, 0);
-
-
 
   /* USER CODE END 2 */
 
@@ -193,7 +187,7 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
     RSSI_Check(); // Run every time to update CommsFailed value
-    attMng -> execute();
+    attMng.execute();
 
   }
   /* USER CODE END 3 */
