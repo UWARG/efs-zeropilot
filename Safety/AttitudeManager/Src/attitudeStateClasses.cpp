@@ -1,10 +1,8 @@
 #include "attitudeStateClasses.hpp"
 #include "Controls.hpp"
-#include "PWM.hpp"
 #include "safetyConfig.hpp"
 #include "RSSI.hpp"
 #include "PID.hpp"
-#include "PPM.hpp"
 // #include "CommFromPMToAM.hpp"
 #include "../../boardfiles/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h"
 
@@ -15,9 +13,7 @@
 float OutputMixingMode::_channelOut[4];
 SFOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t *PIDloopMode::_PidOutput;
-Instructions_t *_ControlsInstructions;
-PWMChannel pwm; 
-PPMChannel ppm (MAX_PPM_CHANNELS, 0);
+Instructions_t *_ControlsInstructions = new Instructions_t();
 CommandsForAM fetchInstructionsMode::_PMInstructions;
 PPM_Instructions_t fetchInstructionsMode::_TeleopInstructions;
 bool fetchInstructionsMode::_isAutonomous = false;
@@ -28,22 +24,6 @@ uint8_t fetchInstructionsMode::PMTimeoutCount;
  * Code
  **********************************************************************************************************************/
 
-void setup::execute(attitudeManager* attitudeMgr) 
-{
-    pwm.setup(); // setup PWM channel, only done once
-    ppm.setNumChannels(MAX_PPM_CHANNELS); // setup PPM channel, only done once
-
-    // set state to fetchInstructionsMode, this state will not be set again unless the system is restarted
-    attitudeMgr -> setState(fetchInstructionsMode::getInstance());
-}
-
-attitudeState& setup::getInstance()
-{
-    static setup singleton;
-    return singleton;
-}
-
-
 //Populate instruction data and decide between manual and auto flight modes
 
 void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
@@ -53,7 +33,7 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
 
     //Note: GetFromTeleop and GetFromPM should leave their corresponding instructions unchanged and return false when they fail
     
-    if(ReceiveTeleopInstructions())
+    if(ReceiveTeleopInstructions(attitudeMgr))
     {
         teleopTimeoutCount = 0;
     }
@@ -98,16 +78,16 @@ attitudeState& fetchInstructionsMode::getInstance()
     return singleton;
 }
 
-bool fetchInstructionsMode::ReceiveTeleopInstructions(void)
+bool fetchInstructionsMode::ReceiveTeleopInstructions(attitudeManager* attitudeMgr)
 {
-    if(ppm.is_disconnected(HAL_GetTick()))
+    if(attitudeMgr->ppm.is_disconnected(HAL_GetTick()))
     {
         return false;
     }
     
     for(int i = 0; i < MAX_PPM_CHANNELS; i++)
     {
-        _TeleopInstructions.PPMValues[i] = ppm.get(i);
+        _TeleopInstructions.PPMValues[i] = attitudeMgr->ppm.get(i);
         return true;
     }
 }
@@ -208,10 +188,10 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
     if (ErrorStruct.errorCode == 0)
     {
         // setting PWM channel values
-        pwm.set(FRONT_LEFT_MOTOR_CHANNEL, PidOutput -> frontLeftMotorPercent);
-        pwm.set(FRONT_RIGHT_MOTOR_CHANNEL, PidOutput -> frontRightMotorPercent);
-        pwm.set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
-        pwm.set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
+        attitudeMgr->pwm.set(FRONT_LEFT_MOTOR_CHANNEL, PidOutput -> frontLeftMotorPercent);
+        attitudeMgr->pwm.set(FRONT_RIGHT_MOTOR_CHANNEL, PidOutput -> frontRightMotorPercent);
+        attitudeMgr->pwm.set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
+        attitudeMgr->pwm.set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
         attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
     }
     else
@@ -230,10 +210,10 @@ attitudeState& OutputMixingMode::getInstance()
 void FatalFailureMode::execute(attitudeManager* attitudeMgr)
 {
     //setting PWM channel values to 0 as per CONOPS guidelines for multicopters
-    pwm.set(FRONT_LEFT_MOTOR_CHANNEL, 0);
-    pwm.set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
-    pwm.set(BACK_LEFT_MOTOR_CHANNEL, 0);
-    pwm.set(BACK_RIGHT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm.set(FRONT_LEFT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm.set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm.set(BACK_LEFT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm.set(BACK_RIGHT_MOTOR_CHANNEL, 0);
 }
 
 attitudeState& FatalFailureMode::getInstance()

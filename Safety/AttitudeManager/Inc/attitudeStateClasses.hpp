@@ -18,15 +18,6 @@
  * Code
  **********************************************************************************************************************/
 
-class setup : public attitudeState
-{
-    public:
-        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
-        void execute(attitudeManager* attitudeMgr);
-        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
-        static attitudeState& getInstance();
-};
-
 class fetchInstructionsMode : public attitudeState
 {
     public:
@@ -44,7 +35,7 @@ class fetchInstructionsMode : public attitudeState
             }
         fetchInstructionsMode(const fetchInstructionsMode& other);
         fetchInstructionsMode& operator =(const fetchInstructionsMode& other);
-        static bool ReceiveTeleopInstructions(void);
+        static bool ReceiveTeleopInstructions(attitudeManager* attitudeMgr);
         static CommandsForAM _PMInstructions;
         static PPM_Instructions_t _TeleopInstructions;
         static Instructions_t _controlsInstructions;
