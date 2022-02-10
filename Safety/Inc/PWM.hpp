@@ -28,6 +28,7 @@
 #define DSHOT_MAX_THROTTLE 2047
 #define DSHOT_BIT_1 1
 #define DSHOT_BIT_0 0
+#define NUM_DSHOT_MOTORS 4
 
 typedef uint8_t PWMChannelNum;
 
@@ -89,8 +90,34 @@ private:
   * @param None
   * @retval None
   */
-    void DshotStartPWM();
+    void dshotStartPWM();
 
-  
+/**
+  * @brief Starts DMA peripheral 
+  * @param dshotConfig which is of type struct PWMPinConfig used to start the DMA
+  * @retval None
+  */
+    void dshotStartDMA(PWMPinConfig dshotConfig);
 
+/**
+  * @brief Enables DMA request 
+  * @param dshotConfig which is of type struct PWMPinConfig used to enable the DMA request
+  * @retval None
+  */
+    void dshotEnableDMARequests(PWMPinConfig dshotConfig);
+
+/**
+  * @brief Links the "dshotDMACompleteCallback" callback function to the specific dma channel
+  * @param None
+  * @retval None
+  */
+    void dshotSetupDMACallbacks();
 };
+
+
+/**
+  * @brief Callback function to be called when a DMA transfer is complete 
+  * @param hdma pointer to DMA handle
+  * @retval None
+  */
+    void dshotDMACompleteCallback(DMA_HandleTypeDef *hdma);

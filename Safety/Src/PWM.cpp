@@ -21,20 +21,22 @@ typedef struct PWMPinConfig {
 	TIM_HandleTypeDef *timer;
 	uint16_t timer_channel;
     bool isUsingDshot;
-    uint32_t* dshotDMABuffer[DSHOT_DMA_BUFFER_SIZE];
+    uint32_t *dshotDMABuffer;
+    uint16_t timDMAHandleIndex;
+    uint16_t timDMASources;
+
 } PWMPinConfig;
 
 static const PWMPinConfig PWM_CONFIG[MAX_CHANNELS] 
 {
-    {PWM1_Pin, PWM1_GPIO_Port, &htim1, TIM_CHANNEL_1, true, DMAMotorBuffer1},
-    {PWM2_Pin, PWM2_GPIO_Port, &htim1, TIM_CHANNEL_2, true, DMAMotorBuffer2},
-    {PWM3_Pin, PWM3_GPIO_Port, &htim1, TIM_CHANNEL_3, true, DMAMotorBuffer3},
-    {PWM4_Pin, PWM4_GPIO_Port, &htim1, TIM_CHANNEL_4, true, DMAMotorBuffer4}, 
-    {PWM6_Pin, PWM6_GPIO_Port, &htim3, TIM_CHANNEL_1, false, {0}},
-    {PWM10_Pin, PWM10_GPIO_Port, &htim3, TIM_CHANNEL_2, false, {0}},
-    {PWM11_Pin, PWM11_GPIO_Port, &htim3, TIM_CHANNEL_3, false, {0}},
-    {PWM12_Pin, PWM12_GPIO_Port, &htim3, TIM_CHANNEL_4, false, {0}}
-
+    {PWM1_Pin, PWM1_GPIO_Port, &htim1, TIM_CHANNEL_1, true, DMAMotorBuffer1, TIM_DMA_ID_CC1, TIM_DMA_CC1},
+    {PWM2_Pin, PWM2_GPIO_Port, &htim1, TIM_CHANNEL_2, true, DMAMotorBuffer2, TIM_DMA_ID_CC2, TIM_DMA_CC2},
+    {PWM3_Pin, PWM3_GPIO_Port, &htim1, TIM_CHANNEL_3, true, DMAMotorBuffer3, TIM_DMA_ID_CC3, TIM_DMA_CC3},
+    {PWM4_Pin, PWM4_GPIO_Port, &htim1, TIM_CHANNEL_4, true, DMAMotorBuffer4, TIM_DMA_ID_CC4, TIM_DMA_CC4}, 
+    {PWM6_Pin, PWM6_GPIO_Port, &htim3, TIM_CHANNEL_1, false, {0}, 0, 0},
+    {PWM10_Pin, PWM10_GPIO_Port, &htim3, TIM_CHANNEL_2, false, {0}, 0, 0},
+    {PWM11_Pin, PWM11_GPIO_Port, &htim3, TIM_CHANNEL_3, false, {0}, 0, 0},
+    {PWM12_Pin, PWM12_GPIO_Port, &htim3, TIM_CHANNEL_4, false, {0}, 0, 0}
 };
 
 PWMChannel::PWMChannel()
@@ -48,7 +50,9 @@ PWMChannel::PWMChannel()
         {
             //ANY DSHOT SETUP FUNCTIONS
                 //setting up timers?
-                //setting up dma call back function that runs when the transfer is comeplete and disables the dma
+                //setting up dma call back function that runs when the transfer is complete and disables the dma
+                dshotSetupDMACallbacks();
+            
         }
 
     }
@@ -66,8 +70,11 @@ void PWMChannel::set(uint8_t channel, uint8_t percent)
     if (currentChannel.isUsingDshot)
     {
         //prepare the buffers
+        dshotPrepareDMABuffer(currentChannel.dshotDMABuffer, percent);
         //enable dma
-        //enablre requests?
+        dshotStartDMA(currentChannel);
+        //enable TIM dma requests?
+        dshotEnableDMARequests(currentChannel);
     }
 
     else
@@ -79,10 +86,9 @@ void PWMChannel::set(uint8_t channel, uint8_t percent)
         __HAL_TIM_SET_COMPARE((TIM_HandleTypeDef *) currentChannel.timer, currentChannel.timer_channel, (uint32_t) ticks);
     }
     
-
 }
 
-void dshotPrepareDMABuffer(uint32_t * dmaBuffer, uint8_t throttlePercentage)
+void PWMChannel::dshotPrepareDMABuffer(uint32_t * dmaBuffer, uint8_t throttlePercentage)
 {
     uint16_t frame = dshotPrepareFrame(throttlePercentage, false);
 
@@ -98,7 +104,7 @@ void dshotPrepareDMABuffer(uint32_t * dmaBuffer, uint8_t throttlePercentage)
     dmaBuffer[17] = 0;
 }
 
-uint16_t dshotPrepareFrame(uint8_t throttlePercentage, bool telemetry)
+uint16_t PWMChannel::dshotPrepareFrame(uint8_t throttlePercentage, bool telemetry)
 {
     /* DSHOT data frame (16 bits total):
      *
@@ -118,4 +124,38 @@ uint16_t dshotPrepareFrame(uint8_t throttlePercentage, bool telemetry)
     frame = (frame << 4) || checksum; //adding the checksum to the frame
     
     return frame;
+}
+
+void PWMChannel::dshotStartDMA(PWMPinConfig dshotConfig)
+{
+    //NOTE: NEED TO CHANGE HOW TO GET THE DESTINATION BUFFER, CURRENTLY HARDCODED TO "CCR1"
+    HAL_DMA_Start_IT(dshotConfig.timer->hdma[dshotConfig.timDMAHandleIndex], dshotConfig.dshotDMABuffer, &dshotConfig.timer->Instance->CCR1, DSHOT_DMA_BUFFER_SIZE);
+}
+
+void PWMChannel::dshotEnableDMARequests(PWMPinConfig dshotConfig)
+{
+    //TODO: FIGURE OUT LOGIC TO FIGURE OUT SPECIFIC DMA REQUEST... ELSE IF OR IN THE CONFIG AND HOW
+    __HAL_TIM_ENABLE_DMA(dshotConfig.timer, dshotConfig.timDMASources);
+}
+
+void PWMChannel::dshotSetupDMACallbacks()
+{
+    for (uint8_t i = 0; i < NUM_DSHOT_MOTORS; i++)
+    {
+        PWM_CONFIG[i].timer->hdma[PWM_CONFIG[i].timDMAHandleIndex]->XferCpltCallback = dshotDMACompleteCallback;
+    }
+
+}
+
+void dshotDMACompleteCallback(DMA_HandleTypeDef *hdma)
+{
+    TIM_HandleTypeDef *htim = (TIM_HandleTypeDef *)((DMA_HandleTypeDef *)hdma)->Parent;
+
+	for (uint8_t i = 0; i < NUM_DSHOT_MOTORS; i++)
+    {
+        if (hdma == htim->hdma[PWM_CONFIG[i].timDMAHandleIndex])
+	    {
+		__HAL_TIM_DISABLE_DMA(htim, PWM_CONFIG[i].timDMASources);
+	    }
+    }
 }
