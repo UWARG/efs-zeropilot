@@ -45,7 +45,6 @@ I2C_HandleTypeDef hi2c1;
 IMU& MPU6050::getInstance(){
   static MPU6050 singleton; 
   return singleton; 
-
 }
 
 void MPU6050::GetResult(IMUData_t& Data){
@@ -85,6 +84,7 @@ void MPU6050::GetResult(IMUData_t& Data){
 
 MPU6050::MPU6050(){
   HAL_I2C_Init(&hi2c1);
+  ImuInit();
 }
 
 void MPU6050::ImuInit (void){
