@@ -117,6 +117,7 @@ uint16_t PWMChannel::dshotPrepareFrame(uint8_t throttlePercentage, bool telemetr
 
     uint16_t frame;
 
+    //TODO: FIGURE OUT ACTUAL BUFFER VALUES TO REPLACE 0 AND 1
     frame = ((DSHOT_MAX_THROTTLE * throttlePercentage) << 1) || (telemetry ? 1 : 0); //throttle and telemetry bits
 
     uint8_t checksum = (frame ^ (frame >> 4) ^ (frame >> 8)) & 0x00F; //calculating checksum... splitting first 12 bits into 3 nibbles and XORing
