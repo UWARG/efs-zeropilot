@@ -129,8 +129,24 @@ uint16_t PWMChannel::dshotPrepareFrame(uint8_t throttlePercentage, bool telemetr
 
 void PWMChannel::dshotStartDMA(PWMPinConfig dshotConfig)
 {
-    //NOTE: NEED TO CHANGE HOW TO GET THE DESTINATION BUFFER, CURRENTLY HARDCODED TO "CCR1"
-    HAL_DMA_Start_IT(dshotConfig.timer->hdma[dshotConfig.timDMAHandleIndex], dshotConfig.dshotDMABuffer, &dshotConfig.timer->Instance->CCR1, DSHOT_DMA_BUFFER_SIZE);
+    uint32_t * destinationBuffer;
+
+    switch (dshotConfig.timer_channel)
+    {
+        case TIM_CHANNEL_1:
+        destinationBuffer = &dshotConfig.timer->Instance->CCR1;
+
+        case TIM_CHANNEL_2:
+        destinationBuffer = &dshotConfig.timer->Instance->CCR2;
+        
+        case TIM_CHANNEL_3:
+        destinationBuffer = &dshotConfig.timer->Instance->CCR3;
+
+        case TIM_CHANNEL_4:
+        destinationBuffer = &dshotConfig.timer->Instance->CCR4;
+
+    }
+    HAL_DMA_Start_IT(dshotConfig.timer->hdma[dshotConfig.timDMAHandleIndex], dshotConfig.dshotDMABuffer, destinationBuffer, DSHOT_DMA_BUFFER_SIZE);
 }
 
 void PWMChannel::dshotEnableDMARequests(PWMPinConfig dshotConfig)

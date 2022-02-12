@@ -26,8 +26,8 @@
 #define DSHOT_DATA_FRAME_LEN 16
 #define DSHOT_DMA_BUFFER_SIZE 18
 #define DSHOT_MAX_THROTTLE 2047
-#define DSHOT_BIT_1 1
-#define DSHOT_BIT_0 0
+#define DSHOT_BIT_1 240
+#define DSHOT_BIT_0 120
 #define NUM_DSHOT_MOTORS 4
 
 typedef uint8_t PWMChannelNum;
