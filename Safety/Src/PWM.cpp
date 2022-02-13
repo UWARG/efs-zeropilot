@@ -52,7 +52,6 @@ PWMChannel::PWMChannel()
                 //setting up timers?
                 //setting up dma call back function that runs when the transfer is complete and disables the dma
                 dshotSetupDMACallbacks();
-            
         }
 
     }
@@ -161,7 +160,6 @@ void PWMChannel::dshotSetupDMACallbacks()
     {
         PWM_CONFIG[i].timer->hdma[PWM_CONFIG[i].timDMAHandleIndex]->XferCpltCallback = dshotDMACompleteCallback;
     }
-
 }
 
 void dshotDMACompleteCallback(DMA_HandleTypeDef *hdma)
@@ -172,7 +170,7 @@ void dshotDMACompleteCallback(DMA_HandleTypeDef *hdma)
     {
         if (hdma == htim->hdma[PWM_CONFIG[i].timDMAHandleIndex])
 	    {
-		__HAL_TIM_DISABLE_DMA(htim, PWM_CONFIG[i].timDMASources);
+		    __HAL_TIM_DISABLE_DMA(htim, PWM_CONFIG[i].timDMASources);
 	    }
     }
 }
