@@ -3,6 +3,8 @@
  * Author: Anthony Bertnyk, Messed with by Gordon Fountain to turn from Attitude Manager to Telemetry
  */
  #include <cstdint>
+ #include"FW_CV_Structs.hpp"
+ #include"comms.hpp"
 
 #ifndef TELEM_PATH_INTERFACE_HPP
 #define TELEM_PATH_INTERFACE_HPP
@@ -35,6 +37,8 @@ typedef struct POGI{
 	uint8_t editingFlightPathErrorCode,flightPathFollowingErrorCode; //Flight path error codes
 	uint8_t currentWaypointId, currentWaypointIndex; //current waypoint data
 	bool homeBaseInit; //is home base initialized
+    struct foji FOJI;
+    pogiData POXI; 
 } POGI;
 
 struct Telemetry_PIGO_t {
@@ -70,6 +74,8 @@ struct Telemetry_PIGO_t {
     // gimbal (pitch and yaw)
     float gimbalPitch;
     float gimbalYaw;
+
+    struct fijo FIJO;
 
 };
 

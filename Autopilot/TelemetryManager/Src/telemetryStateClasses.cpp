@@ -3,6 +3,16 @@
 */
 
 #include "telemetryStateClasses.hpp"
+#include "UARTDriver.hpp"
+#include"comms.hpp"
+#include"FW_CV_Structs.hpp"
+#include "CommsWithPathManager.hpp"
+
+// Stuff that does compile: 
+// UART DRIVER hpp include stm files
+// Weird include reference to function error
+
+struct fijo msg_from_jetson;
 
 void initialMode::execute(telemetryManager* telemetryMgr)
 {
@@ -19,14 +29,17 @@ telemetryState& initialMode::getInstance()
 void obtainDataMode::execute(telemetryManager* telemetryMgr)
 {
     //obtain data from ground
-
+    bool moveToDecode = obtainFIJO();
     if(telemetryMgr -> fatalFail)
     {
         telemetryMgr -> setState(failureMode::getInstance());
     }
-    else
+    else if(moveToDecode)
     {
         telemetryMgr -> setState(decodeDataMode::getInstance());
+    }else
+    {
+        telemetryMgr -> setState(readFromPathMode::getInstance());
     }
 }
 
@@ -39,6 +52,8 @@ telemetryState& obtainDataMode::getInstance()
 void decodeDataMode::execute(telemetryManager* telemetryMgr)
 {
     //decode data with Mavlink
+    msg_from_jetson = decodeFIJO();
+
     if(telemetryMgr -> fatalFail)
     {
         telemetryMgr -> setState(failureMode::getInstance());
@@ -58,6 +73,11 @@ telemetryState& decodeDataMode::getInstance()
 void passToPathMode::execute(telemetryManager* telemetryMgr)
 {
     //pass data to path manager
+
+    Telemetry_PIGO_t commsToPM; 
+    commsToPM.FIJO = msg_from_jetson;
+    SendCommandsForPM(&commsToPM);
+
     if(telemetryMgr -> fatalFail)
     {
         telemetryMgr -> setState(failureMode::getInstance());
@@ -74,9 +94,15 @@ telemetryState& passToPathMode::getInstance()
     return singleton;
 }
 
+bool newDataAvailable = true;
+
+POGI msg_out;
+
 void readFromPathMode::execute(telemetryManager* telemetryMgr)
 {
     //read data out of path manager
+    //If false no new data from PM is available
+    newDataAvailable = GetTelemData(&msg_out);
     if(telemetryMgr -> fatalFail)
     {
         telemetryMgr -> setState(failureMode::getInstance());
@@ -167,6 +193,11 @@ telemetryState& reportMode::getInstance()
 void encodeDataMode::execute(telemetryManager* telemetryMgr)
 {
     //encode data with mavlink
+    sendFOJI(msg_out.FOJI);
+
+    Comms::GetInstance()->transmitMessage(msg_out.POXI);
+
+    
     if(telemetryMgr -> fatalFail)
     {
         telemetryMgr -> setState(failureMode::getInstance());
