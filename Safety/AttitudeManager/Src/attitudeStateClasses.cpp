@@ -92,21 +92,22 @@ attitudeState& fetchInstructionsMode::getInstance()
 
 bool fetchInstructionsMode::ReceiveTeleopInstructions(attitudeManager* attitudeMgr)
 {
-    if(attitudeMgr->ppm.is_disconnected(HAL_GetTick()))
+    if(attitudeMgr->ppm->is_disconnected(HAL_GetTick()))
     {
         return false;
     }
     
     for(int i = 0; i < MAX_PPM_CHANNELS; i++)
     {
-        _TeleopInstructions.PPMValues[i] = attitudeMgr->ppm.get(i);
-        return true;
+        _TeleopInstructions.PPMValues[i] = attitudeMgr->ppm->get(i);
     }
+    return true;
 }
 
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
 {
-    SFError_t _SFError = SF_GetResult(&_SFOutput);
+    SFError_t _SFError = SF_GenerateNewResult();
+    _SFError = SF_GetResult(&_SFOutput);
 
     attitudeMgr->setState(PIDloopMode::getInstance());
 }
@@ -199,10 +200,10 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
     if (ErrorStruct.errorCode == 0)
     {
         // setting PWM channel values
-        attitudeMgr->pwm.set(FRONT_LEFT_MOTOR_CHANNEL, PidOutput -> frontLeftMotorPercent);
-        attitudeMgr->pwm.set(FRONT_RIGHT_MOTOR_CHANNEL, PidOutput -> frontRightMotorPercent);
-        attitudeMgr->pwm.set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
-        attitudeMgr->pwm.set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
+        attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, PidOutput -> frontLeftMotorPercent);
+        attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, PidOutput -> frontRightMotorPercent);
+        attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
+        attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
         attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
     }
     else
@@ -221,10 +222,10 @@ attitudeState& OutputMixingMode::getInstance()
 void FatalFailureMode::execute(attitudeManager* attitudeMgr)
 {
     //setting PWM channel values to 0 as per CONOPS guidelines for multicopters
-    attitudeMgr->pwm.set(FRONT_LEFT_MOTOR_CHANNEL, 0);
-    attitudeMgr->pwm.set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
-    attitudeMgr->pwm.set(BACK_LEFT_MOTOR_CHANNEL, 0);
-    attitudeMgr->pwm.set(BACK_RIGHT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, 0);
 }
 
 attitudeState& FatalFailureMode::getInstance()

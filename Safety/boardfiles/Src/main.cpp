@@ -165,12 +165,9 @@ int main(void)
   MX_USART2_UART_Init();
 
   /* USER CODE BEGIN 2 */
-  PPMChannel ppm;
-  ppm.setNumChannels(MAX_PPM_CHANNELS);
-  PWMChannel pwm;
-  pwm.setup();
-
-  attitudeManager attMng(ppm, pwm);
+  PPMChannel *ppm = new PPMChannel(MAX_PPM_CHANNELS);
+  PWMChannel *pwm = new PWMChannel();
+  attitudeManager *attMng = new attitudeManager(ppm, pwm);
 
   interchipInit();
 
@@ -187,8 +184,7 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
     RSSI_Check(); // Run every time to update CommsFailed value
-    attMng.execute();
-
+    attMng->execute();
   }
   /* USER CODE END 3 */
 

@@ -1,7 +1,7 @@
 #include "attitudeManager.hpp"
 #include "attitudeStateClasses.hpp"
 
-attitudeManager::attitudeManager(PPMChannel &ppmChannel, PWMChannel &pwmChannel)
+attitudeManager::attitudeManager(PPMChannel *ppmChannel, PWMChannel *pwmChannel)
 {
     currentState = &fetchInstructionsMode::getInstance();
     status = AttMan::COMPLETED_CYCLE;
