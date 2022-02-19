@@ -183,5 +183,9 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
     }
 
     // to return PID
+    TEMPORARY_OUT_REMOVE_THIS.backLeftMotorPercent = instructions->input3;
+    TEMPORARY_OUT_REMOVE_THIS.frontLeftMotorPercent = instructions->input3;
+    TEMPORARY_OUT_REMOVE_THIS.backRightMotorPercent = instructions->input3;
+    TEMPORARY_OUT_REMOVE_THIS.frontRightMotorPercent = instructions->input3;
     return &TEMPORARY_OUT_REMOVE_THIS;
 }

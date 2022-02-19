@@ -38,6 +38,8 @@ static uint8_t time_to_percentage(uint32_t max, uint32_t min, float time);
 PPMChannel::PPMChannel(uint8_t channels, uint32_t timeout) {
 	if (channels > MAX_PPM_CHANNELS || channels <= 0) {
 		num_channels = 8;
+	} else {
+		num_channels = channels;
 	}
 
 	this->disconnect_timeout = timeout;
