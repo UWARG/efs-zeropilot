@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include "CommonDataTypes.hpp"
+#include "stm32f7xx_hal.h"
 /** What UART interface the device is connected to */
 #define GPS_UART_INTERFACE 1
 
@@ -153,5 +154,6 @@ class SimulatedGps : public Gps
 };
 #endif
 
+void GPS_HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart); 
 #endif
 
