@@ -12,7 +12,7 @@ extern "C"
 
 void CommWithTelemInit()
 {
-    telemDataMailQ = osMailCreate(osMailQ(telemDataMailQ), NULL);]
+    telemDataMailQ = osMailCreate(osMailQ(telemDataMailQ), NULL);
 }
 
 void SendPathData(POGI *data)
