@@ -1,14 +1,14 @@
 #include "UARTDriver.hpp"
 
-const uint8_t START_BYTE = 0x24;
+uint8_t START_BYTE = 0x24;
 
 //Need to assign UART pins
-UART_HandleTypeDef huart2;
+// UART_HandleTypeDef huart2;
 
 void sendFOJI(struct foji msg_to_jetson){
 	//Get msg_to_jetson from telemetry manager
 	// struct foji msg_to_jetson;
-	HAL_UART_Transmit(&huart2, &START_BYTE, sizeof(START_BYTE), HAL_MAX_DELAY);
+	HAL_UART_Transmit(&huart2,  &START_BYTE, sizeof(START_BYTE), HAL_MAX_DELAY);
 	HAL_UART_Transmit(&huart2, (uint8_t*)&msg_to_jetson, sizeof(struct foji), HAL_MAX_DELAY);
 
 }
@@ -38,8 +38,8 @@ struct fijo decodeFIJO(){
 		msg_from_jetson.takeoffCommand = byteToStruct->takeoffCommand;
 		msg_from_jetson.qrScanFlag = byteToStruct->qrScanFlag;
 		msg_from_jetson.detectFlag = byteToStruct->detectFlag;
-		msg_from_jetson.gpsCoord.lattitude = byteToStruct->gpsCoord.lattitude;
-		msg_from_jetson.gpsCoord.longtitude = byteToStruct->gpsCoord.longtitude;
+		msg_from_jetson.lattitude = byteToStruct->lattitude;
+		msg_from_jetson.longtitude = byteToStruct->longtitude;
 
 		//Resets the check byte
 		check = 0;
