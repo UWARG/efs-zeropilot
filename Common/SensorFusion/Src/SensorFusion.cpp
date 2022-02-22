@@ -89,6 +89,8 @@ void SF_Init(void)
 #endif
     #endif
 
+    imuObj = &MPU6050::getInstance();
+
     //Set initial state to be unknown
     for(int i = 0; i < NUM_KALMAN_VALUES; i++) iterData.prevX[0] = 0;
     iterData.prevP[0] = 100000;
