@@ -46,11 +46,10 @@ typedef struct PWMGroupSetting {
 
 
 class PWMChannel {
- public:
- void set(uint8_t channel, uint8_t percent);
- void setup();
-
- private:
+public:
+	PWMChannel();
+	void set(uint8_t channel, uint8_t percent);
+private:
 	//values in us
 	uint32_t pwmPeriod = 20000;
 	uint32_t min_signal = 950; //standard for 50hz pwm signal, with a 100 Hz margin added to ensure we can reach the extreme values.

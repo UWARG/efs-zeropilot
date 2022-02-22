@@ -46,6 +46,7 @@
 #include "gpio.h"
 #include "interchip_S.hpp"
 #include "RSSI.hpp"
+#include "attitudeManager.hpp"
 
 /* USER CODE BEGIN Includes */
 
@@ -91,6 +92,7 @@ uint32_t IC_Val1 = 0;
 uint32_t IC_Val2 = 0;
 uint32_t Frequency = 0;
 uint32_t Duty_Cycle = 0;
+
 
 // write the input capture callback
 #if 0
@@ -163,27 +165,14 @@ int main(void)
   MX_USART2_UART_Init();
 
   /* USER CODE BEGIN 2 */
-
-  //testSetup();
-
-
-  // start the IC in interrupt mode
-
-
-  PPMChannel ppm;
-  ppm.setNumChannels(8);
-
-  PWMChannel pwm;
-  pwm.setup();
-  safety_controller_init();
+  PPMChannel *ppm = new PPMChannel(MAX_PPM_CHANNELS);
+  PWMChannel *pwm = new PWMChannel();
+  attitudeManager *attMng = new attitudeManager(ppm, pwm);
 
   interchipInit();
 
-
   HAL_NVIC_SetPriority(TIM15_IRQn, 1, 0);
   HAL_NVIC_SetPriority(SPI1_IRQn, 0, 0);
-
-
 
   /* USER CODE END 2 */
 
@@ -194,10 +183,8 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-    RSSI_Check();
-    safety_run(pwm, ppm);
-    HAL_Delay(1);
-
+    RSSI_Check(); // Run every time to update CommsFailed value
+    attMng->execute();
   }
   /* USER CODE END 3 */
 

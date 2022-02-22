@@ -19,6 +19,9 @@
 *.hex
 *.bin
 
+# Cache Files
+*.idx
+
 # Regular Makefiles arent necessary since we're using Cmake as our buildsystem for everything
 Makefile
 project.mk
@@ -79,3 +82,7 @@ cmake-build-*/
 
 # Simulation
 **/SimulationBuild/**
+
+.idea/
+
+.vscode/settings.json

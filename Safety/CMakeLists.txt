@@ -10,12 +10,20 @@ add_definitions(
   -DSTM32F030xC
 )
 
+get_filename_component(PARENT_DIR ../ ABSOLUTE)
+
 include_directories(
+    Inc
+    ${PARENT_DIR}/Common/Inc
+    ${PARENT_DIR}/Common/CControl/Inc
+    ${PARENT_DIR}/Common/SensorFusion/Inc
     boardfiles/Inc
     boardfiles/Drivers/STM32F0xx_HAL_Driver/Inc
     boardfiles/Drivers/CMSIS/Device/ST/STM32F0xx/Include
     boardfiles/Drivers/CMSIS/Include
     Inc
+    AttitudeManager/Inc
+    Controls/Inc
 )
 
 # Libraries
@@ -23,8 +31,9 @@ add_subdirectory(Libraries/STM32F0xx_HAL_Driver)
 
 # Tests
 #add_subdirectory(Tests)
-file(GLOB_RECURSE C_SOURCES  "boardfiles/Drivers/STM32F0xx_HAL_Driver/Src*.c" "boardfiles/Src/*.c")
-file(GLOB_RECURSE CXX_SOURCES "boardfiles/Src/*.cpp" "Src/*.cpp")
+
+file(GLOB_RECURSE C_SOURCES  ../Common/Src/*.c ../Common/CControl/Src/mul.c ../Common/CControl/Src/tran.c ../Common/CControl/Src/inv.c ../Common/CControl/Src/lup.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/Src/*.c boardfiles/Src/*.c "boardfiles/Drivers/STM32F0xx_HAL_Driver/Src*.c" "boardfiles/Src/*.c")
+file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp ../Common/SensorFusion/Src/*.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp SensorFusion/Src/*.cpp SensorFusion/Src/*.c "boardfiles/Src/*.cpp" "Src/*.cpp" "AttitudeManager/Src/*.cpp" "Controls/Src/*.cpp" "SensorFusion/Src/*.cpp" "Src/*.cpp")
 
 
 if( EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/boardfiles/Src/main.c")

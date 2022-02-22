@@ -1,6 +1,7 @@
 #include "PPM.hpp"
 #include "tim.h"
 #include <stdint.h>
+#include "RSSI.hpp"
 
 /***********************************************************************************************************************
  * Definitions
@@ -37,6 +38,8 @@ static uint8_t time_to_percentage(uint32_t max, uint32_t min, float time);
 PPMChannel::PPMChannel(uint8_t channels, uint32_t timeout) {
 	if (channels > MAX_PPM_CHANNELS || channels <= 0) {
 		num_channels = 8;
+	} else {
+		num_channels = channels;
 	}
 
 	this->disconnect_timeout = timeout;
@@ -76,6 +79,12 @@ uint32_t PPMChannel::get_us(PWMChannelNum num)
 	}
 	return static_cast<uint32_t>(ppm_values[num]);
 }
+
+bool PPMChannel::is_disconnected(uint32_t sys_time) {
+	// TODO: To be implemented, currently returns false only
+	return CommsFailed(); // return result of RSSI Check
+}
+
 
 
 
