@@ -25,12 +25,9 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-<<<<<<< HEAD
 #include "interchip_S.hpp"
 #include "RSSI.hpp"
 #include "attitudeManager.hpp"
-=======
->>>>>>> c6d0a2c (remove main.cpp)
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -184,17 +181,9 @@ int main(void)
   {
     /* USER CODE END WHILE */
 
-<<<<<<< HEAD
   /* USER CODE BEGIN 3 */
     RSSI_Check(); // Run every time to update CommsFailed value
     attMng->execute();
-=======
-    /* USER CODE BEGIN 3 */
-    RSSI_Check();
-    // safety_run(pwm, ppm);
-    HAL_Delay(1);
-
->>>>>>> c6d0a2c (remove main.cpp)
   }
   /* USER CODE END 3 */
 }

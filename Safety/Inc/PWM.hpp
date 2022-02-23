@@ -36,10 +36,10 @@ typedef struct PWMPinConfig {
 	GPIO_TypeDef* port;
 	TIM_HandleTypeDef *timer;
 	uint16_t timer_channel;
-    bool isUsingDshot;
-    uint32_t *dshotDMABuffer;
-    uint16_t timDMAHandleIndex;
-    uint16_t timDMASources;
+  bool isUsingDshot;
+  uint32_t *dshotDMABuffer;
+  uint16_t timDMAHandleIndex;
+  uint16_t timDMASources;
 
 } PWMPinConfig;
 
