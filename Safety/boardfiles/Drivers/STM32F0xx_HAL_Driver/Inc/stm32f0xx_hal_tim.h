@@ -28,6 +28,8 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx_hal_def.h"
 
+void TIM_DMADelayPulseCplt(DMA_HandleTypeDef *hdma);
+
 /** @addtogroup STM32F0xx_HAL_Driver
   * @{
   */
