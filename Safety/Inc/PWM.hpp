@@ -22,6 +22,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "stm32f0xx_hal.h"
 
 #define DSHOT_DATA_FRAME_LEN 16
 #define DSHOT_DMA_BUFFER_SIZE 18
@@ -29,6 +30,18 @@
 #define DSHOT_BIT_1 240
 #define DSHOT_BIT_0 120
 #define NUM_DSHOT_MOTORS 4
+
+typedef struct PWMPinConfig {
+	uint16_t num;
+	GPIO_TypeDef* port;
+	TIM_HandleTypeDef *timer;
+	uint16_t timer_channel;
+    bool isUsingDshot;
+    uint32_t *dshotDMABuffer;
+    uint16_t timDMAHandleIndex;
+    uint16_t timDMASources;
+
+} PWMPinConfig;
 
 typedef uint8_t PWMChannelNum;
 

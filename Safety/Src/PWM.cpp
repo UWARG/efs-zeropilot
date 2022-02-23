@@ -15,18 +15,6 @@ static uint32_t DMAMotorBuffer2[DSHOT_DMA_BUFFER_SIZE];
 static uint32_t DMAMotorBuffer3[DSHOT_DMA_BUFFER_SIZE];
 static uint32_t DMAMotorBuffer4[DSHOT_DMA_BUFFER_SIZE];
 
-typedef struct PWMPinConfig {
-	uint16_t num;
-	GPIO_TypeDef* port;
-	TIM_HandleTypeDef *timer;
-	uint16_t timer_channel;
-    bool isUsingDshot;
-    uint32_t *dshotDMABuffer;
-    uint16_t timDMAHandleIndex;
-    uint16_t timDMASources;
-
-} PWMPinConfig;
-
 static const PWMPinConfig PWM_CONFIG[MAX_CHANNELS] 
 {
     {PWM1_Pin, PWM1_GPIO_Port, &htim1, TIM_CHANNEL_1, true, DMAMotorBuffer1, TIM_DMA_ID_CC1, TIM_DMA_CC1},
