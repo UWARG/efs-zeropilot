@@ -36,8 +36,6 @@ PWMChannel::PWMChannel()
 
         if (currentChannel.isUsingDshot)
         {
-            //ANY DSHOT SETUP FUNCTIONS
-                //setting up timers?
                 //setting up dma call back function that runs when the transfer is complete and disables the dma
                 dshotSetupDMACallbacks();
         }
