@@ -31,19 +31,19 @@
 #define DSHOT_BIT_0 120
 #define NUM_DSHOT_MOTORS 4
 
+typedef uint8_t PWMChannelNum;
+
 typedef struct PWMPinConfig {
 	uint16_t num;
-	GPIO_TypeDef* port;
-	TIM_HandleTypeDef *timer;
-	uint16_t timer_channel;
-  bool isUsingDshot;
-  uint32_t *dshotDMABuffer;
-  uint16_t timDMAHandleIndex;
-  uint16_t timDMASources;
+	GPIO_TypeDef* port;           
+	TIM_HandleTypeDef *timer;     //handle to the timer
+	uint16_t timer_channel;       //channel of the timer
+  bool isUsingDshot;            //flag indicating if this configuration is for DSHOT
+  uint32_t *dshotDMABuffer;     //pointer to DSHOT buffer, if applicable
+  uint16_t timDMAHandleIndex;   //TIM DMA handle index , if applicable
+  uint16_t timDMASource;        //TIM DMA source, if applicable
 
 } PWMPinConfig;
-
-typedef uint8_t PWMChannelNum;
 
 /**
  * Represents a group of PWM outputs that map to a single timer

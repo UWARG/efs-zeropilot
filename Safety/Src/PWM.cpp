@@ -136,7 +136,7 @@ void PWMChannel::dshotStartDMA(PWMPinConfig dshotConfig)
 
 void PWMChannel::dshotEnableDMARequests(PWMPinConfig dshotConfig)
 {
-    __HAL_TIM_ENABLE_DMA(dshotConfig.timer, dshotConfig.timDMASources);
+    __HAL_TIM_ENABLE_DMA(dshotConfig.timer, dshotConfig.timDMASource);
 }
 
 void PWMChannel::dshotSetupDMACallbacks()
@@ -155,7 +155,7 @@ void dshotDMACompleteCallback(DMA_HandleTypeDef *hdma)
     {
         if (hdma == htim->hdma[PWM_CONFIG[i].timDMAHandleIndex])
 	    {
-		    __HAL_TIM_DISABLE_DMA(htim, PWM_CONFIG[i].timDMASources);
+		    __HAL_TIM_DISABLE_DMA(htim, PWM_CONFIG[i].timDMASource);
 	    }
     }
 }
