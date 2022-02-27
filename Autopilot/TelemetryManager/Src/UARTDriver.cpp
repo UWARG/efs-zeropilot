@@ -98,7 +98,6 @@ void FW_CV_HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 		uint8_t tempBuf[sizeof(struct fijo)];
 		HAL_UART_Receive(&huart2, tempBuf, sizeof(tempBuf), HAL_MAX_DELAY);
 		enqueuebufNode(tempBuf);
-		// Append bug to the Q
 	}
     //Makes it so any messages sent from CV will always be appended to the queue wihtout constantly polling
     HAL_UART_Receive_IT(&huart2, &check, 1);
