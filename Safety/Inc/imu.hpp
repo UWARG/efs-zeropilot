@@ -12,11 +12,10 @@
 /* Exported functions prototypes ---------------------------------------------*/
 // void Error_Handler();
 
-
 struct IMUData_t {
   double gyro_x, gyro_y, gyro_z; 
   double accel_x, accel_y, accel_z;
-  double magx, magy, magz;
+  double mag_x, mag_y, mag_z;
 }; 
 
 class IMU {
@@ -33,6 +32,7 @@ class BMX160 : public IMU {
     BMX160(const BMX160*)=delete; 
 
     void GetResult(IMUData_t& Data); 
+    void updateData();
 
   private:
 
@@ -49,11 +49,12 @@ class BMX160 : public IMU {
 
     void IMUInit(void); 
 
-    void scan(void); // Check that the slave device exists
+    bool scan(void); // Check that the slave device exists
 
+    // Variables:
+    int16_t rawImuData[20];
+    IMUData_t IMUCalibration;
 };
-
-
 
 #endif 
 
