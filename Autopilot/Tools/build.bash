@@ -55,14 +55,12 @@ while getopts "c,s,t,h,f,r" opt; do
     esac
 done
 
-# # figures out what's available in the used environement
-# if command -v ninja >/dev/null 2>&1; then
-#     GENERATOR="Ninja"
-# el
-# if command -v make >/dev/null 2>&1; then
-#     GENERATOR="Unix Makefiles"
-# el
-if command -v mingw32-make >/dev/null 2>&1; then
+# figures out what's available in the used environement
+if command -v ninja >/dev/null 2>&1; then
+    GENERATOR="Ninja"
+elif command -v make >/dev/null 2>&1; then
+    GENERATOR="Unix Makefiles"
+elif command -v mingw32-make >/dev/null 2>&1; then
     GENERATOR="MinGW Makefiles"
 fi
 
@@ -71,16 +69,16 @@ if [[ $RUN_UNIT_TESTS == true ]]; then
 
     echo "Building Unit tests !"
     echo ""
-    echo "Using \'${GENERATOR}\' as cmake generator"
+    echo ""
 
-   die() {
+    die() {
         echo ""
-        echo "Error $1 was encountered on line $2."
+        echo "Unit test build FAILED!"
         exit $1
     }
 
-    # Set up exit condition
-    trap 'die $? $LINENO' ERR
+    # If any command should return error, go to die
+    trap 'die $?' ERR
 
     BUILD_DIR="testBuild"
 
@@ -102,7 +100,6 @@ if [[ $RUN_UNIT_TESTS == true ]]; then
     # run all executables in the build directory
     for SCRIPT in $BUILD_DIR/bin/*
     do
-        echo $SCRIPT
         ./$SCRIPT;
     done
 
