@@ -17,6 +17,7 @@ struct fijo msg_from_jetson;
 void initialMode::execute(telemetryManager* telemetryMgr)
 {
     //initial mode
+    startInterrupt();
     telemetryMgr -> setState(obtainDataMode::getInstance());
 }
 
@@ -29,7 +30,7 @@ telemetryState& initialMode::getInstance()
 void obtainDataMode::execute(telemetryManager* telemetryMgr)
 {
     //obtain data from ground
-    bool moveToDecode = obtainFIJO();
+    bool moveToDecode = doesFIJODataExist();
     if(telemetryMgr -> fatalFail)
     {
         telemetryMgr -> setState(failureMode::getInstance());

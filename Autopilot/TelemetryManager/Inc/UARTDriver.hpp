@@ -10,6 +10,7 @@
 
 void sendFOJI(struct foji msg_to_jetson);
 struct fijo decodeFIJO();
-bool obtainFIJO();
+void startInterrupt();
+bool doesFIJODataExist();
 void FW_CV_HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 #endif
