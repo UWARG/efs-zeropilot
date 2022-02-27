@@ -105,6 +105,8 @@ NEOM8::NEOM8() : gpsData {},
 /**
  * Method is called when our uart buffer (byte_collection_buffer) is full
  */
+ 
+//Called in the Callback.cpp file
 void GPS_HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	NEOM8 * neoM8N = NEOM8::GetInstance();
 

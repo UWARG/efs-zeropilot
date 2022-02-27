@@ -37,6 +37,7 @@ typedef struct POGI{
 	uint8_t editingFlightPathErrorCode,flightPathFollowingErrorCode; //Flight path error codes
 	uint8_t currentWaypointId, currentWaypointIndex; //current waypoint data
 	bool homeBaseInit; //is home base initialized
+    //New comm structs
     struct foji FOJI;
     pogiData POXI; 
 } POGI;
@@ -75,6 +76,7 @@ struct Telemetry_PIGO_t {
     float gimbalPitch;
     float gimbalYaw;
 
+    //New comm struct
     struct fijo FIJO;
 
 };

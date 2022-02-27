@@ -14,6 +14,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
     }   
 }
 
+//This function is used to allpw both gps.cpp and UARTDriver.cpp to have a callback
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
     if(huart == &huart4){

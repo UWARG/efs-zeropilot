@@ -3,25 +3,24 @@
 const uint8_t START_BYTE = 0x24;
 const uint8_t MAX_ARRAY_SIZE = 10;
 
-//Need to assign UART pins
-// UART_HandleTypeDef huart2;
 
 void sendFOJI(struct foji msg_to_jetson){
 	//Get msg_to_jetson from telemetry manager
-	// struct foji msg_to_jetson;
 	HAL_UART_Transmit(&huart2,  (uint8_t*)&START_BYTE, sizeof(START_BYTE), HAL_MAX_DELAY);
 	HAL_UART_Transmit(&huart2, (uint8_t*)&msg_to_jetson, sizeof(struct foji), HAL_MAX_DELAY);
 
 }
 
 
-//Creates byte array
+//Creates byte queue
 uint8_t buf[MAX_ARRAY_SIZE][sizeof(struct fijo)];
 
+//The 2D array will work as a circular queue which means the head will keep track of where we need to dequeue, and the tail will keep track of where we need to enqueue
 uint8_t head = 0; 
 uint8_t tail = 0;
 bool isEmpty = true;
 
+//Takes a byte array and appends it to the queue
 void enqueuebufNode(uint8_t *new_msg_from_jetson) {
     //Dropping first appended element in case of overflow
     if(tail == head && !isEmpty){
@@ -60,22 +59,24 @@ void dequeuebufNode(uint8_t *tempBuf){
 //Creates the byte used to confirm if the received bytes are a valid message
 uint8_t check;
 
+//Starts the inturrupt
 void startInterrupt(){
     HAL_UART_Receive_IT(&huart2, &check, 1);
 }
 
+//Checks if there is anything to send to PM
 bool doesFIJODataExist(){
-
     return !isEmpty;
-
 }
 
+//Returns an FIJO struct to send to PM
 struct fijo decodeFIJO(){
     struct fijo msg_from_jetson;
     if(!isEmpty){
-		// decodeBuf = q.pop();
+		//Fills a temp buf array to cast to a struct
 		uint8_t tempBuf[sizeof(struct fijo)];
 		dequeuebufNode(tempBuf);
+
 		//Convert the byte array into an fijo struct
 		struct fijo *byteToStruct = (struct fijo*)tempBuf;
 		msg_from_jetson.takeoffCommand = byteToStruct->takeoffCommand;
@@ -88,12 +89,12 @@ struct fijo decodeFIJO(){
 		check = 0;
 	}
 
-	//Send msg_from_jetson into telemetry manager
+	//Send msg_from_jetson into telemetry manager to then send to PM
     return msg_from_jetson;
 }
 
 void FW_CV_HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	//If check is the correct byte, the following bytes can be stored in the buffer array to then be parsed into an fijo struct
+	//If check is the correct byte, the following bytes can be stored in the buffer queue to then be parsed into an fijo struct
 	if(check == START_BYTE){
 		uint8_t tempBuf[sizeof(struct fijo)];
 		HAL_UART_Receive(&huart2, tempBuf, sizeof(tempBuf), HAL_MAX_DELAY);
