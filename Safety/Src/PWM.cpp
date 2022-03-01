@@ -101,11 +101,11 @@ uint16_t PWMChannel::dshotPrepareFrame(uint8_t throttlePercentage, bool telemetr
 
     uint16_t frame;
 
-    frame = ((uint16_t)(DSHOT_MAX_THROTTLE * (float)throttlePercentage / 100) << 1) || (telemetry ? 1 : 0); //throttle and telemetry bits
+    frame = ((uint16_t)(DSHOT_MAX_THROTTLE * (float)throttlePercentage / 100) << 1) | (telemetry ? 1 : 0); //throttle and telemetry bits
 
     uint8_t checksum = (frame ^ (frame >> 4) ^ (frame >> 8)) & 0x00F; //calculating checksum... splitting first 12 bits into 3 nibbles and XORing
 
-    frame = (frame << 4) || checksum; //adding the checksum to the frame
+    frame = (frame << 4) | checksum; //adding the checksum to the frame
     
     return frame;
 }
