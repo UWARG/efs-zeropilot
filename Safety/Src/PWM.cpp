@@ -118,15 +118,19 @@ void PWMChannel::dshotStartDMA(PWMPinConfig dshotConfig)
     {
         case TIM_CHANNEL_1:
         destinationBuffer = (uint32_t)&dshotConfig.timer->Instance->CCR1;
+        break;
 
         case TIM_CHANNEL_2:
         destinationBuffer = (uint32_t)&dshotConfig.timer->Instance->CCR2;
-        
+        break;
+
         case TIM_CHANNEL_3:
         destinationBuffer = (uint32_t)&dshotConfig.timer->Instance->CCR3;
+        break;
 
         case TIM_CHANNEL_4:
         destinationBuffer = (uint32_t)&dshotConfig.timer->Instance->CCR4;
+        break;
 
     }
     HAL_DMA_Start_IT(dshotConfig.timer->hdma[dshotConfig.timDMAHandleIndex], (uint32_t)dshotConfig.dshotDMABuffer, destinationBuffer, DSHOT_DMA_BUFFER_SIZE);
