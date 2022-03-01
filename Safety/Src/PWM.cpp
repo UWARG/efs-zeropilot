@@ -79,11 +79,15 @@ void PWMChannel::dshotPrepareDMABuffer(uint32_t * dmaBuffer, uint8_t throttlePer
 
     for (int i = 0; i < DSHOT_DATA_FRAME_LEN; i++)
     {
-        dmaBuffer[i] = (frame & 0x8000 ? DSHOT_BIT_1 : DSHOT_BIT_0); //using the frame, populate the buffer with the duty cycle value corresponding to a 1 and 0
+        //Using the frame, populate the buffer with the duty cycle value corresponding to a 1 and 0
+        //We are masking out everything except the most significant bit (far left bit) and setting the proper value in the buffer depending if it's a 1 or 0
+        dmaBuffer[i] = (frame & 0x8000 ? DSHOT_BIT_1 : DSHOT_BIT_0);
 
+        //Left shifting the current frame over by 1 to set the next frame bit in the buffer
         frame <<= 1;
     }
 
+    //Setting the last two indexes in the buffer to 0 to ensure the last part of the signal is low
     dmaBuffer[16] = 0;
     dmaBuffer[17] = 0;
 }
