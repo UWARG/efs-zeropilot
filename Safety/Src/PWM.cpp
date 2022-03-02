@@ -3,6 +3,12 @@
 #include "PWM.hpp"
 #define MAX_CHANNELS 10
 #define NUM_AVAILABLE_CHANNELS 8
+#define DSHOT_DATA_FRAME_LEN 16
+#define DSHOT_DMA_BUFFER_SIZE 18
+#define DSHOT_MAX_THROTTLE 2047
+#define DSHOT_BIT_1 240
+#define DSHOT_BIT_0 120
+#define NUM_DSHOT_MOTORS 4
 
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim3;
