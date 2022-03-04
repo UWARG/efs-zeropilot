@@ -120,7 +120,6 @@ private:
     void dshotSetupDMACallbacks();
 };
 
-
 /**
   * @brief Callback function to be called when a DMA transfer is complete 
   * @param hdma pointer to DMA handle

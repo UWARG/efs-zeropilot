@@ -6,8 +6,8 @@
 #define DSHOT_DATA_FRAME_LEN 16
 #define DSHOT_DMA_BUFFER_SIZE 18
 #define DSHOT_MAX_THROTTLE 2047
-#define DSHOT_BIT_1 240
-#define DSHOT_BIT_0 120
+#define DSHOT_150_BIT_1 240
+#define DSHOT_150_BIT_0 120
 #define NUM_DSHOT_MOTORS 4
 
 extern TIM_HandleTypeDef htim1;
@@ -56,25 +56,22 @@ void PWMChannel::set(uint8_t channel, uint8_t percent)
         channel = 0;
     }
 
-    PWMPinConfig currentChannel = PWM_CONFIG[channel];
+    const PWMPinConfig * currentChannel = &PWM_CONFIG[channel];
 
-    if (currentChannel.isUsingDshot)
+    if (currentChannel->isUsingDshot)
     {
-        //prepare the buffers
-        dshotPrepareDMABuffer(currentChannel.dshotDMABuffer, percent);
-        //enable dma
-        dshotStartDMA(currentChannel);
-        //enable TIM dma requests?
-        dshotEnableDMARequests(currentChannel);
+        dshotPrepareDMABuffer(currentChannel->dshotDMABuffer, percent);
+        dshotStartDMA(*currentChannel);
+        dshotEnableDMARequests(*currentChannel);
     }
 
     else
     {
-        uint32_t prescaler = (static_cast<TIM_HandleTypeDef *>(currentChannel.timer))->Init.Prescaler;
+        uint32_t prescaler = (static_cast<TIM_HandleTypeDef *>(currentChannel->timer))->Init.Prescaler;
 	    uint32_t us = ((percent * (PWMChannel::max_signal - PWMChannel::min_signal)) / 100 + PWMChannel::min_signal);
-        uint32_t periodTicks = (static_cast<TIM_HandleTypeDef *>(currentChannel.timer))->Init.Period;
+        uint32_t periodTicks = (static_cast<TIM_HandleTypeDef *>(currentChannel->timer))->Init.Period;
 	    uint32_t ticks = static_cast<uint32_t>((static_cast<float>(us) / static_cast<float>(pwmPeriod)) * static_cast<float>(periodTicks));
-        __HAL_TIM_SET_COMPARE((TIM_HandleTypeDef *) currentChannel.timer, currentChannel.timer_channel, (uint32_t) ticks);
+        __HAL_TIM_SET_COMPARE((TIM_HandleTypeDef *) currentChannel->timer, currentChannel->timer_channel, (uint32_t) ticks);
     }
     
 }
@@ -87,7 +84,7 @@ void PWMChannel::dshotPrepareDMABuffer(uint32_t * dmaBuffer, uint8_t throttlePer
     {
         //Using the frame, populate the buffer with the duty cycle value corresponding to a 1 and 0
         //We are masking out everything except the most significant bit (far left bit) and setting the proper value in the buffer depending if it's a 1 or 0
-        dmaBuffer[i] = (frame & 0x8000 ? DSHOT_BIT_1 : DSHOT_BIT_0);
+        dmaBuffer[i] = (frame & 0x8000 ? DSHOT_150_BIT_1 : DSHOT_150_BIT_0);
 
         //Left shifting the current frame over by 1 to set the next frame bit in the buffer
         frame <<= 1;
