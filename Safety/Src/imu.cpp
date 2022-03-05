@@ -84,10 +84,102 @@ static uint16_t index;
 static uint8_t cnter;
 
 
+// /* Private Methods ---------------------------------------------------------*/
 
 
+void BMX160::configAcc() {
+	// Configure acceleration sampling rate as 800 Hz and every four are averaged
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, ACC_CONF_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) ACC_ODR_800_OSR4, 1, HAL_MAX_DELAY);
 
-// /* Private variables ---------------------------------------------------------*/
+	// Configure accelerometer to have range of +- 8g
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, ACC_RANGE_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) ACC_RANGE_8G, 1, HAL_MAX_DELAY);
+}
+
+void BMX160::configGyro() {
+	// Configure gyro sampling rate as 800 Hz and every four samples are averaged
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, GYR_CONF_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) GYRO_ODR_800_OSR4, 1, HAL_MAX_DELAY);
+
+	// Configure gyroscope to have a range of +- 1000 deg/s
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, GYR_RANGE_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) GYRO_RANGE_1000, 1, HAL_MAX_DELAY);
+}
+
+void BMX160::configMag() {
+
+	/*
+	Steps for Magnetometer Configuration:
+	1.) Put Mag into normal power mode (Already there since that was called before)
+	2.) Wait 650 us
+	3.) Write 0x80 to 0x4C (MAG_IF[0]) - set Mag into setup mode - done
+	4.) Write 0x01 to 0x4F (MAG_IF[3]) and 0x4B to 0x4E (MAG_IF[2]) - put mag into sleep mode - done
+	5.) Write 0x04 to 0x4F (MAG_IF[3]) and 0x51 to 0x4E (MAG_IF[2]) - put mag in regular preset mode - done
+	6.) Write 0x0E to 0x4F (MAG_IF[3]) and 0x52 to 0x4E (MAG_IF[2]) - done
+	7.) Write 0x02 to 0x4F, 0x4C to 0x4E, and 0x42 to 0x4D - prepare MAG_IF[0:3] for mag_if_data mode - done
+	8.) Write 0x__ to MAG_CONF_REG to set ODR to 800 Hz - done
+	9.) Write 0x00 to 0x4C
+	*/
+
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_0_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_SETUP_EN, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_SLEEP_MODE, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_MODE_REG, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) REP_XY_REGULAR_PRESET, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_REPXY_REG, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*)REP_Z_REGULAR_PRESET, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_REPZ_REG, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_IF_3_DATA_MODE, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_IF_2_DATA_MODE, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_1_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_IF_1_DATA_MODE, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_CONF_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_REFRESH_200_HZ, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_SETUP_DIS, 1, HAL_MAX_DELAY);
+
+}
+
+bool BMX160::scan() {
+	if (HAL_I2C_IsDeviceReady(&hi2c1, BMX160_I2C_ADDR, 50, HAL_MAX_DELAY) == HAL_OK) {
+		return true;
+	}
+	return false;
+}
+
+void BMX160::calibrate(void) {
+	const int nSamplesForReliableAverage = 100;
+    IMUData_t TempImuData;
+
+    IMUCalibration.accel_x = 0.0f;
+    IMUCalibration.accel_y = 0.0f;
+    IMUCalibration.accel_z = 0.0f;
+    IMUCalibration.gyro_x = 0.0f;
+    IMUCalibration.gyro_y = 0.0f;
+    IMUCalibration.gyro_z = 0.0f;
+    IMUCalibration.mag_x = 0.0f;
+    IMUCalibration.mag_y = 0.0f;
+    IMUCalibration.mag_z = 0.0f;
+
+    for (int i = 0; i < nSamplesForReliableAverage; i++)
+    {
+        this->updateData();
+
+        HAL_Delay(7);
+
+        this->GetResult(TempImuData);
+
+        IMUCalibration.gyro_x += TempImuData.gyro_x;
+        IMUCalibration.gyro_y += TempImuData.gyro_y;
+        IMUCalibration.gyro_z += TempImuData.gyro_z;
+        IMUCalibration.accel_x += TempImuData.accel_x;
+        IMUCalibration.accel_y += TempImuData.accel_y;
+        IMUCalibration.accel_z += TempImuData.accel_z;
+
+    }
+
+    IMUCalibration.gyro_x /= (float) nSamplesForReliableAverage;
+    IMUCalibration.gyro_y /= (float) nSamplesForReliableAverage;
+    IMUCalibration.gyro_z /= (float) nSamplesForReliableAverage;
+    IMUCalibration.accel_x /= (float) nSamplesForReliableAverage;
+    IMUCalibration.accel_y /= (float) nSamplesForReliableAverage;
+    IMUCalibration.accel_z /= (float) nSamplesForReliableAverage;
+
+    IMUCalibration.accel_z -= 1000.0f;    // at calibration, Z needs to read -1g.
+}
 
 
 // /* Public Methods  ---------------------------------------------------------*/
@@ -99,7 +191,7 @@ IMU& BMX160::getInstance() {
 
 void BMX160::updateData(void) {
 	// Just updates the rawIMUData and conducts some processing on it
-	HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, DATA_REG, I2C_MEMADD_SIZE_8BIT, &rawImuData, 20, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, DATA_REG, I2C_MEMADD_SIZE_8BIT, rawImuData, 40, HAL_MAX_DELAY);
 }
 
 void BMX160::GetResult(IMUData_t &Data) {
@@ -159,98 +251,4 @@ void BMX160::setAllPowerModesToNormal(){
 	// Set magnetometer to normal mode
 	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
 
-}
-
-void configAcc() {
-	// Configure acceleration sampling rate as 800 Hz and every four are averaged
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, ACC_CONF_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) ACC_ODR_800_OSR4, 1, HAL_MAX_DELAY);
-
-	// Configure accelerometer to have range of +- 8g
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, ACC_RANGE_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) ACC_RANGE_8G, 1, HAL_MAX_DELAY);
-}
-
-void configGyro() {
-	// Configure gyro sampling rate as 800 Hz and every four samples are averaged
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, GYR_CONF_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) GYRO_ODR_800_OSR4, 1, HAL_MAX_DELAY);
-
-	// Configure gyroscope to have a range of +- 1000 deg/s
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, GYR_RANGE_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) GYRO_RANGE_1000, 1, HAL_MAX_DELAY);
-}
-
-void configMag() {
-
-	/*
-	Steps for Magnetometer Configuration:
-	1.) Put Mag into normal power mode (Already there since that was called before)
-	2.) Wait 650 us
-	3.) Write 0x80 to 0x4C (MAG_IF[0]) - set Mag into setup mode - done
-	4.) Write 0x01 to 0x4F (MAG_IF[3]) and 0x4B to 0x4E (MAG_IF[2]) - put mag into sleep mode - done
-	5.) Write 0x04 to 0x4F (MAG_IF[3]) and 0x51 to 0x4E (MAG_IF[2]) - put mag in regular preset mode - done
-	6.) Write 0x0E to 0x4F (MAG_IF[3]) and 0x52 to 0x4E (MAG_IF[2]) - done
-	7.) Write 0x02 to 0x4F, 0x4C to 0x4E, and 0x42 to 0x4D - prepare MAG_IF[0:3] for mag_if_data mode - done
-	8.) Write 0x__ to MAG_CONF_REG to set ODR to 800 Hz - done
-	9.) Write 0x00 to 0x4C
-	*/
-
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_0_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_SETUP_EN, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_SLEEP_MODE, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_MODE_REG, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) REP_XY_REGULAR_PRESET, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_REPXY_REG, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*)REP_Z_REGULAR_PRESET, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_REPZ_REG, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_IF_3_DATA_MODE, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_IF_2_DATA_MODE, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_1_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_IF_1_DATA_MODE, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_CONF_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_REFRESH_200_HZ, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_SETUP_DIS, 1, HAL_MAX_DELAY);
-
-}
-
-bool scan() {
-	if (HAL_I2C_IsDeviceReady(&hi2c1, BMX160_I2C_ADDR, 50, HAL_MAX_DELAY) == HAL_OK) {
-		return true;
-	}
-	return false;
-}
-
-void BMX160::calibrate(void) {
-	const int nSamplesForReliableAverage = 100;
-    IMUData_t TempImuData;
-
-    IMUCalibration.accel_x = 0.0f;
-    IMUCalibration.accel_y = 0.0f;
-    IMUCalibration.accel_z = 0.0f;
-    IMUCalibration.gyro_x = 0.0f;
-    IMUCalibration.gyro_y = 0.0f;
-    IMUCalibration.gyro_z = 0.0f;
-    IMUCalibration.mag_x = 0.0f;
-    IMUCalibration.mag_y = 0.0f;
-    IMUCalibration.mag_z = 0.0f;
-
-    for (int i = 0; i < nSamplesForReliableAverage; i++)
-    {
-        this->updateData();
-
-        HAL_Delay(7);
-
-        this->GetResult(TempImuData);
-
-        IMUCalibration.gyro_x += TempImuData.gyro_x;
-        IMUCalibration.gyro_y += TempImuData.gyro_y;
-        IMUCalibration.gyro_z += TempImuData.gyro_z;
-        IMUCalibration.accel_x += TempImuData.accel_x;
-        IMUCalibration.accel_y += TempImuData.accel_y;
-        IMUCalibration.accel_z += TempImuData.accel_z;
-
-    }
-
-    IMUCalibration.gyro_x /= (float) nSamplesForReliableAverage;
-    IMUCalibration.gyro_y /= (float) nSamplesForReliableAverage;
-    IMUCalibration.gyro_z /= (float) nSamplesForReliableAverage;
-    IMUCalibration.accel_x /= (float) nSamplesForReliableAverage;
-    IMUCalibration.accel_y /= (float) nSamplesForReliableAverage;
-    IMUCalibration.accel_z /= (float) nSamplesForReliableAverage;
-
-    IMUCalibration.accel_z -= 1000.0f;    // at calibration, Z needs to read -1g.
 }
