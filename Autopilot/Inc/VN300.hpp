@@ -5,6 +5,10 @@
 #ifndef VN300_HPP
 #define VN300_HPP
 
+#include <cstdlib>
+
+#include "../lib/vn/Inc/packet.h"
+
 template <typename Sensor>
 class VN300 {
 
@@ -91,10 +95,13 @@ class VN300_GPS {
         //Private constructor to prevent multiple instances
         VN300_GPS();
 
+        // Callback that runs everytime a datapacket is found
+        void packetFoundCallback(void * data, vn::protocol::uart::Packet & packet, size_t packetStartIndex);
+
         int registerID;
 
         //A pointer to the existing class instance - nullptr if it doesnt exist
-        VN300_GPS* instance;
+        static VN300_GPS* instance;
 
         //Instance of struct to hold the gps data
         VN300_GPSData data;

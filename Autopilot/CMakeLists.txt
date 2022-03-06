@@ -33,6 +33,7 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
     TelemetryManager/Inc
     CControl/Inc
     SensorFusion/Inc
+    lib/vn/Inc/
   )
 
   # Add ARM math directory for linker to find
@@ -45,8 +46,8 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
   add_subdirectory(boardfiles/Middlewares/Third_Party/FreeRTOS)
   add_subdirectory(DataStructures)
 
-  file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/Src/*.c boardfiles/Src/*.c CControl/Src/*.c)
-file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp PathManager/Src/*.cpp TelemetryManager/Src/*.cpp SensorFusion/Src/*.cpp SensorFusion/Src/*.c)
+  file(GLOB_RECURSE C_SOURCES ../Common/Src/*.c ../Common/Src/stm32/*.c "Src/*.c" AttitudeManager/Src/*.c boardfiles/Src/*.c CControl/Src/*.c lib/vn/Src/*.c)
+file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src/*.cpp" AttitudeManager/Src/*.cpp PathManager/Src/*.cpp TelemetryManager/Src/*.cpp SensorFusion/Src/*.cpp SensorFusion/Src/*.c lib/vn/Src/*.cpp)
   if(NOT NUCLEO)
     set(STARTUP_ASM startup_stm32f765xx.s)
     set(LINKER_SCRIPT ${PROJECT_SOURCE_DIR}/STM32F765ZGTx_FLASH.ld)
@@ -91,7 +92,8 @@ file(GLOB_RECURSE CXX_SOURCES ../Common/Src/*.cpp ../Common/Src/stm32/*.cpp "Src
           arm-none-eabi-gdb -iex "target remote tcp:127.0.0.1:3333"
           -iex "monitor program $<TARGET_FILE:${PROJECT_NAME}.elf>"
           -iex "monitor reset init"
-          -iex "disconnect" -iex "quit")
+          -iex "disconnect" -iex "quit"
+          -fexceptions)
 
 elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
 
@@ -120,6 +122,7 @@ elseif(${KIND_OF_BUILD} STREQUAL "UNIT_TESTS")
     ${CMAKE_CURRENT_SOURCE_DIR}/DataStructures/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/CControl/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/SensorFusion/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/vn/Inc
   )
 
   # Let cmake know where to find all the find<Package>.cmake files
