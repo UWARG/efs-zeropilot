@@ -140,6 +140,7 @@ bool BMX160::scan() {
 	return false;
 }
 
+// Calibrates IMU so that any drift or offset is accounted for
 void BMX160::calibrate(void) {
 	const int nSamplesForReliableAverage = 100;
     IMUData_t TempImuData;
