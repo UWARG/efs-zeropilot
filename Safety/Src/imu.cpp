@@ -196,7 +196,7 @@ void BMX160::updateData(void) {
 }
 
 void BMX160::GetResult(IMUData_t &Data) {
-	int16_t * intImuDataPtr = (int16_t *) &(rawImuData[1]); // First byte is garbage, data starts from second byte
+	uint8_t * intImuDataPtr = &rawImuData[1]; // First byte is garbage, data starts from second byte
 
 	// The 15:8 and 7:0 bits are in different registers. The bitmasking below joins them into one 16 bit integer
 	int16_t magx = (intImuDataPtr[1] << 8) | intImuDataPtr[0];
