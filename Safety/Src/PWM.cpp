@@ -5,7 +5,8 @@
 #define NUM_AVAILABLE_CHANNELS 8
 #define DSHOT_DATA_FRAME_LEN 16
 #define DSHOT_DMA_BUFFER_SIZE 18
-#define DSHOT_MAX_THROTTLE 2047
+#define DSHOT_MAX_THROTTLE 2000
+#define DSHOT_RESERVED_VALUES 47
 #define DSHOT_150_BIT_1 240
 #define DSHOT_150_BIT_0 120
 #define NUM_DSHOT_MOTORS 4
@@ -108,7 +109,7 @@ uint16_t PWMChannel::dshotPrepareFrame(uint8_t throttlePercentage, bool telemetr
 
     uint16_t frame;
 
-    frame = ((uint16_t)(DSHOT_MAX_THROTTLE * (float)throttlePercentage / 100) << 1) | (telemetry ? 1 : 0); //throttle and telemetry bits
+    frame = (((uint16_t)(DSHOT_MAX_THROTTLE * (float)throttlePercentage / 100) + DSHOT_RESERVED_VALUES) << 1) | (telemetry ? 1 : 0); //throttle and telemetry bits
 
     uint8_t checksum = (frame ^ (frame >> 4) ^ (frame >> 8)) & 0x00F; //calculating checksum... splitting first 12 bits into 3 nibbles and XORing
 
