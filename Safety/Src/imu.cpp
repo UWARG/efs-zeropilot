@@ -192,10 +192,11 @@ IMU& BMX160::getInstance() {
 
 void BMX160::updateData(void) {
 	// Just updates the rawIMUData and conducts some processing on it
-	HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, DATA_REG, I2C_MEMADD_SIZE_8BIT, rawImuData, 40, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, DATA_REG, I2C_MEMADD_SIZE_8BIT, rawImuData, 20, HAL_MAX_DELAY);
 }
 
 void BMX160::GetResult(IMUData_t &Data) {
+	// HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, DATA_REG, I2C_MEMADD_SIZE_8BIT, rawImuData, 20, HAL_MAX_DELAY); // test update data first
 	uint8_t * intImuDataPtr = &rawImuData[1]; // First byte is garbage, data starts from second byte
 
 	// The 15:8 and 7:0 bits are in different registers. The bitmasking below joins them into one 16 bit integer
@@ -235,6 +236,7 @@ void BMX160::IMUInit(void) {
 		configAcc();
 		configGyro();
 		configMag();
+		HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, PMU_STATUS_REG, I2C_MEMADD_SIZE_8BIT, &powerStatus, 1, HAL_MAX_DELAY);
 	}
 	else {
 		// The device doesn't exist or isn't responding - there is some error
@@ -244,12 +246,13 @@ void BMX160::IMUInit(void) {
 
 void BMX160::setAllPowerModesToNormal(){
 	// Set gyro to normal mode
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) GYRO_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
-
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) GYRO_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, PMU_STATUS_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) 1, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR | BMX160_READ_BIT, PMU_STATUS_REG, I2C_MEMADD_SIZE_8BIT, &powerStatus, 1, HAL_MAX_DELAY);
 	// Set accelerometer to normal mode
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) ACC_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) ACC_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
 
 	// Set magnetometer to normal mode
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
 
 }
