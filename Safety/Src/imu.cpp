@@ -235,11 +235,14 @@ void BMX160::IMUInit(void) {
 		configAcc();
 		configGyro();
 		configMag();
+		HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, DATA_REG, I2C_MEMADD_SIZE_8BIT, &powerStatus, 1, HAL_MAX_DELAY);
 	}
 	else {
 		// The device doesn't exist or isn't responding - there is some error
 		// TODO: Implement error protocol
+		// Breakpoint here
 	}
+
 }
 
 void BMX160::setAllPowerModesToNormal(){

@@ -53,6 +53,7 @@ class BMX160 : public IMU {
     // Variables:
     uint8_t rawImuData[20];
     IMUData_t IMUCalibration;
+    uint8_t powerStatus;
 };
 
 #endif 
