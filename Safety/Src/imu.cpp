@@ -192,7 +192,7 @@ IMU& BMX160::getInstance() {
 
 void BMX160::updateData(void) {
 	// Just updates the rawIMUData and conducts some processing on it
-	HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, DATA_REG, I2C_MEMADD_SIZE_8BIT, rawImuData, 40, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, DATA_REG, I2C_MEMADD_SIZE_8BIT, rawImuData, 20, HAL_MAX_DELAY);
 }
 
 void BMX160::GetResult(IMUData_t &Data) {
