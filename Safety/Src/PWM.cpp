@@ -38,15 +38,15 @@ PWMChannel::PWMChannel()
 {
     for(int i = 0; i < NUM_AVAILABLE_CHANNELS; i++)
     {
-        PWMPinConfig currentChannel = PWM_CONFIG[i];
-        HAL_TIM_PWM_Start(currentChannel.timer,currentChannel.timer_channel);
+        const PWMPinConfig *currentChannel = &PWM_CONFIG[i];
+        HAL_TIM_PWM_Start(currentChannel->timer,currentChannel->timer_channel);
 
-        if (currentChannel.isUsingDshot)
+        if (currentChannel->isUsingDshot)
         {
-                //setting up dma call back function that runs when the transfer is complete and disables the dma
-                dshotSetupDMACallbacks();
+            dshotPrepareDMABuffer(currentChannel->dshotDMABuffer, 0); //init buffer for 0 percent throttle
+            dshotStartDMA(*currentChannel); //start DMA... it should never be stopped after this bec it is in circular mode
+            dshotEnableDMARequests(*currentChannel);
         }
-
     }
 }
 
@@ -61,9 +61,8 @@ void PWMChannel::set(uint8_t channel, uint8_t percent)
 
     if (currentChannel->isUsingDshot)
     {
+        //the only thing we will do is update the buffer for the next pass of DMA transfers
         dshotPrepareDMABuffer(currentChannel->dshotDMABuffer, percent);
-        dshotStartDMA(*currentChannel);
-        dshotEnableDMARequests(*currentChannel);
     }
 
     else
@@ -141,31 +140,10 @@ void PWMChannel::dshotStartDMA(PWMPinConfig dshotConfig)
         break;
 
     }
-    HAL_DMA_Start_IT(dshotConfig.timer->hdma[dshotConfig.timDMAHandleIndex], (uint32_t)dshotConfig.dshotDMABuffer, destinationBuffer, DSHOT_DMA_BUFFER_SIZE);
+    HAL_DMA_Start(dshotConfig.timer->hdma[dshotConfig.timDMAHandleIndex], (uint32_t)dshotConfig.dshotDMABuffer, destinationBuffer, DSHOT_DMA_BUFFER_SIZE);
 }
 
 void PWMChannel::dshotEnableDMARequests(PWMPinConfig dshotConfig)
 {
     __HAL_TIM_ENABLE_DMA(dshotConfig.timer, dshotConfig.timDMASource);
-}
-
-void PWMChannel::dshotSetupDMACallbacks()
-{
-    for (uint8_t i = 0; i < NUM_DSHOT_MOTORS; i++)
-    {
-        PWM_CONFIG[i].timer->hdma[PWM_CONFIG[i].timDMAHandleIndex]->XferCpltCallback = dshotDMACompleteCallback;
-    }
-}
-
-void dshotDMACompleteCallback(DMA_HandleTypeDef *hdma)
-{
-    TIM_HandleTypeDef *htim = (TIM_HandleTypeDef *)((DMA_HandleTypeDef *)hdma)->Parent;
-
-	for (uint8_t i = 0; i < NUM_DSHOT_MOTORS; i++)
-    {
-        if (hdma == htim->hdma[PWM_CONFIG[i].timDMAHandleIndex])
-	    {
-		    __HAL_TIM_DISABLE_DMA(htim, PWM_CONFIG[i].timDMASource);
-	    }
-    }
 }
