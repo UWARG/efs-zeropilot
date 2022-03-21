@@ -8,6 +8,7 @@
 #include <cstdlib>
 
 #include "../lib/vn/Inc/packet.h"
+#include "../lib/vn/Inc/packetfinder.h"
 
 template <typename Sensor>
 class VN300 {
@@ -95,8 +96,7 @@ class VN300_GPS {
         //Private constructor to prevent multiple instances
         VN300_GPS();
 
-        // Callback that runs everytime a datapacket is found
-        void packetFoundCallback(void * data, vn::protocol::uart::Packet & packet, size_t packetStartIndex);
+
 
         int registerID;
 
@@ -104,7 +104,22 @@ class VN300_GPS {
         static VN300_GPS* instance;
 
         //Instance of struct to hold the gps data
-        VN300_GPSData data;
+        VN300_GPSData gpsData;
+
+        //VN packetfinder to help parse data
+        vn::protocol::uart::PacketFinder pf;
+        
+        //Buffer of raw data
+        char buffer[256];
+
+        //Number of bytes in the buffer
+        size_t numOfBytes;
+
+        //Callback that runs everytime a datapacket is found.
+        //Due to the VN library, it cant be a class function. We make it a friend so it still has access to the member variables.
+        friend void packetFoundCallback(void * data, vn::protocol::uart::Packet & packet, size_t packetStartIndex, vn::xplat::TimeStamp timestamp);
 
 };
+
+
 #endif
