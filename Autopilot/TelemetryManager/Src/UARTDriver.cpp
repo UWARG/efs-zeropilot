@@ -16,12 +16,12 @@ void sendFOJI(struct foji msg_to_jetson){
 uint8_t buf[MAX_ARRAY_SIZE][sizeof(struct fijo)];
 
 //The 2D array will work as a circular queue which means the head will keep track of where we need to dequeue, and the tail will keep track of where we need to enqueue
-uint8_t head = 0; 
-uint8_t tail = 0;
-bool isEmpty = true;
+static uint8_t head = 0;
+static uint8_t tail = 0;
+static bool isEmpty = true;
 
-//Takes a byte array and appends it to the queue
-void enqueuebufNode(uint8_t *new_msg_from_jetson) {
+//Update state of ring buffer to acknowledge that a new message has been appended
+void enqueuebufNode() {
     //Dropping first appended element in case of overflow
     if(tail == head && !isEmpty){
         head++;
@@ -29,11 +29,6 @@ void enqueuebufNode(uint8_t *new_msg_from_jetson) {
             head = 0;
         }
     }
-
-    //Copy new message into buf
-    for(int i = 0; i < sizeof(struct fijo); i++){
-		buf[tail][i] = new_msg_from_jetson[i];
-	}
 
     tail++;
 
@@ -52,16 +47,18 @@ void dequeuebufNode(uint8_t *tempBuf){
 	}
 
     head++;
-
+    if(head == MAX_ARRAY_SIZE){
+        head = 0;
+    }
     isEmpty = (head == tail);
 }
 
-//Creates the byte used to confirm if the received bytes are a valid message
-uint8_t check;
+//Next byte to be recieved
+static uint8_t byteIn = 0;
 
-//Starts the inturrupt
+//Start listening for UART interrupts
 void startInterrupt(){
-    HAL_UART_Receive_IT(&huart2, &check, 1);
+    HAL_UART_Receive_IT(&huart2, &byteIn, 1);
 }
 
 //Checks if there is anything to send to PM
@@ -86,7 +83,7 @@ struct fijo decodeFIJO(){
 		msg_from_jetson.longtitude = byteToStruct->longtitude;
 
 		//Resets the check byte
-		check = 0;
+		byteIn = 0;
 	}
 
 	//Send msg_from_jetson into telemetry manager to then send to PM
@@ -94,12 +91,21 @@ struct fijo decodeFIJO(){
 }
 
 void FW_CV_HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	//If check is the correct byte, the following bytes can be stored in the buffer queue to then be parsed into an fijo struct
-	if(check == START_BYTE){
-		uint8_t tempBuf[sizeof(struct fijo)];
-		HAL_UART_Receive(&huart2, tempBuf, sizeof(tempBuf), HAL_MAX_DELAY);
-		enqueuebufNode(tempBuf);
+	static uint8_t rawIndex = 0;
+
+	//Recieve byte directly into ring buffer, overwriting previous message if it was incomplete
+	if(byteIn == START_BYTE){
+		rawIndex = 0;
+	} else {
+		buf[tail][rawIndex] = byteIn;
+		rawIndex++;
 	}
-    //Makes it so any messages sent from CV will always be appended to the queue wihtout constantly polling
-    HAL_UART_Receive_IT(&huart2, &check, 1);
+	
+	//Indicate that a complete message has been stored in the ring buffer
+	if(rawIndex == sizeof(struct fijo)) {
+		enqueuebufNode();
+	}
+
+	//Listen for next byte
+	HAL_UART_Receive_IT(&huart2, &byteIn, 1);
 }
