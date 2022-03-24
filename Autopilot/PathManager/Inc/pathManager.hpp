@@ -1,6 +1,7 @@
 #pragma once
 #include "pathManagerStateManager.hpp"
 #include "pathDatatypes.hpp"
+#define IS_FIXED_WING FALSE
 
 class pathManagerState;
 

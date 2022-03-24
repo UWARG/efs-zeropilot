@@ -63,3 +63,7 @@ bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
     return true;
     */
 }
+
+bool GetTelemetryCommands(fijo *commands){
+    
+}

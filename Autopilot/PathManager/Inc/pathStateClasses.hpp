@@ -11,6 +11,7 @@
 #include "CommsWithTelemetry.hpp"
 #include "SensorFusion.hpp"
 #include "AttitudePathInterface.hpp"
+#include "TelemPathInterface.hpp"
 #include "gimbal.hpp"
 
 /***********************************************************************************************************************
@@ -22,6 +23,8 @@
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
+
+#if IS_FIXED_WING
 
 class commsWithAttitude : public pathManagerState
 {
@@ -289,4 +292,207 @@ class fatalFailureMode : public pathManagerState
         fatalFailureMode& operator =(const fatalFailureMode& other);
 };
 
+#else 
+/******************************************************************************************************************************
+DRONE CODE 
+******************************************************************************************************************************/
+
+class commsWithAttitude : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+        static AttitudeData* GetCommWithAttitudeData(void) { return &_receivedData; }
+    private:
+        commsWithAttitude() { CommFromPMToAMInit(); } // Initializes module
+        commsWithAttitude(const commsWithAttitude& other);
+        commsWithAttitude& operator =(const commsWithAttitude& other);
+        static AttitudeData _receivedData;
+};
+
+class commsWithTelemetry : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+        static fijo* GetTelemetryIncomingData(void) {return &_incomingData;}
+    private:
+        commsWithTelemetry() {CommWithTelemInit();}
+        commsWithTelemetry(const commsWithTelemetry& other);
+        commsWithTelemetry& operator =(const commsWithTelemetry& other);
+        static fijo _incomingData; // Stores the commands sent by telemetry for easy access by other states in the pathmanager'
+        
+};
+
+class sensorFusion : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+        static SFOutput_t* GetSFOutput(void) { return &_sfOutputData; }
+        static IMU_Data_t* GetIMUData(void) { return &_imudata; }
+    private:
+        sensorFusion() {}
+        sensorFusion(const sensorFusion& other);
+        sensorFusion& operator =(const sensorFusion& other);
+        static SFOutput_t _sfOutputData;
+        static IMU_Data_t _imudata;
+        // If additional raw sensor data is needed, add the static struct here and implement
+        // it like the IMU_Data_t struct above
+};
+
+class resetVariables : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+    private:
+        resetVariables() {}
+        resetVariables(const resetVariables& other);
+        resetVariables& operator =(const resetVariables& other);
+
+        //resetPassby uses operator chaining, for more info, refer to the assignment operator chaining in the following link http://courses.cms.caltech.edu/cs11/material/cpp/donnie/cpp-ops.html
+        void resetPassby(_PassbyControl* controlDetails){controlDetails->rollPassby = controlDetails->pitchPassby = controlDetails->throttlePassby = controlDetails->rudderPassby = false;}
+};
+
+class preflightStage : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+        static WaypointManager takeoffPath;
+        static _PathData takeoffPoint;
+        static _WaypointStatus waypointStatus;
+        static _LandingTakeoffOutput* getControlOutput(){return &output;}
+
+    private:
+        static _PathData * pathArray[1];
+        static _PathData * currentLocation;
+        static _LandingTakeoffInput input;
+        static _LandingTakeoffOutput output;
+        static _WaypointManager_Data_Out waypointOutput;
+        preflightStage() {}
+        preflightStage(const preflightStage& other);
+        preflightStage& operator =(const preflightStage& other);
+
+};
+
+class takeoffStage : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+        static _LandingTakeoffOutput* getControlOutput(){return &output;}
+    private:
+        static _LandingTakeoffInput input;
+        static _LandingTakeoffOutput output;
+        static _WaypointManager_Data_In waypointInput;
+        static _WaypointManager_Data_Out waypointOutput;
+        takeoffStage() {}
+        takeoffStage(const takeoffStage& other);
+        takeoffStage& operator =(const takeoffStage& other);
+};
+
+class cruisingState : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+        static _WaypointManager_Data_Out* GetOutputData(void) {return &_outputdata;}
+        static _CruisingState_Telemetry_Return* GetErrorCodes(void) {return &_returnToGround;}
+
+        #ifdef UNIT_TESTING
+            WaypointManager* GetWaypointManager(void) {return &cruisingStateManager;}
+            int* GetWaypointIdArray(void) {return waypointIDArray;}
+        #endif
+    private:
+        cruisingState() {}
+        cruisingState(const cruisingState& other);
+        cruisingState& operator =(const cruisingState& other);
+
+        WaypointManager cruisingStateManager;
+        int waypointIDArray[PATH_BUFFER_SIZE]; // Stores ids of the waypoints in the flight path in the order that they are executed
+        static _WaypointManager_Data_In _inputdata;
+        static _WaypointManager_Data_Out _outputdata;
+        static _CruisingState_Telemetry_Return _returnToGround;
+        bool inHold = false;
+        bool goingHome = false;
+};
+
+class landingStage : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+
+        static _LandingTakeoffOutput* getControlOutput(){return &output;}
+        static WaypointManager landingPath;
+        static _WaypointStatus waypointStatus; //used to catch errors
+        static _LandingPath path; //used to load in path
+    private:
+        int waypointIDArray[PATH_BUFFER_SIZE];
+        static _LandingTakeoffInput input;
+        static _LandingTakeoffOutput output;
+        static _WaypointManager_Data_In waypointInput;
+        static _WaypointManager_Data_Out waypointOutput;
+        static _PathData * pathArray[3]; //used to translate loaded in path to something the waypoint manager can take as a parameter
+        static _PathData * currentLocation;
+        landingStage() {}
+        landingStage(const landingStage& other);
+        landingStage& operator =(const landingStage& other);
+
+};
+
+
+class coordinateTurnElevation : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+        static CoordinatedTurnAttitudeManagerCommands_t* GetRollAndRudder(void) {return &_rollandrudder;}
+        static AltitudeAirspeedCommands_t* GetPitchAndAirspeed(void) {return &_pitchandairspeed;}
+    private:
+        coordinateTurnElevation() { AutoSteer_Init(); } // Initializes autosteer module
+        coordinateTurnElevation(const coordinateTurnElevation& other);
+        coordinateTurnElevation& operator =(const coordinateTurnElevation& other);
+        static _LandingTakeoffOutput landingTakeoffOutput;
+        static _WaypointManager_Data_Out cruisingOutput;
+        static CoordinatedTurnInput_t turnInput;
+        static AltitudeAirspeedInput_t altitudeAirspeedInput;
+        static CoordinatedTurnAttitudeManagerCommands_t _rollandrudder;
+        static AltitudeAirspeedCommands_t _pitchandairspeed;
+};
+
+class fatalFailureMode : public pathManagerState
+{
+    public:
+        void enter(pathManager* pathMgr) {(void) pathMgr;}
+        void execute(pathManager* pathMgr);
+        void exit(pathManager* pathMgr) {(void) pathMgr;}
+        static pathManagerState& getInstance();
+    private:
+        fatalFailureMode() {}
+        fatalFailureMode(const fatalFailureMode& other);
+        fatalFailureMode& operator =(const fatalFailureMode& other);
+};
+
+#endif
 

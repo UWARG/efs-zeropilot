@@ -41,11 +41,23 @@ struct _LandingPath //this structure is used to hold the waypoint data of the la
     _PathData intersectionPoint; //contains the path data to the intersection point, which is where the slope of the aircraft intersects with the current altitude of the aircraft
 };
 
+#if IS_FIXED_WING
 struct _LandingTakeoffInput //this structure is used to hold the telemetry and sensorfusion outputs, which are needed for landing and takeoff inputs
 {
     Telemetry_PIGO_t * telemetryData;
     SFOutput_t * sensorOutput;
 };
+
+#else
+
+struct _LandingTakeoffInput //this structure is used to hold the telemetry and sensorfusion outputs, which are needed for landing and takeoff inputs
+{
+    fijo * telemetryData;
+    SFOutput_t * sensorOutput;
+};
+
+
+#endif
 
 struct _LandingTakeoffOutput //this structure is used to hold the outputs of each landing state
 {

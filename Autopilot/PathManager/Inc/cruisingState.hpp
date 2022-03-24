@@ -24,6 +24,7 @@ struct _CruisingState_Telemetry_Return {
     bool homeBaseInitialized;
 };
 
+#if IS_FIXED_WING
 /**
  * Function performs any requested modifications on the flight path including appending, inserting, deleting, updating, initializing, and nuking
  *
@@ -33,6 +34,7 @@ struct _CruisingState_Telemetry_Return {
  *
  * @return error code indicating success of operation
  */
+ 
 _ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingStateManager, int * idArray);
 
 /**
@@ -49,6 +51,15 @@ _ModifyFlightPathErrorCode editFlightPath(Telemetry_PIGO_t * telemetryData, Wayp
  */
 _GetNextDirectionsErrorCode pathFollow(Telemetry_PIGO_t * telemetryData, WaypointManager& cruisingStateManager, _WaypointManager_Data_In input, _WaypointManager_Data_Out * output, bool& goingHome, bool& inHold);
 
+#else 
+
+_ModifyFlightPathErrorCode editFlightPath(fijo * telemetryData, WaypointManager& cruisingStateManager, _PathData waypointFlightPath[]);
+
+// Removed the inHold boolean flag as hovering/holding feature was removed for code   
+_GetNextDirectionsErrorCode pathFollow(fijo * telemetryData, WaypointManager& cruisingStateManager, _WaypointManager_Data_In input, _WaypointManager_Data_Out * output, bool& goingHome);
+
+
+
 /**
  * Function sets the _CruisingState_Telemetry_Return struct which will be sent to base via telemetry
  *
@@ -60,4 +71,5 @@ _GetNextDirectionsErrorCode pathFollow(Telemetry_PIGO_t * telemetryData, Waypoin
 void setReturnValues(_CruisingState_Telemetry_Return * _returnToGround, WaypointManager& cruisingStateManager, _ModifyFlightPathErrorCode editErrorCode, _GetNextDirectionsErrorCode pathErrorCode);
 
 #endif
+#endif 
 

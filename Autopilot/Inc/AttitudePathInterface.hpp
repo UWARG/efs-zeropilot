@@ -11,12 +11,16 @@
 
 
 //Commands for path manager to send to attitude manager.
+
+#ifdef IS_FIXED_WING
+
 typedef struct CommandsForAM{
 	float roll,pitch;	// commanded orientation (radians)
 	float rudderPercent;
 	float throttlePercent;
     _PassbyControl passbyData;
 } CommandsForAM;
+
 
 //Data for attitude manager to send to path manager.
 typedef struct AttitudeData{
@@ -25,6 +29,20 @@ typedef struct AttitudeData{
 	float accX, accY, accZ; // accelerometer data
 	float gyrX, gyrY, gyrZ; // gyroscope data
 } AttitudeData;
+
+#else 
+struct CommandsForAM{
+	float rotation; //orientation? in radians? 
+	float desiredX, desiredY, desiredZ;
+}; 	 		
+
+
+
+#endif
+
+
+
+
 
 //RTOS stuff that the cpp files need
 #ifdef TARGET_BUILD
