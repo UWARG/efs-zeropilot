@@ -2,6 +2,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "mpu6050_driver.hpp"
 #include "i2c.h"
+#include "MathConstants.hpp"
 #include "stm32f0xx_hal.h"
 
 /* Private define ------------------------------------------------------------*/
@@ -59,12 +60,12 @@ void MPU6050::getResult(ImuData& Data){
 	raw_y = (int16_t)(data[2] << 8 | data[3]);
 	raw_z = (int16_t)(data[4] << 8 | data[5]);
 
-	/* Converting raw values into degrees per second.
+	/* Converting raw values into radians per second.
 	* Scaling by the sensitivity for the configured scale range.*/
 
-	Data.gyro_x = raw_x / kGryoCorrector;
-	Data.gyro_y = raw_y / kGryoCorrector;
-	Data.gyro_z = raw_z / kGryoCorrector;
+	Data.gyro_x = DEG_TO_RAD(raw_x / kGryoCorrector);
+	Data.gyro_y = DEG_TO_RAD(raw_y / kGryoCorrector);
+	Data.gyro_z = DEG_TO_RAD(raw_z / kGryoCorrector);
 
 	status = HAL_I2C_Mem_Read(&hi2c1, IMU_ADDRESS, ACCEL_XOUT_H, 1, data, 6, HAL_MAX_DELAY);
 
