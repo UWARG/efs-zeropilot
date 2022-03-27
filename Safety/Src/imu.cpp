@@ -14,7 +14,8 @@
    Taken from datasheet: https://www.mouser.com/pdfdocs/BST-BMX160-DS000-11.pdf
  */
  
-
+#define BMX160_READ_BIT 0x01
+#define BMX160_WRITE_BIT 0x00
 #define BMX160_DUMMY_BYTE 0x00
 
 #define BMX160_I2C_ADDR (0x68 << 1) // Left-aligned slave address
@@ -88,18 +89,18 @@ static uint8_t cnter;
 
 void BMX160::configAcc() {
 	// Configure acceleration sampling rate as 800 Hz and every four are averaged
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, ACC_CONF_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) ACC_ODR_800_OSR4, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, ACC_CONF_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) ACC_ODR_800_OSR4, 1, HAL_MAX_DELAY);
 
 	// Configure accelerometer to have range of +- 8g
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, ACC_RANGE_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) ACC_RANGE_8G, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, ACC_RANGE_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) ACC_RANGE_8G, 1, HAL_MAX_DELAY);
 }
 
 void BMX160::configGyro() {
 	// Configure gyro sampling rate as 800 Hz and every four samples are averaged
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, GYR_CONF_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) GYRO_ODR_800_OSR4, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, GYR_CONF_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) GYRO_ODR_800_OSR4, 1, HAL_MAX_DELAY);
 
 	// Configure gyroscope to have a range of +- 1000 deg/s
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, GYR_RANGE_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) GYRO_RANGE_1000, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, GYR_RANGE_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) GYRO_RANGE_1000, 1, HAL_MAX_DELAY);
 }
 
 void BMX160::configMag() {
@@ -117,18 +118,18 @@ void BMX160::configMag() {
 	9.) Write 0x00 to 0x4C
 	*/
 
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_0_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_SETUP_EN, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_SLEEP_MODE, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_MODE_REG, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) REP_XY_REGULAR_PRESET, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_REPXY_REG, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*)REP_Z_REGULAR_PRESET, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_REPZ_REG, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_IF_3_DATA_MODE, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_IF_2_DATA_MODE, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_1_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_IF_1_DATA_MODE, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_CONF_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_REFRESH_200_HZ, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_SETUP_DIS, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_0_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_SETUP_EN, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_SLEEP_MODE, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_MODE_REG, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) REP_XY_REGULAR_PRESET, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_REPXY_REG, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*)REP_Z_REGULAR_PRESET, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_REPZ_REG, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_IF_3_DATA_MODE, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_IF_2_DATA_MODE, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_1_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_IF_1_DATA_MODE, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_CONF_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_REFRESH_200_HZ, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_SETUP_DIS, 1, HAL_MAX_DELAY);
 
 }
 
@@ -195,7 +196,8 @@ void BMX160::updateData(void) {
 }
 
 void BMX160::GetResult(IMUData_t &Data) {
-	int16_t * intImuDataPtr = (int16_t *) &(rawImuData[1]); // First byte is garbage, data starts from second byte
+	// HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, DATA_REG, I2C_MEMADD_SIZE_8BIT, rawImuData, 20, HAL_MAX_DELAY); // test update data first
+	uint8_t * intImuDataPtr = &rawImuData[1]; // First byte is garbage, data starts from second byte
 
 	// The 15:8 and 7:0 bits are in different registers. The bitmasking below joins them into one 16 bit integer
 	int16_t magx = (intImuDataPtr[1] << 8) | intImuDataPtr[0];
@@ -234,20 +236,19 @@ void BMX160::IMUInit(void) {
 		configAcc();
 		configGyro();
 		configMag();
-		HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, DATA_REG, I2C_MEMADD_SIZE_8BIT, powerStatus, 1, HAL_MAX_DELAY);
+		HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, PMU_STATUS_REG, I2C_MEMADD_SIZE_8BIT, &powerStatus, 1, HAL_MAX_DELAY);
 	}
 	else {
 		// The device doesn't exist or isn't responding - there is some error
 		// TODO: Implement error protocol
-		// Breakpoint here
 	}
-
 }
 
 void BMX160::setAllPowerModesToNormal(){
 	// Set gyro to normal mode
 	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) GYRO_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
-
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, PMU_STATUS_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) 1, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR | BMX160_READ_BIT, PMU_STATUS_REG, I2C_MEMADD_SIZE_8BIT, &powerStatus, 1, HAL_MAX_DELAY);
 	// Set accelerometer to normal mode
 	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) ACC_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
 
