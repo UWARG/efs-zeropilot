@@ -445,50 +445,17 @@ _ModifyFlightPathErrorCode editFlightPath(fijo * telemetryData, WaypointManager&
 } 
 
 // Deleted any holding/circling code 
-_GetNextDirectionsErrorCode pathFollow(fijo * telemetryData, WaypointManager& cruisingStateManager, _WaypointManager_Data_In input, _WaypointManager_Data_Out * output, bool& goingHome, bool& inHold) {
+_GetNextDirectionsErrorCode pathFollow(fijo * telemetryData, WaypointManager& cruisingStateManager, _WaypointManager_Data_In input, _WaypointManager_Data_Out * output) {
 
     _WaypointStatus pathFollowingStatus = UNDEFINED_PARAMETER;
-    _HeadHomeStatus goingHomeStatus = HOME_TRUE;
 
-    if (telemetryData->waypointNextDirectionsCommand == REGULAR_PATH_FOLLOWING) { // Regular path following
+    pathFollowingStatus = cruisingStateManager.get_next_directions(input, output);
 
-        pathFollowingStatus = cruisingStateManager.get_next_directions(input, output);
-
-        output->desiredAirspeed = CRUISING_AIRSPEED;
-
-   
-    } else if (telemetryData->waypointNextDirectionsCommand == TOGGLE_HEAD_HOME) { // Heading home
-
-        // Sees if the plane is currently going home. If it is, then we will cancel. Else, start going home
-        if (goingHome) {
-            goingHome = false;
-        } else {
-            goingHome = true;
-        }
-
-        goingHomeStatus = cruisingStateManager.head_home(goingHome);
-
-        output->desiredAirspeed = CRUISING_AIRSPEED;
-
-        if (goingHomeStatus == HOME_UNDEFINED_PARAMETER && goingHome) { // If setting home mode fails, reverse change
-            goingHome = false;
-            pathFollowingStatus = UNDEFINED_PARAMETER;
-        } else if (goingHomeStatus == HOME_TRUE || goingHomeStatus == HOME_FALSE) {
-            pathFollowingStatus = WAYPOINT_SUCCESS;
-        }
-    } else { // Incorrect commands from telemetry
-        telemetryData->waypointModifyFlightPathCommand = NO_FLIGHT_PATH_EDIT; // Set important values to their defaults. This will ensure that if the telemetry struct is not change, our plane will behave as expected
-        
-        return PATH_CRUISING_INCORRECT_TELEMETRY_COMMAND;
-    }
-
-    telemetryData->waypointModifyFlightPathCommand = NO_FLIGHT_PATH_EDIT;  // Set important values to their defaults. This will ensure that if the telemetry struct is not change, our plane will behave as expected
+    output->desiredAirspeed = CRUISING_AIRSPEED;
 
     // Return appropriate error code
     if (pathFollowingStatus == WAYPOINT_SUCCESS) {
         return PATH_CRUISING_SUCCESS;
-    } else if (goingHomeStatus == HOME_UNDEFINED_PARAMETER) {
-        return PATH_CRUISING_UNINITIALIZED_HOMEBASE;
     } else {
         return PATH_CRUISING_ERROR;
     }
