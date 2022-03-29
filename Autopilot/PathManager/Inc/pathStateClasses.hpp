@@ -304,12 +304,12 @@ class commsWithAttitude : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-        static AttitudeData* GetCommWithAttitudeData(void) { return &_receivedData; }
+        // static AttitudeData* GetCommWithAttitudeData(void) { return &_receivedData; }
     private:
         commsWithAttitude() { CommFromPMToAMInit(); } // Initializes module
         commsWithAttitude(const commsWithAttitude& other);
         commsWithAttitude& operator =(const commsWithAttitude& other);
-        static AttitudeData _receivedData;
+        // static AttitudeData _receivedData;
 };
 
 class commsWithTelemetry : public pathManagerState

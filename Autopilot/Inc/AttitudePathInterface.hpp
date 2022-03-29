@@ -12,7 +12,7 @@
 
 //Commands for path manager to send to attitude manager.
 
-#ifdef IS_FIXED_WING
+#if IS_FIXED_WING
 
 typedef struct CommandsForAM{
 	float roll,pitch;	// commanded orientation (radians)
