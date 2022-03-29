@@ -1095,7 +1095,7 @@ _PathData* WaypointManager::initialize_waypoint(long double longitude, long doub
     }    
     
     waypoint->waypointType = waypointType;
-    waypoint->turnRadius = -1; 
+   
     // Set next and previous waypoints to empty for now
     waypoint->next = nullptr;
     waypoint->previous = nullptr;
@@ -1105,20 +1105,6 @@ _PathData* WaypointManager::initialize_waypoint(long double longitude, long doub
 
 
 /*** UNIVERSAL HELPERS (universal to this file, ofc) ***/
-
-
-int WaypointManager::get_waypoint_index_from_id(int waypointId) {
-    for (int i = 0; i < PATH_BUFFER_SIZE; i++) {
-        if(waypointBufferStatus[i] == FREE) { // If array is empty at the specified index, waypoint is not in buffer
-            return -1;
-        }
-        if(waypointBuffer[i]->waypointId == waypointId) { // If waypoint is found, return index
-            return i;
-        }
-    }
-
-    return -1; // If waypoint is not found
-}
 
 void WaypointManager::get_coordinates(long double longitude, long double latitude, float* xyCoordinates) { // Parameters expected to be in degrees
     xyCoordinates[0] = get_distance(relativeLatitude, relativeLongitude, relativeLatitude, longitude); //Calculates longitude (x coordinate) relative to defined origin (RELATIVE_LONGITUDE, RELATIVE_LATITUDE)
@@ -1140,19 +1126,6 @@ float WaypointManager::get_distance(long double lat1, long double lon1, long dou
     }
 }
 
-_WaypointStatus WaypointManager::change_current_index(int id) {
-    int waypointIndex = get_waypoint_index_from_id(id); // Gets index of waypoint in waypointBuffer array
-
-    if (waypointIndex == -1 || waypointBuffer[waypointIndex]->next == nullptr || waypointBuffer[waypointIndex]->next->next == nullptr) { // If waypoint with set id does not exist. Or if the next waypoint or next to next waypoints are not defined. 
-        return INVALID_PARAMETERS;
-    }
-
-    currentIndex = waypointIndex; // If checks pass, then the current index value is updated
-    
-    return WAYPOINT_SUCCESS;
-}
-
-
 /*** NAVIGATION ***/
 
 
@@ -1164,70 +1137,9 @@ _WaypointStatus WaypointManager::get_next_directions(_WaypointManager_Data_In cu
     // Gets current track
     float currentTrack = (float) currentStatus.track;
 
-    // Holding is given higher priority to heading home
-    if (inHold) { // If plane is currently circling and waiting for commands
-        // Checks if parameters are valid. If state machine gets this error it should immediately cancel the hold because output data will not be updated while the parameters are incorrect
-        if(turnRadius <= 0 || (turnDirection != -1 && turnDirection != 1)) { 
-            errorCode = INVALID_PARAMETERS;
-            return errorCode;
-        }
-
-        // Sets position array
-        position[0] = currentStatus.longitude;
-        position[1] = currentStatus.latitude;
-        position[2] = (float) currentStatus.altitude;
-
-        // Calculates desired track, altitude, and all output values
-        follow_hold_pattern(position, currentTrack);
-
-        // Updates the return structure
-        outputType = ORBIT_FOLLOW;
-        dataIsNew = true;
-        update_return_data(Data); 
-
-        return errorCode;
-    }
-
     // Sets position array
     get_coordinates(currentStatus.longitude, currentStatus.latitude, position);
     position[2] = (float) currentStatus.altitude;
-
-    if (goingHome) { // If plane was instructed to go back to base (and is awaiting for waypointBuffer to be updated)
-        if (homeBase == nullptr) {
-            errorCode = UNDEFINED_PARAMETER;
-            return errorCode;
-        }
-
-        // Creates a path data object to represent current position
-        _PathData * currentPosition = new _PathData;
-        currentPosition->latitude = currentStatus.latitude;
-        currentPosition->longitude = currentStatus.longitude;
-        currentPosition->altitude = currentStatus.altitude;
-        currentPosition->turnRadius = -1;
-        currentPosition->waypointType = PATH_FOLLOW;
-        currentPosition->previous = nullptr;
-        currentPosition->next = homeBase;
-
-        // Updates home base object accordingly
-        homeBase->previous = currentPosition;
-        homeBase->next = nullptr;
-        homeBase->waypointType = HOLD_WAYPOINT;
-        
-        // Calculates desired track, altitude, and all output values
-        follow_waypoints(currentPosition, position, currentTrack);
-        
-        // Updates the return structure
-        dataIsNew = true;
-        outputType = PATH_FOLLOW;
-        update_return_data(Data); 
-
-        // Removes currentPosition path data object from memory
-        homeBase->previous = nullptr;
-        currentPosition->next = nullptr;
-        delete currentPosition; 
-
-        return errorCode;
-    }
 
     // Ensures that the currentIndex parameter will not cause a segmentation fault
     if (numWaypoints - currentIndex < 1 && numWaypoints >= 0) { 
@@ -1252,7 +1164,6 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
     Data->distanceX = distanceX;
     Data->distanceY = distanceY;
     Data->distanceZ = distanceZ;
-    Data->radius = turnRadius;
     Data->turnDirection = turnDirection;
     Data->errorCode = errorCode;
     Data->isDataNew = dataIsNew;
@@ -1261,22 +1172,6 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
     Data->desiredAirspeed = 0; 
     Data->out_type = outputType;
 }
-
-_HeadHomeStatus WaypointManager::head_home(bool startHeadingHome) {
-    if (homeBase == nullptr) { // Checks if home waypoint is actually initialized.
-        return HOME_UNDEFINED_PARAMETER;
-    }
-
-    if (startHeadingHome) {
-        clear_path_nodes(); // Clears path nodes so state machine can input new flight path
-        goingHome = true;
-        return HOME_TRUE;
-    } else {
-        goingHome = false;
-        return HOME_FALSE;
-    }
-}
-
 
 void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* position, float track) {
     float waypointPosition[3]; 
@@ -1343,28 +1238,6 @@ void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* posit
     float distanceY=targetCoordinates[1] - position[1];
     float distanceZ=targetCoordinates[2] - position[2];
     
-
-    // Checks if plane is orbiting or flying in a straight line
-    if (orbitPathStatus == PATH_FOLLOW) {
-        float dotProduct = waypointDirection[0] * (position[0] - halfPlane[0]) + waypointDirection[1] * (position[1] - halfPlane[1]) + waypointDirection[2] * (position[2] - halfPlane[2]);
-        
-        if (dotProduct > 0){
-            orbitPathStatus = ORBIT_FOLLOW;
-            if (targetWaypoint->waypointType == HOLD_WAYPOINT) {
-                inHold = true;
-                turnDirection = 1; // Automatically turn CCW
-                turnRadius = targetWaypoint->turnRadius;
-                turnDesiredAltitude = targetWaypoint->altitude;
-                turnCenter[0] = targetWaypoint->longitude;
-                turnCenter[1] = targetWaypoint->latitude;
-                turnCenter[2] = turnDesiredAltitude;
-                /*
-                    Increment the currentIndex so the plane is not perpetually stuck in a holding pattern
-                */
-                currentIndex++; 
-            }
-        }
-
         // std::cout << "Here2 --> " << position[0] << " " << position[1] << " " << position[2] << std::endl;
         // std::cout << "Here3 --> " << waypointDirection[0] << " " << waypointDirection[1] << " " << waypointDirection[2] << std::endl;
         // std::cout << "Here4 --> " << targetCoordinates[0] << " " << targetCoordinates[1] << " " << targetCoordinates[2] << std::endl;
@@ -1440,9 +1313,7 @@ void WaypointManager::follow_last_line_segment(_PathData * currentWaypoint, floa
     // If dot product positive, then wait for commands
     float dotProduct = waypointDirection[0] * (position[0] - targetCoordinates[0]) + waypointDirection[1] * (position[1] - targetCoordinates[1]) + waypointDirection[2] * (position[2] - targetCoordinates[2]);
     if (dotProduct > 0){
-        inHold = true;
         turnDirection = 1; // Automatically turn CCW
-        turnRadius = 50;
         turnDesiredAltitude = targetWaypoint->altitude;
         turnCenter[0] = targetWaypoint->longitude;
         turnCenter[1] = targetWaypoint->latitude;
@@ -1485,10 +1356,6 @@ void WaypointManager::follow_straight_path(float* waypointDirection, float* targ
     outputType = PATH_FOLLOW;
     desiredAltitude = targetWaypoint[2];
 
-    if (!inHold) {
-        turnRadius = 0;
-        turnDirection = 0;
-    }
 }
 
 
@@ -1530,14 +1397,6 @@ void WaypointManager::clear_path_nodes() {
     numWaypoints = 0;
     nextFilledIndex = 0;
     currentIndex = 0;
-}
-
-void WaypointManager::clear_home_base() {
-    if (homeBase != nullptr) {
-        destroy_waypoint(homeBase);
-    }
-
-    homeBase = nullptr; // For safety
 }
 
 void WaypointManager::destroy_waypoint(_PathData *waypoint) {
@@ -1718,10 +1577,6 @@ _WaypointBufferStatus WaypointManager::get_status_of_index(int index) {
     return waypointBufferStatus[index];
 }
 
-_PathData * WaypointManager::get_home_base() {
-    return homeBase;
-}
-
 int WaypointManager::get_current_index() {
     return currentIndex;
 }
@@ -1730,16 +1585,8 @@ int WaypointManager::get_id_of_current_index() {
     return waypointBuffer[currentIndex] ? waypointBuffer[currentIndex]->waypointId : 0;
 }
 
-bool WaypointManager::is_home_base_initialized() {
-    return homeBase ? true : false;
-}
-
 // For valgrind tests
 WaypointManager::~WaypointManager() {
-    if (homeBase != nullptr) { // Only call if homeBase is initialized
-        clear_home_base();
-    }
-
     if (numWaypoints != 0) { // Only call if the waypointBuffer has waypoints in it
         clear_path_nodes();
     }

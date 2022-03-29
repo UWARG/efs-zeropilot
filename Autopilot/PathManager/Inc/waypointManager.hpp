@@ -499,7 +499,7 @@ private:
     _WaypointOutputType outputType;
 
     //Status variables
-    bool goingHome;     // This is set to true when the head_home() function is called.
+    //bool goingHome;     // This is set to true when the head_home() function is called.
     _WaypointStatus errorStatus;
     float turnCenter[3];
     int turnDesiredAltitude;
