@@ -39,9 +39,9 @@
 #define MAG_MODE_REG 0x4B
 
 // Registers for setting power mode to normal 
-#define ACC_NORMAL_MODE_CMD 0x11
-#define GYRO_NORMAL_MODE_CMD 0x15
-#define MAG_NORMAL_MODE_CMD 0x19
+static uint8_t ACC_NORMAL_MODE_CMD = 0x11;
+static uint8_t GYRO_NORMAL_MODE_CMD = 0x15;
+static uint8_t MAG_NORMAL_MODE_CMD = 0x19;
 
 #define ACC_RANGE_8G 0x08
 
@@ -245,14 +245,15 @@ void BMX160::IMUInit(void) {
 }
 
 void BMX160::setAllPowerModesToNormal(){
-	HAL_Delay(100);
+	
 	// Set gyro to normal mode
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) GYRO_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
-	HAL_Delay(100);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, &GYRO_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, PMU_STATUS_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) 1, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR | BMX160_READ_BIT, PMU_STATUS_REG, I2C_MEMADD_SIZE_8BIT, &powerStatus, 1, HAL_MAX_DELAY);
 	// Set accelerometer to normal mode
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) ACC_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
-	HAL_Delay(100);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, &ACC_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
+
 	// Set magnetometer to normal mode
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
-	HAL_Delay(100);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, &MAG_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
+
 }
