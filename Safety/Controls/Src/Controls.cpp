@@ -37,7 +37,7 @@
 static SFOutput_t curr_sf; // current
 static SFOutput_t temp_sf; // temp new targs
 static SFError_t sf_err;   // sf err
-static PID_Output_t TEMPORARY_OUT_REMOVE_THIS;
+static PID_Output_t PID_Out;
 
 static PositionTargets pos_targ;
 
@@ -183,9 +183,9 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
     }
 
     // to return PID
-    TEMPORARY_OUT_REMOVE_THIS.backLeftMotorPercent = instructions->input3;
-    TEMPORARY_OUT_REMOVE_THIS.frontLeftMotorPercent = instructions->input3;
-    TEMPORARY_OUT_REMOVE_THIS.backRightMotorPercent = instructions->input3;
-    TEMPORARY_OUT_REMOVE_THIS.frontRightMotorPercent = instructions->input3;
-    return &TEMPORARY_OUT_REMOVE_THIS;
+    PID_Out.backLeftMotorPercent = instructions->input3;
+    PID_Out.frontLeftMotorPercent = instructions->input3;
+    PID_Out.backRightMotorPercent = instructions->input3;
+    PID_Out.frontRightMotorPercent = instructions->input3;
+    return &PID_Out;
 }
