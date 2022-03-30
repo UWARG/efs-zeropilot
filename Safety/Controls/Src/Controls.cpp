@@ -163,7 +163,7 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
     PIDController a_pid{1, 0.2, 0.2, 100, 20, 100};
     PIDController h_pid{1, 0.2, 0.2, 100, 20, 100};
 
-    PIDController pid_test{0.7, 0.3, 0.2, 100, 0, 100};
+    PIDController pid_test{0.7, 0.3, 0.2, 80, 20, 30};
 
     // calculate and run through PID's or just simple difference....?
     // ensure some safety somewhere?
@@ -184,8 +184,8 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
         // not sure yet
     }*/
 
-    // float test_pid = pid_test.execute(50, 0);
-    static float test_pid = 50;
+    float test_pid = pid_test.execute(50, 0);
+    // float test_pid = 50;
 
     PID_Out.backLeftMotorPercent = test_pid;
     PID_Out.frontLeftMotorPercent = test_pid;
