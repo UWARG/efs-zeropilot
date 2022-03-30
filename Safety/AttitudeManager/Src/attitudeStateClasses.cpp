@@ -214,7 +214,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
         attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, PidOutput -> frontRightMotorPercent);
         attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
         attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
-        attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
+        attitudeMgr->setState(PeripheralControlMode::getInstance()); // returning to beginning of state machine
     }
     else
     {
@@ -318,4 +318,20 @@ bool DisarmMode:: isArmed()
     }
 
     return retVal;
+}
+
+void PeripheralControlMode::execute(attitudeManager* attitudeMgr)
+{
+    PPM_Instructions_t *teleopInstructions = fetchInstructionsMode::GetTeleopInstructions();
+    if (teleopInstructions->PPMValues[attitudeMgr->grabber->ppmChannel] > 50)
+        attitudeMgr->grabber->close();
+    else 
+        attitudeMgr->grabber->open();
+    attitudeMgr->setState(fetchInstructionsMode::getInstance());
+}
+
+attitudeState& PeripheralControlMode::getInstance()
+{
+    static PeripheralControlMode singleton;
+    return singleton;
 }

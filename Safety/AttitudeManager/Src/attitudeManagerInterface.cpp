@@ -9,7 +9,9 @@ attitudeManager *attMng;
 void AttitudeManagerInterfaceInit(void) {
     PPMChannel *ppm = new PPMChannel(MAX_PPM_CHANNELS);
     PWMChannel *pwm = new PWMChannel();
-    attMng = new attitudeManager(ppm, pwm);
+    uint8_t grabberChannel = 5; //TODO: What channel?
+    Grabber *grabber = &Grabber::getInstance(grabberChannel);
+    attMng = new attitudeManager(ppm, pwm, grabber);
 }
 
 void AttitudeManagerInterfaceExecute(void)
