@@ -2,6 +2,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "imu.hpp"
 #include "stm32f0xx_hal.h"
+#include "MathConstants.hpp"
 
 /* Private define ------------------------------------------------------------*/
 
@@ -60,9 +61,9 @@ void MPU6050::GetResult(IMUData_t& Data){
 	/* Converting raw values into degrees per second.
 	* Scaling by the sensitivity for the configured scale range.*/
 
-	Data.gyro_x = raw_x / kGryoCorrector;
-	Data.gyro_y = raw_y / kGryoCorrector;
-	Data.gyro_z = raw_z / kGryoCorrector;
+	Data.gyro_x = DEG_TO_RAD(raw_x / kGryoCorrector);
+	Data.gyro_y = DEG_TO_RAD(raw_y / kGryoCorrector);
+	Data.gyro_z = DEG_TO_RAD(raw_z / kGryoCorrector);
 
 	status = HAL_I2C_Mem_Read(&hi2c1, IMU_ADDRESS, ACCEL_XOUT_H, 1, data, 6, HAL_MAX_DELAY);
 
