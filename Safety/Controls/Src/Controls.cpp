@@ -163,11 +163,13 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
     PIDController a_pid{1, 0.2, 0.2, 100, 20, 100};
     PIDController h_pid{1, 0.2, 0.2, 100, 20, 100};
 
+    PIDController pid_test{0.7, 0.3, 0.2, 100, 0, 100};
+
     // calculate and run through PID's or just simple difference....?
     // ensure some safety somewhere?
 
 
-    if (PID_method == 0) {
+    /*if (PID_method == 0) {
         // use the base pid written without extensive scaling.
 
         // currents are all 0 because we reset the frame with reference to the quadcopter.
@@ -180,12 +182,19 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
         // use a simple p-loop integrator
     } else {
         // not sure yet
-    }
+    }*/
 
+    // float test_pid = pid_test.execute(50, 0);
+    static float test_pid = 50;
+
+    PID_Out.backLeftMotorPercent = test_pid;
+    PID_Out.frontLeftMotorPercent = test_pid;
+    PID_Out.backRightMotorPercent = test_pid;
+    PID_Out.frontRightMotorPercent = test_pid;
     // to return PID
-    PID_Out.backLeftMotorPercent = instructions->input3;
-    PID_Out.frontLeftMotorPercent = instructions->input3;
-    PID_Out.backRightMotorPercent = instructions->input3;
-    PID_Out.frontRightMotorPercent = instructions->input3;
+    // PID_Out.backLeftMotorPercent = instructions->input3;
+    //PID_Out.frontLeftMotorPercent = instructions->input3;
+    //PID_Out.backRightMotorPercent = instructions->input3;
+    //PID_Out.frontRightMotorPercent = instructions->input3;
     return &PID_Out;
 }

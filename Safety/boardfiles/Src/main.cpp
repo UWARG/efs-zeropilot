@@ -167,6 +167,18 @@ int main(void)
   /* USER CODE BEGIN 2 */
   PPMChannel *ppm = new PPMChannel(MAX_PPM_CHANNELS);
   PWMChannel *pwm = new PWMChannel();
+  for(int i = 0; i<4; i++) {
+    pwm->set(i, 0);
+  }
+  HAL_Delay(2000);
+  for(int i = 0; i<4; i++) {
+    pwm->set(i, 100);
+  }
+  HAL_Delay(2000);
+  for(int i = 0; i<4; i++) {
+    pwm->set(i, 0);
+  }
+  HAL_Delay(2000);
   attitudeManager *attMng = new attitudeManager(ppm, pwm);
 
   interchipInit();
