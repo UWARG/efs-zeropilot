@@ -25,6 +25,8 @@
 #define STATUS_REG 0x1B
 #define CMD_REG 0x7E
 #define PMU_STATUS_REG 0x03
+
+// Registers for configuring accelerometer, gyroscope, and magnetometer
 #define ACC_CONF_REG 0x40
 #define ACC_RANGE_REG 0x41
 #define GYR_CONF_REG 0x42
@@ -34,38 +36,39 @@
 #define MAG_IF_1_REG 0x4D
 #define MAG_IF_2_REG 0x4E
 #define MAG_IF_3_REG 0x4F
-#define MAG_REPZ_REG 0x52
-#define MAG_REPXY_REG 0x51
-#define MAG_MODE_REG 0x4B
+
+#define MAX_BUFF_SIZE 21
+
+static uint8_t MAG_REPZ_REG = 0x52;
+static uint8_t MAG_REPXY_REG = 0x51;
+static uint8_t MAG_MODE_REG = 0x4B;
 
 // Registers for setting power mode to normal 
 static uint8_t ACC_NORMAL_MODE_CMD = 0x11;
 static uint8_t GYRO_NORMAL_MODE_CMD = 0x15;
 static uint8_t MAG_NORMAL_MODE_CMD = 0x19;
 
-#define ACC_RANGE_8G 0x08
+static uint8_t ACC_RANGE_8G = 0x08;
 
 // From datasheet - last four bits (1011 indicates a sampling rate of 800 Hz)
 // The first four bits indicate OSR4 - data is sampled at an oversampling rate of 4
-#define ACC_ODR_800_OSR4 0x0B // 0b00001011 
+static uint8_t ACC_ODR_800_OSR4 = 0x0B; // 0b00001011 
 
 
-#define GYRO_RANGE_1000  0x01
+static uint8_t GYRO_RANGE_1000 = 0x01;
 
 // From datasheet - last four bits (1011 indicates a sampling rate of 800 Hz)
 // The first four bits indicate OSR4 - data is sampled at an oversampling rate of 4
-#define GYRO_ODR_800_OSR4 0x0B // 0b00001011
-#define MAG_SETUP_EN 0x80
-#define MAG_SETUP_DIS 0x00
-#define REP_XY_REGULAR_PRESET 0x04 // TODO there is also a high accuracy preset. Not too sure what that's about.
-#define REP_Z_REGULAR_PRESET 0x0E
-#define MAG_IF_3_DATA_MODE 0x02
-#define MAG_IF_2_DATA_MODE 0x4C
-#define MAG_IF_1_DATA_MODE 0x42
-#define MAG_REFRESH_200_HZ 0x09  
-#define MAG_SLEEP_MODE 0x01
-
-#define MAX_BUFF_SIZE 21
+static uint8_t GYRO_ODR_800_OSR4 = 0x0B; // 0b00001011
+static uint8_t MAG_SETUP_EN = 0x80;
+static uint8_t MAG_SETUP_DIS = 0x00;
+static uint8_t REP_XY_REGULAR_PRESET = 0x04; // TODO there is also a high accuracy preset. Not too sure what that's about.
+static uint8_t REP_Z_REGULAR_PRESET = 0x0E;
+static uint8_t MAG_IF_3_DATA_MODE = 0x02;
+static uint8_t MAG_IF_2_DATA_MODE = 0x4C;
+static uint8_t MAG_IF_1_DATA_MODE = 0x42;
+static uint8_t MAG_REFRESH_200_HZ = 0x09;
+static uint8_t MAG_SLEEP_MODE = 0x01;
 
 constexpr float GYRO_RANGE_1000_FACTOR = 1879.3f; // lsb/rad/s
 constexpr float ACC_RANGE_8_FACTOR = 4.096f; // lsb/mg
@@ -89,18 +92,18 @@ static uint8_t cnter;
 
 void BMX160::configAcc() {
 	// Configure acceleration sampling rate as 800 Hz and every four are averaged
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, ACC_CONF_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) ACC_ODR_800_OSR4, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, ACC_CONF_REG, I2C_MEMADD_SIZE_8BIT, &ACC_ODR_800_OSR4, 1, HAL_MAX_DELAY);
 
 	// Configure accelerometer to have range of +- 8g
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, ACC_RANGE_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) ACC_RANGE_8G, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, ACC_RANGE_REG, I2C_MEMADD_SIZE_8BIT, &ACC_RANGE_8G, 1, HAL_MAX_DELAY);
 }
 
 void BMX160::configGyro() {
 	// Configure gyro sampling rate as 800 Hz and every four samples are averaged
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, GYR_CONF_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) GYRO_ODR_800_OSR4, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, GYR_CONF_REG, I2C_MEMADD_SIZE_8BIT, &GYRO_ODR_800_OSR4, 1, HAL_MAX_DELAY);
 
 	// Configure gyroscope to have a range of +- 1000 deg/s
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, GYR_RANGE_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) GYRO_RANGE_1000, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, GYR_RANGE_REG, I2C_MEMADD_SIZE_8BIT, &GYRO_RANGE_1000, 1, HAL_MAX_DELAY);
 }
 
 void BMX160::configMag() {
@@ -118,18 +121,18 @@ void BMX160::configMag() {
 	9.) Write 0x00 to 0x4C
 	*/
 
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_0_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_SETUP_EN, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_SLEEP_MODE, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_MODE_REG, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) REP_XY_REGULAR_PRESET, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_REPXY_REG, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*)REP_Z_REGULAR_PRESET, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_REPZ_REG, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_IF_3_DATA_MODE, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_IF_2_DATA_MODE, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_IF_1_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_IF_1_DATA_MODE, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, MAG_CONF_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_REFRESH_200_HZ, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR | BMX160_WRITE_BIT, CMD_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) MAG_SETUP_DIS, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_0_REG, I2C_MEMADD_SIZE_8BIT, &MAG_SETUP_EN, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, &MAG_SLEEP_MODE, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, &MAG_MODE_REG, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, &REP_XY_REGULAR_PRESET, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, &MAG_REPXY_REG, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, &REP_Z_REGULAR_PRESET, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, &MAG_REPZ_REG, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_3_REG, I2C_MEMADD_SIZE_8BIT, &MAG_IF_3_DATA_MODE, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_2_REG, I2C_MEMADD_SIZE_8BIT, &MAG_IF_2_DATA_MODE, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_IF_1_REG, I2C_MEMADD_SIZE_8BIT, &MAG_IF_1_DATA_MODE, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, MAG_CONF_REG, I2C_MEMADD_SIZE_8BIT, &MAG_REFRESH_200_HZ, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, &MAG_SETUP_DIS, 1, HAL_MAX_DELAY);
 
 }
 
@@ -248,12 +251,14 @@ void BMX160::setAllPowerModesToNormal(){
 	
 	// Set gyro to normal mode
 	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, &GYRO_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, PMU_STATUS_REG, I2C_MEMADD_SIZE_8BIT, (uint8_t*) 1, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR | BMX160_READ_BIT, PMU_STATUS_REG, I2C_MEMADD_SIZE_8BIT, &powerStatus, 1, HAL_MAX_DELAY);
+	HAL_Delay(10);
+
 	// Set accelerometer to normal mode
 	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, &ACC_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
+	HAL_Delay(10);
 
 	// Set magnetometer to normal mode
 	HAL_I2C_Mem_Write(&hi2c1, BMX160_I2C_ADDR, CMD_REG, I2C_MEMADD_SIZE_8BIT, &MAG_NORMAL_MODE_CMD, 1, HAL_MAX_DELAY);
+	HAL_Delay(10);
 
 }
