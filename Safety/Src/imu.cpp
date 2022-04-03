@@ -201,7 +201,7 @@ void BMX160::updateData(void) {
 
 void BMX160::GetResult(IMUData_t &Data) {
 	// HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, DATA_REG, I2C_MEMADD_SIZE_8BIT, rawImuData, 20, HAL_MAX_DELAY); // test update data first
-	int16_t * intImuDataPtr = (int16_t*) &rawImuData[1]; // First byte is garbage, data starts from second byte
+	int16_t *intImuDataPtr = (int16_t *) &(rawImuData[1]); // First byte is garbage, data starts from second byte
 
 	int16_t magx = intImuDataPtr[0];
     int16_t magy = intImuDataPtr[1];
