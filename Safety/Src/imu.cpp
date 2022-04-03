@@ -201,23 +201,33 @@ void BMX160::updateData(void) {
 
 void BMX160::GetResult(IMUData_t &Data) {
 	// HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, DATA_REG, I2C_MEMADD_SIZE_8BIT, rawImuData, 20, HAL_MAX_DELAY); // test update data first
-	uint8_t * intImuDataPtr = &rawImuData[1]; // First byte is garbage, data starts from second byte
+	int16_t * intImuDataPtr = (int16_t*) &rawImuData[1]; // First byte is garbage, data starts from second byte
 
-	// The 15:8 and 7:0 bits are in different registers. The bitmasking below joins them into one 16 bit integer
-	int16_t magx = (intImuDataPtr[1] << 8) | intImuDataPtr[0];
-	int16_t magy = (intImuDataPtr[3] << 8) | intImuDataPtr[2];
-	int16_t magz = (intImuDataPtr[5] << 8) | intImuDataPtr[4];
-	int16_t rhall = (intImuDataPtr[7] << 8) | intImuDataPtr[6];
-	int16_t gyrx = (intImuDataPtr[9] << 8) | intImuDataPtr[8];
-	int16_t gyry = (intImuDataPtr[11] << 8) | intImuDataPtr[10];
-	int16_t gyrz = (intImuDataPtr[13] << 8) | intImuDataPtr[12];
-	int16_t accx = (intImuDataPtr[15] << 8) | intImuDataPtr[14];
-	int16_t accy = (intImuDataPtr[17] << 8) | intImuDataPtr[16];
-	int16_t accz = (intImuDataPtr[19] << 8) | intImuDataPtr[18];
+	int16_t magx = intImuDataPtr[0];
+    int16_t magy = intImuDataPtr[1];
+    int16_t magz = intImuDataPtr[2];
+    int16_t gyrx = intImuDataPtr[4]; // missing 3 is not a mistake, there is a field here named RHall which has something to do with the magnetometer. But I can't quite figure that out yet.
+    int16_t gyry = intImuDataPtr[5];
+    int16_t gyrz = intImuDataPtr[6];
+    int16_t accx = intImuDataPtr[7];
+    int16_t accy = intImuDataPtr[8];
+    int16_t accz = intImuDataPtr[9];
 
-	Data.mag_x = static_cast<float> (magx) / MAG_ADJUST_FACTOR;
-	Data.mag_y = static_cast<float> (magy) / MAG_ADJUST_FACTOR;
-	Data.mag_z = static_cast<float> (magz) / MAG_ADJUST_FACTOR;
+	// // The 15:8 and 7:0 bits are in different registers. The bitmasking below joins them into one 16 bit integer
+	// int16_t magx = (intImuDataPtr[1] << 8) | intImuDataPtr[0];
+	// int16_t magy = (intImuDataPtr[3] << 8) | intImuDataPtr[2];
+	// int16_t magz = (intImuDataPtr[5] << 8) | intImuDataPtr[4];
+	// int16_t rhall = (intImuDataPtr[7] << 8) | intImuDataPtr[6];
+	// int16_t gyrx = (intImuDataPtr[9] << 8) | intImuDataPtr[8];
+	// int16_t gyry = (intImuDataPtr[11] << 8) | intImuDataPtr[10];
+	// int16_t gyrz = (intImuDataPtr[13] << 8) | intImuDataPtr[12];
+	// int16_t accx = (intImuDataPtr[15] << 8) | intImuDataPtr[14];
+	// int16_t accy = (intImuDataPtr[17] << 8) | intImuDataPtr[16];
+	// int16_t accz = (intImuDataPtr[19] << 8) | intImuDataPtr[18];
+
+	Data.mag_x = static_cast<float> (magx);
+	Data.mag_y = static_cast<float> (magy);
+	Data.mag_z = static_cast<float> (magz);
 
 	Data.accel_x = (static_cast<float>(accx) / ACC_RANGE_8_FACTOR) - IMUCalibration.accel_x;
 	Data.accel_y = (static_cast<float>(accy) / ACC_RANGE_8_FACTOR) - IMUCalibration.accel_y;
