@@ -12,7 +12,7 @@ const float SEC_TO_MICROSEC = 1000000.0f;
 const float BASE_FREQUENCY = 48000000.0f;
 
 const float PULSE_WIDTH = 310.0f; // in us
-const float MIN_WIDTH_OF_RESET_PULSE = 5000.0f; // not really a pulse, this is slightly smaller than the difference in time between sequential PPM packets
+const float MIN_WIDTH_OF_RESET_PULSE = 3000.0f; // not really a pulse, this is slightly smaller than the difference in time between sequential PPM packets
 const float MIN_PULSE_WIDTH = 700.0f;
 const float MAX_PULSE_WIDTH = 1670.0f;
 
@@ -143,7 +143,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 		{
 			index = 0;
 		}
-		else
+		else if (index < MAX_PPM_CHANNELS)
 		{
 			ppm_values[index] = pulseLength;
 			index++;
