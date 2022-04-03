@@ -30,7 +30,7 @@ static const PWMPinConfig PWM_CONFIG[MAX_CHANNELS] =
 
 };
 
-void PWMChannel::setup()
+PWMChannel::PWMChannel()
 {
     for(int i = 0; i < NUM_AVAILABLE_CHANNELS; i++)
     {
