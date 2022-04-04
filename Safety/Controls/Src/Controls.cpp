@@ -165,7 +165,7 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
     PIDController a_pid{1, 0.2, 0.2, 100, 20, 100};
     PIDController h_pid{1, 0.2, 0.2, 100, 20, 100};
 
-    PIDController pid_test{1.2, 0.3, 0.2, 80, 0, 70};
+    PIDController pid_test{0.8 , 0.3, 0.2, 80, 10, 20};
 
     // calculate and run through PID's or just simple difference....?
     // ensure some safety somewhere?
@@ -190,22 +190,22 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
     }*/
 
     // float test_pid = pid_test.execute(50, 0);
-    float test_pid = pid_test.execute(0, yaw, curr_sf.yawRate); // not sure if yawRate is usable
-    // float test_pid = 50;
+    float test_pid = pid_test.execute(10, yaw, curr_sf.yawRate); // not sure if yawRate is usable
+    // float test_pid = 1;
 
     // in our testing we define the back to be where the imu is, so we are tuning left/right.
     // In this way, we have left - the PID and the right + PID (unsure about this - double check)
 
-    int M_Base = 50;
-    int M_Scale = 20;
+    float M_Base = 30;
+    float M_Scale = 0.5;
     PID_Out.backLeftMotorPercent = M_Base - M_Scale * test_pid;
     PID_Out.frontLeftMotorPercent = M_Base - M_Scale * test_pid;
     PID_Out.backRightMotorPercent = M_Base + M_Scale * test_pid;
     PID_Out.frontRightMotorPercent = M_Base + M_Scale * test_pid;
     // to return PID
-    // PID_Out.backLeftMotorPercent = instructions->input3;
-    //PID_Out.frontLeftMotorPercent = instructions->input3;
-    //PID_Out.backRightMotorPercent = instructions->input3;
-    //PID_Out.frontRightMotorPercent = instructions->input3;
+    // PID_Out.backLeftMotorPercent = M_Base;
+    // PID_Out.frontLeftMotorPercent = M_Base;
+    // PID_Out.backRightMotorPercent = M_Base;
+    // PID_Out.frontRightMotorPercent = M_Base;
     return &PID_Out;
 }
