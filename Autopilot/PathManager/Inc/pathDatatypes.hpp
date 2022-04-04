@@ -6,8 +6,12 @@
 /********************************************************************
 * Enums
 ********************************************************************/
-
+#if IS_FIXED_WING
 enum _FlightStage{ROLL=0, CLIMB, CRUISING, TRANSITION, SLOPE, FLARE, DECRAB, TOUCHDOWN}; //used to determine the stage of flight
+#else
+enum _FlightStage{CRUISING, PREFLIGHT, LANDING, TAKEOFF}; //used to determine the stage of flight
+
+#endif
 
 /********************************************************************
 * Important Structs
