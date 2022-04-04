@@ -195,10 +195,13 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
 
     // in our testing we define the back to be where the imu is, so we are tuning left/right.
     // In this way, we have left - the PID and the right + PID (unsure about this - double check)
-    PID_Out.backLeftMotorPercent = 50 - test_pid;
-    PID_Out.frontLeftMotorPercent = 50 - test_pid;
-    PID_Out.backRightMotorPercent = 50 + test_pid;
-    PID_Out.frontRightMotorPercent = 50 + test_pid;
+
+    int M_Base = 50;
+    int M_Scale = 20;
+    PID_Out.backLeftMotorPercent = M_Base - M_Scale * test_pid;
+    PID_Out.frontLeftMotorPercent = M_Base - M_Scale * test_pid;
+    PID_Out.backRightMotorPercent = M_Base + M_Scale * test_pid;
+    PID_Out.frontRightMotorPercent = M_Base + M_Scale * test_pid;
     // to return PID
     // PID_Out.backLeftMotorPercent = instructions->input3;
     //PID_Out.frontLeftMotorPercent = instructions->input3;
