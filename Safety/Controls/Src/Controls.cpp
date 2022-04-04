@@ -12,6 +12,8 @@
 #include "SensorFusion.hpp"
 #include "simple_p.hpp"
 
+#include "gpio.h"
+
 
 
 /* Inputs:
@@ -108,6 +110,33 @@ void evalControls(){
     // to be used in the future!
 }
 
+void angleToLED(float angle) {
+    // gets our angle and turns it into LED output
+
+    // 3 led's, means we have some amount of range.
+    // Top          < -90
+    // Top + Mid    -90 - -30
+    // Mid          -30 - 30
+    // Mid +        30 - 90
+    // Bot          > 90
+    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
+    if (angle < -90) {
+        HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+    } else if (angle < -30) {
+        HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+    } else if ( angle < 30) {
+        HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+    } else if ( angle < 90 ) {
+        HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+    } else {
+        HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+    }
+}
+
 /*
  * pwmValues = runControlsAndGetPWM(instructions, SF_position)
  */
@@ -174,6 +203,7 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
     if (yaw > 180) {
         yaw -= 360;
     }
+    angleToLED(-curr_sf.roll);
     /*if (PID_method == 0) {
         // use the base pid written without extensive scaling.
 
@@ -190,6 +220,10 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
     }*/
 
     // float test_pid = pid_test.execute(50, 0);
+    // our LED's 
+    //HAL_GPIO_TogglePin(LED1_GPIO_Port,LED1_Pin);
+    //HAL_GPIO_TogglePin(LED2_GPIO_Port,LED2_Pin);
+    //HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
     float test_pid = pid_test.execute(10, yaw, curr_sf.yawRate); // not sure if yawRate is usable
     // float test_pid = 1;
 
