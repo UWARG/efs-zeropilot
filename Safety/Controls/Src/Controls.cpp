@@ -10,7 +10,7 @@
 #include "PWM.hpp"
 #include "base_pid.hpp"
 #include "SensorFusion.hpp"
-
+#include "simple_p.hpp"
 
 
 
@@ -170,7 +170,10 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
     // calculate and run through PID's or just simple difference....?
     // ensure some safety somewhere?
 
-
+    // convert YAW to +/- value:
+    if (yaw > 180) {
+        yaw -= 360;
+    }
     /*if (PID_method == 0) {
         // use the base pid written without extensive scaling.
 
@@ -187,13 +190,15 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
     }*/
 
     // float test_pid = pid_test.execute(50, 0);
-    float test_pid = pid_test.execute(0, curr_sf.yaw);
+    float test_pid = pid_test.execute(0, yaw);
     // float test_pid = 50;
 
-    PID_Out.backLeftMotorPercent = test_pid;
-    PID_Out.frontLeftMotorPercent = test_pid;
-    PID_Out.backRightMotorPercent = test_pid;
-    PID_Out.frontRightMotorPercent = test_pid;
+    // in our testing we define the back to be where the imu is, so we are tuning left/right.
+    // In this way, we have left - the PID and the right + PID (unsure about this - double check)
+    PID_Out.backLeftMotorPercent = 50 - test_pid;
+    PID_Out.frontLeftMotorPercent = 50 - test_pid;
+    PID_Out.backRightMotorPercent = 50 + test_pid;
+    PID_Out.frontRightMotorPercent = 50 + test_pid;
     // to return PID
     // PID_Out.backLeftMotorPercent = instructions->input3;
     //PID_Out.frontLeftMotorPercent = instructions->input3;
