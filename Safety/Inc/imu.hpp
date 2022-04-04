@@ -51,7 +51,7 @@ class BMX160 : public IMU {
     bool scan(void); // Check that the slave device exists
 
     // Variables:
-    uint8_t rawImuData[21];
+    uint8_t rawImuData[20];
     IMUData_t IMUCalibration;
     uint8_t powerStatus;
 };

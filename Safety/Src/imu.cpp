@@ -148,16 +148,17 @@ bool BMX160::scan() {
 void BMX160::calibrate(void) {
 	const int nSamplesForReliableAverage = 100;
     IMUData_t TempImuData;
+	IMUData_t TempImuCalibration;
 
-    IMUCalibration.accel_x = 0.0f;
-    IMUCalibration.accel_y = 0.0f;
-    IMUCalibration.accel_z = 0.0f;
-    IMUCalibration.gyro_x = 0.0f;
-    IMUCalibration.gyro_y = 0.0f;
-    IMUCalibration.gyro_z = 0.0f;
-    IMUCalibration.mag_x = 0.0f;
-    IMUCalibration.mag_y = 0.0f;
-    IMUCalibration.mag_z = 0.0f;
+	TempImuCalibration.accel_x = 0.0f;
+    TempImuCalibration.accel_y = 0.0f;
+    TempImuCalibration.accel_z = 0.0f;
+    TempImuCalibration.gyro_x = 0.0f;
+    TempImuCalibration.gyro_y = 0.0f;
+    TempImuCalibration.gyro_z = 0.0f;
+    TempImuCalibration.mag_x = 0.0f;
+    TempImuCalibration.mag_y = 0.0f;
+    TempImuCalibration.mag_z = 0.0f;
 
     for (int i = 0; i < nSamplesForReliableAverage; i++)
     {
@@ -167,23 +168,29 @@ void BMX160::calibrate(void) {
 
         this->GetResult(TempImuData);
 
-        IMUCalibration.gyro_x += TempImuData.gyro_x;
-        IMUCalibration.gyro_y += TempImuData.gyro_y;
-        IMUCalibration.gyro_z += TempImuData.gyro_z;
-        IMUCalibration.accel_x += TempImuData.accel_x;
-        IMUCalibration.accel_y += TempImuData.accel_y;
-        IMUCalibration.accel_z += TempImuData.accel_z;
+        TempImuCalibration.gyro_x += TempImuData.gyro_x;
+        TempImuCalibration.gyro_y += TempImuData.gyro_y;
+        TempImuCalibration.gyro_z += TempImuData.gyro_z;
 
     }
 
-    IMUCalibration.gyro_x /= (float) nSamplesForReliableAverage;
-    IMUCalibration.gyro_y /= (float) nSamplesForReliableAverage;
-    IMUCalibration.gyro_z /= (float) nSamplesForReliableAverage;
-    IMUCalibration.accel_x /= (float) nSamplesForReliableAverage;
-    IMUCalibration.accel_y /= (float) nSamplesForReliableAverage;
-    IMUCalibration.accel_z /= (float) nSamplesForReliableAverage;
+	// TempImuCalibration.accel_x /= (float) nSamplesForReliableAverage;
+	// TempImuCalibration.accel_y /= (float) nSamplesForReliableAverage;
+	// TempImuCalibration.accel_z /= (float) nSamplesForReliableAverage;
 
-    IMUCalibration.accel_z -= 1000.0f;    // at calibration, Z needs to read -1g.
+	// // the normalization factor needs to normalize no motion relative to the earth at 1g (1000mg)
+	// float norm = 1000 / sqrtf(TempImuCalibration.accel_x * TempImuCalibration.accel_x
+	// 						+ TempImuCalibration.accel_y * TempImuCalibration.accel_y
+	// 						+ TempImuCalibration.accel_z * TempImuCalibration.accel_z);
+			
+	// IMUCalibration.accel_x = norm;
+    // IMUCalibration.accel_y = norm;
+    // IMUCalibration.accel_z = norm;
+
+    IMUCalibration.gyro_x = TempImuCalibration.gyro_x / (float) nSamplesForReliableAverage;
+    IMUCalibration.gyro_y = TempImuCalibration.gyro_y / (float) nSamplesForReliableAverage;
+    IMUCalibration.gyro_z = TempImuCalibration.gyro_z / (float) nSamplesForReliableAverage;
+
 }
 
 
@@ -196,46 +203,33 @@ IMU& BMX160::getInstance() {
 
 void BMX160::updateData(void) {
 	// Just updates the rawIMUData and conducts some processing on it
-	HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, DATA_REG, I2C_MEMADD_SIZE_8BIT, rawImuData, 21, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, DATA_REG, I2C_MEMADD_SIZE_8BIT, rawImuData, 20, HAL_MAX_DELAY);
 }
 
 void BMX160::GetResult(IMUData_t &Data) {
-	// HAL_I2C_Mem_Read(&hi2c1, BMX160_I2C_ADDR, DATA_REG, I2C_MEMADD_SIZE_8BIT, rawImuData, 20, HAL_MAX_DELAY); // test update data first
-	int16_t *intImuDataPtr = (int16_t *) &(rawImuData[1]); // First byte is garbage, data starts from second byte
-
-	int16_t magx = intImuDataPtr[0];
-    int16_t magy = intImuDataPtr[1];
-    int16_t magz = intImuDataPtr[2];
-    int16_t gyrx = intImuDataPtr[4]; // missing 3 is not a mistake, there is a field here named RHall which has something to do with the magnetometer. But I can't quite figure that out yet.
-    int16_t gyry = intImuDataPtr[5];
-    int16_t gyrz = intImuDataPtr[6];
-    int16_t accx = intImuDataPtr[7];
-    int16_t accy = intImuDataPtr[8];
-    int16_t accz = intImuDataPtr[9];
-
 	// // The 15:8 and 7:0 bits are in different registers. The bitmasking below joins them into one 16 bit integer
-	// int16_t magx = (intImuDataPtr[1] << 8) | intImuDataPtr[0];
-	// int16_t magy = (intImuDataPtr[3] << 8) | intImuDataPtr[2];
-	// int16_t magz = (intImuDataPtr[5] << 8) | intImuDataPtr[4];
-	// int16_t rhall = (intImuDataPtr[7] << 8) | intImuDataPtr[6];
-	// int16_t gyrx = (intImuDataPtr[9] << 8) | intImuDataPtr[8];
-	// int16_t gyry = (intImuDataPtr[11] << 8) | intImuDataPtr[10];
-	// int16_t gyrz = (intImuDataPtr[13] << 8) | intImuDataPtr[12];
-	// int16_t accx = (intImuDataPtr[15] << 8) | intImuDataPtr[14];
-	// int16_t accy = (intImuDataPtr[17] << 8) | intImuDataPtr[16];
-	// int16_t accz = (intImuDataPtr[19] << 8) | intImuDataPtr[18];
+	int16_t magx = (rawImuData[1]  << 8) | rawImuData[0];
+	int16_t magy = (rawImuData[3]  << 8) | rawImuData[2];
+	int16_t magz = (rawImuData[5]  << 8) | rawImuData[4];
+	int16_t rhall= (rawImuData[7]  << 8) | rawImuData[6];
+	int16_t gyrx = (rawImuData[9]  << 8) | rawImuData[8];
+	int16_t gyry = (rawImuData[11] << 8) | rawImuData[10];
+	int16_t gyrz = (rawImuData[13] << 8) | rawImuData[12];
+	int16_t accx = (rawImuData[15] << 8) | rawImuData[14];
+	int16_t accy = (rawImuData[17] << 8) | rawImuData[16];
+	int16_t accz = (rawImuData[19] << 8) | rawImuData[18];
 
-	Data.mag_x = static_cast<float> (magx);
-	Data.mag_y = static_cast<float> (magy);
-	Data.mag_z = static_cast<float> (magz);
+	Data.mag_x = (static_cast<float> (magx) / MAG_ADJUST_FACTOR);
+	Data.mag_y = (static_cast<float> (magy) / MAG_ADJUST_FACTOR);
+	Data.mag_z = (static_cast<float> (magz) / MAG_ADJUST_FACTOR);
 
-	Data.accel_x = (static_cast<float>(accx) / ACC_RANGE_8_FACTOR) - IMUCalibration.accel_x;
-	Data.accel_y = (static_cast<float>(accy) / ACC_RANGE_8_FACTOR) - IMUCalibration.accel_y;
-	Data.accel_z = (static_cast<float>(accz) / ACC_RANGE_8_FACTOR) - IMUCalibration.accel_z;
+	Data.accel_x = (static_cast<float>(accx) / ACC_RANGE_8_FACTOR); //- IMUCalibration.accel_x;
+	Data.accel_y = (static_cast<float>(accy) / ACC_RANGE_8_FACTOR); //- IMUCalibration.accel_y;
+	Data.accel_z = (static_cast<float>(accz) / ACC_RANGE_8_FACTOR); //- IMUCalibration.accel_z;
 
 	Data.gyro_x = (static_cast<float>(gyrx) / GYRO_RANGE_1000_FACTOR) - IMUCalibration.gyro_x;
 	Data.gyro_y = (static_cast<float>(gyry) / GYRO_RANGE_1000_FACTOR) - IMUCalibration.gyro_y;
-	Data.gyro_z = (static_cast<float>(gyry) / GYRO_RANGE_1000_FACTOR) - IMUCalibration.gyro_z;
+	Data.gyro_z = (static_cast<float>(gyrz) / GYRO_RANGE_1000_FACTOR) - IMUCalibration.gyro_z;
 }
 
 BMX160::BMX160() {
