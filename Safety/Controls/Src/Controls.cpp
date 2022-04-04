@@ -190,7 +190,7 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
     }*/
 
     // float test_pid = pid_test.execute(50, 0);
-    float test_pid = pid_test.execute(0, yaw);
+    float test_pid = pid_test.execute(0, yaw, curr_sf.yawRate); // not sure if yawRate is usable
     // float test_pid = 50;
 
     // in our testing we define the back to be where the imu is, so we are tuning left/right.
