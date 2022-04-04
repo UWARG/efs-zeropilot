@@ -58,7 +58,7 @@ void MPU6050::GetResult(IMUData_t& Data){
 	raw_y = (int16_t)(data[2] << 8 | data[3]);
 	raw_z = (int16_t)(data[4] << 8 | data[5]);
 
-	/* Converting raw values into degrees per second.
+	/* Converting raw values into radians per second (from degrees)
 	* Scaling by the sensitivity for the configured scale range.*/
 
 	Data.gyro_x = DEG_TO_RAD(raw_x / kGryoCorrector);
