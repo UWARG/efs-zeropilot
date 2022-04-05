@@ -1,8 +1,7 @@
 /**
   ******************************************************************************
-  * File Name          : SPI.c
-  * Description        : This file provides code for the configuration
-  *                      of the SPI instances.
+  * File Name          : freertos.c
+  * Description        : Code for freertos applications
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -48,111 +47,110 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "spi.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "cmsis_os.h"
 
-#include "gpio.h"
+/* USER CODE BEGIN Includes */
+#include "PPM.hpp"
+#include "PWM.hpp"
+#include "safety_controller.hpp"
 
-/* USER CODE BEGIN 0 */
+#include "sensorFusionInterface.hpp"
+/* USER CODE END Includes */
 
-/* USER CODE END 0 */
+/* Variables -----------------------------------------------------------------*/
+osThreadId attitudeManagerHandle;
+osThreadId sensorFusionHandle;
 
-SPI_HandleTypeDef hspi1;
+/* USER CODE BEGIN Variables */
+PPMChannel *ppm = new PPMChannel(MAX_PPM_CHANNELS);
+PWMChannel *pwm = new PWMChannel();
+attitudeManager *attMng = new attitudeManager(ppm, pwm);
+/* USER CODE END Variables */
 
-/* SPI1 init function */
-void MX_SPI1_Init(void)
-{
+/* Function prototypes -------------------------------------------------------*/
+void attitudeManagerExecute(void const * argument);
+void sensorFusionExecute(void const * argument);
 
-  hspi1.Instance = SPI1;
-  hspi1.Init.Mode = SPI_MODE_SLAVE;
-  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
-  hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
-  hspi1.Init.NSS = SPI_NSS_HARD_INPUT;
-  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  hspi1.Init.CRCPolynomial = 7;
-  hspi1.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
-  hspi1.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
-  if (HAL_SPI_Init(&hspi1) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
+void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
+/* USER CODE BEGIN FunctionPrototypes */
+
+/* USER CODE END FunctionPrototypes */
+
+/* Hook prototypes */
+
+/* Init FreeRTOS */
+
+void MX_FREERTOS_Init(void) {
+  /* USER CODE BEGIN Init */
+
+    SensorFusionInterfaceInit();
+
+  /* USER CODE END Init */
+
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* Create the thread(s) */
+  /* definition and creation of attitudeManager */
+  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 128);
+  attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
+
+  /* definition and creation of sensorFusion */
+  osThreadDef(sensorFusion, sensorFusionExecute, osPriorityNormal, 0, 128);
+  sensorFusionHandle = osThreadCreate(osThread(sensorFusion), NULL);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
 }
 
-void HAL_SPI_MspInit(SPI_HandleTypeDef* spiHandle)
+/* attitudeManagerExecute function */
+void attitudeManagerExecute(void const * argument)
 {
 
-  GPIO_InitTypeDef GPIO_InitStruct;
-  if(spiHandle->Instance==SPI1)
+  /* USER CODE BEGIN attitudeManagerExecute */
+  /* Infinite loop */
+  for(;;)
   {
-  /* USER CODE BEGIN SPI1_MspInit 0 */
-
-  /* USER CODE END SPI1_MspInit 0 */
-    /* SPI1 clock enable */
-    __HAL_RCC_SPI1_CLK_ENABLE();
-
-    /**SPI1 GPIO Configuration
-    PA4     ------> SPI1_NSS
-    PA5     ------> SPI1_SCK
-    PA6     ------> SPI1_MISO
-    PA7     ------> SPI1_MOSI
-    */
-    GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF0_SPI1;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    /* SPI1 interrupt Init */
-    HAL_NVIC_SetPriority(SPI1_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(SPI1_IRQn);
-  /* USER CODE BEGIN SPI1_MspInit 1 */
-
-  /* USER CODE END SPI1_MspInit 1 */
+    attMng->execute();
+    HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+    // osDelay(1);
   }
+  /* USER CODE END attitudeManagerExecute */
 }
 
-void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
+/* sensorFusionExecute function */
+void sensorFusionExecute(void const * argument)
 {
-
-  if(spiHandle->Instance==SPI1)
+  /* USER CODE BEGIN sensorFusionExecute */
+  /* Infinite loop */
+  for(;;)
   {
-  /* USER CODE BEGIN SPI1_MspDeInit 0 */
-
-  /* USER CODE END SPI1_MspDeInit 0 */
-    /* Peripheral clock disable */
-    __HAL_RCC_SPI1_CLK_DISABLE();
-
-    /**SPI1 GPIO Configuration
-    PA4     ------> SPI1_NSS
-    PA5     ------> SPI1_SCK
-    PA6     ------> SPI1_MISO
-    PA7     ------> SPI1_MOSI
-    */
-    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7);
-
-    /* SPI1 interrupt Deinit */
-    HAL_NVIC_DisableIRQ(SPI1_IRQn);
-  /* USER CODE BEGIN SPI1_MspDeInit 1 */
-
-  /* USER CODE END SPI1_MspDeInit 1 */
+    SensorFusionInterfaceExecute();
+    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+    // osDelay(1);
   }
+  /* USER CODE END sensorFusionExecute */
 }
 
-/* USER CODE BEGIN 1 */
+/* USER CODE BEGIN Application */
 
-/* USER CODE END 1 */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
+/* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
