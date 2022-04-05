@@ -130,7 +130,7 @@ void attitudeManagerExecute(void const * argument)
   {
     attMng->execute();
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-    // osDelay(1);
+    osDelay(600);
   }
   /* USER CODE END attitudeManagerExecute */
 }
@@ -144,7 +144,7 @@ void sensorFusionExecute(void const * argument)
   {
     SensorFusionInterfaceExecute();
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-    // osDelay(1);
+    osDelay(500);
   }
   /* USER CODE END sensorFusionExecute */
 }
