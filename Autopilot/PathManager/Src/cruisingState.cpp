@@ -313,7 +313,7 @@ static void clearArray(int * idArray);                              // Resets al
 
 
 // Removed int array 
-_ModifyFlightPathErrorCode editFlightPath(fijo * telemetryData, WaypointManager& cruisingStateManager) {
+_ModifyFlightPathErrorCode editFlightPath(fijo * telemetryData, WaypointManager& cruisingStateManager, _WaypointManager_Data_In input) {
     
     // If no commands given, just skip over this function
 
@@ -328,6 +328,10 @@ _ModifyFlightPathErrorCode editFlightPath(fijo * telemetryData, WaypointManager&
     /* Editing the flight path */
 
     // Else, we recieve the next waypoint 
+    
+    //Creating Target Waypoint 
+    _PathData * targetWaypoint = cruisingStateManager.initialize_waypoint(telemetryData->gpsCoord->longitude, telemetryData->gpsCoord->latitude, DEFAULT_ALTITUDE, waypointType); 
+    _PathData * inputWaypoint = cruisingStateManager.initialize_waypoint(input.longitude,input.latitude, input.altitude, waypointType)
 
     if (telemetryData->numWaypoints == 1 && (telemetryData->waypointModifyFlightPathCommand >= 2 && telemetryData->waypointModifyFlightPathCommand <= 4)) { // Inserting, Appending, or Updating a waypoint
 
@@ -451,7 +455,7 @@ _GetNextDirectionsErrorCode pathFollow(fijo * telemetryData, WaypointManager& cr
 
     pathFollowingStatus = cruisingStateManager.get_next_directions(input, output);
 
-    output->desiredAirspeed = CRUISING_AIRSPEED;
+    output->desiredAirspeed = CRUISING_AIRSPEED; //aadi pls keep this line 
 
     // Return appropriate error code
     if (pathFollowingStatus == WAYPOINT_SUCCESS) {

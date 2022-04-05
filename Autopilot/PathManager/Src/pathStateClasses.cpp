@@ -76,7 +76,7 @@ _WaypointManager_Data_Out landingTouchdownStage::waypointOutput;
 void commsWithAttitude::execute(pathManager* pathMgr)
 {
 
-    #ifdef IS_FIXED_WING
+    #if IS_FIXED_WING
     bool newDataAvailable = GetFromAMToPM(&_receivedData); // Gets attitude manager data
     #endif
 
@@ -788,7 +788,7 @@ _PathData * landingStage::pathArray[3];
 WaypointManager landingStage::landingPath;
 _LandingPath landingStage::path;
 
-#define ON_GROUND_ALT 2
+#define ON_GROUND_ALT 2 //minimum on ground altitude
 
 
 
@@ -803,6 +803,8 @@ void commsWithAttitude::execute(pathManager* pathMgr)
     // Gets data used to populate CommandsForAM struct
     CoordinatedTurnAttitudeManagerCommands_t * turnCommands = coordinateTurnElevation::GetRollAndRudder();
     AltitudeAirspeedCommands_t * altCommands = coordinateTurnElevation::GetPitchAndAirspeed();
+    
+    
     _WaypointManager_Data_Out * waypointOutput = cruisingState::GetOutputData();
 
     CommandsForAM toSend {};
@@ -810,6 +812,8 @@ void commsWithAttitude::execute(pathManager* pathMgr)
     toSend.desiredX = waypointOutput->distanceX;
     toSend.desiredY = waypointOutput->distanceY;
     toSend.desiredZ = waypointOutput->distanceZ;
+    toSend.rotation = waypointOutput->rotation; 
+    toSend.airspeed = waypointOutput->desiredAirspeed; 
 
 
     SendFromPMToAM(&toSend); // Sends commands to attitude manager
@@ -926,17 +930,19 @@ pathManagerState& resetVariables::getInstance()
 void cruisingState::execute(pathManager* pathMgr)
 {
 
+    // telementryData is where we want to go, target waypoint
     fijo * telemetryData = commsWithTelemetry::GetTelemetryIncomingData(); // Get struct from telemetry state with all of the commands and values.
     SFOutput_t * sensFusionOutput = sensorFusion::GetSFOutput(); // Get sensor fusion data
 
-    // Set waypoint manager input struct
+    // Set waypoint manager input struct 
+    // input data is the current position, should be middle waypoint
     _inputdata.track = sensFusionOutput->track; // Gets track
-    _inputdata.longitude = sensFusionOutput->longitude;
+    _inputdata.longitude = sensFusionOutput->longitude; // setting current waypoint longitude to SF longitude 
     _inputdata.latitude = sensFusionOutput->latitude;
     _inputdata.altitude = sensFusionOutput->altitude;
 
     // Call module functions - These will be changed later 
-    _ModifyFlightPathErrorCode editError = editFlightPath(telemetryData, cruisingStateManager, waypointIDArray); // Edit flight path if applicable
+    _ModifyFlightPathErrorCode editError = editFlightPath(telemetryData, cruisingStateManager, this->_inputdata); // Edit flight path if applicable
     _GetNextDirectionsErrorCode pathError = pathFollow(telemetryData, cruisingStateManager, _inputdata, &_outputdata, goingHome, inHold); // Get next direction or modify flight behaviour pattern
     setReturnValues(&_returnToGround, cruisingStateManager, editError, pathError); // Set error codes
 
@@ -947,6 +953,7 @@ void cruisingState::execute(pathManager* pathMgr)
     else
     {
         pathMgr->setState(coordinateTurnElevation::getInstance());
+        // pathMgr->setState(commsWithAttitude::getInstance()); replace above line with this 
     }
 }
 
@@ -957,6 +964,7 @@ pathManagerState& cruisingState::getInstance()
 }
 
 
+//KILL MOST OF THIS WITH FIRE -> DONT NEED THIS 
 void coordinateTurnElevation::execute(pathManager* pathMgr)
 {
 
@@ -1126,6 +1134,7 @@ void landingStage::execute(pathManager* pathMgr)
     else
     {
         pathMgr->setState(coordinateTurnElevation::getInstance());
+        // might replace this with  pathMgr->setState(commsWithAttitude::getInstance());
     }
 }
 
@@ -1160,6 +1169,8 @@ void preflightStage::execute(pathManager* pathMgr)
 
         //10 meters is added to the altitude of the currentLocation waypoint so that is is not ground level
         currentLocation = takeoffPath.initialize_waypoint(input.sensorOutput->longitude, input.sensorOutput->latitude, (input.sensorOutput->altitude + 10), TAKEOFF_WAYPOINT);
+       
+       //target waypoint might be given by gordon and not telem???
         waypointStatus = takeoffPath.initialize_flight_path(pathArray, 1, currentLocation);
         pathMgr->madeTakeoffPoints = true;
     }
@@ -1182,6 +1193,7 @@ void preflightStage::execute(pathManager* pathMgr)
     else
     {
         pathMgr->setState(coordinateTurnElevation::getInstance());
+        // pathMgr->setState(commsWithAttitude::getInstance());
     }
 }
 
@@ -1236,6 +1248,7 @@ void takeoffStage::execute(pathManager* pathMgr)
     else
     {
         pathMgr->setState(coordinateTurnElevation::getInstance());
+        // pathMgr->setState(commsWithAttitude::getInstance());
     }
 }
 

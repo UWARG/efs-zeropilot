@@ -962,10 +962,7 @@ WaypointManager::WaypointManager() {
     relativeLongitude = REFERENCE_LONGITUDE;
     relativeLatitude = REFERENCE_LATITUDE;
 
-    homeBase = nullptr; // Sets the pointer to null
-
     // Sets boolean variables
-    goingHome = false;
     dataIsNew = false;
     orbitPathStatus = PATH_FOLLOW;
     errorStatus = WAYPOINT_SUCCESS;
@@ -974,45 +971,42 @@ WaypointManager::WaypointManager() {
     desiredTrack = 0;
     desiredAltitude = 0;
     distanceToNextWaypoint = 0.0;
+    distanceX = 0;
+    distanceY = 0;
+    distanceZ = 0;
+    rotation = 0;
     errorCode = WAYPOINT_SUCCESS;
     dataIsNew = false;
     outputType = PATH_FOLLOW;
     turnDesiredAltitude = 0;
     turnDirection = 0; // 1 for CW, 2 for CCW
 
-    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
-        waypointBufferStatus[i] = FREE;
-    }
+
+
+    this->currentWaypoint = nullptr;
+
+    // for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
+    //     waypointBufferStatus[i] = FREE;
+    // }
+    // fuk u aadi 
 
     // Sets empty elements to null to prevent segmentation faults
-    for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
-        waypointBuffer[i] = nullptr;
-    }
+    // for(int i = 0; i < PATH_BUFFER_SIZE; i++) {
+      //  waypointBuffer[i] = nullptr;
+    // }
 }
 
-_WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData * currentLocation) {
+_WaypointStatus WaypointManager::initialize_flight_path(_PathData * target, _PathData * currentLocation) {
     
     errorStatus = WAYPOINT_SUCCESS; 
 
-    // The waypointBuffer array must be empty before we initialize the flight path
-    if (numWaypoints != 0) {
+    // if we dont get currentLocation, I dont know how to handle that
+    if (currentLocation == nullptr) {
         errorStatus = UNDEFINED_FAILURE;
         return errorStatus;
     }
 
-    // If user passes in too many waypoints, the enum will notify them, but the flight path will be set with the maximum amount of waypoints allowed 
-    if (numberOfWaypoints > PATH_BUFFER_SIZE) {
-        errorStatus = TOO_MANY_WAYPOINTS;
-        numberOfWaypoints = PATH_BUFFER_SIZE;
-    }
-    
-    // If currentLocation was passed, then initializes homeBase
-    if (currentLocation != nullptr) {
-        homeBase = currentLocation;
-    }
-
-    numWaypoints = numberOfWaypoints;
-    nextFilledIndex = 0;
+    numWaypoints = 2;
     
     #ifdef UNIT_TESTING 
     //waypoint manager tests use a currentIndex of 2. To ensure that the tests work for flight paths with fewer waypoints, this if statement is employed
@@ -1021,35 +1015,15 @@ _WaypointStatus WaypointManager::initialize_flight_path(_PathData ** initialWayp
         } else {
             currentIndex = 0;
         }
-    #else
-        currentIndex = 0;
     #endif
 
-    // Initializes the waypointBuffer array
-    for (int i = 0; i < numWaypoints; i++) {
-        waypointBuffer[i] = initialWaypoints[i]; // Sets the element in the waypointBuffer
-        waypointBufferStatus[i] = FULL;
-        nextFilledIndex = i + 1;
-    }
-
     // Links waypoints together
-    for (int i = 0; i < numWaypoints; i++) {
-        if (i == 0) { // If first waypoint, link to next one only
-            waypointBuffer[i]->next = waypointBuffer[i+1];
-            waypointBuffer[i]->previous = nullptr;
-        } else if (i == numWaypoints - 1) { // If last waypoint, link to previous one only
-            waypointBuffer[i]->next = nullptr;
-            waypointBuffer[i]->previous = waypointBuffer[i-1];
-        } else {
-            waypointBuffer[i]->next = waypointBuffer[i+1];
-            waypointBuffer[i]->previous = waypointBuffer[i-1];
-        }
-    }
 
-    // Sets empty elements to null to prevent segmentation faults
-    for(int i = numWaypoints; i < PATH_BUFFER_SIZE; i++) {
-        waypointBuffer[i] = nullptr;
-    }
+    //TODO figure out how to free data safely
+
+    this->currentWaypoint = currentLocation;
+    this->currentWaypoint->next = target;
+    target->previous = currentLocation;
 
     return errorStatus;
 }
@@ -1061,7 +1035,6 @@ _PathData* WaypointManager::initialize_waypoint() {
         return NULL;
     }
 
-    waypoint->waypointId = nextAssignedId;
     nextAssignedId++; // Increment ID so next waypoint has a different one
     waypoint->latitude = -1;
     waypoint->longitude = -1;
@@ -1082,7 +1055,6 @@ _PathData* WaypointManager::initialize_waypoint(long double longitude, long doub
         return NULL;
     }
 
-    waypoint->waypointId = nextAssignedId; 
     nextAssignedId++; // Increment ID so next waypoint has a different one 
     waypoint->latitude = latitude;
     waypoint->longitude = longitude;
@@ -1164,6 +1136,7 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
     Data->distanceX = distanceX;
     Data->distanceY = distanceY;
     Data->distanceZ = distanceZ;
+    Data->rotation = rotation;
     Data->turnDirection = turnDirection;
     Data->errorCode = errorCode;
     Data->isDataNew = dataIsNew;
@@ -1234,9 +1207,9 @@ void WaypointManager::follow_waypoints(_PathData * currentWaypoint, float* posit
     distanceToNextWaypoint = distanceToWaypoint;
 
     //Calculates X,Y,Z distance to next waypoint
-    float distanceX=targetCoordinates[0] - position[0];
-    float distanceY=targetCoordinates[1] - position[1];
-    float distanceZ=targetCoordinates[2] - position[2];
+    distanceX=targetCoordinates[0] - position[0];
+    distanceY=targetCoordinates[1] - position[1];
+    distanceZ=targetCoordinates[2] - position[2];
     
         // std::cout << "Here2 --> " << position[0] << " " << position[1] << " " << position[2] << std::endl;
         // std::cout << "Here3 --> " << waypointDirection[0] << " " << waypointDirection[1] << " " << waypointDirection[2] << std::endl;
@@ -1269,9 +1242,9 @@ void WaypointManager::follow_line_segment(_PathData * currentWaypoint, float* po
     distanceToNextWaypoint = distanceToWaypoint; // Stores distance to next waypoint :))
 
     //Calculates X,Y,Z distance to next waypoint
-    float distanceX=targetCoordinates[0] - position[0];
-    float distanceY=targetCoordinates[1] - position[1];
-    float distanceZ=targetCoordinates[2] - position[2];
+    distanceX=targetCoordinates[0] - position[0];
+    distanceY=targetCoordinates[1] - position[1];
+    distanceZ=targetCoordinates[2] - position[2];
 
     // std::cout << "Here1.1 --> " << waypointDirection[0] << " " << waypointDirection[1] << " " << waypointDirection[2] << std::endl;
     // std::cout << "Here1.2 --> " << targetCoordinates[0] << " " << targetCoordinates[1] << " " << targetCoordinates[2] << std::endl;
@@ -1306,9 +1279,9 @@ void WaypointManager::follow_last_line_segment(_PathData * currentWaypoint, floa
     distanceToNextWaypoint = distanceToWaypoint; // Stores distance to next waypoint :))
 
     //Calculates X,Y,Z distance to next waypoint
-    float distanceX=targetCoordinates[0] - position[0];
-    float distanceY=targetCoordinates[1] - position[1];
-    float distanceZ=targetCoordinates[2] - position[2];
+    distanceX=targetCoordinates[0] - position[0];
+    distanceY=targetCoordinates[1] - position[1];
+    distanceZ=targetCoordinates[2] - position[2];
 
     // If dot product positive, then wait for commands
     float dotProduct = waypointDirection[0] * (position[0] - targetCoordinates[0]) + waypointDirection[1] * (position[1] - targetCoordinates[1]) + waypointDirection[2] * (position[2] - targetCoordinates[2]);

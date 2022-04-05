@@ -34,6 +34,7 @@ typedef struct AttitudeData{
 struct CommandsForAM{
 	float rotation; //orientation? in radians? 
 	float desiredX, desiredY, desiredZ;
+	float airspeed; 
 }; 	 		
 
 

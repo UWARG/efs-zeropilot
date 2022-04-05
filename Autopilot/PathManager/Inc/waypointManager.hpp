@@ -323,7 +323,6 @@ enum _HeadHomeStatus {HOME_TRUE = 0, HOME_FALSE, HOME_UNDEFINED_PARAMETER};
 * Structure stores information about the waypoints along our path to the destination and back. Got rid of turn radius
 */
 struct _PathData {
-    int waypointId;                   // Id of the waypoint
     _PathData * next;                 // Next waypoint
     _PathData * previous;             // Previous waypoint
     long double latitude;             // Latitude of waypoint
@@ -342,9 +341,10 @@ struct _WaypointManager_Data_Out{
     int desiredAltitude;                // Desired altitude at next waypoint
     long double distanceToNextWaypoint; // Distance to the next waypoint (helps with airspeed PID)
     float distanceX, distanceY, distanceZ;
+    float rotation; 
     _WaypointStatus errorCode;          // Contains error codes
     bool isDataNew;                     // Notifies PID modules if the data in this structure is new
-    int desiredAirspeed;
+    int desiredAirspeed;                // FUN FACT WE NEED THIS 
     uint32_t timeOfData;                // The time that the data in this structure was collected
     _WaypointOutputType out_type;       // Output type (determines which parameters are defined)
 };
@@ -362,7 +362,7 @@ public:
     * @param[in] int numberOfWaypoints -> Number of waypoints being initialized in the waypointBuffer array
     * @param[in] _PathData* currentLocation -> Home base.
     */
-    _WaypointStatus initialize_flight_path(_PathData ** initialWaypoints, int numberOfWaypoints, _PathData * currentLocation = nullptr); // Sets flight path and home base
+    _WaypointStatus initialize_flight_path(_PathData * target, _PathData * currentLocation = nullptr); // Sets flight path and home base
 
     /**
      * Called by state machine to create new _PathData objects. This moves all heap allocation and ID management to the waypoint manager, giving the state machine less work
@@ -480,8 +480,7 @@ private:
     int currentIndex;    // Index for the waypoint in our flight path we are currently on (If we are going from waypint A and B, currentIndex is the index of waypoint A)
     int orbitPathStatus; // Are we orbiting or following a straight path
 
-    //Home base
-    _PathData * homeBase;
+    _PathData * currentWaypoint;
 
     // For calculating desired track. This affects the sensitivity of the given desired tracks
     float k_gain[2] = {0.01, 1.0f};
