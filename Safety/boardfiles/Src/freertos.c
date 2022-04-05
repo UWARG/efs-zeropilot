@@ -130,7 +130,7 @@ void attitudeManagerExecute(void const * argument)
   {
     attMng->execute();
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-    osDelay(600);
+    osDelay(500);
   }
   /* USER CODE END attitudeManagerExecute */
 }
