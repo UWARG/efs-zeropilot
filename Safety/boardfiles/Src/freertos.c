@@ -52,6 +52,8 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN Includes */
+#include "main.h"
+#include "stm32f0xx_hal.h"
 #include "PPM.hpp"
 #include "PWM.hpp"
 #include "safety_controller.hpp"

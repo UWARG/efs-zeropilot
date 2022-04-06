@@ -15,6 +15,9 @@ include_directories(
     boardfiles/Drivers/STM32F0xx_HAL_Driver/Inc
     boardfiles/Drivers/CMSIS/Device/ST/STM32F0xx/Include
     boardfiles/Drivers/CMSIS/Include
+    boardfiles/Middlewares/Third_Party/FreeRTOS/Source/include/
+    boardfiles/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/
+    boardfiles/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM0/
     Inc
 )
 

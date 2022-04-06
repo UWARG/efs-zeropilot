@@ -75,6 +75,9 @@
 /***************************************WARNING!************************************/
 /***************************************WARNING!************************************/
 
+#include "interchip_S.hpp"
+#include "RSSI.hpp"
+#include "attitudeManager.hpp"
 #include "PPM.hpp"
 #include "PWM.hpp"
 #include "safety_controller.hpp"
