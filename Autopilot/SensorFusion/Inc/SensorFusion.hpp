@@ -13,6 +13,7 @@ extern "C"
 
 #ifndef SENSORFUSION_HPP
 #define SENSORFUSION_HPP
+// #define IS_FIXED_WING false; 
 
 #include "CommonDataTypes.hpp"
 //Frequency of SF calculations in Hz
@@ -25,6 +26,7 @@ typedef struct {
     int errorCode;
 } SFError_t;
 
+// #if IS_FIXED_WING
 typedef struct {
     float roll, pitch, yaw; //rad
     float rollRate, pitchRate, yawRate; //rad/s
@@ -38,6 +40,17 @@ typedef struct {
     double track; // degrees
     double heading; //degrees
 } SFOutput_t;
+// #else 
+// typedef struct {
+   
+//     float altitude; //m
+//     long double latitude; //Decimal degrees
+//     long double longitude; //Decimal degrees
+//     double track; // degrees
+//     double heading; //degrees
+// } SFOutput_t;
+
+// #endif
 
 //Following structs store the raw sensor data so other modules can have direct access to them without including sensor header files
 typedef struct

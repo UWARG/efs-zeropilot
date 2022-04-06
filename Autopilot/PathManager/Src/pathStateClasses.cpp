@@ -754,8 +754,8 @@ _WaypointManager_Data_In cruisingState::_inputdata;
 _WaypointManager_Data_Out cruisingState::_outputdata;
 SFOutput_t sensorFusion::_sfOutputData;
 IMU_Data_t sensorFusion::_imudata;
-CoordinatedTurnAttitudeManagerCommands_t coordinateTurnElevation::_rollandrudder;
-AltitudeAirspeedCommands_t coordinateTurnElevation::_pitchandairspeed;
+// CoordinatedTurnAttitudeManagerCommands_t coordinateTurnElevation::_rollandrudder;
+// AltitudeAirspeedCommands_t coordinateTurnElevation::_pitchandairspeed;
 
 // No longer reciving data from AM 
 //AttitudeData commsWithAttitude::_receivedData;
@@ -800,9 +800,8 @@ void commsWithAttitude::execute(pathManager* pathMgr)
 {
 
 
-    // Gets data used to populate CommandsForAM struct
-    CoordinatedTurnAttitudeManagerCommands_t * turnCommands = coordinateTurnElevation::GetRollAndRudder();
-    AltitudeAirspeedCommands_t * altCommands = coordinateTurnElevation::GetPitchAndAirspeed();
+    // CoordinatedTurnAttitudeManagerCommands_t * turnCommands = coordinateTurnElevation::GetRollAndRudder();
+    // AltitudeAirspeedCommands_t * altCommands = coordinateTurnElevation::GetPitchAndAirspeed();
     
     
     _WaypointManager_Data_Out * waypointOutput = cruisingState::GetOutputData();
@@ -952,8 +951,8 @@ void cruisingState::execute(pathManager* pathMgr)
     }
     else
     {
-        pathMgr->setState(coordinateTurnElevation::getInstance());
-        // pathMgr->setState(commsWithAttitude::getInstance()); replace above line with this 
+        // pathMgr->setState(coordinateTurnElevation::getInstance());
+         pathMgr->setState(commsWithAttitude::getInstance()); 
     }
 }
 
@@ -965,102 +964,102 @@ pathManagerState& cruisingState::getInstance()
 
 
 //KILL MOST OF THIS WITH FIRE -> DONT NEED THIS 
-void coordinateTurnElevation::execute(pathManager* pathMgr)
-{
+// void coordinateTurnElevation::execute(pathManager* pathMgr)
+// {
 
-    SFOutput_t * sensFusionOutput = sensorFusion::GetSFOutput(); // Get sensor fusion data
-    IMU_Data_t * imudata = sensorFusion::GetIMUData(); // Gets raw IMU data
-    _WaypointManager_Data_Out * waypointOutput = cruisingState::GetOutputData(); // Get output data from waypoint manager
+//     SFOutput_t * sensFusionOutput = sensorFusion::GetSFOutput(); // Get sensor fusion data
+//     IMU_Data_t * imudata = sensorFusion::GetIMUData(); // Gets raw IMU data
+//     _WaypointManager_Data_Out * waypointOutput = cruisingState::GetOutputData(); // Get output data from waypoint manager
 
-    CoordinatedTurnInput_t turnInput {};
-    AltitudeAirspeedInput_t altAirspeedInput {};
+//     CoordinatedTurnInput_t turnInput {};
+//     AltitudeAirspeedInput_t altAirspeedInput {};
     
-    _LandingTakeoffOutput outputHolder; //had a bug with initializing the passby details, defining the pointer like this fixed it
-    _LandingTakeoffOutput * landingTakeoffOutput = &outputHolder;
-    //get elevation and turning data
-    //loading in commands data from each of the states
-    switch(pathMgr->stage){
-        case PREFLIGHT:
-            landingTakeoffOutput = preflightStage::getControlOutput();
-            break;
-        case LANDING:
-            landingTakeoffOutput = landingStage::getControlOutput();
-            break;
-        case TAKEOFF:
-            landingTakeoffOutput = takeoffStage::getControlOutput();
-            break;
-        case CRUISING:
-            turnInput.currentHeadingTrack = sensFusionOutput->track; // Gets track;
-            turnInput.desiredHeadingTrack = waypointOutput->desiredTrack;
-            turnInput.accY = imudata->accy;
+//     _LandingTakeoffOutput outputHolder; //had a bug with initializing the passby details, defining the pointer like this fixed it
+//     _LandingTakeoffOutput * landingTakeoffOutput = &outputHolder;
+//     //get elevation and turning data
+//     //loading in commands data from each of the states
+//     switch(pathMgr->stage){
+//         case PREFLIGHT:
+//             landingTakeoffOutput = preflightStage::getControlOutput();
+//             break;
+//         case LANDING:
+//             landingTakeoffOutput = landingStage::getControlOutput();
+//             break;
+//         case TAKEOFF:
+//             landingTakeoffOutput = takeoffStage::getControlOutput();
+//             break;
+//         case CRUISING:
+//             turnInput.currentHeadingTrack = sensFusionOutput->track; // Gets track;
+//             turnInput.desiredHeadingTrack = waypointOutput->desiredTrack;
+//             turnInput.accY = imudata->accy;
 
-            // Set up the compute altitude and airspeed function input
-            altAirspeedInput.currentAltitude = sensFusionOutput->altitude;
-            altAirspeedInput.desiredAltitude = waypointOutput->desiredAltitude;
-            altAirspeedInput.currentAirspeed = sensFusionOutput->airspeed;
-            altAirspeedInput.desiredAirspeed = waypointOutput->desiredAirspeed;
-            break;
-        default:
-            //should default to cruising
+//             // Set up the compute altitude and airspeed function input
+//             altAirspeedInput.currentAltitude = sensFusionOutput->altitude;
+//             altAirspeedInput.desiredAltitude = waypointOutput->desiredAltitude;
+//             altAirspeedInput.currentAirspeed = sensFusionOutput->airspeed;
+//             altAirspeedInput.desiredAirspeed = waypointOutput->desiredAirspeed;
+//             break;
+//         default:
+//             //should default to cruising
 
-            turnInput.currentHeadingTrack = sensFusionOutput->track; // Gets track;
-            turnInput.desiredHeadingTrack = waypointOutput->desiredTrack;
-            turnInput.accY = imudata->accy;
+//             turnInput.currentHeadingTrack = sensFusionOutput->track; // Gets track;
+//             turnInput.desiredHeadingTrack = waypointOutput->desiredTrack;
+//             turnInput.accY = imudata->accy;
 
-            // Set up the compute altitude and airspeed function input
-            altAirspeedInput.currentAltitude = sensFusionOutput->altitude;
-            altAirspeedInput.desiredAltitude = waypointOutput->desiredAltitude;
-            altAirspeedInput.currentAirspeed = sensFusionOutput->airspeed;
-            altAirspeedInput.desiredAirspeed = waypointOutput->desiredAirspeed;
+//             // Set up the compute altitude and airspeed function input
+//             altAirspeedInput.currentAltitude = sensFusionOutput->altitude;
+//             altAirspeedInput.desiredAltitude = waypointOutput->desiredAltitude;
+//             altAirspeedInput.currentAirspeed = sensFusionOutput->airspeed;
+//             altAirspeedInput.desiredAirspeed = waypointOutput->desiredAirspeed;
 
-    }
+//     }
 
-    if(pathMgr->stage!=CRUISING)
-    {
-        LandingTakeoffManager::translateLTSFCommandsToCoordTurns(*landingTakeoffOutput, *sensFusionOutput, *imudata, turnInput, altAirspeedInput);
-    }
+//     if(pathMgr->stage!=CRUISING)
+//     {
+//         LandingTakeoffManager::translateLTSFCommandsToCoordTurns(*landingTakeoffOutput, *sensFusionOutput, *imudata, turnInput, altAirspeedInput);
+//     }
 
-    // Call module functions
-    AutoSteer_ComputeCoordinatedTurn(&turnInput, &_rollandrudder);
-    AutoSteer_ComputeAltitudeAndAirspeed(&altAirspeedInput, &_pitchandairspeed);
+//     // Call module functions
+//     AutoSteer_ComputeCoordinatedTurn(&turnInput, &_rollandrudder);
+//     AutoSteer_ComputeAltitudeAndAirspeed(&altAirspeedInput, &_pitchandairspeed);
 
-    //passby functionality
+//     //passby functionality
     
-    if(landingTakeoffOutput->controlDetails.pitchPassby)
-    {
-        _pitchandairspeed.requiredPitch = landingTakeoffOutput->controlDetails.pitchPercent;
-    }
+//     if(landingTakeoffOutput->controlDetails.pitchPassby)
+//     {
+//         _pitchandairspeed.requiredPitch = landingTakeoffOutput->controlDetails.pitchPercent;
+//     }
 
-    if(landingTakeoffOutput->controlDetails.throttlePassby)
-    {
-        _pitchandairspeed.requiredThrottlePercent = landingTakeoffOutput->controlDetails.throttlePercent;
-    }
+//     if(landingTakeoffOutput->controlDetails.throttlePassby)
+//     {
+//         _pitchandairspeed.requiredThrottlePercent = landingTakeoffOutput->controlDetails.throttlePercent;
+//     }
 
-    if(landingTakeoffOutput->controlDetails.rollPassby)
-    {
-        _rollandrudder.requiredRoll = landingTakeoffOutput->controlDetails.rollPercent;
-    }
+//     if(landingTakeoffOutput->controlDetails.rollPassby)
+//     {
+//         _rollandrudder.requiredRoll = landingTakeoffOutput->controlDetails.rollPercent;
+//     }
 
-    if(landingTakeoffOutput->controlDetails.rudderPassby)
-    {
-        _rollandrudder.requiredRudderPosition = landingTakeoffOutput->controlDetails.rudderPercent;
-    }
+//     if(landingTakeoffOutput->controlDetails.rudderPassby)
+//     {
+//         _rollandrudder.requiredRudderPosition = landingTakeoffOutput->controlDetails.rudderPercent;
+//     }
     
-    if(pathMgr->isError)
-    {
-        pathMgr->setState(fatalFailureMode::getInstance());
-    }
-    else
-    {
-        pathMgr->setState(commsWithAttitude::getInstance());
-    }
-}
+//     if(pathMgr->isError)
+//     {
+//         pathMgr->setState(fatalFailureMode::getInstance());
+//     }
+//     else
+//     {
+//         pathMgr->setState(commsWithAttitude::getInstance());
+//     }
+// }
 
-pathManagerState& coordinateTurnElevation::getInstance()
-{
-    static coordinateTurnElevation singleton;
-    return singleton;
-}
+// pathManagerState& coordinateTurnElevation::getInstance()
+// {
+//     static coordinateTurnElevation singleton;
+//     return singleton;
+// }
 
 void fatalFailureMode::execute(pathManager* pathMgr)
 {
@@ -1133,8 +1132,8 @@ void landingStage::execute(pathManager* pathMgr)
     }
     else
     {
-        pathMgr->setState(coordinateTurnElevation::getInstance());
-        // might replace this with  pathMgr->setState(commsWithAttitude::getInstance());
+        //pathMgr->setState(coordinateTurnElevation::getInstance());
+        pathMgr->setState(commsWithAttitude::getInstance());
     }
 }
 
@@ -1149,6 +1148,7 @@ pathManagerState& landingStage::getInstance()
 TAKEOFF STATE FUNCTIONS
 ****************************************************************************************************/
 
+//create a count to 1000 -> then proceed to takeoff. 
 void preflightStage::execute(pathManager* pathMgr)
 {
     pathMgr->stage = PREFLIGHT;
@@ -1176,10 +1176,11 @@ void preflightStage::execute(pathManager* pathMgr)
     }
 
     // if we all good with setup, go to takeoff 
-    if(input.sensorOutput->airspeed > (LandingTakeoffManager::desiredRotationSpeed(pathMgr->isPackage)))
-    {
-        pathMgr->stage = TAKEOFF;
-    }
+    // TAKEOFF WILL BE SET HERE
+    // if(input.sensorOutput->airspeed > (LandingTakeoffManager::desiredRotationSpeed(pathMgr->isPackage)))
+    // {
+    //     pathMgr->stage = TAKEOFF;
+    // }
 
     if(preflightStage::waypointStatus != WAYPOINT_SUCCESS)
     {
@@ -1192,8 +1193,8 @@ void preflightStage::execute(pathManager* pathMgr)
     }
     else
     {
-        pathMgr->setState(coordinateTurnElevation::getInstance());
-        // pathMgr->setState(commsWithAttitude::getInstance());
+        // pathMgr->setState(coordinateTurnElevation::getInstance());
+        pathMgr->setState(commsWithAttitude::getInstance());
     }
 }
 
@@ -1247,8 +1248,8 @@ void takeoffStage::execute(pathManager* pathMgr)
     }
     else
     {
-        pathMgr->setState(coordinateTurnElevation::getInstance());
-        // pathMgr->setState(commsWithAttitude::getInstance());
+        // pathMgr->setState(coordinateTurnElevation::getInstance());
+        pathMgr->setState(commsWithAttitude::getInstance());
     }
 }
 
