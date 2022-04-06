@@ -131,7 +131,8 @@ void attitudeManagerExecute(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    RSSI_Check();
+    // TODO: Re-add RSSI_CHECK
+    // RSSI_Check();
     AttitudeManagerInterfaceExecute();
     // attMng->execute();
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);

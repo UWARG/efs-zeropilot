@@ -93,7 +93,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-void MX_FREERTOS_Init(void);
+
 
 /* USER CODE BEGIN PFP */
 
@@ -177,23 +177,11 @@ int main(void)
   MX_USART2_UART_Init();
 
   /* USER CODE BEGIN 2 */
-
-  //testSetup();
-
-
-  // start the IC in interrupt mode
-
-
-  PPMChannel ppm;
-  ppm.setNumChannels(8);
-
-  PWMChannel pwm;
-  pwm.setup();
-  safety_controller_init();
+  // PPMChannel *ppm = new PPMChannel(MAX_PPM_CHANNELS);
+  // PWMChannel *pwm = new PWMChannel();
+  // attitudeManager *attMng = new attitudeManager(ppm, pwm);
 
   interchipInit();
-
-
   HAL_NVIC_SetPriority(TIM15_IRQn, 1, 0);
   HAL_NVIC_SetPriority(SPI1_IRQn, 0, 0);
 
@@ -217,8 +205,8 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
     //Might need another thread for this task
-    RSSI_Check(); // Run every time to update CommsFailed value
-    attMng->execute();
+    // RSSI_Check(); // Run every time to update CommsFailed value
+    // attMng->execute();
   }
   /* USER CODE END 3 */
 
