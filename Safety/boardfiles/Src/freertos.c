@@ -128,6 +128,7 @@ void attitudeManagerExecute(void const * argument)
   /* Infinite loop */
   for(;;)
   {
+    RSSI_Check();
     attMng->execute();
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
     osDelay(500);
