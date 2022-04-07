@@ -53,13 +53,12 @@
 
 /* USER CODE BEGIN Includes */
 #include "main.h"
-#include "stm32f0xx_hal.h"
-// #include "PPM.hpp"
-// #include "PWM.hpp"
-// #include "safety_controller.hpp"
+#include "stm32f0xx_hal_gpio.h"
 
 #include "sensorFusionInterface.hpp"
 #include "attitudeManagerInterface.h"
+//TODO: include RSSI Interface
+
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -67,9 +66,6 @@ osThreadId attitudeManagerHandle;
 osThreadId sensorFusionHandle;
 
 /* USER CODE BEGIN Variables */
-// PPMChannel *ppm = new PPMChannel(MAX_PPM_CHANNELS);
-// PWMChannel *pwm = new PWMChannel();
-// attitudeManager *attMng = new attitudeManager(ppm, pwm);
 /* USER CODE END Variables */
 
 /* Function prototypes -------------------------------------------------------*/
@@ -90,7 +86,7 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
     SensorFusionInterfaceInit();
-
+    AttitudeManagerInterfaceInit();
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -111,7 +107,7 @@ void MX_FREERTOS_Init(void) {
   attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of sensorFusion */
-  osThreadDef(sensorFusion, sensorFusionExecute, osPriorityNormal, 0, 128);
+  osThreadDef(sensorFusion, sensorFusionExecute, osPriorityNormal, 0, 16*128);
   sensorFusionHandle = osThreadCreate(osThread(sensorFusion), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -134,7 +130,6 @@ void attitudeManagerExecute(void const * argument)
     // TODO: Re-add RSSI_CHECK
     // RSSI_Check();
     AttitudeManagerInterfaceExecute();
-    // attMng->execute();
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
     osDelay(500);
   }

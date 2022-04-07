@@ -4,14 +4,15 @@
 #include "PPM.hpp"
 #include "PWM.hpp"
 
+attitudeManager *attMng;
 
-
-static PPMChannel *ppm = new PPMChannel(MAX_PPM_CHANNELS);
-static PWMChannel *pwm = new PWMChannel();
-static attitudeManager attMng(ppm, pwm);
-
+void AttitudeManagerInterfaceInit(void) {
+    PPMChannel *ppm = new PPMChannel(MAX_PPM_CHANNELS);
+    PWMChannel *pwm = new PWMChannel();
+    attMng = new attitudeManager(ppm, pwm);
+}
 
 void AttitudeManagerInterfaceExecute(void)
 {
-    attMng.execute();
+    attMng->execute();
 }
