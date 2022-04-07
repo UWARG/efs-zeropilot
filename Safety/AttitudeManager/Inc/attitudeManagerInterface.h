@@ -7,6 +7,7 @@
 extern "C" {
 #endif
 
+void AttitudeManagerInterfaceInit(void);
 void AttitudeManagerInterfaceExecute(void);
 
 #ifdef __cplusplus

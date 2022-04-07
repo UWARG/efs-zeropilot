@@ -76,13 +76,6 @@
 /***************************************WARNING!************************************/
 
 #include "interchip_S.hpp"
-#include "RSSI.hpp"
-#include "attitudeManager.hpp"
-#include "PPM.hpp"
-#include "PWM.hpp"
-#include "cmsis_os.h"
-// #include "safety_controller.hpp"
-
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -177,11 +170,9 @@ int main(void)
   MX_USART2_UART_Init();
 
   /* USER CODE BEGIN 2 */
-  // PPMChannel *ppm = new PPMChannel(MAX_PPM_CHANNELS);
-  // PWMChannel *pwm = new PWMChannel();
-  // attitudeManager *attMng = new attitudeManager(ppm, pwm);
 
   interchipInit();
+  HAL_Delay(1000);
   HAL_NVIC_SetPriority(TIM15_IRQn, 1, 0);
   HAL_NVIC_SetPriority(SPI1_IRQn, 0, 0);
 
@@ -204,9 +195,6 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-    //Might need another thread for this task
-    // RSSI_Check(); // Run every time to update CommsFailed value
-    // attMng->execute();
   }
   /* USER CODE END 3 */
 
