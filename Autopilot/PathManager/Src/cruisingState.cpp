@@ -303,160 +303,49 @@ DRONE CODE
 
 #define DEFAULT_ALTITUDE 6 // hardcoding altitude as 6m (Manav's idea) (this might not even be in metres) 
 
-// The following functions are used to update the ID array that is a part of the CruisingState class
-static void appendNewElement(int * idArray, int newId);             // Adds newId to the first free element in idArray
-static int indexOfDesiredId(int * idArray, int id);                 // Returns the index of id in idArray
-static void insertNewElement(int * idArray, int prevId, int newId); // Inserts newId after prevId in idArray
-static void updateElement(int * idArray, int oldId, int newId);     // Replaces oldId with newId in idArray
-static void removeElement(int * idArray, int id);                   // Removes id from idArray
-static void clearArray(int * idArray);                              // Resets all elements in idArray to 0
-
 
 // Removed int array 
-_ModifyFlightPathErrorCode editFlightPath(fijo * telemetryData, WaypointManager& cruisingStateManager, _WaypointManager_Data_In input) {
-    
+_ModifyFlightPathErrorCode editFlightPath(WaypointManager& cruisingStateManager, fijo * telemetryData, _WaypointManager_Data_In input) {
     // If no commands given, just skip over this function
 
-    // IF STATEMENT FOR WHEN NO COMMANDS ARE GIVEN/IF TM FAILS
-    // if (telemetryData->waypointModifyFlightPathCommand == NO_FLIGHT_PATH_EDIT) {        
-    //     return MODIFY_CRUISING_SUCCESS;
-    // }
+    if (fijo == nullptr || cruisingStateManager == nullptr) {
+        return MODIFY_CRUISING_ERROR;
+    } 
     
     _WaypointOutputType waypointType = PATH_FOLLOW;
     _WaypointStatus editingStatus = WAYPOINT_SUCCESS;
 
     /* Editing the flight path */
-
-    // Else, we recieve the next waypoint 
     
     //Creating Target Waypoint 
     _PathData * targetWaypoint = cruisingStateManager.initialize_waypoint(telemetryData->gpsCoord->longitude, telemetryData->gpsCoord->latitude, DEFAULT_ALTITUDE, waypointType); 
     _PathData * inputWaypoint = cruisingStateManager.initialize_waypoint(input.longitude,input.latitude, input.altitude, waypointType)
-
-    if (telemetryData->numWaypoints == 1 && (telemetryData->waypointModifyFlightPathCommand >= 2 && telemetryData->waypointModifyFlightPathCommand <= 4)) { // Inserting, Appending, or Updating a waypoint
-
-
-        // Depending on the waypointType of the waypoint, we will need to call a different initialize_waypoint() method
-        _PathData * modifyWaypoint;
     
-        // initialize the waypoint with its long, lat, alt, and waypoint type 
-        modifyWaypoint = cruisingStateManager.initialize_waypoint(telemetryData->gpsCoord->longitude, telemetryData->gpsCoord->latitude, DEFAULT_ALTITUDE, waypointType); 
-        
-        
-        // Update flight path by passing in the appropriate parameters to update_path_nodes()
-        if (telemetryData->waypointModifyFlightPathCommand == APPEND) { // Append
-
-            editingStatus = cruisingStateManager.update_path_nodes(modifyWaypoint, APPEND_WAYPOINT, 0, 0, 0);
-
-            if (editingStatus == WAYPOINT_SUCCESS) { // Update ID array if edit was successful
-                appendNewElement(idArray, modifyWaypoint->waypointId); // Update the idArray
-            }
-
-        } else if (telemetryData->waypointModifyFlightPathCommand == INSERT) { // Insert
-
-            editingStatus = cruisingStateManager.update_path_nodes(modifyWaypoint, INSERT_WAYPOINT, 0, telemetryData->prevId, telemetryData->nextId);
-
-            if (editingStatus == WAYPOINT_SUCCESS) { // Update ID array if edit was successful
-                insertNewElement(idArray, telemetryData->prevId, modifyWaypoint->waypointId); // Update the idArray
-            }
-
-        } else if (telemetryData->waypointModifyFlightPathCommand == UPDATE) { // Update
-
-            editingStatus = cruisingStateManager.update_path_nodes(modifyWaypoint, UPDATE_WAYPOINT, telemetryData->modifyId, 0, 0);
-            
-            if (editingStatus == WAYPOINT_SUCCESS) { // Update ID array if edit was successful
-                updateElement(idArray, telemetryData->modifyId, modifyWaypoint->waypointId); // Update the idArray
-            }
-
-        } 
-    } else if (telemetryData->numWaypoints == 0 && telemetryData->waypointModifyFlightPathCommand == DELETE) { // Deleting a waypoint
-
-        editingStatus = cruisingStateManager.update_path_nodes(nullptr, DELETE_WAYPOINT, telemetryData->modifyId, 0, 0);
-        
-        if (editingStatus == WAYPOINT_SUCCESS) { // Update ID array if edit was successful
-            removeElement(idArray, telemetryData->modifyId); // Update the idArray
+    // delete the existing stuff
+    if (cruisingStateManager->currentWaypoint != nullptr) {
+        if (cruisingStateManager->currentWaypoint->next != nullptr) {
+            cruisingStateManager->destroy_waypoint(cruisingStateManager->currentWaypoint->next);
+            cruisingStateManager->currentWaypoint->next = nullptr;
         }
-
-    } else if (telemetryData->numWaypoints > 1 && telemetryData->waypointModifyFlightPathCommand == INITIALIZE_FLIGHT_PATH) { // Initialize flight path array
-
-        cruisingStateManager.clear_path_nodes(); // Nukes current flight path (ensures there are no memory leaks)
-        clearArray(idArray);
-
-        _PathData * newFlightPath[PATH_BUFFER_SIZE];
-
-        for(int i = 0; i < telemetryData->numWaypoints && i < PATH_BUFFER_SIZE; i++) {
-            // Set the output type of the new waypoint. Need if statements because of the enum parameter of the initialize_waypoint() method
-            if (telemetryData->waypoints[i].waypointType == 0) {
-                waypointType = PATH_FOLLOW;
-            } else if (telemetryData->waypoints[i].waypointType == 1) {
-                waypointType = ORBIT_FOLLOW;
-            } else {
-                waypointType = HOLD_WAYPOINT;
-            }
-            
-            // Depending on the waypointType of the waypoint, we will need to call a different initialize_waypoint() method
-            if (waypointType == PATH_FOLLOW) {
-                newFlightPath[i] = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[i].longitude, telemetryData->waypoints[i].latitude, telemetryData->waypoints[i].altitude, waypointType); 
-            } else {
-                newFlightPath[i] = cruisingStateManager.initialize_waypoint(telemetryData->waypoints[i].longitude, telemetryData->waypoints[i].latitude, telemetryData->waypoints[i].altitude, waypointType, telemetryData->waypoints[i].turnRadius); 
-            }
-
-            appendNewElement(idArray, newFlightPath[i]->waypointId); // Append elements to the idArray while we go :))
-        }
-
-        if (telemetryData->initializingHomeBase) { // If we are initializing the home base object too
-
-            cruisingStateManager.clear_home_base(); // Remove current home base
-
-            waypointType = HOLD_WAYPOINT; // Set the output type of the new waypoint. Need if statements because of the enum parameter of the initialize_waypoint() method
-
-            // The homebase will be a hold waypoint, so no selection required!
-            _PathData * newHomeBase = cruisingStateManager.initialize_waypoint(telemetryData->homebase.longitude, telemetryData->homebase.latitude, telemetryData->homebase.altitude, waypointType, telemetryData->homebase.turnRadius); 
-    
-            editingStatus = cruisingStateManager.initialize_flight_path(newFlightPath, telemetryData->numWaypoints, newHomeBase);
-        } else { // Only initializing the flight path
-            editingStatus = cruisingStateManager.initialize_flight_path(newFlightPath, telemetryData->numWaypoints);
-        }
-
-        // If initializing the flight path was not successful, then we will clear our idArray to prevent future confusion
-        if (editingStatus != WAYPOINT_SUCCESS) {
-            clearArray(idArray);
-        }
-
-    } else if (telemetryData->numWaypoints == 0 && telemetryData->waypointModifyFlightPathCommand == NUKE) {  // Nuke flight path
-        cruisingStateManager.clear_path_nodes();
-        clearArray(idArray);         
-    } else if (telemetryData->numWaypoints != 0) { // Incorrect commands from telemetry
-        // Set important values to their defaults. This will ensure that if the telemetry struct is not change, our plane will behave as expected
-        telemetryData->waypointModifyFlightPathCommand = NO_FLIGHT_PATH_EDIT; 
-        telemetryData->numWaypoints = 0; 
-        telemetryData->initializingHomeBase = 0; 
-    
-        return MODIFY_CRUISING_INCORRECT_TELEMETRY_COMMAND;
+        cruisingStateManager->destroy_waypoint(cruisingStateManager->currentWaypoint);
+        cruisingStateManager->currentWaypoint = nullptr;
     }
 
-    // Set important values to their defaults. This will ensure that if the telemetry struct is not change, our plane will behave as expected
-    telemetryData->waypointModifyFlightPathCommand = NO_FLIGHT_PATH_EDIT; 
-    telemetryData->numWaypoints = 0; 
-    telemetryData->initializingHomeBase = 0; 
-
+    cruisingStateManager->currentWaypoint = inputWaypoint;
+    cruisingStateManager->currentWaypoint->next = targetWaypoint;
+    cruisingStateManager->currentWaypoint->next->previous = inputWaypoint;
     // Return appropriate error code
-    if (editingStatus == WAYPOINT_SUCCESS) {
-        return MODIFY_CRUISING_SUCCESS;
-    } else {
-        return MODIFY_CRUISING_ERROR;
-    }
+    return MODIFY_CRUISING_SUCCESS;
 } 
 
 // Deleted any holding/circling code 
-_GetNextDirectionsErrorCode pathFollow(fijo * telemetryData, WaypointManager& cruisingStateManager, _WaypointManager_Data_In input, _WaypointManager_Data_Out * output) {
+_GetNextDirectionsErrorCode pathFollow( WaypointManager& cruisingStateManager, fijo * telemetryData, _WaypointManager_Data_In input, _WaypointManager_Data_Out * output) {
 
     _WaypointStatus pathFollowingStatus = UNDEFINED_PARAMETER;
 
     pathFollowingStatus = cruisingStateManager.get_next_directions(input, output);
 
-    output->desiredAirspeed = CRUISING_AIRSPEED; //aadi pls keep this line 
-
+    output->desiredAirspeed = CRUISING_AIRSPEED; //aadi pls keep this line. no i dont think i will. oi
     // Return appropriate error code
     if (pathFollowingStatus == WAYPOINT_SUCCESS) {
         return PATH_CRUISING_SUCCESS;
@@ -474,80 +363,7 @@ void setReturnValues(_CruisingState_Telemetry_Return * _returnToGround, Waypoint
     _returnToGround->pathFollowingErrorCode = (uint8_t) pathErrorCode;
 }
 
-//Don't have an array of waypoints for drone - commenting it out for now 
-
-void appendNewElement(int * idArray, int newId) {
-    int counter = 0;
-    bool appended = false;
-
-    // Goes through array until empty index is found or we reach end of array
-    while (!appended && counter < PATH_BUFFER_SIZE) {
-        if (idArray[counter] == 0) { // If an element has a value of 0, it is empty
-            idArray[counter] = newId;
-            appended = true;
-        }
-
-        counter++;
-    }
-}
-
-int indexOfDesiredId(int * idArray, int id) {
-    int counter = 0;
-
-    // Goes through array until desired index is found or we reach end of array
-    while (counter < PATH_BUFFER_SIZE) {
-        if (idArray[counter] == id) { 
-            return counter;
-        }
-        counter++;
-    }
-
-    return -1;
-}
-
-void insertNewElement(int * idArray, int prevId, int newId) {
-    int index = indexOfDesiredId(idArray, prevId);
-
-    if (index != -1) {
-        for (int i = PATH_BUFFER_SIZE - 1; i > index + 1; i--) {
-            idArray[i] = idArray[i-1];
-        }
-
-        idArray[index + 1] = newId;
-    }
-}
-
-void removeElement(int * idArray, int id) {
-    int index = indexOfDesiredId(idArray, id);
-
-    if (index != -1) {
-           for (int i = index; i < PATH_BUFFER_SIZE - 1; i++) {
-               idArray[i] = idArray[i+1];
-           }
-           idArray[PATH_BUFFER_SIZE - 1] = 0;
-    }
-}
-
-void updateElement(int * idArray, int oldId, int newId) {
-    int counter = 0;
-    bool updated = false;
-
-    // Goes through array until desired index is found or we reach end of array
-    while (!updated && counter < PATH_BUFFER_SIZE) {
-        if (idArray[counter] == oldId) { 
-            idArray[counter] = newId;
-            updated = true;
-        }
-        counter++;
-    }
-}
-
-void clearArray(int * idArray) {
-    for (int i = 0; i < PATH_BUFFER_SIZE; i++) {
-        idArray[i] = 0;
-    }
-}
-
+//Don't have an array of waypoints for drone - commenting it out for now
 #endif
 
 

@@ -99,7 +99,7 @@ class takeoffRollStage : public pathManagerState
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
         static WaypointManager takeoffPath;
-        static _PathData takeoffPoint;
+        static _PathData takeoffPoint; // target 
         static _WaypointStatus waypointStatus;
         static _LandingTakeoffOutput* getControlOutput(){return &output;}
 
@@ -371,13 +371,14 @@ class preflightStage : public pathManagerState
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
         static WaypointManager takeoffPath;
-        static _PathData takeoffPoint;
+        // static _PathData takeoffPoint;
         static _WaypointStatus waypointStatus;
+        static _WaypointManager_Data_Out* GetOutputData(void) {return &waypointOutput;}
         static _LandingTakeoffOutput* getControlOutput(){return &output;}
 
     private:
-        static _PathData * pathArray[1];
         static _PathData * currentLocation;
+        static _PathData * targetWaypoint;
         static _LandingTakeoffInput input;
         static _LandingTakeoffOutput output;
         static _WaypointManager_Data_Out waypointOutput;
@@ -394,10 +395,13 @@ class takeoffStage : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
+         static _WaypointManager_Data_Out* GetOutputData(void) {return &waypointOutput;}
         static _LandingTakeoffOutput* getControlOutput(){return &output;}
     private:
         static _LandingTakeoffInput input;
         static _LandingTakeoffOutput output;
+        static _PathData * currentLocation;
+        static _PathData * targetWaypoint;
         static _WaypointManager_Data_In waypointInput;
         static _WaypointManager_Data_Out waypointOutput;
         takeoffStage() {}
@@ -425,12 +429,10 @@ class cruisingState : public pathManagerState
         cruisingState& operator =(const cruisingState& other);
 
         WaypointManager cruisingStateManager;
-        int waypointIDArray[PATH_BUFFER_SIZE]; // Stores ids of the waypoints in the flight path in the order that they are executed
         static _WaypointManager_Data_In _inputdata;
         static _WaypointManager_Data_Out _outputdata;
         static _CruisingState_Telemetry_Return _returnToGround;
-        bool inHold = false;
-        bool goingHome = false;
+     
 };
 
 class landingStage : public pathManagerState
@@ -440,19 +442,18 @@ class landingStage : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-
+        static _WaypointManager_Data_Out* GetOutputData(void) {return &waypointOutput;}
         static _LandingTakeoffOutput* getControlOutput(){return &output;}
         static WaypointManager landingPath;
         static _WaypointStatus waypointStatus; //used to catch errors
         static _LandingPath path; //used to load in path
     private:
-        int waypointIDArray[PATH_BUFFER_SIZE];
         static _LandingTakeoffInput input;
         static _LandingTakeoffOutput output;
         static _WaypointManager_Data_In waypointInput;
         static _WaypointManager_Data_Out waypointOutput;
-        static _PathData * pathArray[3]; //used to translate loaded in path to something the waypoint manager can take as a parameter
         static _PathData * currentLocation;
+        static _PathData * targetWaypoint;
         landingStage() {}
         landingStage(const landingStage& other);
         landingStage& operator =(const landingStage& other);

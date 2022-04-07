@@ -53,11 +53,9 @@ _GetNextDirectionsErrorCode pathFollow(Telemetry_PIGO_t * telemetryData, Waypoin
 
 #else 
 
-_ModifyFlightPathErrorCode editFlightPath(fijo * telemetryData, WaypointManager& cruisingStateManager, _PathData waypointFlightPath[]);
-
+_ModifyFlightPathErrorCode editFlightPath(WaypointManager& cruisingStateManager, fijo * telemetryData, _WaypointManager_Data_In input);
 // Removed the inHold boolean flag as hovering/holding feature was removed for code   
-_GetNextDirectionsErrorCode pathFollow(fijo * telemetryData, WaypointManager& cruisingStateManager, _WaypointManager_Data_In input, _WaypointManager_Data_Out * output, bool& goingHome);
-
+_GetNextDirectionsErrorCode pathFollow( WaypointManager& cruisingStateManager, fijo * telemetryData, _WaypointManager_Data_In input, _WaypointManager_Data_Out * output);
 
 
 /**
