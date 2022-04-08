@@ -370,7 +370,8 @@ class preflightStage : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-        static WaypointManager takeoffPath;
+        static WaypointManager preflightPath;
+        bool getPreFlightCompleteStatus (void) {return preFlightComplete;}
         // static _PathData takeoffPoint;
         static _WaypointStatus waypointStatus;
         static _WaypointManager_Data_Out* GetOutputData(void) {return &waypointOutput;}
@@ -379,9 +380,11 @@ class preflightStage : public pathManagerState
     private:
         static _PathData * currentLocation;
         static _PathData * targetWaypoint;
+        int cycleCount = 0; 
         static _LandingTakeoffInput input;
         static _LandingTakeoffOutput output;
         static _WaypointManager_Data_Out waypointOutput;
+        bool preFlightComplete; 
         preflightStage() {}
         preflightStage(const preflightStage& other);
         preflightStage& operator =(const preflightStage& other);
@@ -395,7 +398,9 @@ class takeoffStage : public pathManagerState
         void execute(pathManager* pathMgr);
         void exit(pathManager* pathMgr) {(void) pathMgr;}
         static pathManagerState& getInstance();
-         static _WaypointManager_Data_Out* GetOutputData(void) {return &waypointOutput;}
+        static WaypointManager takeOffPath;
+        static _WaypointStatus waypointStatus;
+        static _WaypointManager_Data_Out* GetOutputData(void) {return &waypointOutput;}
         static _LandingTakeoffOutput* getControlOutput(){return &output;}
     private:
         static _LandingTakeoffInput input;

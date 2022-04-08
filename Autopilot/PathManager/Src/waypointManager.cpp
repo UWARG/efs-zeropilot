@@ -1122,7 +1122,6 @@ void WaypointManager::update_return_data(_WaypointManager_Data_Out *Data) {
     Data->distanceY = distanceY;
     Data->distanceZ = distanceZ;
     Data->rotation = rotation;
-    Data->turnDirection = turnDirection;
     Data->errorCode = errorCode;
     Data->isDataNew = dataIsNew;
     dataIsNew = false; 

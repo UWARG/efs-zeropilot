@@ -319,7 +319,7 @@ _ModifyFlightPathErrorCode editFlightPath(WaypointManager& cruisingStateManager,
     
     //Creating Target Waypoint 
     _PathData * targetWaypoint = cruisingStateManager.initialize_waypoint(telemetryData->gpsCoord->longitude, telemetryData->gpsCoord->latitude, DEFAULT_ALTITUDE, waypointType); 
-    _PathData * inputWaypoint = cruisingStateManager.initialize_waypoint(input.longitude,input.latitude, input.altitude, waypointType)
+    _PathData * inputWaypoint = cruisingStateManager.initialize_waypoint(input.longitude,input.latitude, input.altitude, waypointType);
     
     // delete the existing stuff
     if (cruisingStateManager->currentWaypoint != nullptr) {

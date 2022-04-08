@@ -763,23 +763,28 @@ IMU_Data_t sensorFusion::_imudata;
 // Landing and Takeoff Variables (some stages DO NOT need waypoint inputs, it's not a mistake that some are missing)
 // For landing and takeoff states that use waypoint manager functions, the variables below will hold the I/O that is needed for those functions to work
 
+// Preflight
 _LandingTakeoffInput preflightStage::input;
 _LandingTakeoffOutput preflightStage::output;
 _WaypointManager_Data_Out preflightStage::waypointOutput;
 _PathData * preflightStage::currentLocation;
 _PathData * preflightStage::targetWaypoint;
-WaypointManager preflightStage::takeoffPath;
-_PathData preflightStage::takeoffPoint;
+WaypointManager preflightStage::preflightPath;
 _WaypointStatus preflightStage::waypointStatus;
 
+// Takeoff
 _LandingTakeoffInput takeoffStage::input;
 _LandingTakeoffOutput takeoffStage::output;
 _PathData * takeoffStage::currentLocation;
-_PathData * tafeoffStage::targetWaypoint;
+_PathData * takeoffStage::targetWaypoint;
+WaypointManager takeOffPath;
 _WaypointManager_Data_In takeoffStage::waypointInput;
 _WaypointManager_Data_Out takeoffStage::waypointOutput;
+ _WaypointStatus takeoffStage::waypointStatus;
 
 
+
+//Landing
 _LandingTakeoffInput landingStage::input;
 _LandingTakeoffOutput landingStage::output;
 _WaypointManager_Data_In landingStage::waypointInput;
@@ -806,23 +811,25 @@ void commsWithAttitude::execute(pathManager* pathMgr)
 
     // CoordinatedTurnAttitudeManagerCommands_t * turnCommands = coordinateTurnElevation::GetRollAndRudder();
     // AltitudeAirspeedCommands_t * altCommands = coordinateTurnElevation::GetPitchAndAirspeed();
+
+    _WaypointManager_Data_Out * waypointOutput {}; 
     
     //deciding which stage we get output data from 
     switch(pathMgr->stage){
         case LANDING:
-            _WaypointManager_Data_Out * waypointOutput = landingStage::GetOutputData();
+            waypointOutput = landingStage::GetOutputData();
             break;
         case CRUISING:
-            _WaypointManager_Data_Out * waypointOutput = cruisingState::GetOutputData();
+            waypointOutput = cruisingState::GetOutputData();
             break;
         case PREFLIGHT:
-            _WaypointManager_Data_Out * waypointOutput = preflightStage::GetOutputData();
+            waypointOutput = preflightStage::GetOutputData();
             break;
         case TAKEOFF:
-           _WaypointManager_Data_Out * waypointOutput = takeoffStage::GetOutputData();
+           waypointOutput = takeoffStage::GetOutputData();
             break;
         default:
-            _WaypointManager_Data_Out * waypointOutput = cruisingState::GetOutputData();
+            waypointOutput = cruisingState::GetOutputData();
     }
 
 
@@ -915,7 +922,13 @@ void resetVariables::execute(pathManager* pathMgr)
 
     }
 
-     // If we are above the ground, reached a certain height, and takeOff is still true 
+    //checking of 
+    if (pathMgr->stage == PREFLIGHT && preflightStage::getPreFlightCompleteStatus){
+        pathMgr->stage = TAKEOFF; 
+
+    }
+
+     // If we are above the ground, reached a certain height, and takeOff is still true, begin cruising 
     if(sensorFusion::GetSFOutput()->altitude > EXIT_TAKEOFF_ALTITUDE && commsWithTelemetry::GetTelemetryIncomingData()->takeoffCommand)
     {
         pathMgr->stage = CRUISING;
@@ -1110,9 +1123,9 @@ void landingStage::execute(pathManager* pathMgr)
     input.telemetryData = commsWithTelemetry::GetTelemetryIncomingData();
     input.sensorOutput = sensorFusion::GetSFOutput();
 
-    //making sure landing points are only made once
-    if(!pathMgr->madeLandingPoints)
-    {
+    //Think I need to get rid of this if statement as we should continuously create target and currentLocation waypoints
+    // if(!pathMgr->madeLandingPoints)
+    // {
         //Getting current location from sensor fusion 
         currentLocation = landingPath.initialize_waypoint(input.sensorOutput->longitude, input.sensorOutput->latitude, input.sensorOutput->altitude, LANDING_WAYPOINT); 
 
@@ -1122,9 +1135,8 @@ void landingStage::execute(pathManager* pathMgr)
         //initializing flight path - sets the relationship between current location's and target's pointers
         waypointStatus = landingPath.initialize_flight_path(targetWaypoint, currentLocation);
 
-        //set made madelandingPoints to true
-        pathMgr->madeLandingPoints = true;
-    }
+        // pathMgr->madeLandingPoints = true;
+    // }
 
     //we use this instead of the currentLocationWaypoint for get_next_directions for reasons I hate 
     waypointInput.latitude = input.sensorOutput->latitude;
@@ -1150,7 +1162,6 @@ void landingStage::execute(pathManager* pathMgr)
     }
     else
     {
-        //pathMgr->setState(coordinateTurnElevation::getInstance());
         pathMgr->setState(commsWithAttitude::getInstance());
     }
 }
@@ -1169,36 +1180,22 @@ TAKEOFF STATE FUNCTIONS
 //create a count to 1000 -> then proceed to takeoff. 
 void preflightStage::execute(pathManager* pathMgr)
 {
-    pathMgr->stage = PREFLIGHT;
     //load in sensor fusion data and telemtry data into input structure
     input.telemetryData = commsWithTelemetry::GetTelemetryIncomingData();
     input.sensorOutput = sensorFusion::GetSFOutput();
 
     
-    output.controlDetails.throttlePassby = true;
-    output.controlDetails.throttlePercent = 20; // because Gordon wants it to be at 20%
+    // This is the part where we ~wait~ before going to takeoff...not entirely sure if I'm doing this right 
+    // I'll make this a const later once I know if this actually works 
 
-    if(!pathMgr->madeTakeoffPoints)
-    {
-        // We are no longer getting input.telemetryData->takeoffDirectionHeading
-        //takeoffPoint = LandingTakeoffManager::createTakeoffWaypoint(input.sensorOutput->latitude,input.sensorOutput->longitude, input.sensorOutput->altitude, input.telemetryData->takeoffDirectionHeading);
-        
-        //pathArray[0] = takeoffPath.initialize_waypoint(takeoffPoint.longitude, takeoffPoint.latitude, takeoffPoint.altitude, PATH_FOLLOW);
-
-        //10 meters is added to the altitude of the currentLocation waypoint so that is is not ground level
-        currentLocation = takeoffPath.initialize_waypoint(input.sensorOutput->longitude, input.sensorOutput->latitude, (input.sensorOutput->altitude + 10), TAKEOFF_WAYPOINT);
-       
-       //target waypoint might be given by gordon and not telem???
-        waypointStatus = takeoffPath.initialize_flight_path(pathArray, 1, currentLocation);
-        pathMgr->madeTakeoffPoints = true;
+    if (cycleCount < 1000){
+        cycleCount++; 
+        preFlightComplete = false;
+    } else { 
+        preFlightComplete = true; 
+        cycleCount = 0; 
     }
 
-    // if we all good with setup, go to takeoff 
-    // TAKEOFF WILL BE SET HERE
-    // if(input.sensorOutput->airspeed > (LandingTakeoffManager::desiredRotationSpeed(pathMgr->isPackage)))
-    // {
-    //     pathMgr->stage = TAKEOFF;
-    // }
 
     if(preflightStage::waypointStatus != WAYPOINT_SUCCESS)
     {
@@ -1228,27 +1225,29 @@ void takeoffStage::execute(pathManager* pathMgr)
     input.telemetryData = commsWithTelemetry::GetTelemetryIncomingData();
     input.sensorOutput = sensorFusion::GetSFOutput();
 
-        //setting sensorFusion input to waypoint data in
+        // we use this instead of the currentLocationWaypoint for get_next_directions for reasons I hate 
         waypointInput.latitude = input.sensorOutput->latitude;
         waypointInput.longitude = input.sensorOutput->longitude;
         waypointInput.altitude = input.sensorOutput->altitude;
         waypointInput.track = input.sensorOutput->track;
 
-        // Note for future us: yes, there is meant to be preflightStage in here 
-        preflightStage::waypointStatus = preflightStage::takeoffPath.get_next_directions(waypointInput, &waypointOutput);
-        output = LandingTakeoffManager::translateWaypointCommands(waypointOutput);
+         //Getting current location from sensor fusion 
+        currentLocation = takeOffPath.initialize_waypoint(input.sensorOutput->longitude, input.sensorOutput->latitude, input.sensorOutput->altitude, LANDING_WAYPOINT); 
+
+        // Gordon this is for you! - targetWaypoint Must have long, lat, alt, and waypointType = TAKEOFF
+        // targetWaypoint = someFancyLandingTakeoffMath
+
+        //initializing flight path - sets the relationship between current location's and target's pointers
+        waypointStatus = takeOffPath.initialize_flight_path(targetWaypoint, currentLocation);
+
+        // Going from current to target
+        waypointStatus = takeOffPath.get_next_directions(waypointInput, &waypointOutput);
 
         //maintaining altitude
         waypointOutput.desiredAirspeed = CRUISING_AIRSPEED;        
-        //pitching up
-        output.controlDetails.pitchPassby = true;
-        output.controlDetails.pitchPercent =  0.3;
-    
+        
 
-    //ensuring made takeoff points is reset
-    pathMgr->madeTakeoffPoints = false;
-
-    if(preflightStage::waypointStatus != WAYPOINT_SUCCESS)
+    if(waypointStatus != WAYPOINT_SUCCESS)
     {
         pathMgr->isError = true;
     }
@@ -1259,7 +1258,6 @@ void takeoffStage::execute(pathManager* pathMgr)
     }
     else
     {
-        // pathMgr->setState(coordinateTurnElevation::getInstance());
         pathMgr->setState(commsWithAttitude::getInstance());
     }
 }
