@@ -394,6 +394,10 @@ public:
     float orbitCentreLong;
     float orbitCentreAlt;
     _PathData * currentWaypoint;
+    /**
+     * Removes waypoint from the heap
+     */
+    void destroy_waypoint(_PathData * waypoint);
 private:
 
     float currentTrack;
@@ -449,10 +453,8 @@ private:
      */
     float get_distance(long double lat1, long double lon1, long double lat2, long double lon2);
 
-    /**
-     * Removes waypoint from the heap
-     */
-    void destroy_waypoint(_PathData * waypoint);
+    
+    
 };
 
 #endif

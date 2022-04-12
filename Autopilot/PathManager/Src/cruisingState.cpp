@@ -308,7 +308,7 @@ DRONE CODE
 _ModifyFlightPathErrorCode editFlightPath(WaypointManager& cruisingStateManager, fijo * telemetryData, _WaypointManager_Data_In input) {
     // If no commands given, just skip over this function
 
-    if (fijo == nullptr || cruisingStateManager == nullptr) {
+    if (telemetryData == nullptr || cruisingStateManager == nullptr) {
         return MODIFY_CRUISING_ERROR;
     } 
     
@@ -318,22 +318,22 @@ _ModifyFlightPathErrorCode editFlightPath(WaypointManager& cruisingStateManager,
     /* Editing the flight path */
     
     //Creating Target Waypoint 
-    _PathData * targetWaypoint = cruisingStateManager.initialize_waypoint(telemetryData->gpsCoord->longitude, telemetryData->gpsCoord->latitude, DEFAULT_ALTITUDE, waypointType); 
+    _PathData * targetWaypoint = cruisingStateManager.initialize_waypoint(telemetryData->gpsCoord.longitude, telemetryData->gpsCoord.lattiude, DEFAULT_ALTITUDE, waypointType); 
     _PathData * inputWaypoint = cruisingStateManager.initialize_waypoint(input.longitude,input.latitude, input.altitude, waypointType);
     
     // delete the existing stuff
-    if (cruisingStateManager->currentWaypoint != nullptr) {
-        if (cruisingStateManager->currentWaypoint->next != nullptr) {
-            cruisingStateManager->destroy_waypoint(cruisingStateManager->currentWaypoint->next);
-            cruisingStateManager->currentWaypoint->next = nullptr;
+    if (cruisingStateManager.currentWaypoint != nullptr) {
+        if (cruisingStateManager.currentWaypoint->next != nullptr) {
+            cruisingStateManager.destroy_waypoint(cruisingStateManager.currentWaypoint->next);
+            cruisingStateManager.currentWaypoint->next = nullptr;
         }
-        cruisingStateManager->destroy_waypoint(cruisingStateManager->currentWaypoint);
-        cruisingStateManager->currentWaypoint = nullptr;
+        cruisingStateManager.destroy_waypoint(cruisingStateManager.currentWaypoint);
+        cruisingStateManager.currentWaypoint = nullptr;
     }
 
-    cruisingStateManager->currentWaypoint = inputWaypoint;
-    cruisingStateManager->currentWaypoint->next = targetWaypoint;
-    cruisingStateManager->currentWaypoint->next->previous = inputWaypoint;
+    cruisingStateManager.currentWaypoint = inputWaypoint;
+    cruisingStateManager.currentWaypoint->next = targetWaypoint;
+    cruisingStateManager.currentWaypoint->next->previous = inputWaypoint;
     // Return appropriate error code
     return MODIFY_CRUISING_SUCCESS;
 } 
@@ -355,9 +355,9 @@ _GetNextDirectionsErrorCode pathFollow( WaypointManager& cruisingStateManager, f
 }
 
 void setReturnValues(_CruisingState_Telemetry_Return * _returnToGround, WaypointManager& cruisingStateManager, _ModifyFlightPathErrorCode editErrorCode, _GetNextDirectionsErrorCode pathErrorCode) {
-    _returnToGround->currentWaypointId = cruisingStateManager.get_id_of_current_index();
-    _returnToGround->currentWaypointIndex = cruisingStateManager.get_current_index();
-    _returnToGround->homeBaseInitialized = cruisingStateManager.is_home_base_initialized();
+    // _returnToGround->currentWaypointId = cruisingStateManager.get_id_of_current_index();
+    // _returnToGround->currentWaypointIndex = cruisingStateManager.get_current_index();
+    // _returnToGround->homeBaseInitialized = cruisingStateManager.is_home_base_initialized();
 
     _returnToGround->editingFlightPathErrorCode = (uint8_t) editErrorCode;
     _returnToGround->pathFollowingErrorCode = (uint8_t) pathErrorCode;

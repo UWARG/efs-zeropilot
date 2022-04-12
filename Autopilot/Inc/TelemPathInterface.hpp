@@ -82,7 +82,7 @@ struct Telemetry_PIGO_t {
 //telem struct from cv for drone 
 
 struct gpsCoordinatesFIJO{
-    double longitide; 
+    double longitude; 
     double lattiude; 
 }; 
 

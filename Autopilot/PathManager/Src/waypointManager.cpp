@@ -953,10 +953,10 @@ DRONE CODE
 **************************************************************************************************************************************************************************/
 WaypointManager::WaypointManager() {
     // Initializes important array and id navigation constants
-    currentIndex = 0;
-    nextAssignedId = 1;
-    numWaypoints = 0;
-    nextFilledIndex = 0;
+    // currentIndex = 0;
+    // nextAssignedId = 1;
+    // numWaypoints = 0;
+    // nextFilledIndex = 0;
 
     // Sets relative long and lat
     relativeLongitude = REFERENCE_LONGITUDE;
@@ -964,7 +964,7 @@ WaypointManager::WaypointManager() {
 
     // Sets boolean variables
     dataIsNew = false;
-    orbitPathStatus = PATH_FOLLOW;
+    // orbitPathStatus = PATH_FOLLOW;
     errorStatus = WAYPOINT_SUCCESS;
 
     // Initialize all other parameters (defaults)
@@ -1023,7 +1023,7 @@ _PathData* WaypointManager::initialize_waypoint() {
         return NULL;
     }
 
-    nextAssignedId++; // Increment ID so next waypoint has a different one
+    // nextAssignedId++; // Increment ID so next waypoint has a different one
     waypoint->latitude = -1;
     waypoint->longitude = -1;
     waypoint->altitude = 10; // Sets this to 10 as a default so plane does not crash. This can be changed by state machine.
@@ -1043,7 +1043,7 @@ _PathData* WaypointManager::initialize_waypoint(long double longitude, long doub
         return NULL;
     }
 
-    nextAssignedId++; // Increment ID so next waypoint has a different one 
+    // nextAssignedId++; // Increment ID so next waypoint has a different one 
     waypoint->latitude = latitude;
     waypoint->longitude = longitude;
 
