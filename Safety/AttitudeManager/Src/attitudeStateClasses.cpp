@@ -324,9 +324,9 @@ void PeripheralControlMode::execute(attitudeManager* attitudeMgr)
 {
     PPM_Instructions_t *teleopInstructions = fetchInstructionsMode::GetTeleopInstructions();
     if (teleopInstructions->PPMValues[attitudeMgr->grabber->ppmChannel] > 50)
-        attitudeMgr->grabber->close();
+        attitudeMgr->grabber->close(50);
     else 
-        attitudeMgr->grabber->open();
+        attitudeMgr->grabber->open(50);
     attitudeMgr->setState(fetchInstructionsMode::getInstance());
 }
 
