@@ -122,14 +122,14 @@ void angleToLED(float angle) {
     HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
-    if (angle < -90) {
+    if (angle < -180) {
         HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
-    } else if (angle < -30) {
+    } else if (angle < -90) {
         HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
         HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
-    } else if ( angle < 30) {
+    } else if ( angle < 90) {
         HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
-    } else if ( angle < 90 ) {
+    } else if ( angle < 180 ) {
         HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
         HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
     } else {
@@ -201,7 +201,15 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
 
     // convert YAW to +/- value:
     if (yaw > 180) {
-        yaw -= 360;
+        //yaw -= 360;
+    }
+
+    // constrain roll
+    float roll = -curr_sf.roll;
+    if( roll < -180) {
+        //roll += 360;
+    } if (roll > 180) {
+        //roll -= 360;
     }
     angleToLED(-curr_sf.roll);
     /*if (PID_method == 0) {
@@ -228,10 +236,10 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
     // float test_pid = 1;
 
     // in our testing we define the back to be where the imu is, so we are tuning left/right.
-    // In this way, we have left - the PID and the right + PID (unsure about this - double check)
+    // In this way, we have left - curr_sf.rollcurr_sf.rollcurr_sf.rollthe PID and the right + PID (unsure about this - double check)
 
-    float M_Base = 30;
-    float M_Scale = 0.5;
+    float M_Base = 40;
+    float M_Scale = 0;
     PID_Out.backLeftMotorPercent = M_Base - M_Scale * test_pid;
     PID_Out.frontLeftMotorPercent = M_Base - M_Scale * test_pid;
     PID_Out.backRightMotorPercent = M_Base + M_Scale * test_pid;
@@ -241,5 +249,9 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * S
     // PID_Out.frontLeftMotorPercent = M_Base;
     // PID_Out.backRightMotorPercent = M_Base;
     // PID_Out.frontRightMotorPercent = M_Base;
+
+    // set this to temporarily be current pitch.
+    // PID_Out.tempMotor0 = curr_sf.pitch;
+    // PID_Out.tempMotor1 = 50;
     return &PID_Out;
 }

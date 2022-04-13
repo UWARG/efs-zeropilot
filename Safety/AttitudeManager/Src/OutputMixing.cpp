@@ -47,6 +47,9 @@ OutputMixing_error_t OutputMixing_Execute(PID_Output_t *PidOutput, float *channe
 	channelOut[BACK_LEFT_MOTOR_CHANNEL] = PidOutput -> backLeftMotorPercent;
 	channelOut[BACK_RIGHT_MOTOR_CHANNEL] = PidOutput -> backRightMotorPercent;
 
+	//channelOut[5] = PidOutput->tempMotor0;
+	//channelOut[11] = PidOutput->tempMotor1;
+
 	constrainOutput(channelOut);
 
 // #if TAIL_TYPE == INV_V_TAIL

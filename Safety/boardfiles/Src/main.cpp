@@ -170,15 +170,16 @@ int main(void)
 
   bool CALIBRATE = false;
   if (CALIBRATE) {
-for(int i = 0; i<4; i++) {
+for(int i = 0; i<=4; i++) {
     pwm->set(i, 0);
   }
   HAL_Delay(2000);
-  for(int i = 0; i<4; i++) {
+  for(int i = 0; i<=4; i++) {
     // pwm->set(i, 100);
+    pwm->set(11, 100);
   }
   HAL_Delay(2000);
-  for(int i = 0; i<4; i++) {
+  for(int i = 0; i<=11; i++) {
     pwm->set(i, 0);
   }
   HAL_Delay(2000);
