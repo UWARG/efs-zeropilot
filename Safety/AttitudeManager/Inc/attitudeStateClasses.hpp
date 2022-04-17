@@ -36,6 +36,7 @@ class fetchInstructionsMode : public attitudeState
         fetchInstructionsMode(const fetchInstructionsMode& other);
         fetchInstructionsMode& operator =(const fetchInstructionsMode& other);
         static bool ReceiveTeleopInstructions(attitudeManager* attitudeMgr);
+        static bool isArmed();
         static CommandsForAM _PMInstructions;
         static PPM_Instructions_t _TeleopInstructions;
         static Instructions_t _controlsInstructions;
@@ -104,4 +105,21 @@ class FatalFailureMode : public attitudeState
         FatalFailureMode() {}
         FatalFailureMode(const FatalFailureMode& other);
         FatalFailureMode& operator =(const FatalFailureMode& other);
+};
+
+class DisarmMode : public attitudeState
+{
+    public:
+        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
+        void execute(attitudeManager* attitudeMgr);
+        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
+        static attitudeState& getInstance();
+    private:
+        DisarmMode() {}
+        DisarmMode(const DisarmMode& other);
+        DisarmMode& operator =(const DisarmMode& other);
+        static bool ReceiveArmDisarmInstruction(attitudeManager* attitudeMgr);
+        static bool isArmed();
+        static uint8_t _armDisarmPPMValue;
+        static uint8_t armDisarmTimeoutCount;
 };
