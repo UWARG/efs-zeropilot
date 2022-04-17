@@ -19,7 +19,7 @@
 #include "PWM.hpp"
 #include <stdint.h>
 
-static const int32_t MAX_PPM_CHANNELS = 12;
+static const int32_t MAX_PPM_CHANNELS = 13;
 
 enum StatusCode{STATUS_CODE_OK, STATUS_CODE_FAILED, STATUS_CODE_INVALID_ARGS};
 
