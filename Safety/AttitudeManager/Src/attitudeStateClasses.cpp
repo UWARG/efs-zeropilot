@@ -94,8 +94,7 @@ bool fetchInstructionsMode::ReceiveTeleopInstructions(attitudeManager* attitudeM
 
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
 {
-    SFError_t _SFError = SF_GenerateNewResult();
-    _SFError = SF_GetResult(&_SFOutput);
+    SFError_t _SFError = SF_GetResult(&_SFOutput);
 
     attitudeMgr->setState(PIDloopMode::getInstance());
 }

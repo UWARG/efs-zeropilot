@@ -93,6 +93,25 @@ void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackTy
 /* USER CODE END FunctionPrototypes */
 
 /* Hook prototypes */
+void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName);
+
+/* USER CODE BEGIN 4 */
+__weak void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
+{
+   /* Run time stack overflow checking is performed if
+   configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
+   called if a stack overflow is detected. */
+  while (1) {
+    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+    for (int i = 0; i < 100000; i++) { }
+    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+    for (int i = 0; i < 900000; i++) { }
+  }
+
+}
+/* USER CODE END 4 */
 
 /* Init FreeRTOS */
 
@@ -117,13 +136,13 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of attitudeManager */
-  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 128);
+  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 256);
   attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of sensorFusion */
-  osThreadDef(sensorFusion, sensorFusionExecute, osPriorityNormal, 0, 128);
+  osThreadDef(sensorFusion, sensorFusionExecute, osPriorityNormal, 0, 2000);
   sensorFusionHandle = osThreadCreate(osThread(sensorFusion), NULL);
-
+  
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -138,15 +157,18 @@ void attitudeManagerExecute(void const * argument)
 {
 
   /* USER CODE BEGIN attitudeManagerExecute */
+  UBaseType_t uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
   /* Infinite loop */
   for(;;)
   {
     // TODO: Re-add RSSI_CHECK
     // RSSI_Check();
-    // AttitudeManagerInterfaceExecute();
-    HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-    osDelay(500);
+    AttitudeManagerInterfaceExecute();
+    // HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+    uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+    vTaskDelay(20);
   }
+
   /* USER CODE END attitudeManagerExecute */
 }
 
@@ -154,12 +176,23 @@ void attitudeManagerExecute(void const * argument)
 void sensorFusionExecute(void const * argument)
 {
   /* USER CODE BEGIN sensorFusionExecute */
+  TickType_t xLastWakeTime;
+  const TickType_t xTimeIncrement = 20;
+  /* Inspect our own high water mark on entering the task. */
+  UBaseType_t uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+
   /* Infinite loop */
   for(;;)
   {
-    // SensorFusionInterfaceExecute();
+    // Initialise the xLastWakeTime variable with the current time.
+    xLastWakeTime = xTaskGetTickCount();
+
+    // TODO: Re-add RSSI_CHECK
+    // RSSI_Check();
+    SensorFusionInterfaceExecute();
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-    osDelay(250);
+    uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+    vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
   }
   /* USER CODE END sensorFusionExecute */
 }

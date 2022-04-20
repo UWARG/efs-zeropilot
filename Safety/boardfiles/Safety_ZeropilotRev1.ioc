@@ -1,7 +1,12 @@
 #MicroXplorer Configuration settings - do not modify
-FREERTOS.FootprintOK=true
-FREERTOS.IPParameters=Tasks01,FootprintOK
-FREERTOS.Tasks01=attitudeManager,0,128,attitudeManagerExecute,Default,NULL,Dynamic,NULL,NULL;sensorFusion,0,128,sensorFusionExecute,Default,NULL,Dynamic,NULL,NULL
+FREERTOS.FootprintOK=false
+FREERTOS.INCLUDE_uxTaskGetStackHighWaterMark=1
+FREERTOS.INCLUDE_vTaskDelayUntil=1
+FREERTOS.IPParameters=Tasks01,FootprintOK,configMINIMAL_STACK_SIZE,INCLUDE_vTaskDelayUntil,configTOTAL_HEAP_SIZE,INCLUDE_uxTaskGetStackHighWaterMark,configCHECK_FOR_STACK_OVERFLOW
+FREERTOS.Tasks01=attitudeManager,0,128,attitudeManagerExecute,Default,NULL,Dynamic,NULL,NULL;sensorFusion,0,1536,sensorFusionExecute,Default,NULL,Dynamic,NULL,NULL
+FREERTOS.configCHECK_FOR_STACK_OVERFLOW=2
+FREERTOS.configMINIMAL_STACK_SIZE=128
+FREERTOS.configTOTAL_HEAP_SIZE=8000
 File.Version=6
 GPIO.groupedBy=Group By Peripherals
 I2C1.I2C_Speed_Mode=I2C_Fast
