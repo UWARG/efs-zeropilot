@@ -208,6 +208,7 @@ void BMX160::updateData(void) {
 
 void BMX160::GetResult(IMUData_t &Data) {
 	// // The 15:8 and 7:0 bits are in different registers. The bitmasking below joins them into one 16 bit integer
+	this -> updateData(); 
 	int16_t magx = (rawImuData[1]  << 8) | rawImuData[0];
 	int16_t magy = (rawImuData[3]  << 8) | rawImuData[2];
 	int16_t magz = (rawImuData[5]  << 8) | rawImuData[4];
