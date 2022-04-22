@@ -105,8 +105,7 @@ bool fetchInstructionsMode:: isArmed()
 {
     //Range of PPM percentage to be considered ARMED is 95-100%
     const uint8_t MIN_ARM_VALUE = 50;
-    const uint8_t MAX_ARM_VALUE = 100;
-    if (_TeleopInstructions.PPMValues[ARM_DISARM_CHANNEL_INDEX] >= MIN_ARM_VALUE && _TeleopInstructions.PPMValues[ARM_DISARM_CHANNEL_INDEX] <= MAX_ARM_VALUE)
+    if (_TeleopInstructions.PPMValues[ARM_DISARM_CHANNEL_INDEX] >= MIN_ARM_VALUE)
     {
         return true;
     }
@@ -300,27 +299,26 @@ attitudeState& DisarmMode:: getInstance()
 
 bool DisarmMode:: ReceiveArmDisarmInstruction(attitudeManager* attitudeMgr)
 {
+    bool retVal = true;
     if(attitudeMgr->ppm->is_disconnected(HAL_GetTick()))
     {
-        return false;
+        retVal = false;
     }
     
     _armDisarmPPMValue = attitudeMgr->ppm->get(ARM_DISARM_CHANNEL_INDEX);
 
-    return true;
+    return retVal;
 }
 
 bool DisarmMode:: isArmed()
 {
     //Range of PPM percentage to be considered ARMED is 95-100%
+    bool retVal = false;
     const uint8_t MIN_ARM_VALUE = 50;
-    const uint8_t MAX_ARM_VALUE = 100;
-    if (_armDisarmPPMValue >= MIN_ARM_VALUE && _armDisarmPPMValue <= MAX_ARM_VALUE)
+    if (_armDisarmPPMValue >= MIN_ARM_VALUE)
     {
-        return true;
+        retVal = true;
     }
-    else
-    {
-        return false;
-    }
+
+    return retVal;
 }
