@@ -26,4 +26,4 @@ struct PMError_t{
 */
 PMError_t PM_GetCommands(PMCommands *Commands);
 
-#endif
+#endif // ATTITUDE_PATH_INTERFACE_HPP

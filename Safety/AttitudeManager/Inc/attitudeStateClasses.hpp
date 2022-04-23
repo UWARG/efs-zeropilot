@@ -1,15 +1,18 @@
 #pragma once
 
+#include "Controls.hpp"
 #include "attitudeStateManager.hpp"
 #include "attitudeManager.hpp"
 #include "AttitudeDatatypes.hpp"
 #include "attitudeConfig.hpp"
-
+#include "AttitudePathInterface.hpp"
 #include "CommWithPathManager.hpp"
+
 #include "SensorFusion.hpp"
 #include "OutputMixing.hpp"
 #include "PID.hpp"
-#include "SendInstructionsToSafety.hpp"
+#include "PWM.hpp"
+#include "PPM.hpp"
 
 /***********************************************************************************************************************
  * Code
@@ -22,12 +25,23 @@ class fetchInstructionsMode : public attitudeState
         void execute(attitudeManager* attitudeMgr);
         void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
+        // TODO: fix GetPMInstructions to send data over interchip
         static CommandsForAM *GetPMInstructions(void) {return &_PMInstructions;}
+        static PPM_Instructions_t *GetTeleopInstructions(void) {return &_TeleopInstructions;}
+        static bool isAutonomous(void) {return fetchInstructionsMode::_isAutonomous;}
     private:
-        fetchInstructionsMode() {CommFromAMToPMInit();}
+        fetchInstructionsMode() {
+            //CommFromAMToPMInit(); (To be implementetd)
+            }
         fetchInstructionsMode(const fetchInstructionsMode& other);
         fetchInstructionsMode& operator =(const fetchInstructionsMode& other);
+        static bool ReceiveTeleopInstructions(attitudeManager* attitudeMgr);
         static CommandsForAM _PMInstructions;
+        static PPM_Instructions_t _TeleopInstructions;
+        static Instructions_t _controlsInstructions;
+        static bool _isAutonomous;
+        static uint8_t teleopTimeoutCount;
+        static uint8_t PMTimeoutCount;
 };
 
 class sensorFusionMode : public attitudeState
@@ -52,7 +66,7 @@ class PIDloopMode : public attitudeState
         void execute(attitudeManager* attitudeMgr);
         void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
         static attitudeState& getInstance();
-        static PID_Output_t *GetPidOutput(void) {return &_PidOutput;}
+        static PID_Output_t *GetPidOutput(void) {return _PidOutput;}
     private:
         PIDloopMode() {}
         PIDloopMode(const PIDloopMode& other);
@@ -61,7 +75,7 @@ class PIDloopMode : public attitudeState
         PIDController _pitchPid{PITCH_PID_KP, PITCH_PID_KI, PITCH_PID_KD, PITCH_PID_INTEGRAL_MAX, PITCH_PID_MIN, PITCH_PID_MAX};
         PIDController _yawPid{YAW_PID_KP, YAW_PID_KI, YAW_PID_KD, YAW_PID_INTEGRAL_MAX, YAW_PID_MIN, YAW_PID_MAX};
         PIDController _airspeedPid{AIRSPEED_PID_KP, AIRSPEED_PID_KI, AIRSPEED_PID_KD, AIRSPEED_PID_INTEGRAL_MAX, AIRSPEED_PID_MIN, AIRSPEED_PID_MAX};
-        static PID_Output_t _PidOutput;
+        static PID_Output_t *_PidOutput;
 };
 
 class OutputMixingMode : public attitudeState
@@ -77,19 +91,6 @@ class OutputMixingMode : public attitudeState
         OutputMixingMode(const OutputMixingMode& other);
         OutputMixingMode& operator =(const OutputMixingMode& other);
         static float _channelOut[4];
-};
-
-class sendToSafetyMode : public attitudeState
-{
-    public:
-        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
-        void execute(attitudeManager* attitudeMgr);
-        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
-        static attitudeState& getInstance();
-    private:
-        sendToSafetyMode() {SendToSafety_Init();} // Calls C-style initialization function
-        sendToSafetyMode(const sendToSafetyMode& other);
-        sendToSafetyMode& operator =(const sendToSafetyMode& other);
 };
 
 class FatalFailureMode : public attitudeState

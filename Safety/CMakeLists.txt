@@ -10,7 +10,13 @@ add_definitions(
   -DSTM32F030xC
 )
 
+get_filename_component(PARENT_DIR ../ ABSOLUTE)
+
 include_directories(
+    Inc
+    ${PARENT_DIR}/Common/Inc
+    ${PARENT_DIR}/Common/CControl/Inc
+    ${PARENT_DIR}/Common/SensorFusion/Inc
     boardfiles/Inc
     boardfiles/Drivers/STM32F0xx_HAL_Driver/Inc
     boardfiles/Drivers/CMSIS/Device/ST/STM32F0xx/Include
@@ -19,6 +25,8 @@ include_directories(
     boardfiles/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/
     boardfiles/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM0/
     Inc
+    AttitudeManager/Inc
+    Controls/Inc
 )
 
 # Libraries
