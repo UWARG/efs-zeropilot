@@ -42,7 +42,7 @@ void SendFromPMToAM(CommandsForAM *commands)
 }
 
 
-bool GetFromPMToAM(CommandsForAM *commands)
+bool GetFromPMToAM(CommandsForAM *commands) // needs to be rewritten once teleop is set up
 {
     //Try to get commands from mail queue
     osEvent event;

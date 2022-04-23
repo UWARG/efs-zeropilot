@@ -6,6 +6,5 @@ void SensorFusionInterfaceInit(void) {
 }
 
 SFError_t SensorFusionInterfaceExecute(void) {
-    SFError_t err = SF_GenerateNewResult();
-    return err;
+    return SF_GenerateNewResult();
 }
