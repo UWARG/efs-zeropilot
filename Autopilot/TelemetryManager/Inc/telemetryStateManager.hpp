@@ -6,10 +6,6 @@
 #define TELEMETRYSTATEMANAGER_HPP
 
 #include "telemetryManager.hpp"
-// #include "UARTDriver.hpp"
-// #include"comms.hpp"
-// #include"FW_CV_Structs.hpp"
-// #include "CommsWithPathManager.hpp"
 
 class telemetryManager;
 

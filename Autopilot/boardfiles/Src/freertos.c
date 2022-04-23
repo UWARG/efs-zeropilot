@@ -59,7 +59,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "attitudeManagerInterface.h"
+// #include "attitudeManagerInterface.h"
 #include "PathManagerInterface.h"
 #include "telemetryManagerInterface.h"
 #include "sensorFusionInterface.hpp"
@@ -111,7 +111,7 @@ osThreadId telemetryRunHandle;
 
 /* USER CODE END FunctionPrototypes */
 
-void attitudeManagerExecute(void const * argument);
+// void attitudeManagerExecute(void const * argument);
 void pathManagerExecute(void const * argument);
 void telemetryRunExecute(void const * argument);
 void sensorFusionExecute(void const * argument);
@@ -175,8 +175,8 @@ void MX_FREERTOS_Init(void) {
   sensorDataHandle = osThreadCreate(osThread(sensorDataRun), NULL);
 
   /* definition and creation of attitudeManager */
-  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 250);
-  attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
+  // osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 250);
+  // attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of pathManager */
   //osThreadDef(pathManager, pathManagerExecute, osPriorityNormal, 0, 250);
@@ -204,21 +204,21 @@ void MX_FREERTOS_Init(void) {
   * @retval None
   */
 /* USER CODE END Header_attitudeManagerExecute */
-void attitudeManagerExecute(void const * argument)
-{
-  /* USER CODE BEGIN attitudeManagerExecute */
-  /* Infinite loop */
-  while(1)
-  {
-    TickType_t xLastWakeTime = xTaskGetTickCount();
-    vTaskDelayUntil(&xLastWakeTime, PERIOD_ATTITUDEMANAGER_MS);
-    bool status = AttitudeManagerInterfaceExecute();
-    if (!status) {
-      catastrophicFailure = true;
-    }
-  }
-  /* USER CODE END attitudeManagerExecute */
-}
+// void attitudeManagerExecute(void const * argument)
+// {
+//   /* USER CODE BEGIN attitudeManagerExecute */
+//   /* Infinite loop */
+//   while(1)
+//   {
+//     TickType_t xLastWakeTime = xTaskGetTickCount();
+//     vTaskDelayUntil(&xLastWakeTime, PERIOD_ATTITUDEMANAGER_MS);
+//     bool status = AttitudeManagerInterfaceExecute();
+//     if (!status) {
+//       catastrophicFailure = true;
+//     }
+//   }
+//   /* USER CODE END attitudeManagerExecute */
+// }
 
 /* USER CODE BEGIN Header_pathManagerExecute */
 /**

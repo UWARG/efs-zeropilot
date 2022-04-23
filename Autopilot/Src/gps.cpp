@@ -12,7 +12,7 @@
 
 #include <gps.hpp>
 #include <cstring>
-// #include "stm32f7xx_hal.h"
+#include "stm32f7xx_hal.h"
 
 // different commands to set the update rate from once a second (1 Hz) to 10 times a second (10Hz)
 // Note that these only control the rate at which the position is echoed, to actually speed up the
@@ -105,9 +105,7 @@ NEOM8::NEOM8() : gpsData {},
 /**
  * Method is called when our uart buffer (byte_collection_buffer) is full
  */
- 
-//Called in the Callback.cpp file
-void GPS_HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	NEOM8 * neoM8N = NEOM8::GetInstance();
 
 	neoM8N->set_uart_data_is_new(true);

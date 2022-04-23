@@ -20,7 +20,7 @@ void CommWithTelemInit();
 void SendPathData(POGI *data);
 
 /**
- * Retrieve commands from ground/CV.
+ * Retrieve commands from the path manager.
  * @param[out]   commands   Pointer to struct to recieve commands.
  * @return True if commands were recieved.
  */
