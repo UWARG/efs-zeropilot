@@ -98,9 +98,6 @@ void Error_Handler(void);
 
 /* USER CODE END Private defines */
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 void _Error_Handler(char *, int);
 void MX_FREERTOS_Init(void);
 #define Error_Handler() _Error_Handler(__FILE__, __LINE__)

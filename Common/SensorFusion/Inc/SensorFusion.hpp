@@ -2,17 +2,14 @@
  * Sensor Fusion - Converts raw sensor data into human readable formatted structs
  * Author: Lucy Gong, Dhruv Rawat, Anthony Bertnyk
  */
+#ifndef SENSORFUSION_HPP
+#define SENSORFUSION_HPP
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
     #include "CControlFunctions.h"
-#ifdef __cplusplus
-}
-#endif
-
-#ifndef SENSORFUSION_HPP
-#define SENSORFUSION_HPP
 
 #include "CommonDataTypes.hpp"
 //Frequency of SF calculations in Hz
@@ -133,6 +130,10 @@ Gps_Data_t SF_GetRawGPS();
  * @return Altimeter struct.
  */ 
 Altimeter_Data_t SF_GetRawAltimeter();
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif // SENSOR_FUSION_HPP
