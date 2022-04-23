@@ -119,7 +119,7 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t *instructions,
 
   StickDistance *internal_targets = translatePPM(instructions);
 
-  updateTargets(internal_targets);
+  // updateTargets(internal_targets);
 
   /**
    * Now we need to get distances and run pids.
@@ -204,17 +204,17 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t *instructions,
   // float _min_output, float _max_output);
   PIDController pid_test{
       0.8, 0.3, 0.2, 80,
-      10,  20};  // defining our test PID with a lower max output for now (bring
+      0,  30};  // defining our test PID with a lower max output for now (bring
                 // this up as testing needs).
 
   // get PID result
   float test_pid = pid_test.execute(
-      10, curr_sf.yaw, curr_sf.yawRate); // change yaw and yawRate to correct measurement.
+      0, curr_sf.roll);//, curr_sf.rollRate); // change yaw and yawRate to correct measurement.
   // yawRate may not be usable. If you don't put in yawRate PID will automatically calculate derivative
 
   // scalars that we will use to adjust bias linearly.
-  float M_Base = 30;    // some amount of BASE pid to keepmotors above threshold
-  float M_Scale = 1.5;  // some amount of scaling for the PID result (scale this
+  float M_Base = instructions->input3;    // some amount of BASE pid to keepmotors above threshold
+  float M_Scale = 0.5;  // some amount of scaling for the PID result (scale this
                         // down as PID output range increases)
 
   // mix the PID's. Not sure yet if there wants to be a "soft limit" of how

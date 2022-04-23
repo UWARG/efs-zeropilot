@@ -188,10 +188,10 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
     if (ErrorStruct.errorCode == 0)
     {
         // setting PWM channel values
-        attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, PidOutput -> frontLeftMotorPercent);
-        attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, PidOutput -> frontRightMotorPercent);
-        attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
-        attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
+        attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, _channelOut[FRONT_LEFT_MOTOR_CHANNEL]);
+        attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, _channelOut[FRONT_RIGHT_MOTOR_CHANNEL]);
+        attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, _channelOut[BACK_LEFT_MOTOR_CHANNEL]);
+        attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, _channelOut[BACK_RIGHT_MOTOR_CHANNEL]);
         attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
     }
     else

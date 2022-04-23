@@ -108,9 +108,9 @@ static void constrainOutput(float *channelOut)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (channelOut[i] < -100.0f)
+		if (channelOut[i] < 0.0f)
 		{
-			channelOut[i] = -100.0f;
+			channelOut[i] = 0.0f;
 		}
 		else if (channelOut[i] > 100.0f)
 		{
