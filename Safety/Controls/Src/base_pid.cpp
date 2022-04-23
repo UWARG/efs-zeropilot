@@ -26,6 +26,11 @@ PIDController::PIDController(float _kp, float _ki, float _kd, float _i_max, floa
 	historicalValue[2] = 0.0f;
 }
 
+float PIDController::execute_p(float desired, float actual) {
+	float error = desired-actual;
+	return error * kp;
+}
+
 float PIDController::execute(float desired, float actual, float actualRate) {
 
 	float error = desired - actual;
