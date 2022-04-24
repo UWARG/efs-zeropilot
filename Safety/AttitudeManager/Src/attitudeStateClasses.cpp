@@ -19,6 +19,9 @@ PPM_Instructions_t fetchInstructionsMode::_TeleopInstructions;
 bool fetchInstructionsMode::_isAutonomous = false;
 uint8_t fetchInstructionsMode::teleopTimeoutCount;
 uint8_t fetchInstructionsMode::PMTimeoutCount;
+uint8_t DisarmMode:: _armDisarmPPMValue;
+uint8_t DisarmMode:: armDisarmTimeoutCount;
+const uint8_t MIN_ARM_VALUE = 50; //Minimum PPM value for ARM instruction
 
 /***********************************************************************************************************************
  * Code
@@ -68,6 +71,13 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
         return;
     }
 
+    //Check if Disarm instruction was sent
+    if (!isArmed())
+    {
+        attitudeMgr->setState(DisarmMode::getInstance());
+        return;
+    }
+
     // The support is also here for sending stuff to Path manager, but there's nothing I need to send atm.
     attitudeMgr->setState(sensorFusionMode::getInstance());
 }
@@ -90,6 +100,18 @@ bool fetchInstructionsMode::ReceiveTeleopInstructions(attitudeManager* attitudeM
         _TeleopInstructions.PPMValues[i] = attitudeMgr->ppm->get(i);
     }
     return true;
+}
+
+bool fetchInstructionsMode:: isArmed()
+{
+    bool retVal = false;
+
+    if (_TeleopInstructions.PPMValues[ARM_DISARM_CHANNEL_INDEX] >= MIN_ARM_VALUE)
+    {
+        retVal = true;
+    }
+    
+    return retVal;
 }
 
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
@@ -183,7 +205,7 @@ attitudeState& PIDloopMode::getInstance()
 void OutputMixingMode::execute(attitudeManager* attitudeMgr)
 {
     // *PIDOutput an array of four values corresponding to motor percentages for the 
-    PID_Output_t *PidOutput = PIDloopMode::GetPidOutput(); 
+    PID_Output_t *PidOutput = PIDloopMode::GetPidOutput();
 
     OutputMixing_error_t ErrorStruct = OutputMixing_Execute(PidOutput, _channelOut);
 
@@ -224,3 +246,78 @@ attitudeState& FatalFailureMode::getInstance()
     return singleton;
 }
 
+void DisarmMode:: execute(attitudeManager* attitudeMgr)
+{
+    //setting PWM channel values to lowest "disarm" value
+    attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, 0);
+
+    const uint8_t TIMEOUT_THRESHOLD = 2; //Max cycles without data until connection is considered broken
+
+    //Get Arm Disarm instruction
+    if(ReceiveArmDisarmInstruction(attitudeMgr))
+    {
+        armDisarmTimeoutCount = 0;
+    }
+    else
+    {
+        if(armDisarmTimeoutCount < TIMEOUT_THRESHOLD)
+            armDisarmTimeoutCount++;
+    }
+
+    /*
+        3 possibilities:
+             1. Go into FatalFailureMode bec of timeout
+             2. Go into fetchInstructionsMode bec "Arm" instruction was sent
+             3. Do nothing, stay in the disarm state
+    */
+    if(armDisarmTimeoutCount > TIMEOUT_THRESHOLD && CommsFailed())
+    {
+        //Abort due to timeout failures
+        attitudeMgr->setState(FatalFailureMode::getInstance());
+        return;
+    }
+    else if (isArmed())
+    {   
+        attitudeMgr->setState(fetchInstructionsMode::getInstance());
+    }
+    else
+    {
+        //Do nothing, stay in this state
+        //attitudeMgr->setState(DisarmMode::getInstance());
+    }
+
+}
+
+attitudeState& DisarmMode:: getInstance()
+{
+    static DisarmMode singleton;
+    return singleton;
+}
+
+bool DisarmMode:: ReceiveArmDisarmInstruction(attitudeManager* attitudeMgr)
+{
+    bool retVal = true;
+    if(attitudeMgr->ppm->is_disconnected(HAL_GetTick()))
+    {
+        retVal = false;
+    }
+    
+    _armDisarmPPMValue = attitudeMgr->ppm->get(ARM_DISARM_CHANNEL_INDEX);
+
+    return retVal;
+}
+
+bool DisarmMode:: isArmed()
+{
+    bool retVal = false;
+    
+    if (_armDisarmPPMValue >= MIN_ARM_VALUE)
+    {
+        retVal = true;
+    }
+
+    return retVal;
+}
