@@ -27,8 +27,6 @@
 static OutputMixingErrorCodes checkInputValidity(PID_Output_t *PidOutput);
 static void constrainOutput(float *channelOut);
 
-static float map(float num, float minInput, float maxInput, float minOutput, float maxOutput);
-
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
@@ -121,7 +119,7 @@ static void constrainOutput(float *channelOut)
 	}
 }
 
-static float map(float num, float minInput, float maxInput, float minOutput, float maxOutput)
+float map(float num, float minInput, float maxInput, float minOutput, float maxOutput)
 {
     return minOutput + ((num - minInput) * ((maxOutput - minOutput) / (maxInput - minInput)));
 }

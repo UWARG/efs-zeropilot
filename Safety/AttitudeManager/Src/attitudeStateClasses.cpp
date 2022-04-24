@@ -119,10 +119,12 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     else
     {
         PPM_Instructions_t *teleopInstructions = fetchInstructionsMode::GetTeleopInstructions();
-        _ControlsInstructions -> input1 = teleopInstructions->PPMValues[0];
-        _ControlsInstructions -> input2 = teleopInstructions->PPMValues[1];
+        float max_angle = 30;
+        float max_rotation = 10;
+        _ControlsInstructions -> input1 = map(teleopInstructions->PPMValues[0], 0, 100, -max_angle, max_angle);
+        _ControlsInstructions -> input2 = map(teleopInstructions->PPMValues[1], 0, 100, -max_angle, max_angle);
         _ControlsInstructions -> input3 = teleopInstructions->PPMValues[2];
-        _ControlsInstructions -> input4 = teleopInstructions->PPMValues[3];
+        _ControlsInstructions -> input4 = map(teleopInstructions->PPMValues[3], 0, 100, -max_rotation, max_rotation);
         _PidOutput = runControlsAndGetPWM(_ControlsInstructions, SFOutput);
     }
 
