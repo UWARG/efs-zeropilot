@@ -21,6 +21,7 @@ uint8_t fetchInstructionsMode::teleopTimeoutCount;
 uint8_t fetchInstructionsMode::PMTimeoutCount;
 uint8_t DisarmMode:: _armDisarmPPMValue;
 uint8_t DisarmMode:: armDisarmTimeoutCount;
+const uint8_t MIN_ARM_VALUE = 50; //Minimum PPM value for ARM instruction
 
 /***********************************************************************************************************************
  * Code
@@ -103,16 +104,14 @@ bool fetchInstructionsMode::ReceiveTeleopInstructions(attitudeManager* attitudeM
 
 bool fetchInstructionsMode:: isArmed()
 {
-    //Range of PPM percentage to be considered ARMED is 95-100%
-    const uint8_t MIN_ARM_VALUE = 50;
+    bool retVal = false;
+
     if (_TeleopInstructions.PPMValues[ARM_DISARM_CHANNEL_INDEX] >= MIN_ARM_VALUE)
     {
-        return true;
+        retVal = true;
     }
-    else
-    {
-        return false;
-    }
+    
+    return retVal;
 }
 
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
@@ -312,9 +311,8 @@ bool DisarmMode:: ReceiveArmDisarmInstruction(attitudeManager* attitudeMgr)
 
 bool DisarmMode:: isArmed()
 {
-    //Range of PPM percentage to be considered ARMED is 95-100%
     bool retVal = false;
-    const uint8_t MIN_ARM_VALUE = 50;
+    
     if (_armDisarmPPMValue >= MIN_ARM_VALUE)
     {
         retVal = true;
