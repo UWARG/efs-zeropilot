@@ -203,13 +203,13 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t *instructions,
   // PIDController controller(float _kp, float _ki, float _kd, float _i_max,
   // float _min_output, float _max_output);
   PIDController pid_test{
-      0.8, 0.3, 0.2, 80,
-      0,  30};  // defining our test PID with a lower max output for now (bring
+      0.4, 0, 0.1, 80,
+      -100,  100};  // defining our test PID with a lower max output for now (bring
                 // this up as testing needs).
 
   // get PID result
   float test_pid = pid_test.execute(
-      0, curr_sf.roll);//, curr_sf.rollRate); // change yaw and yawRate to correct measurement.
+      0, curr_sf.roll, curr_sf.rollRate); // change yaw and yawRate to correct measurement.
   // yawRate may not be usable. If you don't put in yawRate PID will automatically calculate derivative
 
   // scalars that we will use to adjust bias linearly.

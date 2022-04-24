@@ -14,7 +14,7 @@ void AttitudeManagerInterfaceInit(void) {
     pwm->set(1,0);
     pwm->set(2,0);
     pwm->set(3,0);
-    HAL_Delay(1000);
+    HAL_Delay(3000);
     attMng = new attitudeManager(ppm, pwm);
 }
 
