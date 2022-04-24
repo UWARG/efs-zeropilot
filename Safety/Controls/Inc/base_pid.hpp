@@ -40,6 +40,7 @@ class PIDController
 		* @return					The result of the PID computation.
 		*/
 		float execute(float desired, float actual, float actualRate = std::nanf(""));
+		float execute_p(float desired, float actual);
 
 	private:
 

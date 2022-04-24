@@ -7,7 +7,7 @@
 #define ATTITUDE_PATH_INTERFACE_HPP
 
 #include "pathDatatypes.hpp"
-#include "AttitudeDatatypes.hpp"
+// #include "AttitudeDatatypes.hpp"
 
 
 //Commands for path manager to send to attitude manager.
