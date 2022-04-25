@@ -203,11 +203,15 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t *instructions,
   // PIDController controller(float _kp, float _ki, float _kd, float _i_max,
   // float _min_output, float _max_output);
   PIDController pid_roll{
-      0.175, 0, 0.05, 80,
+      0.175, 0, 0.055, 80,
       -100,  100};  // defining our test PID with a lower max output for now (bring
                 // this up as testing needs).
   PIDController pid_pitch{
-      0.175, 0, 0.05, 80,
+      0.15, 0, 0.055, 80,
+      -100,  100};
+
+   PIDController pid_yaw{
+      0.0, 0, 0., 80,
       -100,  100};
  
 
@@ -217,21 +221,28 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t *instructions,
   // yawRate may not be usable. If you don't put in yawRate PID will automatically calculate derivative
 
   float pitch = pid_pitch.execute(
-      instructions->input2, curr_sf.pitch, curr_sf.pitchRate); // change yaw and yawRate to correct measurement.
-  // yawRate may not be usable. If you don't put in yawRate PID will automatically calculate derivative
+      instructions->input2, curr_sf.pitch, curr_sf.pitchRate);
+
+  float yaw = pid_yaw.execute(
+      instructions->input4, curr_sf.yaw, curr_sf.yawRate);
 
 
   // scalars that we will use to adjust bias linearly.
   float M_Base = instructions->input3;    // some amount of BASE pid to keepmotors above threshold
-  float M_Scale = 1;  // some amount of scaling for the PID result (scale this
+  float M_Scale = 0.5;  // some amount of scaling for the PID result (scale this
                         // down as PID output range increases)
 
   // mix the PID's. Not sure yet if there wants to be a "soft limit" of how
   // negative the PID can be, e.g. M_Base - M_Scale * Max(roll, SET_VALUE)
   // in order to keep motors spinning. Won't be an issue with DSHOT
-  PID_Out.backLeftMotorPercent   = M_Base - roll + pitch;
-  PID_Out.frontLeftMotorPercent  = M_Base - roll - pitch;
-  PID_Out.backRightMotorPercent  = M_Base + roll + pitch;
-  PID_Out.frontRightMotorPercent = M_Base + roll - pitch;
+  PID_Out.backLeftMotorPercent   = M_Base - roll - pitch;  // - yaw;
+  PID_Out.frontLeftMotorPercent  = M_Base - roll + pitch;  // + yaw;
+  PID_Out.backRightMotorPercent  = M_Base + roll - pitch;  // + yaw;
+  PID_Out.frontRightMotorPercent = M_Base + roll + pitch;  // - yaw;
+  // PID_Out.backLeftMotorPercent   = 0;
+  // PID_Out.frontLeftMotorPercent  = 0;
+  // PID_Out.backRightMotorPercent  = 0;
+  // PID_Out.frontRightMotorPercent = 0;
+  
   return &PID_Out;
 }
