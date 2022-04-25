@@ -22,6 +22,7 @@ public:
                               PWMChannel *pwm);
   Grabber(const Grabber*)=delete; 
   
+  void brake();
   void open(uint8_t speed);
   void close(uint8_t speed);
 
@@ -30,7 +31,8 @@ public:
   void lower(uint8_t speed);
   void raise(uint8_t speed);
 
-  const uint8_t ppmChannel = 5; // TODO: What channel?
+  const uint8_t ppmCraneChannel = 6; // TODO: What channel?
+  const uint8_t ppmClawChannel = 7; // TODO: What channel?
 
 private:
   Grabber() {};
@@ -45,8 +47,6 @@ private:
     crane_channel_2(grabber_pwm_channel_2),
     pwm(*pwm) {}
   
-  bool isOpen = false;
-  bool isLowered = false;
   const uint8_t grabber_channel_1 = 0;
   const uint8_t grabber_channel_2 = 0;
   const uint8_t crane_channel_1 = 0;

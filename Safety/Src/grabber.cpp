@@ -47,37 +47,30 @@ void Grabber::crane_coast() {
 // is finished lowering to set the motor into brake mode and update its state
 // Unfortunately I dont know what that will look like... It could very well be time based
 // need more details from Mech/Electrical
+// Update: This will just rely on pilot visual unless otherwise required
 void Grabber::lower(uint8_t speed) {
-	if (!this->isLowered) {
-		pwm.set(this->crane_channel_1, speed);
-		pwm.set(this->crane_channel_2, 0);
-		this->isLowered = true;
-	}
+	pwm.set(this->crane_channel_1, speed);
+	pwm.set(this->crane_channel_2, 0);
 }
 void Grabber::raise(uint8_t speed) {
-	if (this->isLowered) {
-		pwm.set(this->crane_channel_1, 0);
-		pwm.set(this->crane_channel_2, speed);
-		this->isLowered = false;
-	}
+	pwm.set(this->crane_channel_1, 0);
+	pwm.set(this->crane_channel_2, speed);
 }
 
 
-//TODO: Still need data from electrical on the input to the motor driver, 
-//		hopefully it is similar to the above
+
+// Using https://media.digikey.com/pdf/Data%20Sheets/Seeed%20Technology/105090004_Web.pdf
+void Grabber::brake() {
+	pwm.set(this->grabber_channel_1, 0);
+	pwm.set(this->grabber_channel_2, 0);
+}
 void Grabber::close(uint8_t speed) {
-	if (!this->isOpen) {
-		pwm.set(this->grabber_channel_1, speed);
-		pwm.set(this->grabber_channel_2, 0);
-		this->isOpen = true;
-	}
+	pwm.set(this->grabber_channel_1, speed);
+	pwm.set(this->grabber_channel_2, 0);
 }
 void Grabber::open(uint8_t speed) {
-	if (this->isOpen) {
-		pwm.set(this->grabber_channel_1, 0);
-		pwm.set(this->grabber_channel_2, speed);
-		this->isOpen = false;
-	}
+	pwm.set(this->grabber_channel_1, 0);
+	pwm.set(this->grabber_channel_2, speed);
 }
 
 /* Private methods  ---------------------------------------------------------*/
