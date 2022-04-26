@@ -17,8 +17,16 @@ if (${KIND_OF_BUILD} STREQUAL "FOR_TARGET")
     -DSTM32F765xG
     -DARM_MATH_CM7
   )
-
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O3")
+  
+  IF(CMAKE_BUILD_TYPE MATCHES Debug)
+    message("Debug build.")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O3")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O3")
+  ELSEIF(CMAKE_BUILD_TYPE MATCHES Release)
+    message("Release build.")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+  ENDIF()
 
   get_filename_component(PARENT_DIR ../ ABSOLUTE)
 
