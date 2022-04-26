@@ -203,17 +203,17 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t *instructions,
   // PIDController controller(float _kp, float _ki, float _kd, float _i_max,
   // float _min_output, float _max_output);
   PIDController pid_roll{
-      0.175, 0, 0.055, 80,
-      -100,  100};  // defining our test PID with a lower max output for now (bring
+      0.15, 0, 0.05, 5,
+      -50,  50};  // defining our test PID with a lower max output for now (bring
                 // this up as testing needs).
   PIDController pid_pitch{
-      0.15, 0, 0.055, 80,
-      -100,  100};
+      0, 0, 0, 5,
+      -50,  50};
 
    PIDController pid_yaw{
-      0.0, 0, 0., 80,
-      -100,  100};
- 
+      0, 0, 0, 0,
+      -50,  50};
+
 
   // get PID result
   float roll = pid_roll.execute(
@@ -235,10 +235,10 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t *instructions,
   // mix the PID's. Not sure yet if there wants to be a "soft limit" of how
   // negative the PID can be, e.g. M_Base - M_Scale * Max(roll, SET_VALUE)
   // in order to keep motors spinning. Won't be an issue with DSHOT
-  PID_Out.backLeftMotorPercent   = M_Base - roll - pitch;  // - yaw;
-  PID_Out.frontLeftMotorPercent  = M_Base - roll + pitch;  // + yaw;
-  PID_Out.backRightMotorPercent  = M_Base + roll - pitch;  // + yaw;
-  PID_Out.frontRightMotorPercent = M_Base + roll + pitch;  // - yaw;
+  PID_Out.backLeftMotorPercent   = M_Base - roll - pitch - yaw;
+  PID_Out.frontLeftMotorPercent  = M_Base - roll + pitch + yaw;
+  PID_Out.backRightMotorPercent  = M_Base + roll - pitch + yaw;
+  PID_Out.frontRightMotorPercent = M_Base + roll + pitch - yaw;
   // PID_Out.backLeftMotorPercent   = 0;
   // PID_Out.frontLeftMotorPercent  = 0;
   // PID_Out.backRightMotorPercent  = 0;

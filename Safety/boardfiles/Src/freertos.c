@@ -158,16 +158,19 @@ void attitudeManagerExecute(void const * argument)
 {
 
   /* USER CODE BEGIN attitudeManagerExecute */
+  TickType_t xLastWakeTime;
+  const TickType_t xTimeIncrement = 20;
   UBaseType_t uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
   /* Infinite loop */
   for(;;)
   {
     // TODO: Re-add RSSI_CHECK
+    xLastWakeTime = xTaskGetTickCount();
     RSSI_Check();
     AttitudeManagerInterfaceExecute();
     // HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
     uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
-    vTaskDelay(20);
+    vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
   }
 
   /* USER CODE END attitudeManagerExecute */
@@ -188,10 +191,8 @@ void sensorFusionExecute(void const * argument)
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
 
-    // TODO: Re-add RSSI_CHECK
-    // RSSI_Check();
     SensorFusionInterfaceExecute();
-    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+    // HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
     uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
   }
