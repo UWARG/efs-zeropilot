@@ -50,7 +50,7 @@ PWMChannel::PWMChannel()
     }
 }
 
-void PWMChannel::set(uint8_t channel, uint8_t percent)
+void PWMChannel::set(uint8_t channel, float percent)
 {
     if(channel > MAX_CHANNELS || channel < 0)
     {
@@ -64,11 +64,10 @@ void PWMChannel::set(uint8_t channel, uint8_t percent)
         //the only thing we will do is update the buffer for the next pass of DMA transfers
         dshotPrepareDMABuffer(currentChannel->dshotDMABuffer, percent);
     }
-
     else
     {
         uint32_t prescaler = (static_cast<TIM_HandleTypeDef *>(currentChannel->timer))->Init.Prescaler;
-	    uint32_t us = ((percent * (PWMChannel::max_signal - PWMChannel::min_signal)) / 100 + PWMChannel::min_signal);
+	    uint32_t us = (((uint8_t)percent * (PWMChannel::max_signal - PWMChannel::min_signal)) / 100 + PWMChannel::min_signal);
         uint32_t periodTicks = (static_cast<TIM_HandleTypeDef *>(currentChannel->timer))->Init.Period;
 	    uint32_t ticks = static_cast<uint32_t>((static_cast<float>(us) / static_cast<float>(pwmPeriod)) * static_cast<float>(periodTicks));
         __HAL_TIM_SET_COMPARE((TIM_HandleTypeDef *) currentChannel->timer, currentChannel->timer_channel, (uint32_t) ticks);
@@ -76,7 +75,7 @@ void PWMChannel::set(uint8_t channel, uint8_t percent)
     
 }
 
-void PWMChannel::dshotPrepareDMABuffer(uint32_t * dmaBuffer, uint8_t throttlePercentage)
+void PWMChannel::dshotPrepareDMABuffer(uint32_t * dmaBuffer, float throttlePercentage)
 {
     uint16_t frame = dshotPrepareFrame(throttlePercentage, false);
 
@@ -95,7 +94,7 @@ void PWMChannel::dshotPrepareDMABuffer(uint32_t * dmaBuffer, uint8_t throttlePer
     dmaBuffer[17] = 0;
 }
 
-uint16_t PWMChannel::dshotPrepareFrame(uint8_t throttlePercentage, bool telemetry)
+uint16_t PWMChannel::dshotPrepareFrame(float throttlePercentage, bool telemetry)
 {
     /* DSHOT data frame (16 bits total):
      *
@@ -108,7 +107,7 @@ uint16_t PWMChannel::dshotPrepareFrame(uint8_t throttlePercentage, bool telemetr
 
     uint16_t frame;
 
-    frame = (((uint16_t)(DSHOT_MAX_THROTTLE * (float)throttlePercentage / 100) + DSHOT_RESERVED_VALUES) << 1) | (telemetry ? 1 : 0); //throttle and telemetry bits
+    frame = (((uint16_t)(DSHOT_MAX_THROTTLE * throttlePercentage / 100) + DSHOT_RESERVED_VALUES) << 1) | (telemetry ? 1 : 0); //throttle and telemetry bits
 
     uint8_t checksum = (frame ^ (frame >> 4) ^ (frame >> 8)) & 0x00F; //calculating checksum... splitting first 12 bits into 3 nibbles and XORing
 
