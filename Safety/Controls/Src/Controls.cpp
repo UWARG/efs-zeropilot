@@ -39,17 +39,32 @@ static PID_Output_t PID_Out;
 const int pid_abs_max = 100;
 const int max_i_windup = 5;  // ? not sure if we need specifics for each angle
 
-const float roll_kp = 0.175;
+// const float roll_kp = 0.175;
+// const float roll_ki = 0;
+// const float roll_kd = 0.055;
+
+// const float pitch_kp = 0.15;
+// const float pitch_ki = 0;
+// const float pitch_kd = 0.055;
+
+// const float yaw_kp = 0.15;
+// const float yaw_ki = 0;
+// const float yaw_kd = 0;
+
+const float roll_kp = 0.05;
 const float roll_ki = 0;
-const float roll_kd = 0.055;
+const float roll_kd = 0.05;
 
-const float pitch_kp = 0.15;
+const float pitch_kp = 0.05;
 const float pitch_ki = 0;
-const float pitch_kd = 0.055;
+const float pitch_kd = 0.05;
 
-const float yaw_kp = 0.15;
+const float yaw_kp = 0.25;
 const float yaw_ki = 0;
-const float yaw_kd = 0;
+const float yaw_kd = 0.05;
+
+
+
 
 const int PID_method = 0;
 
@@ -83,9 +98,9 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t *instructions, SFOutput_t *SF_
   float throttle = instructions->input3;  //
 
   // mix the PID's.
-  PID_Out.backLeftMotorPercent = throttle - roll - pitch + yaw;
-  PID_Out.frontLeftMotorPercent = throttle - roll + pitch - yaw;
-  PID_Out.backRightMotorPercent = throttle + roll - pitch - yaw;
-  PID_Out.frontRightMotorPercent = throttle + roll + pitch + yaw;
+  PID_Out.backLeftMotorPercent   = throttle - roll - pitch - yaw;
+  PID_Out.frontLeftMotorPercent  = throttle - roll + pitch + yaw;
+  PID_Out.backRightMotorPercent  = throttle + roll - pitch + yaw;
+  PID_Out.frontRightMotorPercent = throttle + roll + pitch - yaw;
   return &PID_Out;
 }

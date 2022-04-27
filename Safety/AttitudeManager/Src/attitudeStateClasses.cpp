@@ -146,7 +146,7 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
         _ControlsInstructions -> input1 = map(teleopInstructions->PPMValues[0], 0, 100, -max_angle, max_angle);
         _ControlsInstructions -> input2 = -map(teleopInstructions->PPMValues[1], 0, 100, -max_angle, max_angle);
         _ControlsInstructions -> input3 = teleopInstructions->PPMValues[2];
-        _ControlsInstructions -> input4 = map(teleopInstructions->PPMValues[3], 0, 100, -max_rotation_rate, max_rotation_rate);
+        _ControlsInstructions -> input4 = -map(teleopInstructions->PPMValues[3], 0, 100, -max_rotation_rate, max_rotation_rate);
         _PidOutput = runControlsAndGetPWM(_ControlsInstructions, SFOutput);
     }
 
