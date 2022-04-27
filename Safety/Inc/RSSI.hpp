@@ -7,7 +7,7 @@ extern "C" {
 #endif
 
 bool CommsFailed();
-void RSSI_Check();
+void UpdateRSSI(float onTime);
 
 #ifdef __cplusplus
 }

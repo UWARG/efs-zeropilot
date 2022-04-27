@@ -23,6 +23,10 @@ const float MAX_PULSE_WIDTH = 1670.0f;
 
 static volatile float ppm_values[MAX_PPM_CHANNELS]; // cannot be private because it's used by the ISR
 
+static bool isRisingEdge = true;
+static uint32_t pwmTicks = 0;
+static uint32_t pwmStartTime = 0;
+
 /***********************************************************************************************************************
  * Prototypes
  **********************************************************************************************************************/
@@ -131,22 +135,57 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 
 	if (htim->Instance == TIM15)
 	{
-
-		static volatile uint8_t index = 0;
-
-		volatile uint32_t time_diff = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-		__HAL_TIM_SET_COUNTER(htim, 0);
-
-		float pulseLength = counter_to_time(time_diff, htim->Init.Prescaler) - PULSE_WIDTH;
-
-		if (pulseLength > MIN_WIDTH_OF_RESET_PULSE)
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
 		{
-			index = 0;
+			static volatile uint8_t index = 0;
+
+			volatile uint32_t time_diff = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+			__HAL_TIM_SET_COUNTER(htim, 0);
+
+			//Make sure we don't lose track of the PWM input that uses the same timer
+			pwmTicks += time_diff - pwmStartTime;
+			if (time_diff < pwmStartTime)
+			{
+				pwmTicks += 0xffff; //Handle timer overflow
+			}
+			pwmStartTime = 0;
+
+			float pulseLength = counter_to_time(time_diff, htim->Init.Prescaler) - PULSE_WIDTH;
+
+			if (pulseLength > MIN_WIDTH_OF_RESET_PULSE)
+			{
+				index = 0;
+			}
+			else if (index < MAX_PPM_CHANNELS)
+			{
+				ppm_values[index] = pulseLength;
+				index++;
+			}
 		}
-		else if (index < MAX_PPM_CHANNELS)
+		else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) //Recieve RSSI PWM
 		{
-			ppm_values[index] = pulseLength;
-			index++;
+			if (isRisingEdge) {
+				volatile uint32_t time = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+				pwmTicks = 0;
+				pwmStartTime = time;
+
+				__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_FALLING);
+				isRisingEdge = false;
+			}
+			else
+			{
+				volatile uint32_t time = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+				pwmTicks += time - pwmStartTime;
+				if (time < pwmStartTime)
+				{
+					pwmTicks += 0xffff; //Handle timer overflow
+				}
+				UpdateRSSI(counter_to_time(pwmTicks, htim->Init.Prescaler));
+				
+				__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_RISING);
+				isRisingEdge = true;
+			}
 		}
 	}
+	
 }

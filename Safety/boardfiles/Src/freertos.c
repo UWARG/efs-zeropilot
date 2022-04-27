@@ -162,8 +162,6 @@ void attitudeManagerExecute(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    // TODO: Re-add RSSI_CHECK
-    RSSI_Check();
     AttitudeManagerInterfaceExecute();
     // HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
     uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
