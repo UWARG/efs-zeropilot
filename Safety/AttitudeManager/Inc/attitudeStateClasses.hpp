@@ -123,3 +123,16 @@ class DisarmMode : public attitudeState
         static uint8_t _armDisarmPPMValue;
         static uint8_t armDisarmTimeoutCount;
 };
+
+class PeripheralControlMode : public attitudeState
+{
+    public:
+        void enter(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
+        void execute(attitudeManager* attitudeMgr);
+        void exit(attitudeManager* attitudeMgr) {(void) attitudeMgr;}
+        static attitudeState& getInstance();
+    private:
+        PeripheralControlMode() {}
+        PeripheralControlMode(const PeripheralControlMode& other);
+        PeripheralControlMode& operator =(const PeripheralControlMode& other);
+};

@@ -214,7 +214,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
         attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, PidOutput -> frontRightMotorPercent);
         attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
         attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
-        attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
+        attitudeMgr->setState(PeripheralControlMode::getInstance()); // returning to beginning of state machine
     }
     else
     {
@@ -318,4 +318,35 @@ bool DisarmMode:: isArmed()
     }
 
     return retVal;
+}
+
+void PeripheralControlMode::execute(attitudeManager* attitudeMgr)
+{
+    const uint8_t speed = 10;
+    PPM_Instructions_t *teleopInstructions = fetchInstructionsMode::GetTeleopInstructions();
+    const uint8_t &clawInput = teleopInstructions->PPMValues[attitudeMgr->grabber->ppmClawChannel];
+    const uint8_t &craneInput = teleopInstructions->PPMValues[attitudeMgr->grabber->ppmCraneChannel];
+    
+    if (clawInput < 30)
+        attitudeMgr->grabber->close(speed);
+    else if (clawInput < 70)
+        attitudeMgr->grabber->brake();
+    else
+        attitudeMgr->grabber->open(speed);
+    
+    if (craneInput < 30)
+        attitudeMgr->grabber->lower(speed);
+    else if (craneInput < 70)
+        attitudeMgr->grabber->crane_brake();
+    else
+        attitudeMgr->grabber->raise(speed);
+    
+
+    attitudeMgr->setState(fetchInstructionsMode::getInstance());
+}
+
+attitudeState& PeripheralControlMode::getInstance()
+{
+    static PeripheralControlMode singleton;
+    return singleton;
 }
