@@ -55,7 +55,7 @@ const int max_i_windup = 5;  // ? not sure if we need specifics for each angle
 
 
 // FIXME: this is to be defined in the code later depending on switch positions
-const int PID_method = 0; // 0 = acro, 1 = hold altitude, 2 = hold location
+int PID_method = 0; // 0 = acro, 1 = hold altitude, 2 = hold location
 
 /***********************************************************************************************************************
  * Code
@@ -65,10 +65,13 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t *instructions, SFOutput_t *SF_
   // to use or not to use pointers?
   curr_sf = *SF_pos;
 
-  int prev_PID_Method = 0; // default is acro
+  int prev_PID_method = 0; // default is acro
   // =================================
   // PID Code Begins here.
   // =================================
+  if (PID_method < 0 || PID_method >2) {
+    PID_method = 0; // set to default acro mode
+  }
   if (PID_method == 0) {
     // acro mode
     // PIDController controller(float _kp, float _ki, float _kd, float _i_max,
@@ -107,8 +110,8 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t *instructions, SFOutput_t *SF_
     PID_Out.frontLeftMotorPercent = throttle - roll + pitch + yaw;
     PID_Out.backRightMotorPercent = throttle + roll - pitch + yaw;
     PID_Out.frontRightMotorPercent = throttle + roll + pitch - yaw;
-  } else {
-    if (prev_PID_Method != PID_method) {
+  } else if (PID_method == 1) {
+    if (prev_PID_method != PID_method) {
       // we have just toggled the PID method, so save height location
       prev_sf = curr_sf;  // not sure about the pointer operation...
     }
@@ -151,6 +154,52 @@ PID_Output_t *runControlsAndGetPWM(Instructions_t *instructions, SFOutput_t *SF_
     PID_Out.frontLeftMotorPercent = throttle - roll + pitch + yaw;
     PID_Out.backRightMotorPercent = throttle + roll - pitch + yaw;
     PID_Out.frontRightMotorPercent = throttle + roll + pitch - yaw;
+  } else if (PID_method == 2) {
+    // HOLD LOCATION
+    // EXTREMELY UNTESTED, probably not usable
+    // lat = roll = left/right ; lon = pitc = front/back ; alt = throttle = up/down ; yaw = yaw = rotation
+    if (prev_PID_method != PID_method) {
+      // we have just toggled the PID method, so save height location
+      prev_sf = curr_sf;  // not sure about the pointer operation...
+    }
+
+    const float lat_kp = 0.04;
+    const float lat_ki = 0;
+    const float lat_kd = 0.01;
+
+    const float lon_kp = 0.04;
+    const float lon_ki = 0;
+    const float lon_kd = 0.01;
+
+    const float yaw_kp = 0.25;
+    const float yaw_ki = 0;
+    const float yaw_kd = 0.05;
+
+    const float alt_kp = 0.025;
+    const float alt_ki = 0;
+    const float alt_kd = 0.0125;
+
+    PIDController pid_lat(lat_kp, lat_ki, lat_kd, max_i_windup, -pid_abs_max, pid_abs_max);
+
+    PIDController pid_lon(lon_kp, lon_ki, lon_kd, max_i_windup, -pid_abs_max, pid_abs_max);
+
+    PIDController pid_yaw(yaw_kp, yaw_ki, yaw_kd, max_i_windup, -pid_abs_max, pid_abs_max);
+
+    PIDController pid_altitude(alt_kp, alt_ki, alt_kd, max_i_windup, -pid_abs_max, pid_abs_max);
+
+    float lat = pid_lat.execute(prev_sf.latitude, curr_sf.latitude);
+    float lon = pid_lon.execute(prev_sf.longitude, curr_sf.longitude);
+
+    // yaw is now going to target a specific yawrate.
+    // FIXME: double check that the yawRate matches direction from stick
+    float yaw = pid_yaw.execute(0, curr_sf.yawRate); // no yaw rate
+    float alt = pid_altitude.execute(prev_sf.altitude, curr_sf.altitude);  // desired is the one assigned on toggle
+
+    // mix the PID's.
+    PID_Out.backLeftMotorPercent = alt - lat - lon - yaw;
+    PID_Out.frontLeftMotorPercent = alt - lat + lon + yaw;
+    PID_Out.backRightMotorPercent = alt + lat - lon + yaw;
+    PID_Out.frontRightMotorPercent = alt + lat + lon - yaw;
   }
   return &PID_Out;
 }
