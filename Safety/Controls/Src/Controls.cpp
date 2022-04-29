@@ -37,7 +37,7 @@ static PID_Output_t PID_Out;
 // PID consts
 // =======================================================
 const int pid_abs_max = 100;
-const int max_i_windup = 5;  // ? not sure if we need specifics for each angle
+const int max_i_windup = 1;  // ? not sure if we need specifics for each angle
 
 // const float roll_kp = 0.175;
 // const float roll_ki = 0;
@@ -52,15 +52,15 @@ const int max_i_windup = 5;  // ? not sure if we need specifics for each angle
 // const float yaw_kd = 0;
 
 const float roll_kp = 0.05;
-const float roll_ki = 0;
-const float roll_kd = 0.05;
+const float roll_ki = 0.001;
+const float roll_kd = 0.015;
 
 const float pitch_kp = 0.05;
-const float pitch_ki = 0;
-const float pitch_kd = 0.05;
+const float pitch_ki = 0.001;
+const float pitch_kd = 0.015;
 
 const float yaw_kp = 0.25;
-const float yaw_ki = 0;
+const float yaw_ki = 0.01;
 const float yaw_kd = 0.05;
 
 

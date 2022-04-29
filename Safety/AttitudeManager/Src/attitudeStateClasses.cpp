@@ -141,8 +141,8 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     else
     {
         PPM_Instructions_t *teleopInstructions = fetchInstructionsMode::GetTeleopInstructions();
-        float max_angle = 30; //deg
-        float max_rotation_rate = 90; // deg/sec
+        const float max_angle = 45; //deg
+        const float max_rotation_rate = 90; // deg/sec
         _ControlsInstructions -> input1 = map(teleopInstructions->PPMValues[0], 0, 100, -max_angle, max_angle);
         _ControlsInstructions -> input2 = -map(teleopInstructions->PPMValues[1], 0, 100, -max_angle, max_angle);
         _ControlsInstructions -> input3 = teleopInstructions->PPMValues[2];
