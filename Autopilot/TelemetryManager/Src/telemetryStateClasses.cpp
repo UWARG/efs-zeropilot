@@ -7,6 +7,7 @@
 #include"comms.hpp"
 #include"FW_CV_Structs.hpp"
 #include "CommsWithPathManager.hpp"
+//#include "gps.hpp"
 
 struct fijo msg_from_jetson;
 
@@ -27,6 +28,15 @@ void obtainDataMode::execute(telemetryManager* telemetryMgr)
 {
     //Checks if there is any data to get from CV
     bool moveToDecode = doesFIJODataExist();
+
+
+    //testing gps
+    //struct GpsData_t gps_data;
+    //NEOM8 * neoM8N = NEOM8::GetInstance();
+
+    //neoM8N->GetResult(gps_data);
+
+
     if(telemetryMgr -> fatalFail)
     {
         telemetryMgr -> setState(failureMode::getInstance());
