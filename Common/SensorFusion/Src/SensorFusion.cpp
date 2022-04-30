@@ -586,13 +586,22 @@ SFError_t SF_GenerateNewResult()
     SFError = SF_GetAttitude(&attitudeOutput, &imuData);
     if(SFError.errorCode != 0) return SFError;
 
+#ifdef AUTOPILOT
     SFError = SF_GetPosition(
         &pathOutput,
-#ifdef AUTOPILOT
         &altimeterData, &GpsData,
-#endif
         &imuData, &attitudeOutput, &iterData);
     if(SFError.errorCode != 0) return SFError;
+#else
+    pathOutput.altitude = 0;
+    pathOutput.rateOfClimb = 0;
+    pathOutput.latitude = 0;
+    pathOutput.latitudeSpeed = 0;
+    pathOutput.longitude = 0;
+    pathOutput.longitudeSpeed = 0;
+    pathOutput.track = 0;
+    pathOutput.groundSpeed = 0;
+#endif
 
     osMutexWait(uart_mutex_id, osWaitForever);
     SFOutput.pitch = attitudeOutput.pitch;

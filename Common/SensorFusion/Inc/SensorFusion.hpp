@@ -13,7 +13,7 @@ extern "C"
 
 #include "CommonDataTypes.hpp"
 //Frequency of SF calculations in Hz
-const int SF_FREQ = 50;
+const int SF_FREQ = 100;
 
 // -1 = FAILED
 // 0 = SUCCESS

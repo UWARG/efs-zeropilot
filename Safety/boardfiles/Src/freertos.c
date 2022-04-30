@@ -103,12 +103,10 @@ __weak void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTask
    configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
    called if a stack overflow is detected. */
   while (1) {
-    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
-    for (int i = 0; i < 100000; i++) { }
-    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
-    for (int i = 0; i < 900000; i++) { }
+    HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+    for (int i = 0; i < 1000000; i++) { }
+    HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
+    for (int i = 0; i < 9000000; i++) { }
   }
 
 }
@@ -158,16 +156,20 @@ void attitudeManagerExecute(void const * argument)
 {
 
   /* USER CODE BEGIN attitudeManagerExecute */
+  TickType_t xLastWakeTime;
+  const TickType_t xTimeIncrement = 4;
   UBaseType_t uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
   /* Infinite loop */
   for(;;)
   {
     // TODO: Re-add RSSI_CHECK
-    RSSI_Check();
+    xLastWakeTime = xTaskGetTickCount();
+
+    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
     AttitudeManagerInterfaceExecute();
-    // HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-    uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
-    vTaskDelay(20);
+    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+    // uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+    vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
   }
 
   /* USER CODE END attitudeManagerExecute */
@@ -178,7 +180,7 @@ void sensorFusionExecute(void const * argument)
 {
   /* USER CODE BEGIN sensorFusionExecute */
   TickType_t xLastWakeTime;
-  const TickType_t xTimeIncrement = 20;
+  const TickType_t xTimeIncrement = 10; // 100Hz
   /* Inspect our own high water mark on entering the task. */
   UBaseType_t uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
 
@@ -190,9 +192,11 @@ void sensorFusionExecute(void const * argument)
 
     // TODO: Re-add RSSI_CHECK
     // RSSI_Check();
+    // HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+    HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
     SensorFusionInterfaceExecute();
-    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-    uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+    HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+    // uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
   }
   /* USER CODE END sensorFusionExecute */
