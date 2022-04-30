@@ -64,6 +64,7 @@
 /* Variables -----------------------------------------------------------------*/
 osThreadId attitudeManagerHandle;
 osThreadId sensorFusionHandle;
+osThreadId gimbalGrabberHandle;
 
 /* USER CODE BEGIN Variables */
 /* USER CODE END Variables */
@@ -71,6 +72,7 @@ osThreadId sensorFusionHandle;
 /* Function prototypes -------------------------------------------------------*/
 void attitudeManagerExecute(void const * argument);
 void sensorFusionExecute(void const * argument);
+void gimbalGrabberExecute(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -142,6 +144,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of sensorFusion */
   osThreadDef(sensorFusion, sensorFusionExecute, osPriorityNormal, 0, 2000);
   sensorFusionHandle = osThreadCreate(osThread(sensorFusion), NULL);
+
+  /* definition and creation of gimbalGrabber */
+  osThreadDef(gimbalGrabber, gimbalGrabberExecute, osPriorityNormal, 0, 128);
+  gimbalGrabberHandle = osThreadCreate(osThread(gimbalGrabber), NULL);
   
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -195,6 +201,13 @@ void sensorFusionExecute(void const * argument)
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
   }
   /* USER CODE END sensorFusionExecute */
+}
+
+/* gimbalGrabberExecute function */
+void gimbalGrabberExecute() {
+  /* USER CODE BEGIN gimbalGrabberExecute */
+
+  /* USER CODE END gimbalGrabberExecute */
 }
 
 /* USER CODE BEGIN Application */
