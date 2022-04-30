@@ -46,8 +46,8 @@ uint8_t calculateChecksum(uint8_t* data, uint8_t start, uint8_t end) {
     return checksum;
 }
 
-void Comms::transmitMessage() {
-    uint8_t* msgByteArray = (uint8_t*)&this->tx;
-    msgByteArray[sizeof(this->tx)] = calculateChecksum(msgByteArray,3,sizeof(this->tx)));
-    HAL_UART_Transmit(&huart1, msgByteArray, sizeof(this->tx)+1,100);
+void Comms::transmitMessage(pogiData tx) {
+    uint8_t* msgByteArray = (uint8_t*)&tx;
+    msgByteArray[sizeof(tx)] = calculateChecksum(msgByteArray,3,sizeof(tx)));
+    HAL_UART_Transmit(&huart1, msgByteArray, sizeof(tx)+1,100); // fix the uart, not sure if I can use 1
 }

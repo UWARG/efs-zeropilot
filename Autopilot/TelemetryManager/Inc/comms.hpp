@@ -86,9 +86,9 @@ class Comms {
     Comms(const Comms*) = delete;
     static Comms* GetInstance();
 
-    void transmitMessage();
+    void transmitMessage(pogiData tx);
 
-    pogiData tx;
+    //pogiData tx;
     //uint8_t rxBuffer[22];
 
     private:
