@@ -38,57 +38,16 @@ Comms* Comms::GetInstance() {
     return instance;
 }
 
-void Comms::transmitMessage(pogiData Data) {
-    transmitFrame frame;
-	frame.payload = Data;
-	frame.id = 1;
-
-	uint8_t rawData[42] = { 0 };
-	uint8_t checksum = 0xFF;
-
-	rawData[0] = frame.startDelim;
-
-	uint8_t *castVal = (uint8_t*)&frame.length;
-	rawData[1] = castVal[1];
-	rawData[2] = castVal[0];
-
-	rawData[3] = frame.type;
-	rawData[4] = frame.id;
-	checksum -= frame.type;
-	checksum -= frame.id;
-
-	uint8_t index = 5;
-	castVal = (uint8_t*)&frame.address64;
-	for(int i = 7; i > -1; i--) {
-	    rawData[index] = castVal[i];
-	    checksum -= castVal[i];
-	    index++;
+uint8_t calculateChecksum(uint8_t* data, uint8_t start, uint8_t end) {
+    uint8_t checksum = 0;
+    for (uint8_t i = start; i < end; i++) {
+        checksum += data[i];
     }
+    return checksum;
+}
 
-	castVal = (uint8_t*)&frame.address16;
-	for (int i = 1; i > -1; i--) {
-	    rawData[index] = castVal[i];
-	    checksum -= castVal[i];
-	    index++;
-	}
-
-	rawData[15] = frame.broadcastRadius;
-	checksum -= frame.broadcastRadius;
-	rawData[16] = frame.options;
-	checksum -= frame.options;
-
-	   index = 17;
-	castVal = (uint8_t*)&frame.payload;
-	for(int i =0; i < 24; i++) {
-	    rawData[index] = castVal[i];
-	    checksum -= castVal[i];
-	    index++;
-	}
-
-	rawData[41] = checksum;
-	uint8_t size = sizeof(rawData);
-
-
-	// send the data
-	HAL_UART_Transmit(&huart1, rawData, size,100);
+void Comms::transmitMessage() {
+    uint8_t* msgByteArray = (uint8_t*)&this->tx;
+    msgByteArray[sizeof(this->tx)] = calculateChecksum(msgByteArray,3,sizeof(this->tx)));
+    HAL_UART_Transmit(&huart1, msgByteArray, sizeof(this->tx)+1,100);
 }

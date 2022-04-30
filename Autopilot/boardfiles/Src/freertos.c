@@ -187,8 +187,8 @@ void MX_FREERTOS_Init(void) {
   telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
 
   /* definition and creation of Interchip */
-  //osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 0, 250);
-  //InterchipHandle = osThreadCreate(osThread(interchip), NULL);
+  osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 0, 250);
+  InterchipHandle = osThreadCreate(osThread(interchip), NULL);
 
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -284,7 +284,8 @@ void interchipRunExecute(void const * argument) {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, PERIOD_INTERCHIP_MS);
     if (!catastrophicFailure) {
-      Interchip_Run();
+      //Interchip_Run();
+      Comms::GetInstance()->transmitMessage();
     }
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
     /* USER CODE END interchipRunExecute */
