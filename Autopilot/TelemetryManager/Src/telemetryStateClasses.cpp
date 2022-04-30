@@ -3,10 +3,17 @@
 */
 
 #include "telemetryStateClasses.hpp"
+#include "UARTDriver.hpp"
+#include"comms.hpp"
+#include"FW_CV_Structs.hpp"
+#include "CommsWithPathManager.hpp"
+
+struct fijo msg_from_jetson;
 
 void initialMode::execute(telemetryManager* telemetryMgr)
 {
     //initial mode
+    startInterrupt();
     telemetryMgr -> setState(obtainDataMode::getInstance());
 }
 
@@ -18,15 +25,18 @@ telemetryState& initialMode::getInstance()
 
 void obtainDataMode::execute(telemetryManager* telemetryMgr)
 {
-    //obtain data from ground
-
+    //Checks if there is any data to get from CV
+    bool moveToDecode = doesFIJODataExist();
     if(telemetryMgr -> fatalFail)
     {
         telemetryMgr -> setState(failureMode::getInstance());
     }
-    else
+    else if(moveToDecode)
     {
         telemetryMgr -> setState(decodeDataMode::getInstance());
+    }else
+    {
+        telemetryMgr -> setState(readFromPathMode::getInstance());
     }
 }
 
@@ -38,7 +48,9 @@ telemetryState& obtainDataMode::getInstance()
 
 void decodeDataMode::execute(telemetryManager* telemetryMgr)
 {
-    //decode data with Mavlink
+    //Decodes the data from CV and stores it into the struct
+    msg_from_jetson = decodeFIJO();
+
     if(telemetryMgr -> fatalFail)
     {
         telemetryMgr -> setState(failureMode::getInstance());
@@ -57,7 +69,12 @@ telemetryState& decodeDataMode::getInstance()
 
 void passToPathMode::execute(telemetryManager* telemetryMgr)
 {
-    //pass data to path manager
+    //Sends the data from CV to PM
+
+    Telemetry_PIGO_t commsToPM; 
+    commsToPM.FIJO = msg_from_jetson;
+    SendCommandsForPM(&commsToPM);
+
     if(telemetryMgr -> fatalFail)
     {
         telemetryMgr -> setState(failureMode::getInstance());
@@ -74,9 +91,15 @@ telemetryState& passToPathMode::getInstance()
     return singleton;
 }
 
+bool newDataAvailable = true;
+
+POGI msg_out;
+
 void readFromPathMode::execute(telemetryManager* telemetryMgr)
 {
-    //read data out of path manager
+    //Gets data out of path manager
+    //If false no new data from PM is available
+    newDataAvailable = GetTelemData(&msg_out);
     if(telemetryMgr -> fatalFail)
     {
         telemetryMgr -> setState(failureMode::getInstance());
@@ -166,7 +189,12 @@ telemetryState& reportMode::getInstance()
 
 void encodeDataMode::execute(telemetryManager* telemetryMgr)
 {
-    //encode data with mavlink
+    //Transmits the data from PM
+    sendFOJI(msg_out.FOJI);
+
+    Comms::GetInstance()->transmitMessage(msg_out.POXI);
+
+    
     if(telemetryMgr -> fatalFail)
     {
         telemetryMgr -> setState(failureMode::getInstance());
@@ -185,7 +213,7 @@ telemetryState& encodeDataMode::getInstance()
 
 void sendDataMode::execute(telemetryManager* telemetryMgr)
 {
-    //send data to ground
+    //Send data to ground and CV
     if(telemetryMgr -> fatalFail)
     {
         telemetryMgr -> setState(failureMode::getInstance());

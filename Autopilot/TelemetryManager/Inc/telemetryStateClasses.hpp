@@ -5,6 +5,7 @@
 #pragma once
 #include "telemetryStateManager.hpp"
 #include "telemetryManager.hpp"
+#include "CommsWithPathManager.hpp"
 
 //each state's classes
 class initialMode: public telemetryState
@@ -58,7 +59,7 @@ class passToPathMode: public telemetryState
         static telemetryState& getInstance();
 
     private:
-        passToPathMode(){}
+        passToPathMode(){TelemCommWithPMInit();}
         passToPathMode(const passToPathMode& other);
         passToPathMode& operator =(const passToPathMode& other);
 };

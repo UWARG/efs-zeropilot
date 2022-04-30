@@ -10,56 +10,82 @@ extern "C"
 #include "cmsis_os.h"
 }
 
+osMailQDef(POGIMailQ, PATH_TELEM_MAIL_Q_SIZE, POGI);
+osMailQId POGIMailQ;
+
 void CommWithTelemInit()
 {
-    /*
-    telemDataMailQ = osMailCreate(osMailQ(telemDataMailQ), NULL);
-    */
+    POGIMailQ = osMailCreate(osMailQ(POGIMailQ), NULL);
 }
 
 void SendPathData(POGI *data)
 {
-    /*
+
     //Remove previous data from mail queue if it exists
-    osEvent event = osMailGet(telemDataMailQ, 0);
+    osEvent event = osMailGet(POGIMailQ, 0);
     if(event.status == osEventMail)
     {
-        osMailFree(telemDataMailQ, static_cast<POGI *>(event.value.p));
+        osMailFree(POGIMailQ, static_cast<POGI *>(event.value.p));
     }
 
     //Allocate mail slot
     POGI *dataOut;
-    dataOut = static_cast<POGI *>(osMailAlloc(telemDataMailQ, osWaitForever));
+    dataOut = static_cast<POGI *>(osMailAlloc(POGIMailQ, osWaitForever));
 
     //Fill mail slot with data
     *dataOut = *data;
 
     //Post mail slot to mail queue
-    osMailPut(telemDataMailQ, dataOut);
-    */
+    osMailPut(POGIMailQ, dataOut);
+
 }
 
-bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
+bool GetTelemData(POGI *data)
 {
-    /*
-    //Try to get commands from mail queue
+    
+    //Try to get data from mail queue
     osEvent event;
-    POGI * commandsIn;
-    event = osMailGet(PMcommandsMailQ, 0);
+    POGI * dataIn;
+    event = osMailGet(POGIMailQ, 0);
     if(event.status == osEventMail)
     {
-        commandsIn = static_cast<POGI *>(event.value.p);
+        dataIn = static_cast<POGI *>(event.value.p);
 
-        //Keep the command and remove it from the queue
-        *commands = *commandsIn;
-        osMailFree(commandsMailQ, commandsIn);
+        //Keep the data and remove it from the queue
+        *data = *dataIn;
+        osMailFree(POGIMailQ, dataIn);
         return true;
     }
     else
     {
-        //Indicate that no new commands are available.
+        //Indicate that no new data is available.
         return false;
     }
+    
     return true;
-    */
 }
+
+// bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
+// {
+
+//     //Try to get commands from mail queue
+//     osEvent event;
+//     Telemetry_PIGO_t * commandsIn;
+//     event = osMailGet(PIGOMailQ, 0);
+//     if(event.status == osEventMail)
+//     {
+//         commandsIn = static_cast<Telemetry_PIGO_t *>(event.value.p);
+
+//         //Keep the command and remove it from the queue
+//         *commands = *commandsIn;
+//         osMailFree(PIGOMailQ, commandsIn);
+//         return true;
+//     }
+//     else
+//     {
+//         //Indicate that no new commands are available.
+//         return false;
+//     }
+//     return true;
+
+// }

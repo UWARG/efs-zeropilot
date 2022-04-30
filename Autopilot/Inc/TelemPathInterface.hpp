@@ -3,6 +3,8 @@
  * Author: Anthony Bertnyk, Messed with by Gordon Fountain to turn from Attitude Manager to Telemetry
  */
  #include <cstdint>
+ #include"FW_CV_Structs.hpp"
+ #include"comms.hpp"
 
 #ifndef TELEM_PATH_INTERFACE_HPP
 #define TELEM_PATH_INTERFACE_HPP
@@ -35,6 +37,9 @@ typedef struct POGI{
 	uint8_t editingFlightPathErrorCode,flightPathFollowingErrorCode; //Flight path error codes
 	uint8_t currentWaypointId, currentWaypointIndex; //current waypoint data
 	bool homeBaseInit; //is home base initialized
+    //New comm structs
+    struct foji FOJI;
+    pogiData POXI; 
 } POGI;
 
 struct Telemetry_PIGO_t {
@@ -71,6 +76,9 @@ struct Telemetry_PIGO_t {
     float gimbalPitch;
     float gimbalYaw;
 
+    //New comm struct
+    struct fijo FIJO;
+
 };
 
 //RTOS stuff that the cpp files need
@@ -84,13 +92,13 @@ extern "C"
 const char PATH_TELEM_MAIL_Q_SIZE = 1;
 
 //Set up a mail queue for sending commands to the path manager
-extern osMailQDef(PMcommandsMailQ, PATH_TELEM_MAIL_Q_SIZE, Telemetry_PIGO_t);
-extern osMailQId PMcommandsMailQ;
+// extern osMailQDef(PIGOMailQ, PATH_TELEM_MAIL_Q_SIZE, Telemetry_PIGO_t);
+// extern osMailQId PIGOMailQ;
 
 
 //Set up a mail queue for sending data to telemetry
-extern osMailQDef(telemDataMailQ, PATH_TELEM_MAIL_Q_SIZE, POGI);
-extern osMailQId telemDataMailQ;
+// extern osMailQDef(POGIMailQ, PATH_TELEM_MAIL_Q_SIZE, POGI);
+// extern osMailQId POGIMailQ;
 
 #endif
 
