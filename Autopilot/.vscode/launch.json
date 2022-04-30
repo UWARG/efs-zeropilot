@@ -11,7 +11,7 @@
             "cwd": "${workspaceRoot}",
             "executable": "./build/Autopilot.elf",
             "name": "Debug Autopilot",
-            "device": "STM32F030RC",
+            "device": "STM32F765ZG",
             "v1": false,
         }
     ]
