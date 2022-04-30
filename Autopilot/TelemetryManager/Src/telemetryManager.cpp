@@ -34,5 +34,6 @@ void telemetryManager::setState(telemetryState& newState) //set state function
 void telemetryManager::execute() //execute actions within the state class, defined in stateclasses.cpp
 {
     currentState -> execute(this);
+    
 }
 
