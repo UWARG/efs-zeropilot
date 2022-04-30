@@ -57,6 +57,7 @@
 
 #include "sensorFusionInterface.hpp"
 #include "attitudeManagerInterface.h"
+#include "RSSI.hpp"
 //TODO: include RSSI Interface
 
 /* USER CODE END Includes */
@@ -162,7 +163,7 @@ void attitudeManagerExecute(void const * argument)
   for(;;)
   {
     // TODO: Re-add RSSI_CHECK
-    // RSSI_Check();
+    RSSI_Check();
     AttitudeManagerInterfaceExecute();
     // HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
     uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );

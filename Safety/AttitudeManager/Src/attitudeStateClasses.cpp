@@ -141,10 +141,12 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
     else
     {
         PPM_Instructions_t *teleopInstructions = fetchInstructionsMode::GetTeleopInstructions();
-        _ControlsInstructions -> input1 = teleopInstructions->PPMValues[0];
-        _ControlsInstructions -> input2 = teleopInstructions->PPMValues[1];
+        const float max_angle = 45; //deg
+        const float max_rotation_rate = 90; // deg/sec
+        _ControlsInstructions -> input1 = map(teleopInstructions->PPMValues[0], 0, 100, -max_angle, max_angle);
+        _ControlsInstructions -> input2 = -map(teleopInstructions->PPMValues[1], 0, 100, -max_angle, max_angle);
         _ControlsInstructions -> input3 = teleopInstructions->PPMValues[2];
-        _ControlsInstructions -> input4 = teleopInstructions->PPMValues[3];
+        _ControlsInstructions -> input4 = -map(teleopInstructions->PPMValues[3], 0, 100, -max_rotation_rate, max_rotation_rate);
         _PidOutput = runControlsAndGetPWM(_ControlsInstructions, SFOutput);
     }
 
@@ -210,10 +212,10 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
     if (ErrorStruct.errorCode == 0)
     {
         // setting PWM channel values
-        attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, PidOutput -> frontLeftMotorPercent);
-        attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, PidOutput -> frontRightMotorPercent);
-        attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
-        attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
+        attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, _channelOut[FRONT_LEFT_MOTOR_CHANNEL]);
+        attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, _channelOut[FRONT_RIGHT_MOTOR_CHANNEL]);
+        attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, _channelOut[BACK_LEFT_MOTOR_CHANNEL]);
+        attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, _channelOut[BACK_RIGHT_MOTOR_CHANNEL]);
         attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
     }
     else
