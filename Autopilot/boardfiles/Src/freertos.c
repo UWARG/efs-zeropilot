@@ -171,24 +171,24 @@ void MX_FREERTOS_Init(void) {
   // /* Create the thread(s) */
 
   /* definition and creation of sensorDataRun (thread for IMU, sensor fusion, and altimeter) */
-  osThreadDef(sensorDataRun, sensorDataExecute, osPriorityNormal, 0, 1000);
-  sensorDataHandle = osThreadCreate(osThread(sensorDataRun), NULL);
+  //osThreadDef(sensorDataRun, sensorDataExecute, osPriorityNormal, 0, 1000);
+  //sensorDataHandle = osThreadCreate(osThread(sensorDataRun), NULL);
 
   /* definition and creation of attitudeManager */
-  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 250);
-  attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
+  //osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 250);
+  //attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of pathManager */
   //osThreadDef(pathManager, pathManagerExecute, osPriorityNormal, 0, 250);
   //pathManagerHandle = osThreadCreate(osThread(pathManager), NULL);
 
   // /* definition and creation of telemetryRun */
-  //osThreadDef(telemetryRun, telemetryRunExecute, osPriorityNormal, 0, 250);
-  //telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
+  osThreadDef(telemetryRun, telemetryRunExecute, osPriorityNormal, 0, 250);
+  telemetryRunHandle = osThreadCreate(osThread(telemetryRun), NULL);
 
   /* definition and creation of Interchip */
-  osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 0, 250);
-  InterchipHandle = osThreadCreate(osThread(interchip), NULL);
+  //osThreadDef(interchip, interchipRunExecute, osPriorityNormal, 0, 250);
+  //InterchipHandle = osThreadCreate(osThread(interchip), NULL);
 
 
   /* USER CODE BEGIN RTOS_THREADS */
