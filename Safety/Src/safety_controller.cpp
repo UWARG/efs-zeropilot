@@ -41,6 +41,26 @@ void safety_controller_init()
 {
 }
 
+
+void new_safety_run(PWMChannel &pwm, PPMChannel &ppm) {
+
+    // ?get current pwm?
+    // PWM Values to be changed?
+    volatile int16_t *AutoPilotPwmChannel = getPWM();
+
+    // get RC PPM?
+    uint8_t lat_PPM = getPPM(ppm, THROTTLE_PPM_CHANNEL);
+    uint8_t lng_PPM = getPPM(ppm, PITCH_PPM_CHANNEL);
+    uint8_t vrt_PPM = getPPM(ppm, ROLL_PPM_CHANNEL);
+    uint8_t yaw_PPM = getPPM(ppm, YAW_PPM_CHANNEL);
+
+    // somehow convert PPM into directionnnn?
+    // for teleop controls, add target to current
+    // for auton, Path Manager should give new total direction but idk.
+
+
+}
+
 // void safety_run(PWMChannel &pwm, PPMChannel &ppm)
 // {
 

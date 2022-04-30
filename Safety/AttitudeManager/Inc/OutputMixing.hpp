@@ -30,6 +30,9 @@ typedef struct
  * Prototypes
  **********************************************************************************************************************/
 
+// Maps num from range minInput to maxInput to range minOutput to maxOutput
+float map(float num, float minInput, float maxInput, float minOutput, float maxOutput);
+
 /**
 * Converts the desired roll, pitch, yaw, and thrust percentages into an array of percentages
 * corresponding directly to what percentage of full the actuator attached to each channel should be set to.

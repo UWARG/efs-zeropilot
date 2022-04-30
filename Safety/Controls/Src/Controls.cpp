@@ -1,6 +1,7 @@
 //
 // Controls.cpp
-// Keeps the drone in the air. Updating target position will cause drone to fly towards position
+// Keeps the drone in the air. Updating target position will cause drone to fly
+// towards position
 //
 
 #include "Controls.hpp"
@@ -8,184 +9,98 @@
 
 #include "PPM.hpp"
 #include "PWM.hpp"
-#include "base_pid.hpp"
 #include "SensorFusion.hpp"
-
-
-
+#include "base_pid.hpp"
 
 /* Inputs:
- * - Global position -> not sure who will track diff from prev
  * - RC inputs
-*/
+ */
 
 /* Outputs:
  *      - PWM values
-*/
+ */
 
 /* Some notes
- * Do we need to worry about tracking drift error in the IMU? -> would it be preferable if we did?
- * Do we store current heading data? How do we store this.....
- *  -> would we use this data later to generate better curves and splines?
- * Define traditional XYZ coordinates: x forward, y left, z up, cw +
-*/
+ * Do we need to worry about tracking drift error in the IMU? -> would it be
+ * preferable if we did? Do we store current heading data? How do we store
+ * this.....
+ */
 
 /***********************************************************************************************************************
  * Defs
  **********************************************************************************************************************/
 
-static SFOutput_t curr_sf; // current
-static SFOutput_t temp_sf; // temp new targs
-static SFError_t sf_err;   // sf err
-static PID_Output_t TEMPORARY_OUT_REMOVE_THIS;
+static SFOutput_t curr_sf;  // current
+static PID_Output_t PID_Out;
 
-static PositionTargets pos_targ;
+// =======================================================
+// PID consts
+// =======================================================
+const int pid_abs_max = 100;
+const int max_i_windup = 1;  // ? not sure if we need specifics for each angle
 
-long double x_targ; // x target
-long double y_targ; // y target
-float a_targ;       // altitude target
-double h_targ;      // heading target
+// const float roll_kp = 0.175;
+// const float roll_ki = 0;
+// const float roll_kd = 0.055;
 
-/** Determines whether to use P-loop, or PID, or something else.
- * 0 = base_pid
- * 1 = simple_p
- */
+// const float pitch_kp = 0.15;
+// const float pitch_ki = 0;
+// const float pitch_kd = 0.055;
+
+// const float yaw_kp = 0.15;
+// const float yaw_ki = 0;
+// const float yaw_kd = 0;
+
+const float roll_kp = 0.05;
+const float roll_ki = 0.001;
+const float roll_kd = 0.015;
+
+const float pitch_kp = 0.05;
+const float pitch_ki = 0.001;
+const float pitch_kd = 0.015;
+
+const float yaw_kp = 0.25;
+const float yaw_ki = 0.01;
+const float yaw_kd = 0.05;
+
+
+
+
 const int PID_method = 0;
 
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
 
-StickDistance *translatePPM(Instructions_t * instructions){
-    // translates PPM into distances to move in each direction wrt % max
+PID_Output_t *runControlsAndGetPWM(Instructions_t *instructions, SFOutput_t *SF_pos) {
+  // to use or not to use pointers?
+  curr_sf = *SF_pos;
 
-}
+  // =================================
+  // PID Code Begins here.
+  // =================================
 
-void updateTargets(StickDistance *stick) {
-    // update target position to go to. 
-    // todo: make inputs not temporary floats (maybe a struct?)
-    
-    /** Drone coordinates:
-     * positive x forward
-     * positive y left
-     ** SF Coordinates:
-     * positive North, East, Up.
-     * newx = + forward cos(heading) + leftright sin(heading)
-     * newy = + forward sin(heading) + leftright cos(heading)
-     * ~ might have to flip LR to match SF? ~
-     */
-    int f_stick = stick->f_stick;
-    int lr_stick = stick->lr_stick;
-    int a_stick = stick->a_stick;
-    int h_stick = stick->h_stick;
+  // PIDController controller(float _kp, float _ki, float _kd, float _i_max,
+  // float _min_output, float _max_output);
+  PIDController pid_roll{roll_kp, roll_ki, roll_kd, max_i_windup, -pid_abs_max, pid_abs_max};
 
-    updatePosition();
+  PIDController pid_pitch{pitch_kp, pitch_ki, pitch_kd, max_i_windup, -pid_abs_max, pid_abs_max};
 
-    pos_targ.latitude   = f_stick * cos(curr_sf.heading) + lr_stick * sin(curr_sf.heading) + curr_sf.latitude;
-    pos_targ.longitude  = f_stick * sin(curr_sf.heading) + lr_stick * cos(curr_sf.heading) + curr_sf.longitude;
+  PIDController pid_yaw{yaw_kp, yaw_ki, yaw_kd, max_i_windup, -pid_abs_max, pid_abs_max};
 
-    pos_targ.altitude   = curr_sf.altitude + a_stick;
+  // get PID result
+  float roll = pid_roll.execute(instructions->input1, curr_sf.roll, curr_sf.rollRate);
+  float pitch = pid_pitch.execute(instructions->input2, curr_sf.pitch, curr_sf.pitchRate);
 
-    pos_targ.heading    = curr_sf.heading + h_stick;
-}
+  // yaw is now going to target a specific yawrate.
+  // FIXME: double check that the yawRate matches direction from stick
+  float yaw = pid_yaw.execute(instructions->input4, curr_sf.yawRate);
+  float throttle = instructions->input3;  //
 
-void updatePosition() {
-    // update the current position of the drone from SF
-
-    sf_err = SF_GetResult(&temp_sf);
-
-    if(sf_err.errorCode == 0) {
-        // double checks that the SF output is correct before assigning new values.
-        curr_sf = temp_sf;
-    }
-}
-
-void evalControls(){
-    // main entry point to run/evaluate controls.
-
-    // run PID's on our target positions.
-
-    // to be used in the future!
-}
-
-/*
- * pwmValues = runControlsAndGetPWM(instructions, SF_position)
- */
-
-PID_Output_t *runControlsAndGetPWM(Instructions_t * instructions, SFOutput_t * SF_pos) {
-    // to use or not to use pointers?
-    curr_sf = *SF_pos;
-
-    StickDistance *internal_targets = translatePPM(instructions);
-
-    updateTargets(internal_targets);
-
-    /**
-     * Now we need to get distances and run pids.
-     * dist lat
-     * dist lon
-     * dist alt
-     * angl hdn
-     * ===============
-     * pid lat
-     * pid lon
-     * pid alt
-     * pid hdn
-     * ===============
-     * mux signals and send back out
-     */
-
-    static float pid_x;
-    static float pid_y;
-    static float pid_a;
-    static float pid_h;
-
-    static float dist_lat; // latitude
-    static float dist_lon; // longitude
-    static float dist_alt; // altitude
-    static float angl_hdn; // heading
-
-    static float translate_lat;
-    static float translate_lon;
-
-    dist_lat = pos_targ.latitude - curr_sf.latitude;
-    dist_lon = pos_targ.longitude - curr_sf.longitude;
-    dist_alt = pos_targ.altitude - curr_sf.altitude;
-    angl_hdn = pos_targ.heading - curr_sf.heading;
-
-    translate_lat = - dist_lon * sin(curr_sf.heading) + dist_lat * cos(curr_sf.heading);
-    translate_lon = dist_lon * cos(curr_sf.heading) + dist_lat * sin(curr_sf.heading);
-
-    // PIDController controller(float _kp, float _ki, float _kd, float _i_max, float _min_output, float _max_output);
-    
-    PIDController x_pid{0.7, 0.3, 0.2, 100, 10, 100};
-    PIDController y_pid{0.7, 0.3, 0.2, 100, 10 ,100};
-    PIDController a_pid{1, 0.2, 0.2, 100, 20, 100};
-    PIDController h_pid{1, 0.2, 0.2, 100, 20, 100};
-
-    // calculate and run through PID's or just simple difference....?
-    // ensure some safety somewhere?
-
-
-    if (PID_method == 0) {
-        // use the base pid written without extensive scaling.
-
-        // currents are all 0 because we reset the frame with reference to the quadcopter.
-
-        pid_x = x_pid.execute(translate_lon, 0);
-        pid_y = - y_pid.execute(translate_lat, 0); // global and airframe positive left/right are flipped
-        pid_a = a_pid.execute(dist_alt, 0);
-        pid_h = h_pid.execute(angl_hdn, 0);
-    } else if (PID_method == 1) {
-        // use a simple p-loop integrator
-    } else {
-        // not sure yet
-    }
-
-    // to return PID
-    TEMPORARY_OUT_REMOVE_THIS.backLeftMotorPercent = instructions->input3;
-    TEMPORARY_OUT_REMOVE_THIS.frontLeftMotorPercent = instructions->input3;
-    TEMPORARY_OUT_REMOVE_THIS.backRightMotorPercent = instructions->input3;
-    TEMPORARY_OUT_REMOVE_THIS.frontRightMotorPercent = instructions->input3;
-    return &TEMPORARY_OUT_REMOVE_THIS;
+  // mix the PID's.
+  PID_Out.backLeftMotorPercent   = throttle - roll - pitch - yaw;
+  PID_Out.frontLeftMotorPercent  = throttle - roll + pitch + yaw;
+  PID_Out.backRightMotorPercent  = throttle + roll - pitch + yaw;
+  PID_Out.frontRightMotorPercent = throttle + roll + pitch - yaw;
+  return &PID_Out;
 }

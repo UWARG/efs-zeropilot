@@ -27,8 +27,6 @@
 static OutputMixingErrorCodes checkInputValidity(PID_Output_t *PidOutput);
 static void constrainOutput(float *channelOut);
 
-static float map(float num, float minInput, float maxInput, float minOutput, float maxOutput);
-
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
@@ -39,13 +37,15 @@ OutputMixing_error_t OutputMixing_Execute(PID_Output_t *PidOutput, float *channe
 {
 
 	OutputMixing_error_t error;
-	error.errorCode = checkInputValidity(PidOutput);
+	error.errorCode = OUTPUT_MIXING_SUCCESS; //TODO: FIX ME THIS IS BAD
+	// error.errorCode = checkInputValidity(PidOutput);
 
 	// Populating the channel array with the outputted motor percentages and constraining them from 0 to 100%
 	channelOut[FRONT_LEFT_MOTOR_CHANNEL] = PidOutput -> frontLeftMotorPercent;
 	channelOut[FRONT_RIGHT_MOTOR_CHANNEL] = PidOutput -> frontRightMotorPercent;
 	channelOut[BACK_LEFT_MOTOR_CHANNEL] = PidOutput -> backLeftMotorPercent;
 	channelOut[BACK_RIGHT_MOTOR_CHANNEL] = PidOutput -> backRightMotorPercent;
+
 
 	constrainOutput(channelOut);
 
@@ -82,9 +82,9 @@ static OutputMixingErrorCodes checkInputValidity(PID_Output_t *PidOutput)
 {
 	OutputMixingErrorCodes errorCode;
 
-	if ( (PidOutput->frontLeftMotorPercent < -100.0f) 
-	|| (PidOutput->frontRightMotorPercent < -100.0f) 
-	|| (PidOutput->backLeftMotorPercent < -100.0f) 
+	if ( (PidOutput->frontLeftMotorPercent < 0.0f) 
+	|| (PidOutput->frontRightMotorPercent < 0.0f) 
+	|| (PidOutput->backLeftMotorPercent < 0.0f) 
 	|| (PidOutput->backRightMotorPercent < 0.0f) )
 	{
 		errorCode = OUTPUT_MIXING_VALUE_TOO_LOW;
@@ -108,9 +108,9 @@ static void constrainOutput(float *channelOut)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (channelOut[i] < -100.0f)
+		if (channelOut[i] < 0.0f)
 		{
-			channelOut[i] = -100.0f;
+			channelOut[i] = 0.0f;
 		}
 		else if (channelOut[i] > 100.0f)
 		{
@@ -119,7 +119,7 @@ static void constrainOutput(float *channelOut)
 	}
 }
 
-static float map(float num, float minInput, float maxInput, float minOutput, float maxOutput)
+float map(float num, float minInput, float maxInput, float minOutput, float maxOutput)
 {
     return minOutput + ((num - minInput) * ((maxOutput - minOutput) / (maxInput - minInput)));
 }
