@@ -81,7 +81,7 @@ NEOM8::NEOM8() : gpsData {},
 
 // Could not actually talk to GPS, so making a proper configuration will need to be done at a later time. 
 // The following code is the stuff I wanted to send
-#if 0
+#if 1
 	const uint8_t CFG_NMEA[16] = { 0x17, 0x20, 0b00011000, 0x40, 0x08, 0x01, 0x00, 0x00, 0x00, 0b01110110, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00 };
 	HAL_UART_Transmit_DMA(&huart4, (uint8_t*) CFG_NMEA, sizeof(CFG_NMEA));
 

@@ -146,9 +146,9 @@ void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackTy
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-    SensorFusionInterfaceInit();
-    Interchip_Init();
-    IMUThreadInterfaceInit();
+    //SensorFusionInterfaceInit();
+    //Interchip_Init();
+    //IMUThreadInterfaceInit();
 
   /* USER CODE END Init */
 
