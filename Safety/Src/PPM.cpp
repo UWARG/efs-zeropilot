@@ -54,7 +54,9 @@ PPMChannel::PPMChannel(uint8_t channels, uint32_t timeout) {
 		max_values[i] = MAX_PULSE_WIDTH;
 	}
 
+	//Initialize input and RSSI from RC
 	HAL_TIM_IC_Start_IT(&htim15, TIM_CHANNEL_1);
+	HAL_TIM_IC_Start_IT(&htim15, TIM_CHANNEL_2);
 }
 
 StatusCode PPMChannel::setLimits(uint8_t channel, uint32_t min, uint32_t max, uint32_t deadzone) {
