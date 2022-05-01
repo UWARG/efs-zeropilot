@@ -1,4 +1,5 @@
 #include "attitudeStateClasses.hpp"
+#include "AttitudeDatatypes.hpp"
 #include "Controls.hpp"
 #include "PPM.hpp"
 #include "safetyConfig.hpp"
@@ -229,6 +230,8 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
 
     OutputMixing_error_t ErrorStruct = OutputMixing_Execute(PidOutput, _channelOut);
 
+    PPM_Instructions_t *teleopInstructions = fetchInstructionsMode::GetTeleopInstructions();
+
     if (ErrorStruct.errorCode == 0)
     {
         // setting PWM channel values
@@ -236,6 +239,14 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
         attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, PidOutput -> frontRightMotorPercent);
         attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
         attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
+
+        if (fetchInstructionsMode::gimbalGrabberState == 0) 
+        {
+            // set gimbal position according to PPM values of sliders on left and right side (channel 6 and 7)
+            attitudeMgr->pwm->set(LEFT_GIMBAL, teleopInstructions->PPMValues[LEFT_GIMBAL_GRABBER_CRANE]);
+            attitudeMgr->pwm->set(RIGHT_GIMBAL,teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH]);   
+        }
+        
         attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
     }
     else

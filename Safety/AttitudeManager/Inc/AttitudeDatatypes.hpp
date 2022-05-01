@@ -17,10 +17,12 @@ constexpr static uint8_t FRONT_LEFT_MOTOR_CHANNEL {0};
 constexpr static uint8_t FRONT_RIGHT_MOTOR_CHANNEL {1};
 constexpr static uint8_t BACK_LEFT_MOTOR_CHANNEL {2};
 constexpr static uint8_t BACK_RIGHT_MOTOR_CHANNEL {3};
-constexpr static uint8_t LEFT_GIMBAL_GRABBER_CRANE {4};
-constexpr static uint8_t RIGHT_GIMBAL_GRABBER_MOUTH {5};
+constexpr static uint8_t LEFT_GIMBAL {4};
+constexpr static uint8_t RIGHT_GIMBAL {5};
+constexpr static uint8_t GRABBER_CRANE {6};
+constexpr static uint8_t GRABBER_MOUTH {7};
 
-constexpr static uint8_t NUM_PWM_CHANNELS {4}; // keeping them at 4 motors only for now, will def be changed as more elements added
+constexpr static uint8_t NUM_PWM_CHANNELS {10}; // 4 motors plus two actuators for gimbal, and four for grabber
 
 /*
 Commented out for now to allow for just quadcopter channel mapping

@@ -30,6 +30,10 @@ class fetchInstructionsMode : public attitudeState
         static PPM_Instructions_t *GetTeleopInstructions(void) {return &_TeleopInstructions;}
         static bool isAutonomous(void) {return fetchInstructionsMode::_isAutonomous;}
         static int gimbalGrabberState; // 0 - gimbal, 1 - none, 2 - grabber
+        static int leftGimbalPercentage;
+        static int rightGimbalPercentage;
+        static int grabberCranePercentage;
+        static int grabberMouthPercentage;
 
     private:
         fetchInstructionsMode() {
