@@ -29,6 +29,8 @@ class fetchInstructionsMode : public attitudeState
         static CommandsForAM *GetPMInstructions(void) {return &_PMInstructions;}
         static PPM_Instructions_t *GetTeleopInstructions(void) {return &_TeleopInstructions;}
         static bool isAutonomous(void) {return fetchInstructionsMode::_isAutonomous;}
+        static int gimbalGrabberState; // 0 - gimbal, 1 - none, 2 - grabber
+
     private:
         fetchInstructionsMode() {
             //CommFromAMToPMInit(); (To be implementetd)
@@ -37,6 +39,7 @@ class fetchInstructionsMode : public attitudeState
         fetchInstructionsMode& operator =(const fetchInstructionsMode& other);
         static bool ReceiveTeleopInstructions(attitudeManager* attitudeMgr);
         static bool isArmed();
+        static int getGimbalGrabberState();
         static CommandsForAM _PMInstructions;
         static PPM_Instructions_t _TeleopInstructions;
         static Instructions_t _controlsInstructions;

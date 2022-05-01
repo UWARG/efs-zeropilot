@@ -1,5 +1,6 @@
 #include "attitudeStateClasses.hpp"
 #include "Controls.hpp"
+#include "PPM.hpp"
 #include "safetyConfig.hpp"
 #include "RSSI.hpp"
 #include "PID.hpp"
@@ -22,6 +23,9 @@ uint8_t fetchInstructionsMode::PMTimeoutCount;
 uint8_t DisarmMode:: _armDisarmPPMValue;
 uint8_t DisarmMode:: armDisarmTimeoutCount;
 const uint8_t MIN_ARM_VALUE = 50; //Minimum PPM value for ARM instruction
+const uint8_t GIMBAL_THRESHOLD = 33; // Maximum PPM value for drone to be in gimbal operations state
+const uint8_t NO_GIMBAL_GRABBER_THRESHOLD = 66; // Maximum PPM value for drone to be in neither gimbal nor grabber (between 33 and 66)
+const uint8_t GRABBER_THRESHOLD = 100; // Maximum PPM value for drone to be in grabber mode (higher than 66)
 
 /***********************************************************************************************************************
  * Code
@@ -78,6 +82,9 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
         return;
     }
 
+    // determine what actuator operation state the drone is (gimbal, grabber, or off)
+    gimbalGrabberState = getGimbalGrabberState();
+
     // The support is also here for sending stuff to Path manager, but there's nothing I need to send atm.
     attitudeMgr->setState(sensorFusionMode::getInstance());
 }
@@ -111,6 +118,21 @@ bool fetchInstructionsMode:: isArmed()
         retVal = true;
     }
     
+    return retVal;
+}
+
+int fetchInstructionsMode::getGimbalGrabberState()
+{
+    int retVal;
+    if (_TeleopInstructions.PPMValues[GIMBAL_GRABBER_TOGGLE_INDEX] <= GIMBAL_THRESHOLD) {
+        retVal = 0; // the drone will be able to operate gimbal only in this mode
+    }
+    else if (_TeleopInstructions.PPMValues[_TeleopInstructions.PPMValues[GIMBAL_GRABBER_TOGGLE_INDEX] > NO_GIMBAL_GRABBER_THRESHOLD)) {
+        retVal = 2; // the drone will be able to operate grabber only in this mode 
+    }
+    else {
+        retVal = 1; // the drone won't be able to operate gimbal or grabber in this mode
+    }
     return retVal;
 }
 
