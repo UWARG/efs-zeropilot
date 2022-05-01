@@ -15,6 +15,7 @@
 float OutputMixingMode::_channelOut[4];
 SFOutput_t sensorFusionMode::_SFOutput;
 PID_Output_t *PIDloopMode::_PidOutput;
+int fetchInstructionsMode::gimbalGrabberState;
 Instructions_t *_ControlsInstructions = new Instructions_t();
 CommandsForAM fetchInstructionsMode::_PMInstructions;
 PPM_Instructions_t fetchInstructionsMode::_TeleopInstructions;
@@ -84,7 +85,7 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
     }
 
     // determine what actuator operation state the drone is (gimbal, grabber, or off)
-    gimbalGrabberState = getGimbalGrabberState();
+    setGimbalGrabberState(updateGimbalGrabberState());
 
     // The support is also here for sending stuff to Path manager, but there's nothing I need to send atm.
     attitudeMgr->setState(sensorFusionMode::getInstance());
@@ -122,19 +123,23 @@ bool fetchInstructionsMode:: isArmed()
     return retVal;
 }
 
-int fetchInstructionsMode::getGimbalGrabberState()
+int fetchInstructionsMode::updateGimbalGrabberState()
 {
     int retVal;
     if (_TeleopInstructions.PPMValues[GIMBAL_GRABBER_TOGGLE_INDEX] <= GIMBAL_THRESHOLD) {
         retVal = 0; // the drone will be able to operate gimbal only in this mode
     }
-    else if (_TeleopInstructions.PPMValues[_TeleopInstructions.PPMValues[GIMBAL_GRABBER_TOGGLE_INDEX] > NO_GIMBAL_GRABBER_THRESHOLD)) {
+    else if (_TeleopInstructions.PPMValues[GIMBAL_GRABBER_TOGGLE_INDEX] > NO_GIMBAL_GRABBER_THRESHOLD) {
         retVal = 2; // the drone will be able to operate grabber only in this mode 
     }
     else {
         retVal = 1; // the drone won't be able to operate gimbal or grabber in this mode
     }
     return retVal;
+}
+
+void fetchInstructionsMode::setGimbalGrabberState(int toSet) {
+    fetchInstructionsMode::gimbalGrabberState = toSet;
 }
 
 void sensorFusionMode::execute(attitudeManager* attitudeMgr)
@@ -240,13 +245,13 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
         attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
         attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
 
-        if (fetchInstructionsMode::gimbalGrabberState == 0) 
+        if (fetchInstructionsMode::getGimbalGrabberState() == 0) 
         {
-            // set gimbal position according to PPM values of sliders on left and right side (channel 6 and 7)
-            attitudeMgr->pwm->set(LEFT_GIMBAL, teleopInstructions->PPMValues[LEFT_GIMBAL_GRABBER_CRANE]);
-            attitudeMgr->pwm->set(RIGHT_GIMBAL,teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH]);   
+        // set gimbal position according to PPM values of sliders on left and right side (channel 6 and 7)
+        attitudeMgr->pwm->set(LEFT_GIMBAL, teleopInstructions->PPMValues[LEFT_GIMBAL_GRABBER_CRANE]);
+        attitudeMgr->pwm->set(RIGHT_GIMBAL,teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH]);   
         }
-        
+
         attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
     }
     else
