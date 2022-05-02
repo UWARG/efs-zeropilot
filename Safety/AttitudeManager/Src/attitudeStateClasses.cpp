@@ -252,6 +252,11 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
         attitudeMgr->pwm->set(RIGHT_GIMBAL,teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH]);   
         }
 
+        else if (fetchInstructionsMode::getGimbalGrabberState() == 2)
+        {
+            // set grabber position according to PPM values of switches on transmitter and speed
+        }
+
         attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
     }
     else

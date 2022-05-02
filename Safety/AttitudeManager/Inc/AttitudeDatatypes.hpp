@@ -19,8 +19,10 @@ constexpr static uint8_t BACK_LEFT_MOTOR_CHANNEL {2};
 constexpr static uint8_t BACK_RIGHT_MOTOR_CHANNEL {3};
 constexpr static uint8_t LEFT_GIMBAL {4};
 constexpr static uint8_t RIGHT_GIMBAL {5};
-constexpr static uint8_t GRABBER_CRANE {6};
-constexpr static uint8_t GRABBER_MOUTH {7};
+constexpr static uint8_t GRABBER_CRANE_M1A {6};
+constexpr static uint8_t GRABBER_CRANE_M1B {7};
+constexpr static uint8_t GRABBER_MOUTH_M2A {8};
+constexpr static uint8_t GRABBER_MOUTH_M2B {9};
 
 constexpr static uint8_t NUM_PWM_CHANNELS {10}; // 4 motors plus two actuators for gimbal, and four for grabber
 

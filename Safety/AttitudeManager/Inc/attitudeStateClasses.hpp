@@ -31,8 +31,8 @@ class fetchInstructionsMode : public attitudeState
         static bool isAutonomous(void) {return fetchInstructionsMode::_isAutonomous;}
         static int leftGimbalPercentage;
         static int rightGimbalPercentage;
-        static int grabberCranePercentage;
-        static int grabberMouthPercentage;
+        static int grabberCraneState; // -1 - reverse, 0 - off, +1 - forward
+        static int grabberMouthState; // -1 - reverse, 0 - off, +1 - forward
         static int getGimbalGrabberState(void) {return fetchInstructionsMode::gimbalGrabberState;}
         static int updateGimbalGrabberState();
         static void setGimbalGrabberState(int toSet);
