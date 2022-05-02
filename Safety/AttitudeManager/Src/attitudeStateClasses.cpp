@@ -2,6 +2,7 @@
 #include "AttitudeDatatypes.hpp"
 #include "Controls.hpp"
 #include "PPM.hpp"
+#include "main.h"
 #include "safetyConfig.hpp"
 #include "stm32f0xx_hal_gpio.h"
 #include "RSSI.hpp"
@@ -279,6 +280,36 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
 
             else if (teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH] > 66) {
                 grabberState = 1; // grabber opening
+            }
+
+            if (craneState == -1) {
+                HAL_GPIO_WritePin(GRABBER_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_SET);
+                HAL_GPIO_WritePin(GRABBER_M2B_Port, GRABBER_PIN_5_M2B, GPIO_PIN_RESET);
+            }
+            
+            else if (craneState == 0) {
+                HAL_GPIO_WritePin(GRABBER_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_RESET);
+                HAL_GPIO_WritePin(GRABBER_M2B_Port, GRABBER_PIN_5_M2B, GPIO_PIN_RESET);
+            }
+
+            else {
+                HAL_GPIO_WritePin(GRABBER_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_RESET);
+                HAL_GPIO_WritePin(GRABBER_M2B_Port, GRABBER_PIN_5_M2B, GPIO_PIN_SET);
+            }
+
+            if (grabberState == -1) {
+                attitudeMgr->pwm->set(GRABBER_MOUTH_M1A, 100);
+                attitudeMgr->pwm->set(GRABBER_MOUTH_M1B, 0);
+            }
+
+            else if (grabberState == 0) {
+                attitudeMgr->pwm->set(GRABBER_MOUTH_M1A, 0);
+                attitudeMgr->pwm->set(GRABBER_MOUTH_M1B, 0);
+            }
+
+            else {
+                attitudeMgr->pwm->set(GRABBER_MOUTH_M1A, 0);
+                attitudeMgr->pwm->set(GRABBER_MOUTH_M1B, 100);
             }
 
         }
