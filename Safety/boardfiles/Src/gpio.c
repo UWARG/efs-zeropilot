@@ -19,6 +19,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
+#include "main.h"
+#include "stm32f0xx_hal_gpio.h"
 
 /* USER CODE BEGIN 0 */
 
@@ -64,6 +66,21 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /* Configure grabber GPIO pins : M2A, M2B */
+  GPIO_InitStruct.Pin = GRABBER_Pin_9_M2A;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = GRABBER_Pin_9_M2A;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+
 
 }
 

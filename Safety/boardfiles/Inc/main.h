@@ -70,6 +70,7 @@ void Error_Handler(void);
 #define RSSI_GPIO_Port GPIOB
 #define PWM6_Pin GPIO_PIN_6
 #define PWM6_GPIO_Port GPIOC
+
 #define PWM10_Pin GPIO_PIN_7
 #define PWM10_GPIO_Port GPIOC
 #define PWM11_Pin GPIO_PIN_8
@@ -90,6 +91,12 @@ void Error_Handler(void);
 #define LED2_GPIO_Port GPIOC
 #define LED3_Pin GPIO_PIN_12
 #define LED3_GPIO_Port GPIOC
+
+#define GRABBER_Pin_9_M2A GPIO_PIN_11
+#define GRABBER_M2A_Port GPIOB
+#define GRABBER_PIN_5_M2B GPIO_PIN_10
+#define GRABBER_M2B_Port GPIOB
+
 #define DBG_UART_TX_Pin GPIO_PIN_6
 #define DBG_UART_TX_GPIO_Port GPIOB
 #define DBG_UART_RX_Pin GPIO_PIN_7

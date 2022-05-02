@@ -3,6 +3,7 @@
 #include "Controls.hpp"
 #include "PPM.hpp"
 #include "safetyConfig.hpp"
+#include "stm32f0xx_hal_gpio.h"
 #include "RSSI.hpp"
 #include "PID.hpp"
 // #include "CommFromPMToAM.hpp"
@@ -248,13 +249,37 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
         if (fetchInstructionsMode::getGimbalGrabberState() == 0) 
         {
         // set gimbal position according to PPM values of sliders on left and right side (channel 6 and 7)
-        attitudeMgr->pwm->set(LEFT_GIMBAL, teleopInstructions->PPMValues[LEFT_GIMBAL_GRABBER_CRANE]);
-        attitudeMgr->pwm->set(RIGHT_GIMBAL,teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH]);   
+            attitudeMgr->pwm->set(LEFT_GIMBAL, teleopInstructions->PPMValues[LEFT_GIMBAL_GRABBER_CRANE]);
+            attitudeMgr->pwm->set(RIGHT_GIMBAL,teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH]);   
         }
 
         else if (fetchInstructionsMode::getGimbalGrabberState() == 2)
         {
             // set grabber position according to PPM values of switches on transmitter and speed
+            int craneState = 0;
+            int grabberState = 0;
+            if (teleopInstructions->PPMValues[LEFT_GIMBAL_GRABBER_CRANE] < 33) {
+                craneState = -1; // crane lowering
+            }
+            else if (teleopInstructions->PPMValues[LEFT_GIMBAL_GRABBER_CRANE] <= 66) {
+                craneState = 0; // crane braked
+            }
+
+            else if (teleopInstructions->PPMValues[LEFT_GIMBAL_GRABBER_CRANE] > 66) {
+                craneState = 1; // crane raising
+            }
+            
+
+            if (teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH] < 33) {
+                grabberState = -1; // grabber closing
+            }
+            else if (teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH] <= 66) {
+                grabberState = 0; // grabber braked
+            }
+
+            else if (teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH] > 66) {
+                grabberState = 1; // grabber opening
+            }
 
         }
 
