@@ -2,6 +2,8 @@
 #include "tim.h"
 #include <stdint.h>
 #include "RSSI.hpp"
+#include "gpio.h"
+#include "main.h"
 
 /***********************************************************************************************************************
  * Definitions
@@ -23,9 +25,9 @@ const float MAX_PULSE_WIDTH = 1670.0f;
 
 static volatile float ppm_values[MAX_PPM_CHANNELS]; // cannot be private because it's used by the ISR
 
-static bool isRisingEdge = true;
-static uint32_t pwmTicks = 0;
-static uint32_t pwmStartTime = 0;
+static volatile bool isRisingEdge = true;
+// static uint32_t pwmTicks = 0;
+// static uint32_t pwmStartTime = 0;
 
 /***********************************************************************************************************************
  * Prototypes
@@ -56,7 +58,7 @@ PPMChannel::PPMChannel(uint8_t channels, uint32_t timeout) {
 
 	//Initialize input and RSSI from RC
 	HAL_TIM_IC_Start_IT(&htim15, TIM_CHANNEL_1);
-	HAL_TIM_IC_Start_IT(&htim15, TIM_CHANNEL_2);
+	HAL_TIM_Base_Start(&htim7);
 }
 
 StatusCode PPMChannel::setLimits(uint8_t channel, uint32_t min, uint32_t max, uint32_t deadzone) {
@@ -145,12 +147,12 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 			__HAL_TIM_SET_COUNTER(htim, 0);
 
 			//Make sure we don't lose track of the PWM input that uses the same timer
-			pwmTicks += time_diff - pwmStartTime;
-			if (time_diff < pwmStartTime)
-			{
-				pwmTicks += 0xffff; //Handle timer overflow
-			}
-			pwmStartTime = 0;
+			// pwmTicks += time_diff - pwmStartTime;
+			// if (time_diff < pwmStartTime)
+			// {
+			// 	pwmTicks += htim->Init.Period; //Handle timer overflow
+			// }
+			// pwmStartTime = 0;
 
 			float pulseLength = counter_to_time(time_diff, htim->Init.Prescaler) - PULSE_WIDTH;
 
@@ -164,30 +166,75 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 				index++;
 			}
 		}
-		else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) //Recieve RSSI PWM
-		{
-			if (isRisingEdge) {
-				volatile uint32_t time = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
-				pwmTicks = 0;
-				pwmStartTime = time;
+		// else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) //Recieve RSSI PWM
+		// {
+		// 	if (isRisingEdge) {
+		// 		volatile uint32_t time = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+		// 		pwmTicks = 0;
+		// 		pwmStartTime = time;
 
-				__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_FALLING);
-				isRisingEdge = false;
+		// 		__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_FALLING);
+		// 		isRisingEdge = false;
+		// 	}
+		// 	else
+		// 	{
+		// 		volatile uint32_t time = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+		// 		pwmTicks += time - pwmStartTime;
+		// 		if (time < pwmStartTime)
+		// 		{
+		// 			pwmTicks += htim->Init.Period; //Handle timer overflow
+		// 		}
+		// 		UpdateRSSI(counter_to_time(pwmTicks, htim->Init.Prescaler));
+				
+		// 		__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_RISING);
+		// 		isRisingEdge = true;
+		// 	}
+		// }
+	}
+	
+}
+
+static uint16_t tempDeltaArray[255] = {0};
+static uint32_t tempTImingArray[255] = {0};
+static uint8_t index = 0;
+void HAL_GPIO_EXTI_Callback(uint16_t gpio_pin)
+{
+	if(gpio_pin == RSSI_Pin)
+	{
+		static uint16_t ccrRising = 0;
+		static uint16_t ccrFalling = 0;
+		
+		isRisingEdge = HAL_GPIO_ReadPin(RSSI_GPIO_Port, RSSI_Pin); //Rising Edge
+		if (isRisingEdge) {
+			ccrRising = __HAL_TIM_GET_COUNTER(&htim7);
+			HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, (GPIO_PinState)true);
+		}
+		else
+		{
+			uint16_t delta = 0;
+
+			ccrFalling = __HAL_TIM_GET_COUNTER(&htim7);
+			if(ccrRising > ccrFalling)
+			{
+				delta = htim7.Init.Period - ccrRising + ccrFalling;
 			}
 			else
 			{
-				volatile uint32_t time = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
-				pwmTicks += time - pwmStartTime;
-				if (time < pwmStartTime)
-				{
-					pwmTicks += 0xffff; //Handle timer overflow
-				}
-				UpdateRSSI(counter_to_time(pwmTicks, htim->Init.Prescaler));
-				
-				__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_RISING);
-				isRisingEdge = true;
+				delta = ccrFalling - ccrRising;
 			}
+			tempDeltaArray[index] = delta;
+			tempTImingArray[index] = HAL_GetTick();
+			if (index < 255){
+				index++;
+			}
+			else {
+				index = 0;
+			}
+			float ontime = counter_to_time(delta, htim7.Init.Prescaler);
+			UpdateRSSI(ontime);
+			HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, (GPIO_PinState)false);
+
 		}
-	}
 	
+	}
 }
