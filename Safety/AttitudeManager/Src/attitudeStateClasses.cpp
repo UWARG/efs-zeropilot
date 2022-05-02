@@ -138,8 +138,6 @@ int fetchInstructionsMode::updateGimbalGrabberState()
     return retVal;
 }
 
-void fetchInstructionsMode::
-
 void fetchInstructionsMode::setGimbalGrabberState(int toSet) {
     fetchInstructionsMode::gimbalGrabberState = toSet;
 }
