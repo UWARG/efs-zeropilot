@@ -138,6 +138,8 @@ int fetchInstructionsMode::updateGimbalGrabberState()
     return retVal;
 }
 
+void fetchInstructionsMode::
+
 void fetchInstructionsMode::setGimbalGrabberState(int toSet) {
     fetchInstructionsMode::gimbalGrabberState = toSet;
 }
@@ -255,6 +257,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
         else if (fetchInstructionsMode::getGimbalGrabberState() == 2)
         {
             // set grabber position according to PPM values of switches on transmitter and speed
+
         }
 
         attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
