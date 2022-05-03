@@ -2,6 +2,8 @@
 #include "tim.h"
 #include <stdint.h>
 #include "RSSI.hpp"
+#include "gpio.h"
+#include "main.h"
 
 /***********************************************************************************************************************
  * Definitions
@@ -22,6 +24,10 @@ const float MAX_PULSE_WIDTH = 1670.0f;
  **********************************************************************************************************************/
 
 static volatile float ppm_values[MAX_PPM_CHANNELS]; // cannot be private because it's used by the ISR
+
+static volatile bool isRisingEdge = true;
+// static uint32_t pwmTicks = 0;
+// static uint32_t pwmStartTime = 0;
 
 /***********************************************************************************************************************
  * Prototypes
@@ -50,7 +56,9 @@ PPMChannel::PPMChannel(uint8_t channels, uint32_t timeout) {
 		max_values[i] = MAX_PULSE_WIDTH;
 	}
 
+	//Initialize input and RSSI from RC
 	HAL_TIM_IC_Start_IT(&htim15, TIM_CHANNEL_1);
+	HAL_TIM_Base_Start(&htim7);
 }
 
 StatusCode PPMChannel::setLimits(uint8_t channel, uint32_t min, uint32_t max, uint32_t deadzone) {
@@ -131,22 +139,59 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 
 	if (htim->Instance == TIM15)
 	{
-
-		static volatile uint8_t index = 0;
-
-		volatile uint32_t time_diff = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-		__HAL_TIM_SET_COUNTER(htim, 0);
-
-		float pulseLength = counter_to_time(time_diff, htim->Init.Prescaler) - PULSE_WIDTH;
-
-		if (pulseLength > MIN_WIDTH_OF_RESET_PULSE)
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
 		{
-			index = 0;
+			static volatile uint8_t index = 0;
+
+			volatile uint32_t time_diff = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+			__HAL_TIM_SET_COUNTER(htim, 0);
+
+
+			float pulseLength = counter_to_time(time_diff, htim->Init.Prescaler) - PULSE_WIDTH;
+
+			if (pulseLength > MIN_WIDTH_OF_RESET_PULSE)
+			{
+				index = 0;
+			}
+			else if (index < MAX_PPM_CHANNELS)
+			{
+				ppm_values[index] = pulseLength;
+				index++;
+			}
 		}
-		else if (index < MAX_PPM_CHANNELS)
+	}
+	
+}
+
+
+void HAL_GPIO_EXTI_Callback(uint16_t gpio_pin) // RSSI
+{
+	if(gpio_pin == RSSI_Pin)
+	{
+		static uint16_t ccrRising = 0;
+		static uint16_t ccrFalling = 0;
+		
+		isRisingEdge = HAL_GPIO_ReadPin(RSSI_GPIO_Port, RSSI_Pin); //Rising Edge
+		if (isRisingEdge) {
+			ccrRising = __HAL_TIM_GET_COUNTER(&htim7);			
+		}
+		else
 		{
-			ppm_values[index] = pulseLength;
-			index++;
+			uint16_t delta = 0;
+
+			ccrFalling = __HAL_TIM_GET_COUNTER(&htim7);
+			if(ccrRising > ccrFalling)
+			{
+				delta = htim7.Init.Period - ccrRising + ccrFalling;
+			}
+			else
+			{
+				delta = ccrFalling - ccrRising;
+			}
+			float ontime = counter_to_time(delta, htim7.Init.Prescaler);
+			UpdateRSSI(ontime);
+
 		}
+	
 	}
 }

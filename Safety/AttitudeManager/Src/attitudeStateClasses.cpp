@@ -102,7 +102,7 @@ bool fetchInstructionsMode::ReceiveTeleopInstructions(attitudeManager* attitudeM
     return true;
 }
 
-bool fetchInstructionsMode:: isArmed()
+bool fetchInstructionsMode::isArmed()
 {
     bool retVal = false;
 
@@ -273,7 +273,7 @@ void DisarmMode:: execute(attitudeManager* attitudeMgr)
              2. Go into fetchInstructionsMode bec "Arm" instruction was sent
              3. Do nothing, stay in the disarm state
     */
-    if(armDisarmTimeoutCount > TIMEOUT_THRESHOLD && CommsFailed())
+    if(armDisarmTimeoutCount >= TIMEOUT_THRESHOLD || CommsFailed())
     {
         //Abort due to timeout failures
         attitudeMgr->setState(FatalFailureMode::getInstance());

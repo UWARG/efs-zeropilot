@@ -25,6 +25,7 @@ static const int32_t ARM_DISARM_CHANNEL_INDEX = 4;
 
 enum StatusCode{STATUS_CODE_OK, STATUS_CODE_FAILED, STATUS_CODE_INVALID_ARGS};
 
+
 typedef struct PPM_Instructions_t
 {
     uint8_t PPMValues[MAX_PPM_CHANNELS];

@@ -135,13 +135,13 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of attitudeManager */
-  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 256);
+  osThreadDef(attitudeManager, attitudeManagerExecute, osPriorityNormal, 0, 128);
   attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of sensorFusion */
-  osThreadDef(sensorFusion, sensorFusionExecute, osPriorityNormal, 0, 2000);
+  osThreadDef(sensorFusion, sensorFusionExecute, osPriorityNormal, 0, 1536);
   sensorFusionHandle = osThreadCreate(osThread(sensorFusion), NULL);
-  
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
