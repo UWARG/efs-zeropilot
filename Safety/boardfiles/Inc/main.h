@@ -92,8 +92,8 @@ void Error_Handler(void);
 #define LED3_Pin GPIO_PIN_12
 #define LED3_GPIO_Port GPIOC
 
-#define GRABBER_Pin_9_M2A GPIO_PIN_11
-#define GRABBER_M2A_Port GPIOB
+#define GRABBER_Pin_9_M2A GPIO_PIN_8
+#define GRABBER_M2A_Port GPIOC
 #define GRABBER_PIN_5_M2B GPIO_PIN_10
 #define GRABBER_M2B_Port GPIOB
 
