@@ -298,18 +298,20 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
             }
 
             if (grabberState == -1) {
-                attitudeMgr->pwm->set(GRABBER_MOUTH_M1A, 100);
-                attitudeMgr->pwm->set(GRABBER_MOUTH_M1B, 0);
+
+                HAL_GPIO_WritePin(CRANE_M1A_Port, CRANE_Pin_7_M1A, GPIO_PIN_SET);
+                HAL_GPIO_WritePin(CRANE_M1B_Port, CRANE_Pin_8_M1B, GPIO_PIN_RESET);
             }
 
             else if (grabberState == 0) {
-                attitudeMgr->pwm->set(GRABBER_MOUTH_M1A, 0);
-                attitudeMgr->pwm->set(GRABBER_MOUTH_M1B, 0);
+
+                HAL_GPIO_WritePin(CRANE_M1A_Port, CRANE_Pin_7_M1A, GPIO_PIN_RESET);
+                HAL_GPIO_WritePin(CRANE_M1B_Port, CRANE_Pin_8_M1B, GPIO_PIN_RESET);
             }
 
             else {
-                attitudeMgr->pwm->set(GRABBER_MOUTH_M1A, 0);
-                attitudeMgr->pwm->set(GRABBER_MOUTH_M1B, 100);
+                HAL_GPIO_WritePin(CRANE_M1A_Port, CRANE_Pin_7_M1A, GPIO_PIN_RESET);
+                HAL_GPIO_WritePin(CRANE_M1B_Port, CRANE_Pin_8_M1B, GPIO_PIN_SET);
             }
 
         }
