@@ -51,11 +51,11 @@ const int max_i_windup = 1;  // ? not sure if we need specifics for each angle
 // const float yaw_ki = 0;
 // const float yaw_kd = 0;
 
-const float roll_kp = 0.05;
+const float roll_kp = 0.085;
 const float roll_ki = 0.001;
 const float roll_kd = 0.015;
 
-const float pitch_kp = 0.05;
+const float pitch_kp = 0.085;
 const float pitch_ki = 0.001;
 const float pitch_kd = 0.015;
 
