@@ -102,7 +102,7 @@ bool fetchInstructionsMode::ReceiveTeleopInstructions(attitudeManager* attitudeM
     return true;
 }
 
-bool fetchInstructionsMode:: isArmed()
+bool fetchInstructionsMode::isArmed()
 {
     bool retVal = false;
 

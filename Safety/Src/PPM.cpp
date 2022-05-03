@@ -146,13 +146,6 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 			volatile uint32_t time_diff = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 			__HAL_TIM_SET_COUNTER(htim, 0);
 
-			//Make sure we don't lose track of the PWM input that uses the same timer
-			// pwmTicks += time_diff - pwmStartTime;
-			// if (time_diff < pwmStartTime)
-			// {
-			// 	pwmTicks += htim->Init.Period; //Handle timer overflow
-			// }
-			// pwmStartTime = 0;
 
 			float pulseLength = counter_to_time(time_diff, htim->Init.Prescaler) - PULSE_WIDTH;
 
@@ -166,38 +159,12 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 				index++;
 			}
 		}
-		// else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) //Recieve RSSI PWM
-		// {
-		// 	if (isRisingEdge) {
-		// 		volatile uint32_t time = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
-		// 		pwmTicks = 0;
-		// 		pwmStartTime = time;
-
-		// 		__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_FALLING);
-		// 		isRisingEdge = false;
-		// 	}
-		// 	else
-		// 	{
-		// 		volatile uint32_t time = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
-		// 		pwmTicks += time - pwmStartTime;
-		// 		if (time < pwmStartTime)
-		// 		{
-		// 			pwmTicks += htim->Init.Period; //Handle timer overflow
-		// 		}
-		// 		UpdateRSSI(counter_to_time(pwmTicks, htim->Init.Prescaler));
-				
-		// 		__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_RISING);
-		// 		isRisingEdge = true;
-		// 	}
-		// }
 	}
 	
 }
 
-static uint16_t tempDeltaArray[255] = {0};
-static uint32_t tempTImingArray[255] = {0};
-static uint8_t index = 0;
-void HAL_GPIO_EXTI_Callback(uint16_t gpio_pin)
+
+void HAL_GPIO_EXTI_Callback(uint16_t gpio_pin) // RSSI
 {
 	if(gpio_pin == RSSI_Pin)
 	{
@@ -206,8 +173,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t gpio_pin)
 		
 		isRisingEdge = HAL_GPIO_ReadPin(RSSI_GPIO_Port, RSSI_Pin); //Rising Edge
 		if (isRisingEdge) {
-			ccrRising = __HAL_TIM_GET_COUNTER(&htim7);
-			HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, (GPIO_PinState)true);
+			ccrRising = __HAL_TIM_GET_COUNTER(&htim7);			
 		}
 		else
 		{
@@ -222,17 +188,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t gpio_pin)
 			{
 				delta = ccrFalling - ccrRising;
 			}
-			tempDeltaArray[index] = delta;
-			tempTImingArray[index] = HAL_GetTick();
-			if (index < 255){
-				index++;
-			}
-			else {
-				index = 0;
-			}
 			float ontime = counter_to_time(delta, htim7.Init.Prescaler);
 			UpdateRSSI(ontime);
-			HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, (GPIO_PinState)false);
 
 		}
 	
