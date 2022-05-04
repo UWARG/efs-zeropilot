@@ -30,8 +30,8 @@ static const PWMPinConfig PWM_CONFIG[MAX_CHANNELS]
     {PWM4_Pin, PWM4_GPIO_Port, &htim1, TIM_CHANNEL_4, true, DMAMotorBuffer4, TIM_DMA_ID_CC4, TIM_DMA_CC4}, 
     {PWM6_Pin, PWM6_GPIO_Port, &htim3, TIM_CHANNEL_1, false, {0}, 0, 0},
     {PWM10_Pin, PWM10_GPIO_Port, &htim3, TIM_CHANNEL_2, false, {0}, 0, 0},
-    {PWM11_Pin, PWM11_GPIO_Port, &htim3, TIM_CHANNEL_3, false, {0}, 0, 0},
-    {PWM12_Pin, PWM12_GPIO_Port, &htim3, TIM_CHANNEL_4, false, {0}, 0, 0}
+    // {PWM11_Pin, PWM11_GPIO_Port, &htim3, TIM_CHANNEL_3, false, {0}, 0, 0},
+    // {PWM12_Pin, PWM12_GPIO_Port, &htim3, TIM_CHANNEL_4, false, {0}, 0, 0}
 };
 
 PWMChannel::PWMChannel()
