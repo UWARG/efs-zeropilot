@@ -21,8 +21,8 @@
 
 static const int32_t MAX_PPM_CHANNELS = 12;
 
-static const int32_t ARM_DISARM_CHANNEL_INDEX = 4;
-static const uint8_t GIMBAL_GRABBER_TOGGLE_INDEX = 5; // three-way switch for gimbal, grabber, or none
+static const int32_t ARM_DISARM_CHANNEL_INDEX = 5;
+static const uint8_t GIMBAL_GRABBER_TOGGLE_INDEX = 4; // three-way switch for gimbal, grabber, or none
 static const uint8_t LEFT_GIMBAL_GRABBER_CRANE = 6;
 static const uint8_t RIGHT_GIMBAL_GRABBER_MOUTH = 7;
 
