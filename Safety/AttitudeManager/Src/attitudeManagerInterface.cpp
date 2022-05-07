@@ -32,6 +32,8 @@ constexpr static uint8_t GRABBER_CLAW_INPUT = 2;
 // stop: ma lo mb lo OR ma hi mb hi
 // rv: ma lo mb hi
 
+// tested pins: pwm 5, 9, pc2 (gpio 11), pc3 (gpio 12)
+
 void AttitudeManagerInterfaceInit(void) {
     ppm = new PPMChannel(MAX_PPM_CHANNELS);
     pwm = new PWMChannel();
@@ -76,42 +78,34 @@ void AttitudeManagerInterfaceExecute(void)
     if (craneState == -1) {
         HAL_GPIO_WritePin(GRABBER_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_SET);
         HAL_GPIO_WritePin(GRABBER_M2B_Port, GRABBER_Pin_5_M2B, GPIO_PIN_RESET);
-
-        HAL_GPIO_WritePin(GRABBER_M1A_Port, GRABBER_Pin_11_M1A, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(GPIOC, GRABBER_Pin_12_M1B, GPIO_PIN_RESET);
     }
     
     else if (craneState == 0) {
         HAL_GPIO_WritePin(GRABBER_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_RESET);
         HAL_GPIO_WritePin(GPIOC, GRABBER_Pin_5_M2B, GPIO_PIN_RESET);
-
-        HAL_GPIO_WritePin(GRABBER_M1A_Port, GRABBER_Pin_11_M1A, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOC, GRABBER_Pin_12_M1B, GPIO_PIN_RESET);
     }
 
     else {
         HAL_GPIO_WritePin(GRABBER_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_RESET);
         HAL_GPIO_WritePin(GRABBER_M2B_Port, GRABBER_Pin_5_M2B, GPIO_PIN_SET);
 
-        HAL_GPIO_WritePin(GRABBER_M1A_Port, GRABBER_Pin_11_M1A, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOC, GRABBER_Pin_12_M1B, GPIO_PIN_SET);
     }
 
     if (grabberState == -1) {
 
-        HAL_GPIO_WritePin(CRANE_M1A_Port, CRANE_Pin_7_M1A, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(CRANE_M1B_Port, CRANE_Pin_8_M1B, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GRABBER_M1A_Port, GRABBER_Pin_11_M1A, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOC, GRABBER_Pin_12_M1B, GPIO_PIN_RESET);
     }
 
     else if (grabberState == 0) {
 
-        HAL_GPIO_WritePin(CRANE_M1A_Port, CRANE_Pin_7_M1A, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(CRANE_M1B_Port, CRANE_Pin_8_M1B, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GRABBER_M1A_Port, GRABBER_Pin_11_M1A, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOC, GRABBER_Pin_12_M1B, GPIO_PIN_RESET);
     }
 
     else {
-        HAL_GPIO_WritePin(CRANE_M1A_Port, CRANE_Pin_7_M1A, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(CRANE_M1B_Port, CRANE_Pin_8_M1B, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GRABBER_M1A_Port, GRABBER_Pin_11_M1A, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOC, GRABBER_Pin_12_M1B, GPIO_PIN_SET);
     }
 
     // attMng->execute();

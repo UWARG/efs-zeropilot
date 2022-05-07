@@ -283,7 +283,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
             }
 
             if (craneState == -1) {
-                HAL_GPIO_WritePin(GRABBER_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_SET);
+                HAL_GPIO_WritePin(CRANE_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_SET);
                 HAL_GPIO_WritePin(GRABBER_M2B_Port, GRABBER_Pin_5_M2B, GPIO_PIN_RESET);
 
                 HAL_GPIO_WritePin(GRABBER_M1A_Port, GRABBER_Pin_11_M1A, GPIO_PIN_SET);
@@ -291,7 +291,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
             }
             
             else if (craneState == 0) {
-                HAL_GPIO_WritePin(GRABBER_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_RESET);
+                HAL_GPIO_WritePin(CRANE_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_RESET);
                 HAL_GPIO_WritePin(GPIOC, GRABBER_Pin_5_M2B, GPIO_PIN_RESET);
 
                 HAL_GPIO_WritePin(GRABBER_M1A_Port, GRABBER_Pin_11_M1A, GPIO_PIN_RESET);
@@ -299,7 +299,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
             }
 
             else {
-                HAL_GPIO_WritePin(GRABBER_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_RESET);
+                HAL_GPIO_WritePin(CRANE_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_RESET);
                 HAL_GPIO_WritePin(GRABBER_M2B_Port, GRABBER_Pin_5_M2B, GPIO_PIN_SET);
 
                 HAL_GPIO_WritePin(GRABBER_M1A_Port, GRABBER_Pin_11_M1A, GPIO_PIN_RESET);
