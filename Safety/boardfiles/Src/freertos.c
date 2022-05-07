@@ -119,7 +119,7 @@ __weak void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTask
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
-    SensorFusionInterfaceInit();
+    // SensorFusionInterfaceInit();
     AttitudeManagerInterfaceInit();
   /* USER CODE END Init */
 
@@ -141,8 +141,8 @@ void MX_FREERTOS_Init(void) {
   attitudeManagerHandle = osThreadCreate(osThread(attitudeManager), NULL);
 
   /* definition and creation of sensorFusion */
-  osThreadDef(sensorFusion, sensorFusionExecute, osPriorityNormal, 0, 2000);
-  sensorFusionHandle = osThreadCreate(osThread(sensorFusion), NULL);
+  // osThreadDef(sensorFusion, sensorFusionExecute, osPriorityNormal, 0, 2000);
+  // sensorFusionHandle = osThreadCreate(osThread(sensorFusion), NULL);
   
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
