@@ -11,7 +11,7 @@
 #include "../../boardfiles/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h"
 
 /***********************************************************************************************************************
- * Definitions
+ * Definitions  
  **********************************************************************************************************************/
 
 float OutputMixingMode::_channelOut[4];
@@ -82,8 +82,8 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
     //Check if Disarm instruction was sent
     if (!isArmed())
     {
-        // attitudeMgr->setState(DisarmMode::getInstance());
-        // return;
+        attitudeMgr->setState(DisarmMode::getInstance());
+        return;
     }
 
     // determine what actuator operation state the drone is (gimbal, grabber, or off)
@@ -231,7 +231,7 @@ attitudeState& PIDloopMode::getInstance()
 }
 
 void OutputMixingMode::execute(attitudeManager* attitudeMgr)
-{
+{ // ! nuked for now
     // *PIDOutput an array of four values corresponding to motor percentages for the 
     PID_Output_t *PidOutput = PIDloopMode::GetPidOutput();
 
@@ -242,20 +242,20 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
     if (ErrorStruct.errorCode == 0)
     {
         // setting PWM channel values
-        // attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, PidOutput -> frontLeftMotorPercent);
-        // attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, PidOutput -> frontRightMotorPercent);
-        // attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
-        // attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
+        attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, PidOutput -> frontLeftMotorPercent);
+        attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, PidOutput -> frontRightMotorPercent);
+        attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
+        attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
 
-        // if (fetchInstructionsMode::getGimbalGrabberState() == 0) 
-        // {
-        // // set gimbal position according to PPM values of sliders on left and right side (channel 6 and 7)
-        //     // attitudeMgr->pwm->set(LEFT_GIMBAL, teleopInstructions->PPMValues[LEFT_GIMBAL_GRABBER_CRANE]);
-        //     // attitudeMgr->pwm->set(RIGHT_GIMBAL,teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH]);   
-        // }
+        if (fetchInstructionsMode::getGimbalGrabberState() == 0) 
+        {
+        // set gimbal position according to PPM values of sliders on left and right side (channel 6 and 7)
+            attitudeMgr->pwm->set(LEFT_GIMBAL, teleopInstructions->PPMValues[LEFT_GIMBAL_GRABBER_CRANE]);
+            attitudeMgr->pwm->set(RIGHT_GIMBAL,teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH]);   
+        }
 
-        // else if (fetchInstructionsMode::getGimbalGrabberState() == 2)
-        // {
+        else if (fetchInstructionsMode::getGimbalGrabberState() == 2)
+        {
             // set grabber position according to PPM values of switches on transmitter and speed
             int craneState = 0;
             int grabberState = 0;
@@ -283,7 +283,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
             }
 
             if (craneState == -1) {
-                HAL_GPIO_WritePin(CRANE_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_SET);
+                HAL_GPIO_WritePin(GRABBER_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_SET);
                 HAL_GPIO_WritePin(GRABBER_M2B_Port, GRABBER_Pin_5_M2B, GPIO_PIN_RESET);
 
                 HAL_GPIO_WritePin(GRABBER_M1A_Port, GRABBER_Pin_11_M1A, GPIO_PIN_SET);
@@ -291,7 +291,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
             }
             
             else if (craneState == 0) {
-                HAL_GPIO_WritePin(CRANE_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_RESET);
+                HAL_GPIO_WritePin(GRABBER_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_RESET);
                 HAL_GPIO_WritePin(GPIOC, GRABBER_Pin_5_M2B, GPIO_PIN_RESET);
 
                 HAL_GPIO_WritePin(GRABBER_M1A_Port, GRABBER_Pin_11_M1A, GPIO_PIN_RESET);
@@ -299,7 +299,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
             }
 
             else {
-                HAL_GPIO_WritePin(CRANE_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_RESET);
+                HAL_GPIO_WritePin(GRABBER_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_RESET);
                 HAL_GPIO_WritePin(GRABBER_M2B_Port, GRABBER_Pin_5_M2B, GPIO_PIN_SET);
 
                 HAL_GPIO_WritePin(GRABBER_M1A_Port, GRABBER_Pin_11_M1A, GPIO_PIN_RESET);
@@ -323,7 +323,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
                 HAL_GPIO_WritePin(CRANE_M1B_Port, CRANE_Pin_8_M1B, GPIO_PIN_SET);
             }
 
-        // }
+        }
 
         attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
     }
@@ -343,10 +343,10 @@ attitudeState& OutputMixingMode::getInstance()
 void FatalFailureMode::execute(attitudeManager* attitudeMgr)
 {
     //setting PWM channel values to 0 as per CONOPS guidelines for multicopters
-    // attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, 0);
-    // attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
-    // attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, 0);
-    // attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, 0);
 }
 
 attitudeState& FatalFailureMode::getInstance()
@@ -357,14 +357,11 @@ attitudeState& FatalFailureMode::getInstance()
 
 void DisarmMode:: execute(attitudeManager* attitudeMgr)
 {
-    attitudeMgr->setState(fetchInstructionsMode::getInstance());
-    return;
-
     //setting PWM channel values to lowest "disarm" value
-    // attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, 0);
-    // attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
-    // attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, 0);
-    // attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, 0);
+    attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, 0);
 
     const uint8_t TIMEOUT_THRESHOLD = 2; //Max cycles without data until connection is considered broken
 
@@ -391,15 +388,15 @@ void DisarmMode:: execute(attitudeManager* attitudeMgr)
         attitudeMgr->setState(FatalFailureMode::getInstance());
         return;
     }
-    else// if (isArmed())
+    else if (isArmed())
     {   
         attitudeMgr->setState(fetchInstructionsMode::getInstance());
     }
-    // else
-    // {
+    else
+    {
         //Do nothing, stay in this state
         //attitudeMgr->setState(DisarmMode::getInstance());
-    // }
+    }
 
 }
 

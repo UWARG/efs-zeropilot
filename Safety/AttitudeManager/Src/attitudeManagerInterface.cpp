@@ -14,19 +14,15 @@ constexpr static uint8_t VERTICAL_GIMBAL_OUTPUT = 5;
 // constexpr static uint8_t GRABBER_CRANE_OUTPUT = 7;
 // constexpr static uint8_t GRABBER_CLAW_OUTPUT = 8;
 
-// 1 gimbal up down
-// 2 grabber open/close
-// 3 crane up/down
-// 4 gimbal left/right
 
-constexpr static uint8_t HORIZONTAL_GIMBAL_INPUT = 1;
-constexpr static uint8_t VERTICAL_GIMBAL_INPUT = 4;
-constexpr static uint8_t GRABBER_CRANE_INPUT = 3;
-constexpr static uint8_t GRABBER_CLAW_INPUT = 2;
+constexpr static uint8_t HORIZONTAL_GIMBAL_INPUT = 3;
+constexpr static uint8_t VERTICAL_GIMBAL_INPUT = 0;
+constexpr static uint8_t GRABBER_CRANE_INPUT = 2; /// check
+constexpr static uint8_t GRABBER_CLAW_INPUT = 1;
 
 // 1 driver board
-// = -> = M1 grabber ?
-// = -> = M2 crane   ?
+// = -> = M1 grabber ? (11/12)
+// = -> = M2 crane   ? (5/9)
 
 // fw: ma hi mb lo
 // stop: ma lo mb lo OR ma hi mb hi
@@ -82,7 +78,7 @@ void AttitudeManagerInterfaceExecute(void)
     
     else if (craneState == 0) {
         HAL_GPIO_WritePin(GRABBER_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOC, GRABBER_Pin_5_M2B, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GRABBER_M2B_Port, GRABBER_Pin_5_M2B, GPIO_PIN_RESET);
     }
 
     else {
@@ -94,18 +90,18 @@ void AttitudeManagerInterfaceExecute(void)
     if (grabberState == -1) {
 
         HAL_GPIO_WritePin(GRABBER_M1A_Port, GRABBER_Pin_11_M1A, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(GPIOC, GRABBER_Pin_12_M1B, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GRABBER_M1B_Port, GRABBER_Pin_12_M1B, GPIO_PIN_RESET);
     }
 
     else if (grabberState == 0) {
 
         HAL_GPIO_WritePin(GRABBER_M1A_Port, GRABBER_Pin_11_M1A, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOC, GRABBER_Pin_12_M1B, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GRABBER_M1B_Port, GRABBER_Pin_12_M1B, GPIO_PIN_RESET);
     }
 
     else {
         HAL_GPIO_WritePin(GRABBER_M1A_Port, GRABBER_Pin_11_M1A, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOC, GRABBER_Pin_12_M1B, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GRABBER_M1B_Port, GRABBER_Pin_12_M1B, GPIO_PIN_SET);
     }
 
     // attMng->execute();
