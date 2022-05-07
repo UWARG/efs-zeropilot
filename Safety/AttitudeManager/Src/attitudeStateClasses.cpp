@@ -82,8 +82,8 @@ void fetchInstructionsMode::execute(attitudeManager* attitudeMgr)
     //Check if Disarm instruction was sent
     if (!isArmed())
     {
-        attitudeMgr->setState(DisarmMode::getInstance());
-        return;
+        // attitudeMgr->setState(DisarmMode::getInstance());
+        // return;
     }
 
     // determine what actuator operation state the drone is (gimbal, grabber, or off)
@@ -242,16 +242,16 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
     if (ErrorStruct.errorCode == 0)
     {
         // setting PWM channel values
-        attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, PidOutput -> frontLeftMotorPercent);
-        attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, PidOutput -> frontRightMotorPercent);
-        attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
-        attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
+        // attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, PidOutput -> frontLeftMotorPercent);
+        // attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, PidOutput -> frontRightMotorPercent);
+        // attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
+        // attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
 
         // if (fetchInstructionsMode::getGimbalGrabberState() == 0) 
         // {
         // // set gimbal position according to PPM values of sliders on left and right side (channel 6 and 7)
-        //     attitudeMgr->pwm->set(LEFT_GIMBAL, teleopInstructions->PPMValues[LEFT_GIMBAL_GRABBER_CRANE]);
-        //     attitudeMgr->pwm->set(RIGHT_GIMBAL,teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH]);   
+        //     // attitudeMgr->pwm->set(LEFT_GIMBAL, teleopInstructions->PPMValues[LEFT_GIMBAL_GRABBER_CRANE]);
+        //     // attitudeMgr->pwm->set(RIGHT_GIMBAL,teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH]);   
         // }
 
         // else if (fetchInstructionsMode::getGimbalGrabberState() == 2)
@@ -343,10 +343,10 @@ attitudeState& OutputMixingMode::getInstance()
 void FatalFailureMode::execute(attitudeManager* attitudeMgr)
 {
     //setting PWM channel values to 0 as per CONOPS guidelines for multicopters
-    attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, 0);
-    attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
-    attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, 0);
-    attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, 0);
+    // attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, 0);
+    // attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
+    // attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, 0);
+    // attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, 0);
 }
 
 attitudeState& FatalFailureMode::getInstance()
@@ -357,11 +357,14 @@ attitudeState& FatalFailureMode::getInstance()
 
 void DisarmMode:: execute(attitudeManager* attitudeMgr)
 {
+    attitudeMgr->setState(fetchInstructionsMode::getInstance());
+    return;
+
     //setting PWM channel values to lowest "disarm" value
-    attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, 0);
-    attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
-    attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, 0);
-    attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, 0);
+    // attitudeMgr->pwm->set(FRONT_LEFT_MOTOR_CHANNEL, 0);
+    // attitudeMgr->pwm->set(FRONT_RIGHT_MOTOR_CHANNEL, 0);
+    // attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, 0);
+    // attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, 0);
 
     const uint8_t TIMEOUT_THRESHOLD = 2; //Max cycles without data until connection is considered broken
 
@@ -388,15 +391,15 @@ void DisarmMode:: execute(attitudeManager* attitudeMgr)
         attitudeMgr->setState(FatalFailureMode::getInstance());
         return;
     }
-    else if (isArmed())
+    else// if (isArmed())
     {   
         attitudeMgr->setState(fetchInstructionsMode::getInstance());
     }
-    else
-    {
+    // else
+    // {
         //Do nothing, stay in this state
         //attitudeMgr->setState(DisarmMode::getInstance());
-    }
+    // }
 
 }
 

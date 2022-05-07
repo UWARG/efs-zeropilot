@@ -167,7 +167,7 @@ void attitudeManagerExecute(void const * argument)
     AttitudeManagerInterfaceExecute();
     // HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
     uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
-    vTaskDelay(20);
+    vTaskDelay(100);
   }
 
   /* USER CODE END attitudeManagerExecute */
