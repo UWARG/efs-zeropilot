@@ -14,23 +14,37 @@ constexpr static uint8_t VERTICAL_GIMBAL_OUTPUT = 5;
 // constexpr static uint8_t GRABBER_CRANE_OUTPUT = 7;
 // constexpr static uint8_t GRABBER_CLAW_OUTPUT = 8;
 
+// 1 gimbal up down
+// 2 grabber open/close
+// 3 crane up/down
+// 4 gimbal left/right
+
 constexpr static uint8_t HORIZONTAL_GIMBAL_INPUT = 1;
 constexpr static uint8_t VERTICAL_GIMBAL_INPUT = 4;
-constexpr static uint8_t GRABBER_CRANE_INPUT = 2;
-constexpr static uint8_t GRABBER_CLAW_INPUT = 3
-;
+constexpr static uint8_t GRABBER_CRANE_INPUT = 3;
+constexpr static uint8_t GRABBER_CLAW_INPUT = 2;
 
+// 1 driver board
+// = -> = M1 grabber ?
+// = -> = M2 crane   ?
+
+// fw: ma hi mb lo
+// stop: ma lo mb lo OR ma hi mb hi
+// rv: ma lo mb hi
 
 void AttitudeManagerInterfaceInit(void) {
     ppm = new PPMChannel(MAX_PPM_CHANNELS);
     pwm = new PWMChannel();
     // attMng = new attitudeManager(ppm, pwm);
-}
+};
 
 void AttitudeManagerInterfaceExecute(void)
 {
+    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
 
-    HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+    if (ppm->get(GRABBER_CRANE_INPUT) > 33) {
+        HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+    }
 
     pwm->set(HORIZONTAL_GIMBAL_OUTPUT, ppm->get(HORIZONTAL_GIMBAL_INPUT));
     pwm->set(VERTICAL_GIMBAL_OUTPUT, ppm->get(VERTICAL_GIMBAL_INPUT));
