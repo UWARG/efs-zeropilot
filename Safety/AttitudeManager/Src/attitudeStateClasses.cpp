@@ -247,15 +247,15 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
         attitudeMgr->pwm->set(BACK_LEFT_MOTOR_CHANNEL, PidOutput -> backLeftMotorPercent);
         attitudeMgr->pwm->set(BACK_RIGHT_MOTOR_CHANNEL, PidOutput -> backRightMotorPercent);
 
-        if (fetchInstructionsMode::getGimbalGrabberState() == 0) 
-        {
-        // set gimbal position according to PPM values of sliders on left and right side (channel 6 and 7)
-            attitudeMgr->pwm->set(LEFT_GIMBAL, teleopInstructions->PPMValues[LEFT_GIMBAL_GRABBER_CRANE]);
-            attitudeMgr->pwm->set(RIGHT_GIMBAL,teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH]);   
-        }
+        // if (fetchInstructionsMode::getGimbalGrabberState() == 0) 
+        // {
+        // // set gimbal position according to PPM values of sliders on left and right side (channel 6 and 7)
+        //     attitudeMgr->pwm->set(LEFT_GIMBAL, teleopInstructions->PPMValues[LEFT_GIMBAL_GRABBER_CRANE]);
+        //     attitudeMgr->pwm->set(RIGHT_GIMBAL,teleopInstructions->PPMValues[RIGHT_GIMBAL_GRABBER_MOUTH]);   
+        // }
 
-        else if (fetchInstructionsMode::getGimbalGrabberState() == 2)
-        {
+        // else if (fetchInstructionsMode::getGimbalGrabberState() == 2)
+        // {
             // set grabber position according to PPM values of switches on transmitter and speed
             int craneState = 0;
             int grabberState = 0;
@@ -323,7 +323,7 @@ void OutputMixingMode::execute(attitudeManager* attitudeMgr)
                 HAL_GPIO_WritePin(CRANE_M1B_Port, CRANE_Pin_8_M1B, GPIO_PIN_SET);
             }
 
-        }
+        // }
 
         attitudeMgr->setState(fetchInstructionsMode::getInstance()); // returning to beginning of state machine
     }
