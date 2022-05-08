@@ -70,6 +70,11 @@ void AttitudeManagerInterfaceExecute(void)
     else if (ppm->get(GRABBER_CLAW_INPUT) > 66) {
         grabberState = 1; // grabber opening
     }
+    
+    if (ppm->get(GRABBER_CRANE_INPUT) < 10 && ppm->get(GRABBER_CLAW_INPUT) < 10) {
+        grabberState = 0;
+        craneState = 0;
+    }
 
     if (craneState == -1) {
         HAL_GPIO_WritePin(GRABBER_M2A_Port, GRABBER_Pin_9_M2A, GPIO_PIN_SET);
