@@ -42,6 +42,8 @@
 /* External variables --------------------------------------------------------*/
 extern SPI_HandleTypeDef hspi1;
 extern TIM_HandleTypeDef htim15;
+extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim3;
 
 /******************************************************************************/
 /*            Cortex-M0 Processor Interruption and Exception Handlers         */
@@ -66,7 +68,10 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-
+  // Shut down outputs here
+  __HAL_TIM_MOE_DISABLE(&htim1);
+  __HAL_TIM_MOE_DISABLE(&htim3);
+  
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
