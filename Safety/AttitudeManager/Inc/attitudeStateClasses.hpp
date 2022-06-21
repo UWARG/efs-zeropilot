@@ -17,7 +17,9 @@
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
-
+Instructions_t *_ControlsInstructions;
+SFOutput_t *SFOutputG;
+PID_Output_t _PidOutputG; //global pid output 
 class fetchInstructionsMode : public attitudeState
 {
     public:

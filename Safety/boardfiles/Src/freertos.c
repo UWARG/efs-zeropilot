@@ -64,6 +64,7 @@
 /* Variables -----------------------------------------------------------------*/
 osThreadId attitudeManagerHandle;
 osThreadId sensorFusionHandle;
+osThreadId pidHandle;
 
 /* USER CODE BEGIN Variables */
 /* USER CODE END Variables */
@@ -71,6 +72,7 @@ osThreadId sensorFusionHandle;
 /* Function prototypes -------------------------------------------------------*/
 void attitudeManagerExecute(void const * argument);
 void sensorFusionExecute(void const * argument);
+void pidExecute(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -120,6 +122,7 @@ void MX_FREERTOS_Init(void) {
 
     SensorFusionInterfaceInit();
     AttitudeManagerInterfaceInit();
+    pidInterfaceInit();
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -142,6 +145,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of sensorFusion */
   osThreadDef(sensorFusion, sensorFusionExecute, osPriorityNormal, 0, 2000);
   sensorFusionHandle = osThreadCreate(osThread(sensorFusion), NULL);
+
+    /* definition and creation of pid */
+  osThreadDef(pid, pidExecute, osPriorityNormal, 0, 2000);
+  pidHandle = osThreadCreate(osThread(pid), NULL);
   
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -197,6 +204,20 @@ void sensorFusionExecute(void const * argument)
   /* USER CODE END sensorFusionExecute */
 }
 
+/* pidExecute function */
+void pidExecute(void const * argument)
+{
+  /* USER CODE BEGIN pidExecute */
+  UBaseType_t uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+  /* Infinite loop */
+  for(;;)
+  {
+    pidInterfaceExecute();
+    uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+    vTaskDelay(20);
+  }
+  /* USER CODE END pidExecute */
+}
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */

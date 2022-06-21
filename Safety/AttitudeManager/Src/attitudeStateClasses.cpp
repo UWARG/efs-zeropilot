@@ -3,16 +3,17 @@
 #include "safetyConfig.hpp"
 #include "RSSI.hpp"
 #include "PID.hpp"
-// #include "CommFromPMToAM.hpp"
+#include "../../boardfiles/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h"
 #include "../../boardfiles/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h"
 
 /***********************************************************************************************************************
  * Definitions
  **********************************************************************************************************************/
 
+osMutexDef(MutexIsr);
+osMutexId pidMutex = osMutexCreate(osMutex(MutexIsr));
 float OutputMixingMode::_channelOut[4];
 SFOutput_t sensorFusionMode::_SFOutput;
-PID_Output_t *PIDloopMode::_PidOutput;
 Instructions_t *_ControlsInstructions = new Instructions_t();
 CommandsForAM fetchInstructionsMode::_PMInstructions;
 PPM_Instructions_t fetchInstructionsMode::_TeleopInstructions;
@@ -130,7 +131,8 @@ attitudeState& sensorFusionMode::getInstance()
 void PIDloopMode::execute(attitudeManager* attitudeMgr)
 {
     CommandsForAM *PMInstructions = nullptr;
-    SFOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
+    // add mutex here if another thread changes this
+    SFOutput_t *SFOutputG = sensorFusionMode::GetSFOutput();
 
     PID_Output_t *pidOut = nullptr;
     if(fetchInstructionsMode::isAutonomous())
@@ -145,7 +147,9 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
         _ControlsInstructions -> input2 = teleopInstructions->PPMValues[1];
         _ControlsInstructions -> input3 = teleopInstructions->PPMValues[2];
         _ControlsInstructions -> input4 = teleopInstructions->PPMValues[3];
-        _PidOutput = runControlsAndGetPWM(_ControlsInstructions, SFOutput);
+        osMutexWait(pidMutex, 1000);
+        _PidOutput = _PidOutputG;
+        osMutexRelease(pidMutex);
     }
 
     #ifdef FIXED_WING
