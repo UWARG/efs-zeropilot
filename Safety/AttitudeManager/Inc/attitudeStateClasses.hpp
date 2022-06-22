@@ -17,7 +17,6 @@
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
-// multiple definition errors caused by these declarations
 extern Instructions_t *_ControlsInstructions;
 extern SFOutput_t *SFOutputG;
 extern PID_Output_t *_PidOutputG; 
