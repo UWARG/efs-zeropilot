@@ -67,7 +67,7 @@ typedef enum dshotType
 class PWMChannel {
 public:
 	PWMChannel();
-	void set(uint8_t channel, uint8_t percent);
+	void set(uint8_t channel, float percent);
 private:
 	//values in us
 	uint32_t pwmPeriod = 20000;
@@ -80,7 +80,7 @@ private:
   * @param telemetry Bool indicating whether to set the telemetry bit or not
   * @retval 16 bit dshot data frame
   */    
-    uint16_t dshotPrepareFrame(uint8_t throttlePercentage, bool telemetry);
+    uint16_t dshotPrepareFrame(float throttlePercentage, bool telemetry);
 
 /**
   * @brief Prepares the DMA buffer using the data frame
@@ -88,7 +88,7 @@ private:
   * @param frame DSHOT data frame
   * @retval None
   */    
-    void dshotPrepareDMABuffer(uint32_t * dmaBuffer, uint8_t throttlePercentage);
+    void dshotPrepareDMABuffer(uint32_t * dmaBuffer, float throttlePercentage);
 
 /**
   * @brief Starts PWM generation of channels 1-4 on TIM1

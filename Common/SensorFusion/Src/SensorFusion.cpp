@@ -70,8 +70,14 @@ constexpr int LAT_DIST = 111133;
 //Maximum covariance before a sensor value is discarded
 const int HIGH_COVAR = 10000;
 
+#include "cmsis_os.h"
+osMutexDef(uart_mutex);    // Declare mutex
+osMutexId(uart_mutex_id); // Mutex ID
+
 void SF_Init(void)
 {
+    uart_mutex_id = osMutexCreate(osMutex(uart_mutex));
+
     #ifdef TARGET_BUILD
     imuObj = &BMX160::getInstance();
 #ifdef AUTOPILOT
@@ -588,6 +594,7 @@ SFError_t SF_GenerateNewResult()
         &imuData, &attitudeOutput, &iterData);
     if(SFError.errorCode != 0) return SFError;
 
+    osMutexWait(uart_mutex_id, osWaitForever);
     SFOutput.pitch = attitudeOutput.pitch;
     SFOutput.roll = attitudeOutput.roll;
     SFOutput.yaw = attitudeOutput.yaw;
@@ -603,6 +610,7 @@ SFError_t SF_GenerateNewResult()
     SFOutput.track = pathOutput.track;
     SFOutput.groundSpeed = pathOutput.groundSpeed;
     SFOutput.heading = attitudeOutput.heading;
+    osMutexRelease(uart_mutex_id);
 
     return SFError;
 }
@@ -612,7 +620,9 @@ SFError_t SF_GetResult(SFOutput_t *output)
     SFError_t SFError;
     SFError.errorCode = 0;
 
+    osMutexWait(uart_mutex_id, osWaitForever);
     *output = SFOutput;
+    osMutexRelease(uart_mutex_id);
 
     return SFError;
 }
