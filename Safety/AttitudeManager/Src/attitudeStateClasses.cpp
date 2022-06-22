@@ -9,7 +9,9 @@
 /***********************************************************************************************************************
  * Definitions
  **********************************************************************************************************************/
-
+Instructions_t *_ControlsInstructions = new Instructions_t();
+SFOutput_t *SFOutputG = new SFOutput_t;
+PID_Output_t *_PidOutputG = new PID_Output_t; 
 osMutexDef(MutexIsr);
 osMutexId pidMutex = osMutexCreate(osMutex(MutexIsr));
 float OutputMixingMode::_channelOut[4];

@@ -18,9 +18,9 @@
  * Code
  **********************************************************************************************************************/
 // multiple definition errors caused by these declarations
-Instructions_t *_ControlsInstructions = new Instructions_t();
-SFOutput_t *SFOutputG;
-PID_Output_t *_PidOutputG; 
+extern Instructions_t *_ControlsInstructions;
+extern SFOutput_t *SFOutputG;
+extern PID_Output_t *_PidOutputG; 
 class fetchInstructionsMode : public attitudeState
 {
     public:
