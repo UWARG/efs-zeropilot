@@ -3,17 +3,20 @@
 #include "safetyConfig.hpp"
 #include "RSSI.hpp"
 #include "PID.hpp"
-// #include "CommFromPMToAM.hpp"
+#include "../../boardfiles/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h"
 #include "../../boardfiles/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h"
 
 /***********************************************************************************************************************
  * Definitions
  **********************************************************************************************************************/
-
+Instructions_t *_ControlsInstructions = new Instructions_t();
+SFOutput_t *SFOutputG = nullptr;
+PID_Output_t *_PidOutputG = nullptr; 
+osMutexDef(MutexIsr);
+osMutexId pidMutex = osMutexCreate(osMutex(MutexIsr));
 float OutputMixingMode::_channelOut[4];
 SFOutput_t sensorFusionMode::_SFOutput;
-PID_Output_t *PIDloopMode::_PidOutput;
-Instructions_t *_ControlsInstructions = new Instructions_t();
+PID_Output_t *PIDloopMode::_PidOutput; 
 CommandsForAM fetchInstructionsMode::_PMInstructions;
 PPM_Instructions_t fetchInstructionsMode::_TeleopInstructions;
 bool fetchInstructionsMode::_isAutonomous = false;
@@ -130,7 +133,7 @@ attitudeState& sensorFusionMode::getInstance()
 void PIDloopMode::execute(attitudeManager* attitudeMgr)
 {
     CommandsForAM *PMInstructions = nullptr;
-    SFOutput_t *SFOutput = sensorFusionMode::GetSFOutput();
+    SFOutputG = sensorFusionMode::GetSFOutput();
 
     PID_Output_t *pidOut = nullptr;
     if(fetchInstructionsMode::isAutonomous())
@@ -147,7 +150,9 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
         _ControlsInstructions -> input2 = -map(teleopInstructions->PPMValues[1], 0, 100, -max_angle, max_angle);
         _ControlsInstructions -> input3 = teleopInstructions->PPMValues[2];
         _ControlsInstructions -> input4 = -map(teleopInstructions->PPMValues[3], 0, 100, -max_rotation_rate, max_rotation_rate);
-        _PidOutput = runControlsAndGetPWM(_ControlsInstructions, SFOutput);
+        osMutexWait(pidMutex, 1000);
+        if(_PidOutputG != nullptr) _PidOutput = _PidOutputG;
+        osMutexRelease(pidMutex);
     }
 
     #ifdef FIXED_WING
