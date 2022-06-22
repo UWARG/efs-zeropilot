@@ -10,8 +10,8 @@
  * Definitions
  **********************************************************************************************************************/
 Instructions_t *_ControlsInstructions = new Instructions_t();
-SFOutput_t *SFOutputG = new SFOutput_t;
-PID_Output_t *_PidOutputG = new PID_Output_t; 
+SFOutput_t *SFOutputG = nullptr;
+PID_Output_t *_PidOutputG = nullptr; 
 osMutexDef(MutexIsr);
 osMutexId pidMutex = osMutexCreate(osMutex(MutexIsr));
 float OutputMixingMode::_channelOut[4];
@@ -149,7 +149,7 @@ void PIDloopMode::execute(attitudeManager* attitudeMgr)
         _ControlsInstructions -> input3 = teleopInstructions->PPMValues[2];
         _ControlsInstructions -> input4 = teleopInstructions->PPMValues[3];
         osMutexWait(pidMutex, 1000);
-        _PidOutput = _PidOutputG;
+        if(_PidOutputG != nullptr) _PidOutput = _PidOutputG;
         osMutexRelease(pidMutex);
     }
 
