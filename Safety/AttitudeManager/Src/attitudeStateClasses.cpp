@@ -14,7 +14,7 @@ osMutexDef(MutexIsr);
 osMutexId pidMutex = osMutexCreate(osMutex(MutexIsr));
 float OutputMixingMode::_channelOut[4];
 SFOutput_t sensorFusionMode::_SFOutput;
-Instructions_t *_ControlsInstructions = new Instructions_t();
+PID_Output_t *PIDloopMode::_PidOutput; 
 CommandsForAM fetchInstructionsMode::_PMInstructions;
 PPM_Instructions_t fetchInstructionsMode::_TeleopInstructions;
 bool fetchInstructionsMode::_isAutonomous = false;
@@ -131,8 +131,7 @@ attitudeState& sensorFusionMode::getInstance()
 void PIDloopMode::execute(attitudeManager* attitudeMgr)
 {
     CommandsForAM *PMInstructions = nullptr;
-    // add mutex here if another thread changes this
-    SFOutput_t *SFOutputG = sensorFusionMode::GetSFOutput();
+    SFOutputG = sensorFusionMode::GetSFOutput();
 
     PID_Output_t *pidOut = nullptr;
     if(fetchInstructionsMode::isAutonomous())

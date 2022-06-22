@@ -17,9 +17,10 @@
 /***********************************************************************************************************************
  * Code
  **********************************************************************************************************************/
-Instructions_t *_ControlsInstructions;
+// multiple definition errors caused by these declarations
+Instructions_t *_ControlsInstructions = new Instructions_t();
 SFOutput_t *SFOutputG;
-PID_Output_t _PidOutputG; //global pid output 
+PID_Output_t *_PidOutputG; 
 class fetchInstructionsMode : public attitudeState
 {
     public:
