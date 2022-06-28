@@ -12,6 +12,8 @@ extern "C"
 #include "cmsis_os.h"
 }
 
+const char PATH_ATTITUDE_MAIL_Q_SIZE = 1;
+
 //Set up a mail queue for sending commands to the attitude manager
 osMailQDef(commandsMailQ, PATH_ATTITUDE_MAIL_Q_SIZE, CommandsForAM);
 osMailQId commandsMailQID;
@@ -41,7 +43,7 @@ void SendFromPMToAM(CommandsForAM *commands)
     osStatus sendStatus = osMailPut(commandsMailQID, commandsOut);
 }
 
-
+#if IS_FIXED_WING
 bool GetFromPMToAM(CommandsForAM *commands)
 {
     //Try to get commands from mail queue
@@ -63,3 +65,4 @@ bool GetFromPMToAM(CommandsForAM *commands)
         return false;
     }
 }
+#endif

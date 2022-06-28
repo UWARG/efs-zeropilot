@@ -308,7 +308,7 @@ DRONE CODE
 _ModifyFlightPathErrorCode editFlightPath(WaypointManager& cruisingStateManager, fijo * telemetryData, _WaypointManager_Data_In input) {
     // If no commands given, just skip over this function
 
-    if (telemetryData == nullptr || cruisingStateManager == nullptr) {
+    if (telemetryData == nullptr) {
         return MODIFY_CRUISING_ERROR;
     } 
     

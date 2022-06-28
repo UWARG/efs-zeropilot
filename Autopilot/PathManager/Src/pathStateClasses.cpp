@@ -842,7 +842,7 @@ void commsWithAttitude::execute(pathManager* pathMgr)
     toSend.airspeed = waypointOutput->desiredAirspeed; 
 
 
-    SendFromPMToAM(&toSend); // Sends commands to attitude manager
+    // SendFromPMToAM(&toSend); // Sends commands to attitude manager - For now, commented out because I was told to 
 
     pathMgr->setState(commsWithTelemetry::getInstance());
 }

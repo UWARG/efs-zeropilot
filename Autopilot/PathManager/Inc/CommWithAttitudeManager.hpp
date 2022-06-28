@@ -14,6 +14,8 @@
  */
 void CommFromPMToAMInit();
 
+#if IS_FIXED_WING
+
 /**
  * Send commands to the attitude manager. Called by path manager. CommFromPMToAMInit must be called once before this function can be called.
  * @param[in]   commands   Pointer to struct with commands.
@@ -26,5 +28,11 @@ void SendFromPMToAM(CommandsForAM *commands);
  * @return True if data was recieved.
  */
 bool GetFromAMToPM(AttitudeData *data);
+
+#else 
+
+void SendFromPMToAM(CommandsForAM *commands); 
+
+#endif
 
 #endif

@@ -10,34 +10,18 @@ extern "C"
 #include "cmsis_os.h"
 }
 
+const char PATH_TELEM_MAIL_Q_SIZE = 1;
+
+osMailQDef(PIGOMailQ, PATH_TELEM_MAIL_Q_SIZE, fijo);
+osMailQId PIGOMailQ;
+
 void CommWithTelemInit()
 {
-    /*
-    telemDataMailQ = osMailCreate(osMailQ(telemDataMailQ), NULL);
-    */
+    PIGOMailQ = osMailCreate(osMailQ(PIGOMailQ), NULL);
+
 }
 
-void SendPathData(POGI *data)
-{
-    /*
-    //Remove previous data from mail queue if it exists
-    osEvent event = osMailGet(telemDataMailQ, 0);
-    if(event.status == osEventMail)
-    {
-        osMailFree(telemDataMailQ, static_cast<POGI *>(event.value.p));
-    }
-
-    //Allocate mail slot
-    POGI *dataOut;
-    dataOut = static_cast<POGI *>(osMailAlloc(telemDataMailQ, osWaitForever));
-
-    //Fill mail slot with data
-    *dataOut = *data;
-
-    //Post mail slot to mail queue
-    osMailPut(telemDataMailQ, dataOut);
-    */
-}
+#if IS_FIXED_WING
 
 bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
 {
@@ -62,8 +46,55 @@ bool GetTelemetryCommands(Telemetry_PIGO_t *commands)
     }
     return true;
     */
-}
 
+// For sending data back to TM -> unsure if this is required for drone 
+void SendPathData(POGI *data)
+{
+    /*
+    //Remove previous data from mail queue if it exists
+    osEvent event = osMailGet(telemDataMailQ, 0);
+    if(event.status == osEventMail)
+    {
+        osMailFree(telemDataMailQ, static_cast<POGI *>(event.value.p));
+    }
+
+    //Allocate mail slot
+    POGI *dataOut;
+    dataOut = static_cast<POGI *>(osMailAlloc(telemDataMailQ, osWaitForever));
+
+    //Fill mail slot with data
+    *dataOut = *data;
+
+    //Post mail slot to mail queue
+    osMailPut(telemDataMailQ, dataOut);
+    */
+}
+}
+#else
+
+
+// Getting commands from TM 
 bool GetTelemetryCommands(fijo *commands){
+
+    osEvent event;
+    fijo * commandsIn;
+    event = osMailGet(PIGOMailQ, 0);
+    if(event.status == osEventMail)
+    {
+        commandsIn = static_cast<fijo *>(event.value.p);
+
+        //Keep the command and remove it from the queue
+        *commands = *commandsIn;
+        osMailFree(PIGOMailQ, commandsIn);
+        return true;
+    }
+    else
+    {
+        //Indicate that no new commands are available.
+        return false;
+    }
+    return true;
     
 }
+
+#endif

@@ -18,7 +18,7 @@ void CommWithTelemInit();
  * Send path manager data to telemetry.
  * @param[in]   data   Pointer to struct with data.
  */
-void SendPathData(POGI *data);
+
 
 /**
  * Retrieve commands from the path manager.
@@ -27,9 +27,10 @@ void SendPathData(POGI *data);
  */
 #if IS_FIXED_WING 
 bool GetTelemetryCommands(Telemetry_PIGO_t *commands);
-
+void SendPathData(POGI *data);
 #else
 bool GetTelemetryCommands(fijo *commands);
+
 
 #endif
 
