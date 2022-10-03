@@ -24,9 +24,11 @@ extern "C"
 #endif
 
 typedef struct {
-    float roll, pitch, yaw; //rad
-    float rollRate, pitchRate, yawRate; //rad/s
+    float roll, pitch, yaw; //Degrees. Yaw of 180 is north.
+    float rollRate, pitchRate, yawRate; //Degrees/second
     float airspeed; //m/s
+    float heading; //Degrees. Heading of 0 is north.
+    float q0, q1, q2, q3; //Quaternion attitude
 } SFAttitudeOutput_t ;
 
 struct SFPathOutput_t{
@@ -36,6 +38,8 @@ struct SFPathOutput_t{
     float latitudeSpeed; //m/s
     long double longitude; //Decimal degrees
     float longitudeSpeed; //m/s
+    double track; //Degrees. Track of 0 is north.
+    float groundSpeed; //m/s
 };
 
 const int NUM_KALMAN_VALUES = 6; 
@@ -89,14 +93,36 @@ void SF_Init(void)
     iterData.prevP[5] = 0;
 }
 
-void localToGlobalAccel(IMUData_t *imudata, float *u)
+//Rotates acceleration vector so its direction is no longer relative to the aircrafts's rotation.
+//Uses a quaternion-derived rotation matrix:
+//wikipedia.org/wiki/Quaternions_and_spatial_rotation#Using_quaternions_as_rotations
+void localToGlobalAccel(SFAttitudeOutput_t *attitudeData, float uAccel[3])
 {
-    u[0] = imudata->accy; //Vertical acceleration
-    u[1] = imudata->accx; //Latitudinal acceleration
-    u[2] = imudata->accz; //Longitudinal acceleration
+    float q0 = attitudeData->q0;
+    float q1 = attitudeData->q1;
+    float q2 = attitudeData->q2;
+    float q3 = attitudeData->q3;
+
+    float rotation[3*3] = 
+    {
+        1 - 2 * (q2*q2 + q3*q3),  2 * (q1*q2 - q3*q0),      2 * (q1*q3 + q2*q0),
+        2 * (q1*q2 + q3*q0),      1 - 2 * (q1*q1 + q3*q3),  2 * (q2*q3 - q1*q0),
+        2 * (q1*q3 - q2*q0),      2 * (q2*q3 + q1*q0),      1 - 2 * (q1*q1 + q2*q2)
+    };
+
+    //Convert axes of u vector to agree with quaternion definition.
+    //X is north, Y is east, Z is down.
+    float xyzAccel[3] = {uAccel[1], uAccel[2], -uAccel[0]};
+    float newAccel[3];
+    mul(rotation, xyzAccel, newAccel, 3, 3, 1);
+    
+    //Convert result to original format of u
+    uAccel[0] = -(xyzAccel[2] - 9.81);
+    uAccel[1] = xyzAccel[0];
+    uAccel[2] = xyzAccel[1];
 }
 
-//Map gps position to xy coords using the reference location as the origin.
+//Map gps position to xy coords using the reference location as the origin
 //wikipedia.org/wiki/Geographic_coordinate_system
 double * gpsToCartesian(double lat, double lng){
     const double RAD_LAT = DEG_TO_RAD(REF_LAT);
@@ -178,23 +204,33 @@ SFError_t SF_GetAttitude(SFAttitudeOutput_t *Output, IMUData_t *imudata) {
     MahonyAHRSupdate(imudata->gyrx, imudata->gyry, imudata->gyrz, imudata->accx, imudata->accy, imudata->accz, imudata->magx, imudata->magy, imudata->magz);
 
     //Convert quaternion output to angles (in deg)
-    imu_RollAngle = atan2f(q0 * q1 + q2 * q3, 0.5f - q1 * q1 - q2 * q2) * 57.29578f;
-    imu_PitchAngle = asinf(-2.0f * (q1 * q3 - q0 * q2)) * 57.29578f;
-    imu_YawAngle = atan2f(q1 * q2 + q0 * q3, 0.5f - q2 * q2 - q3 * q3) * 57.29578f + 180.0f;
+    imu_RollAngle = RAD_TO_DEG(atan2f(q0 * q1 + q2 * q3, 0.5f - q1 * q1 - q2 * q2));
+    imu_PitchAngle = RAD_TO_DEG(asinf(-2.0f * (q1 * q3 - q0 * q2)));
+    imu_YawAngle = RAD_TO_DEG(atan2f(q1 * q2 + q0 * q3, 0.5f - q2 * q2 - q3 * q3)) + 180.0f;
+    
 
     //Convert rate of change of quaternion to angular velocity (in deg/s)
-    //imu_RollRate = atan2f(qDot1 * qDot2 + qDot3 * qDot4, 0.5f - qDot2 * qDot2 - qDot3 * qDot3) * 57.29578f;
-    //imu_PitchRate = asinf(-2.0f * (qDot2 * qDot4 - qDot1 * qDot3)) * 57.29578f;
-    //imu_YawRate = atan2f(qDot2 * qDot3 + qDot1 * qDot4, 0.5f - qDot3 * qDot3 - qDot4 * qDot4) * 57.29578f + 180.0f;
+    imu_RollRate = RAD_TO_DEG(atan2f(qDiff1 * qDiff2 + qDiff3 * qDiff4, 0.5f - qDiff2 * qDiff2 - qDiff3 * qDiff3)) * SF_FREQ;
+    imu_PitchRate = RAD_TO_DEG(asinf(-2.0f * (qDiff2 * qDiff4 - qDiff1 * qDiff3))) * SF_FREQ;
+    imu_YawRate = RAD_TO_DEG(atan2f(qDiff2 * qDiff3 + qDiff1 * qDiff4, 0.5f - qDiff3 * qDiff3 - qDiff4 * qDiff4)) * SF_FREQ;
 
     //Transfer Fused IMU data into SF Output struct
     Output->pitch = imu_PitchAngle;
     Output->roll = imu_RollAngle;
     Output->yaw = imu_YawAngle;
 
+    float heading = imu_YawAngle + 180;
+    if (heading >= 360) heading -= 360;
+    Output->heading = heading;
+
     Output->pitchRate = imu_PitchRate;
     Output->rollRate = imu_RollRate;
     Output->yawRate = imu_YawRate;
+
+    Output->q0 = q0;
+    Output->q1 = q1;
+    Output->q2 = q2;
+    Output->q3 = q3;
 
     return SFError;
 }
@@ -254,11 +290,12 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
     //Measured XYZ acceleration
     float u[U_DIM] =
     {
-        0,
-        0,
-        0
+        //TODO: Verify the directions of reported acceleration by the imu
+        imudata->accy, //Vertical acceleration
+        imudata->accx, //Latitudinal acceleration
+        imudata->accz  //Longitudinal acceleration
     };
-    localToGlobalAccel(imudata, u);
+    localToGlobalAccel(attitudedata, u);
 
     //Relationship between distance and acceleration
     float ddt = pow(dt,2)/2;
@@ -446,6 +483,12 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
 
     /*Output*/
 
+    float northSpeed = x[3], eastSpeed = x[5];
+    float track = RAD_TO_DEG(atan2(eastSpeed, northSpeed));
+    if (track < 0) track += 360;
+
+    float groundSpeed = sqrt(northSpeed*northSpeed + eastSpeed*eastSpeed);
+
     double * latLongOut = cartesianToGPS(x[2], x[4]);
 
     Output->altitude = x[0];
@@ -454,6 +497,8 @@ SFError_t SF_GetPosition(SFPathOutput_t *Output, AltimeterData_t *altimeterdata,
     Output->latitudeSpeed = x[3];
     Output->longitude = latLongOut[1];
     Output->longitudeSpeed = x[5];
+    Output->track = track;
+    Output->groundSpeed = groundSpeed;
 
     for (int i = 0; i < DIM*1; i++) iterdata->prevX[i] = newX[i];
     for (int i = 0; i < DIM*DIM; i++) iterdata->prevP[i] = newP[i];
@@ -497,12 +542,18 @@ SFError_t SF_GenerateNewResult()
     SFOutput.pitch = attitudeOutput.pitch;
     SFOutput.roll = attitudeOutput.roll;
     SFOutput.yaw = attitudeOutput.yaw;
+    SFOutput.pitchRate = attitudeOutput.pitchRate;
+    SFOutput.rollRate = attitudeOutput.rollRate;
+    SFOutput.yawRate = attitudeOutput.yawRate;
     SFOutput.altitude = pathOutput.altitude;
     SFOutput.rateOfClimb = pathOutput.rateOfClimb;
     SFOutput.latitude = pathOutput.latitude;
     SFOutput.latitudeSpeed = pathOutput.latitudeSpeed;
     SFOutput.longitude = pathOutput.longitude;
     SFOutput.longitudeSpeed = pathOutput.longitudeSpeed;
+    SFOutput.track = pathOutput.track;
+    SFOutput.groundSpeed = pathOutput.groundSpeed;
+    SFOutput.heading = attitudeOutput.heading;
 
     return SFError;
 }

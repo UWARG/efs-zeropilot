@@ -31,6 +31,7 @@
 volatile float twoKp = twoKpDef;											// 2 * proportional gain (Kp)
 volatile float twoKi = twoKiDef;											// 2 * integral gain (Ki)
 volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;					// quaternion of sensor frame relative to auxiliary frame
+volatile float qDiff1 = 0.0f, qDiff2 = 0.0f, qDiff3 = 0.0f, qDiff4 = 0.0f;	// rate of change of quaternion per SF update
 volatile float integralFBx = 0.0f,  integralFBy = 0.0f, integralFBz = 0.0f;	// integral error terms scaled by Ki
 
 //---------------------------------------------------------------------------------------------------
@@ -152,7 +153,7 @@ void MahonyAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float
 	float recipNorm;
 	float halfvx, halfvy, halfvz;
 	float halfex, halfey, halfez;
-	float qa, qb, qc;
+	float qa, qb, qc, qd;
 
 	// Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
 	if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {
@@ -201,6 +202,7 @@ void MahonyAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float
 	qa = q0;
 	qb = q1;
 	qc = q2;
+	qd = q3;
 	q0 += (-qb * gx - qc * gy - q3 * gz);
 	q1 += (qa * gx + qc * gz - q3 * gy);
 	q2 += (qa * gy - qb * gz + q3 * gx);
@@ -212,6 +214,18 @@ void MahonyAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float
 	q1 *= recipNorm;
 	q2 *= recipNorm;
 	q3 *= recipNorm;
+
+	float qInvertFactor = 1.0f / (qa*qa + qb*qb + qc*qc + qd*qd);
+	float qInv1 = qa * qInvertFactor;
+	float qInv2 = -qb * qInvertFactor;
+	float qInv3 = -qc * qInvertFactor;
+	float qInv4 = -qd * qInvertFactor;
+
+	//qDiff = qNum * qInv
+	qDiff1 = (q0 * qInv1 - q1 * qInv2 - q2 * qInv3 - q3 * qInv4);
+	qDiff2 = (q0 * qInv2 + q1 * qInv1 + q2 * qInv4 - q3 * qInv3);
+	qDiff3 = (q0 * qInv3 - q1 * qInv4 + q2 * qInv1 + q3 * qInv2);
+	qDiff4 = (q0 * qInv4 + q1 * qInv3 - q2 * qInv2 + q3 * qInv1);
 }
 
 //---------------------------------------------------------------------------------------------------
